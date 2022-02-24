@@ -19,23 +19,23 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-//@Configuration
-//@RequiredArgsConstructor
+@Configuration
+@RequiredArgsConstructor
 public class FirebaseConfiguration {
-//    @Value("${firebase.file.configuration}")
-//    private String configurationFile;
-//    @PostConstruct
-//    public void setupFirebase() throws IOException {
-//        InputStream inputStream = new FileInputStream(configurationFile);
-//        FirebaseOptions options = FirebaseOptions.builder()
-//                .setCredentials(GoogleCredentials.fromStream(inputStream))
-//                .build();
-//        FirebaseApp.initializeApp(options);
-//    }
-//
-//    @Bean
-//    public FirebaseAuth createFirebaseAuth() {
-//        return FirebaseAuth.getInstance(FirebaseApp.getInstance());
-//    }
+    @Value("${firebase.file.configuration}")
+    private String configurationFile;
+    @PostConstruct
+    public void setupFirebase() throws IOException {
+        InputStream inputStream = new FileInputStream(configurationFile);
+        FirebaseOptions options = FirebaseOptions.builder()
+                .setCredentials(GoogleCredentials.fromStream(inputStream))
+                .build();
+        FirebaseApp.initializeApp(options);
+    }
+
+    @Bean
+    public FirebaseAuth createFirebaseAuth() {
+        return FirebaseAuth.getInstance(FirebaseApp.getInstance());
+    }
 
 }

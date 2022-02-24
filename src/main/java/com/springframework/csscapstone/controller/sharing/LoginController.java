@@ -35,7 +35,7 @@ public class LoginController {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
     private final AccountService services;
-//    private final LoginService loginService;
+    private final LoginService loginService;
 
     @Value("${jwt.token.header}")
     private String tokenHeader;
@@ -47,13 +47,13 @@ public class LoginController {
         HttpHeaders jwtHeader = getHeader(_principal);
         return new ResponseEntity<>(_principal, jwtHeader, OK);
     }
-//
-//    @PostMapping(USER_OPEN_LOGIN)
-//    public ResponseEntity<?> openLogin(@RequestParam String firebaseToken) throws FirebaseAuthException, AccountLoginWithEmailException {
-//        UserDetails _principal = this.loginService.loginByFirebaseService(firebaseToken);
-//        HttpHeaders jwtHeader = getHeader(_principal);
-//        return new ResponseEntity<>(_principal, jwtHeader, OK);
-//    }
+
+    @PostMapping(USER_OPEN_LOGIN)
+    public ResponseEntity<?> openLogin(@RequestParam String firebaseToken) throws FirebaseAuthException, AccountLoginWithEmailException {
+        UserDetails _principal = this.loginService.loginByFirebaseService(firebaseToken);
+        HttpHeaders jwtHeader = getHeader(_principal);
+        return new ResponseEntity<>(_principal, jwtHeader, OK);
+    }
 
     @PostMapping(USER_REGISTER)
     public ResponseEntity<?> register(@Valid @RequestBody AccountRegisterDto dto) throws AccountExistException {

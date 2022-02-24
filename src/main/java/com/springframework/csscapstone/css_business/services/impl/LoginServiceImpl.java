@@ -16,26 +16,26 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-//@Service
-//@RequiredArgsConstructor
-//public class LoginServiceImpl implements LoginService {
-//    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
-//    private final FirebaseAuth firebaseAuth;
-//    private final AccountRepository accountRepository;
-//
-//    //todo This admit out useDetails
-//    @Override
-//    public UserDetails loginByFirebaseService(String firebaseToken) throws FirebaseAuthException, AccountLoginWithEmailException {
-//        FirebaseToken verifiedToken = firebaseAuth.verifyIdToken(firebaseToken);
-//        UserRecord _user = FirebaseAuth.getInstance().getUser(verifiedToken.getUid());
-//        String email = _user.getEmail();
-//
-//        return accountRepository.findAccountByEmail(email)
-//                .map(UserDetail::new)
-//                .orElseThrow(this::getAccountLoginWithEmailException);
-//    }
-//
-//    private AccountLoginWithEmailException getAccountLoginWithEmailException() {
-//        return new AccountLoginWithEmailException(MessagesUtils.getMessage(MessageConstant.Account.FAIL_LOGIN_EMAIL));
-//    }
-//}
+@Service
+@RequiredArgsConstructor
+public class LoginServiceImpl implements LoginService {
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
+    private final FirebaseAuth firebaseAuth;
+    private final AccountRepository accountRepository;
+
+    //todo This admit out useDetails
+    @Override
+    public UserDetails loginByFirebaseService(String firebaseToken) throws FirebaseAuthException, AccountLoginWithEmailException {
+        FirebaseToken verifiedToken = firebaseAuth.verifyIdToken(firebaseToken);
+        UserRecord _user = FirebaseAuth.getInstance().getUser(verifiedToken.getUid());
+        String email = _user.getEmail();
+
+        return accountRepository.findAccountByEmail(email)
+                .map(UserDetail::new)
+                .orElseThrow(this::getAccountLoginWithEmailException);
+    }
+
+    private AccountLoginWithEmailException getAccountLoginWithEmailException() {
+        return new AccountLoginWithEmailException(MessagesUtils.getMessage(MessageConstant.Account.FAIL_LOGIN_EMAIL));
+    }
+}
