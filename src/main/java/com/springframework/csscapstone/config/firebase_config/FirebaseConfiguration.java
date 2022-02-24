@@ -22,11 +22,14 @@ import java.io.InputStream;
 @Configuration
 @RequiredArgsConstructor
 public class FirebaseConfiguration {
-    @Value("${firebase.file.configuration}")
-    private String configurationFile;
+//    @Value("${firebase.file.configuration}")
+//    private String configurationFile;
+//    @Value("${classpath:firebase_config.json}")
+//    private String configurationFile;
     @PostConstruct
     public void setupFirebase() throws IOException {
-        InputStream inputStream = new FileInputStream(configurationFile);
+        File file = new File("src/main/resources/static/firebase_config.json");
+        InputStream inputStream = new FileInputStream(file);
         FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.fromStream(inputStream))
                 .build();
