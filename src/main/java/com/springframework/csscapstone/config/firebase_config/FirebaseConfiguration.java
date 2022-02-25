@@ -22,6 +22,7 @@ import java.io.InputStream;
 @RequiredArgsConstructor
 public class FirebaseConfiguration {
     private final Logger LOGGER = LoggerFactory.getLogger(FirebaseConfiguration.class);
+
     @Value("${firebase.file.configuration}")
     private String configurationFile;
 
@@ -30,7 +31,6 @@ public class FirebaseConfiguration {
         LOGGER.info("THE PATH OF FILE INPUTSTREAM {}", configurationFile);
         InputStream inputStream = new FileInputStream(configurationFile);
 
-//        InputStream inputStream = new ClassPathResource("firebase_config.json").getInputStream();
         FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.fromStream(inputStream))
                 .build();
