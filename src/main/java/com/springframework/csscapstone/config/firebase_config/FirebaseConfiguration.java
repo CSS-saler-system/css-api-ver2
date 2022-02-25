@@ -24,8 +24,7 @@ public class FirebaseConfiguration {
 //    private String configurationFile;
     @PostConstruct
     public void setupFirebase() throws IOException {
-        File file = new ClassPathResource("firebase_config.json").getFile();
-        InputStream inputStream = new FileInputStream(file);
+        InputStream inputStream = new ClassPathResource("firebase_config.json").getInputStream();
         FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.fromStream(inputStream))
                 .build();
