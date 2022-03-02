@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.ResourceLoader;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
@@ -23,13 +25,19 @@ import java.io.InputStream;
 public class FirebaseConfiguration {
     private final Logger LOGGER = LoggerFactory.getLogger(FirebaseConfiguration.class);
 
-    @Value("${firebase.file.configuration}")
-    private String configurationFile;
+//    @Value("${firebase.file.configuration}")
+//    private String configurationFile;
+//    @Value("${}")
+//    private String configurationFile;
 
     @PostConstruct
     public void setupFirebase() throws IOException {
-        LOGGER.info("THE PATH OF FILE INPUTSTREAM {}", configurationFile);
-        InputStream inputStream = new FileInputStream(configurationFile);
+//        String configurationFile = "firebase_config.json";
+//        LOGGER.info("THE PATH OF FILE INPUTSTREAM {}", configurationFile);
+//        InputStream inputStream = new FileInputStream(configurationFile);
+
+        ResourceLoader resourceLoader = new DefaultResourceLoader();
+        InputStream inputStream = resourceLoader.getResource("firebase_config.json").getInputStream();
 
         FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.fromStream(inputStream))
