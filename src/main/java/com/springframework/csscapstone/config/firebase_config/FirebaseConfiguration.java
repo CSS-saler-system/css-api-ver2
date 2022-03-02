@@ -25,19 +25,16 @@ import java.io.InputStream;
 public class FirebaseConfiguration {
     private final Logger LOGGER = LoggerFactory.getLogger(FirebaseConfiguration.class);
 
-//    @Value("${firebase.file.configuration}")
-//    private String configurationFile;
-//    @Value("${}")
-//    private String configurationFile;
+    @Value("${firebase.file.configuration}")
+    private String configurationFile;
 
     @PostConstruct
     public void setupFirebase() throws IOException {
 //        String configurationFile = "firebase_config.json";
-//        LOGGER.info("THE PATH OF FILE INPUTSTREAM {}", configurationFile);
-//        InputStream inputStream = new FileInputStream(configurationFile);
+        InputStream inputStream = new FileInputStream(configurationFile);
 
-        ResourceLoader resourceLoader = new DefaultResourceLoader();
-        InputStream inputStream = resourceLoader.getResource("firebase_config.json").getInputStream();
+//        ResourceLoader resourceLoader = new DefaultResourceLoader();
+//        InputStream inputStream = resourceLoader.getResource("firebase_config.json").getInputStream();
 
         FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.fromStream(inputStream))
