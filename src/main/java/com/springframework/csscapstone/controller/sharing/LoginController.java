@@ -48,6 +48,7 @@ public class LoginController {
         return new ResponseEntity<>(_principal, jwtHeader, OK);
     }
 
+
     @PostMapping(USER_OPEN_LOGIN)
     public ResponseEntity<?> openLogin(@RequestParam String firebaseToken) throws FirebaseAuthException, AccountLoginWithEmailException {
         UserDetails _principal = this.loginService.loginByFirebaseService(firebaseToken);
