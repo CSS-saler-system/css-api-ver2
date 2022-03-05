@@ -1,5 +1,6 @@
 package com.springframework.csscapstone.config.security;
 
+import com.google.common.collect.ImmutableList;
 import com.springframework.csscapstone.config.security.services.JwtAccessDeniedHandler;
 import com.springframework.csscapstone.config.security.services.JwtAuthenticationEntryPoint;
 import com.springframework.csscapstone.controller.sharing.filter.AuthenticationHandlerFilter;
@@ -37,7 +38,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable().cors(request -> corsConfiguration())
+        http.csrf().disable().cors().configurationSource(request -> corsConfiguration())
+                .and()
 
                 .sessionManagement().sessionCreationPolicy(STATELESS).and()
 
@@ -70,7 +72,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
 //        corsConfiguration.setAllowedOrigins(Collections.singletonList("*"));
-        corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+        corsConfiguration.setAllowedOrigins(ImmutableList.of("http://localhost:3000"));
         corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PUT", "OPTIONS", "PATCH", "DELETE"));
         corsConfiguration.setAllowCredentials(true);
         corsConfiguration.setExposedHeaders(Collections.singletonList("Authorization"));
