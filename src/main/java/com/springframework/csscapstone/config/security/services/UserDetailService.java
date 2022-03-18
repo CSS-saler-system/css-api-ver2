@@ -1,7 +1,7 @@
 package com.springframework.csscapstone.config.security.services;
 
 import com.springframework.csscapstone.config.security.model.UserDetail;
-import com.springframework.csscapstone.css_data.repositories.AccountRepository;
+import com.springframework.csscapstone.data.repositories.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

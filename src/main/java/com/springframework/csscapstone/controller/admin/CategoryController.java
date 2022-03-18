@@ -1,11 +1,11 @@
 package com.springframework.csscapstone.controller.admin;
 
-import com.springframework.csscapstone.css_business.services.CategoryService;
-import com.springframework.csscapstone.css_business.model_dto.basic.CategoryDto;
-import com.springframework.csscapstone.css_business.model_dto.custom.creator_model.CategoryCreatorDto;
-import com.springframework.csscapstone.css_business.model_dto.custom.return_model.category.CategoryReturnDto;
-import com.springframework.csscapstone.css_business.model_dto.custom.search_model.CategorySearchDto;
-import com.springframework.csscapstone.css_data.status.CategoryStatus;
+import com.springframework.csscapstone.services.services.CategoryService;
+import com.springframework.csscapstone.services.model_dto.basic.CategoryDto;
+import com.springframework.csscapstone.services.model_dto.custom.creator_model.CategoryCreatorDto;
+import com.springframework.csscapstone.services.model_dto.custom.return_model.category.CategoryReturnDto;
+import com.springframework.csscapstone.services.model_dto.custom.search_model.CategorySearchDto;
+import com.springframework.csscapstone.data.status.CategoryStatus;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.category_exception.CategoryInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.category_exception.CategoryNotFoundException;

@@ -1,11 +1,9 @@
 package com.springframework.csscapstone.config.bootstrap;
 
-import com.springframework.csscapstone.css_data.domain.Account;
-import com.springframework.csscapstone.css_data.domain.Campaign;
-import com.springframework.csscapstone.css_data.domain.Category;
-import com.springframework.csscapstone.css_data.domain.Role;
-import com.springframework.csscapstone.css_data.repositories.CategoryRepository;
-import com.springframework.csscapstone.css_data.status.CampaignStatus;
+import com.springframework.csscapstone.data.domain.Campaign;
+import com.springframework.csscapstone.data.domain.Role;
+import com.springframework.csscapstone.data.repositories.CategoryRepository;
+import com.springframework.csscapstone.data.status.CampaignStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
@@ -14,13 +12,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 @Slf4j
 @Component
