@@ -1,6 +1,6 @@
 package com.springframework.csscapstone.controller.admin;
 
-import com.springframework.csscapstone.services.services.CategoryService;
+import com.springframework.csscapstone.services.business.CategoryService;
 import com.springframework.csscapstone.services.model_dto.basic.CategoryDto;
 import com.springframework.csscapstone.services.model_dto.custom.creator_model.CategoryCreatorDto;
 import com.springframework.csscapstone.services.model_dto.custom.return_model.category.CategoryReturnDto;

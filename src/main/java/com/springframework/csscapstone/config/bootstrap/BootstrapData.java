@@ -1,7 +1,7 @@
 package com.springframework.csscapstone.config.bootstrap;
 
-import com.springframework.csscapstone.data.domain.Campaign;
-import com.springframework.csscapstone.data.domain.Role;
+import com.springframework.csscapstone.controller.domain.Campaign;
+import com.springframework.csscapstone.controller.domain.Role;
 import com.springframework.csscapstone.data.repositories.CategoryRepository;
 import com.springframework.csscapstone.data.status.CampaignStatus;
 import lombok.RequiredArgsConstructor;

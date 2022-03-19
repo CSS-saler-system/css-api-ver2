@@ -2,7 +2,7 @@ package com.springframework.csscapstone.controller.admin;
 
 import com.springframework.csscapstone.config.constant.DataConstraint;
 import com.springframework.csscapstone.config.constant.MessageConstant;
-import com.springframework.csscapstone.services.services.CampaignService;
+import com.springframework.csscapstone.services.business.CampaignService;
 import com.springframework.csscapstone.services.model_dto.basic.CampaignDto;
 import com.springframework.csscapstone.services.model_dto.custom.creator_model.CampaignCreatorDto;
 import com.springframework.csscapstone.data.status.CampaignStatus;

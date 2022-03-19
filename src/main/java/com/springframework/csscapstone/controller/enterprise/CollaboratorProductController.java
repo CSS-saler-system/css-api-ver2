@@ -1,6 +1,6 @@
 package com.springframework.csscapstone.controller.enterprise;
 
-import com.springframework.csscapstone.services.services.ProductService;
+import com.springframework.csscapstone.services.business.ProductService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

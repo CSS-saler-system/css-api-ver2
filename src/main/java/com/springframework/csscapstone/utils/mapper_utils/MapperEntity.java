@@ -1,7 +1,7 @@
 package com.springframework.csscapstone.utils.mapper_utils;
 
+import com.springframework.csscapstone.controller.domain.*;
 import com.springframework.csscapstone.services.model_dto.basic.*;
-import com.springframework.csscapstone.data.domain.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
