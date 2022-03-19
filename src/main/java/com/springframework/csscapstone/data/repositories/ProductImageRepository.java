@@ -1,7 +1,7 @@
 package com.springframework.csscapstone.data.repositories;
 
-import com.springframework.csscapstone.controller.domain.Product;
-import com.springframework.csscapstone.controller.domain.ProductImage;
+import com.springframework.csscapstone.data.domain.Product;
+import com.springframework.csscapstone.data.domain.ProductImage;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

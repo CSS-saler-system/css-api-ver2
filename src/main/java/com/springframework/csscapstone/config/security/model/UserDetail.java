@@ -1,7 +1,7 @@
 package com.springframework.csscapstone.config.security.model;
 
-import com.springframework.csscapstone.controller.domain.Account;
-import com.springframework.csscapstone.controller.domain.Role;
+import com.springframework.csscapstone.data.domain.Account;
+import com.springframework.csscapstone.data.domain.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

@@ -1,12 +1,12 @@
 package com.springframework.csscapstone.services.business.impl;
 
 import com.springframework.csscapstone.config.constant.MessageConstant;
-import com.springframework.csscapstone.controller.domain.Account;
-import com.springframework.csscapstone.controller.domain.Product;
+import com.springframework.csscapstone.data.dao.ProductDAO;
+import com.springframework.csscapstone.data.domain.Account;
+import com.springframework.csscapstone.data.domain.Product;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.data.repositories.ProductRepository;
 import com.springframework.csscapstone.data.status.ProductStatus;
-import com.springframework.csscapstone.data.dao.ProductDAO;
 import com.springframework.csscapstone.services.business.ProductService;
 import com.springframework.csscapstone.services.model_dto.basic.ProductDto;
 import com.springframework.csscapstone.services.model_dto.custom.creator_model.ProductCreatorDto;
@@ -48,10 +48,6 @@ public class ProductServiceImpl implements ProductService {
 
     /**
      * todo find product by account
-     *
-     * @param accountId
-     * @return
-     * @throws AccountNotFoundException
      */
     @Override
     public List<ProductDto> findByIdAccount(UUID accountId) throws AccountNotFoundException {

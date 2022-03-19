@@ -1,8 +1,8 @@
 package com.springframework.csscapstone.services.business;
 
+import com.springframework.csscapstone.data.domain.OrderDetail;
 import com.springframework.csscapstone.services.model_dto.custom.creator_model.OrderDetailCreator;
 import com.springframework.csscapstone.services.model_dto.custom.update_model.OrderDetailUpdater;
-import com.springframework.csscapstone.controller.domain.OrderDetail;
 import com.springframework.csscapstone.utils.exception_utils.order_detail_exception.OrderDetailException;
 import com.springframework.csscapstone.utils.exception_utils.order_detail_exception.ProductCanCreateException;
 import com.springframework.csscapstone.utils.exception_utils.order_exception.OrderNotFoundException;

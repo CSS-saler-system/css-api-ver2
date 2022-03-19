@@ -1,8 +1,8 @@
 package com.springframework.csscapstone.services.model_dto.custom.return_model.category;
 
-import com.springframework.csscapstone.services.model_dto.custom.Image;
 import com.springframework.csscapstone.data.status.CategoryStatus;
 import com.springframework.csscapstone.data.status.ProductStatus;
+import com.springframework.csscapstone.services.model_dto.custom.Image;
 import lombok.Data;
 
 import java.io.Serializable;

@@ -1,4 +1,4 @@
-package com.springframework.csscapstone.controller.domain;
+package com.springframework.csscapstone.data.domain;
 
 import org.hibernate.annotations.GenericGenerator;
 

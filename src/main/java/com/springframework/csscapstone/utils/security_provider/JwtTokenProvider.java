@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
-@PropertySource(value = "classpath:securities.properties")
+@PropertySource(value = "classpath:application-securities.properties")
 public class JwtTokenProvider {
 
     @Value("${security.secret-string}")

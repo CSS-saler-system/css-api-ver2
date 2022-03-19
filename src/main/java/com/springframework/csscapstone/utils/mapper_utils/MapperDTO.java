@@ -1,11 +1,11 @@
 package com.springframework.csscapstone.utils.mapper_utils;
 
-import com.springframework.csscapstone.controller.domain.*;
+import com.springframework.csscapstone.data.domain.*;
 import com.springframework.csscapstone.services.model_dto.basic.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(componentModel = "spring")
+@Mapper
 public interface MapperDTO {
     MapperDTO INSTANCE = Mappers.getMapper(MapperDTO.class);
 

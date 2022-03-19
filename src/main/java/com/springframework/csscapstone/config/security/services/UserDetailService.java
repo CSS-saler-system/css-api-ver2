@@ -17,7 +17,7 @@ public class UserDetailService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) {
         return repository.findAccountByUsername(username)
                 .map(UserDetail::new)
-                .orElseThrow(() -> new UsernameNotFoundException("The current username cant be not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("The user: " + username + " cant be not found"));
     }
 
 

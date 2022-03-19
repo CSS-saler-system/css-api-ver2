@@ -1,6 +1,6 @@
 package com.springframework.csscapstone.data.repositories;
 
-import com.springframework.csscapstone.controller.domain.Order;
+import com.springframework.csscapstone.data.domain.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;

@@ -22,7 +22,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-@PropertySource(value = "classpath:securities.properties")
+@PropertySource(value = "classpath:application-securities.properties")
 public class AuthenticationHandlerFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final Logger LOGGER = LoggerFactory.getLogger(AuthenticationHandlerFilter.class);

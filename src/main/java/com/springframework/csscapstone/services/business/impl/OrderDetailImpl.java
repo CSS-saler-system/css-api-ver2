@@ -1,15 +1,15 @@
 package com.springframework.csscapstone.services.business.impl;
 
 import com.springframework.csscapstone.config.constant.MessageConstant;
-import com.springframework.csscapstone.services.business.OrderDetailService;
-import com.springframework.csscapstone.services.model_dto.custom.creator_model.OrderDetailCreator;
-import com.springframework.csscapstone.services.model_dto.custom.update_model.OrderDetailUpdater;
-import com.springframework.csscapstone.controller.domain.Order;
-import com.springframework.csscapstone.controller.domain.OrderDetail;
-import com.springframework.csscapstone.controller.domain.Product;
+import com.springframework.csscapstone.data.domain.Order;
+import com.springframework.csscapstone.data.domain.OrderDetail;
+import com.springframework.csscapstone.data.domain.Product;
 import com.springframework.csscapstone.data.repositories.OrderDetailRepository;
 import com.springframework.csscapstone.data.repositories.OrderRepository;
 import com.springframework.csscapstone.data.repositories.ProductRepository;
+import com.springframework.csscapstone.services.business.OrderDetailService;
+import com.springframework.csscapstone.services.model_dto.custom.creator_model.OrderDetailCreator;
+import com.springframework.csscapstone.services.model_dto.custom.update_model.OrderDetailUpdater;
 import com.springframework.csscapstone.utils.exception_utils.order_detail_exception.OrderDetailException;
 import com.springframework.csscapstone.utils.exception_utils.order_detail_exception.ProductCanCreateException;
 import com.springframework.csscapstone.utils.exception_utils.order_exception.OrderNotFoundException;
@@ -65,7 +65,7 @@ public class OrderDetailImpl implements OrderDetailService {
 
         detail.setNameProduct(product.getName())
                 .setQuantity(dto.getQuantity())
-                .setOrderLinePrice(priceLineOfProduct)
+                .setProductPrice(priceLineOfProduct)
                 .addOrderDetailDToOrder(order);
         return detail;
     }
@@ -88,7 +88,7 @@ public class OrderDetailImpl implements OrderDetailService {
         Product product = this.productRepository.findById(dto.getIdProduct()).orElseThrow(productException());
         orderDetail.setNameProduct(product.getName())
                 .setQuantity(dto.getQuantity())
-                .setOrderLinePrice(product.getPrice() * dto.getQuantity());
+                .setProductPrice(product.getPrice() * dto.getQuantity());
         this.orderDetailRepository.save(orderDetail);
         return orderDetail.getId();
     }

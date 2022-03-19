@@ -1,6 +1,5 @@
 package com.springframework.csscapstone.config.security;
 
-import com.google.common.collect.ImmutableList;
 import com.springframework.csscapstone.config.security.services.JwtAccessDeniedHandler;
 import com.springframework.csscapstone.config.security.services.JwtAuthenticationEntryPoint;
 import com.springframework.csscapstone.controller.sharing.filter.AuthenticationHandlerFilter;
@@ -12,11 +11,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.Collections;

@@ -1,7 +1,7 @@
 package com.springframework.csscapstone.controller.enterprise;
 
 
-import com.springframework.csscapstone.controller.domain.Product;
+import com.springframework.csscapstone.data.domain.Product;
 import com.springframework.csscapstone.data.repositories.ProductRepository;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

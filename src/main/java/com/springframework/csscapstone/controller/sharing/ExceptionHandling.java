@@ -14,6 +14,7 @@ import com.springframework.csscapstone.utils.exception_utils.product_exception.P
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -22,7 +23,18 @@ import static org.springframework.http.HttpStatus.*;
 
 @RestControllerAdvice
 public class ExceptionHandling implements ErrorController {
-
+    // ================== handler exception ===============================
+    // ================== Login was wrong =================================
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<?> authenticationException(AuthenticationException exception) {
+        String message = exception.getMessage();
+        if (exception.getMessage().equals("Bad credentials")) {
+            message = "The username or password was wrong";
+        }
+        return createHttpResponse(FORBIDDEN, message);
+    }
+    // ================== handler exception ===============================
+    // ================== Argument was wrong ==============================
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> methodArgumentNotValidException(MethodArgumentNotValidException exception) {
         return createHttpResponse(BAD_REQUEST, exception.getMessage());
@@ -50,6 +62,7 @@ public class ExceptionHandling implements ErrorController {
 //    }
 
 
+
     @ExceptionHandler(CampaignInvalidException.class)
     public ResponseEntity<HttpResponse> campaignInvalidException(CampaignInvalidException exception) {
         exception.printStackTrace();
@@ -58,7 +71,6 @@ public class ExceptionHandling implements ErrorController {
 
     // ================== handler exception ================================
     // ================== Campaign =========================================
-
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<HttpResponse> productNotFoundException(ProductNotFoundException exception) {
         return createHttpResponse(NOT_FOUND, exception.getMessage());
@@ -68,9 +80,9 @@ public class ExceptionHandling implements ErrorController {
     public ResponseEntity<HttpResponse> productNotFoundException(ProductInvalidException exception) {
         return createHttpResponse(BAD_REQUEST, exception.getMessage());
     }
+
     // ================== handler exception ================================
     // ================== Category =========================================
-
     @ExceptionHandler(CategoryNotFoundException.class)
     public ResponseEntity<HttpResponse> categoryNotFoundException(CategoryNotFoundException exception) {
         return createHttpResponse(NOT_FOUND, exception.getMessage());
@@ -103,15 +115,6 @@ public class ExceptionHandling implements ErrorController {
     public ResponseEntity<?> authenticationException(AccountLoginWithEmailException exception) {
         return createHttpResponse(FORBIDDEN, exception.getMessage());
     }
-//
-//    @ExceptionHandler(UsernameNotFoundException.class)
-//    public ResponseEntity<?> usernameNotFoundException(UsernameNotFoundException exception) {
-//    }
-//
-//    @ExceptionHandler(AuthenticationException.class)
-//    public ResponseEntity<?> authenticationException(AuthenticationException exception) {
-//        return createHttpResponse(FORBIDDEN, exception.getMessage());
-//    }
 
     // ================== handler exception ================================
     // ================== UTILS ============================================

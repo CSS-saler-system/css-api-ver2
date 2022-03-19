@@ -1,6 +1,6 @@
 package com.springframework.csscapstone.data.repositories;
 
-import com.springframework.csscapstone.controller.domain.Account;
+import com.springframework.csscapstone.data.domain.Account;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.List;

@@ -1,7 +1,7 @@
 package com.springframework.csscapstone.data.dao.impl;
 
 import com.springframework.csscapstone.data.dao.ProductDAO;
-import com.springframework.csscapstone.controller.domain.Product;
+import com.springframework.csscapstone.data.domain.Product;
 import com.springframework.csscapstone.data.domain.Product_;
 import com.springframework.csscapstone.data.status.ProductStatus;
 import lombok.RequiredArgsConstructor;

@@ -3,8 +3,8 @@ package com.springframework.csscapstone.controller.sharing;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.springframework.csscapstone.config.security.model.UserLogin;
 import com.springframework.csscapstone.services.business.AccountService;
-import com.springframework.csscapstone.services.model_dto.custom.creator_model.AccountRegisterDto;
 import com.springframework.csscapstone.services.business.LoginService;
+import com.springframework.csscapstone.services.model_dto.custom.creator_model.AccountRegisterDto;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountExistException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountLoginWithEmailException;
 import com.springframework.csscapstone.utils.security_provider.JwtTokenProvider;
@@ -17,19 +17,20 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-
 import java.util.UUID;
 
 import static com.springframework.csscapstone.config.constant.ApiEndPoint.*;
 import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @RequiredArgsConstructor
-@PropertySource(value = "classpath:securities.properties")
+@PropertySource(value = "classpath:application-securities.properties")
 public class LoginController {
     private final UserDetailsService userDetailsService;
     private final AuthenticationManager authenticationManager;
@@ -50,7 +51,8 @@ public class LoginController {
 
 
     @PostMapping(USER_OPEN_LOGIN)
-    public ResponseEntity<?> openLogin(@RequestParam String firebaseToken) throws FirebaseAuthException, AccountLoginWithEmailException {
+    public ResponseEntity<?> openLogin(@RequestParam String firebaseToken)
+            throws FirebaseAuthException, AccountLoginWithEmailException {
         UserDetails _principal = this.loginService.loginByFirebaseService(firebaseToken);
         HttpHeaders jwtHeader = getHeader(_principal);
         return new ResponseEntity<>(_principal, jwtHeader, OK);

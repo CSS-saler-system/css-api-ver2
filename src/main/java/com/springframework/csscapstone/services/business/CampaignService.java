@@ -1,8 +1,8 @@
 package com.springframework.csscapstone.services.business;
 
+import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.services.model_dto.basic.CampaignDto;
 import com.springframework.csscapstone.services.model_dto.custom.creator_model.CampaignCreatorDto;
-import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignInvalidException;
 

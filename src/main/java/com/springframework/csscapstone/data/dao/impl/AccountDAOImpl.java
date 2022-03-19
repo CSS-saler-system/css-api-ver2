@@ -1,7 +1,7 @@
 package com.springframework.csscapstone.data.dao.impl;
 
 import com.springframework.csscapstone.data.dao.AccountDAO;
-import com.springframework.csscapstone.controller.domain.Account;
+import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.Account_;
 import com.springframework.csscapstone.services.model_dto.basic.AccountDto;
 import com.springframework.csscapstone.utils.mapper_utils.MapperDTO;

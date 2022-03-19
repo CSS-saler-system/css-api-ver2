@@ -1,4 +1,4 @@
-package com.springframework.csscapstone.controller.domain;
+package com.springframework.csscapstone.data.domain;
 
 import javax.persistence.*;
 
@@ -19,4 +19,5 @@ public class BillImage {
     @ManyToOne
     @JoinColumn(name = "transactions_id")
     private Transactions transactions;
+
 }

@@ -1,6 +1,6 @@
 package com.springframework.csscapstone.data.dao;
 
-import com.springframework.csscapstone.controller.domain.Product;
+import com.springframework.csscapstone.data.domain.Product;
 import com.springframework.csscapstone.data.status.ProductStatus;
 
 import java.util.List;

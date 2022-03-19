@@ -1,23 +1,23 @@
 package com.springframework.csscapstone.services.business.impl;
 
 import com.springframework.csscapstone.config.constant.MessageConstant;
-import com.springframework.csscapstone.controller.domain.Account;
-import com.springframework.csscapstone.controller.domain.Category;
-import com.springframework.csscapstone.controller.domain.Product;
-import com.springframework.csscapstone.services.model_dto.custom.Image;
-import com.springframework.csscapstone.services.business.CategoryService;
-import com.springframework.csscapstone.services.model_dto.basic.CategoryDto;
-import com.springframework.csscapstone.services.model_dto.custom.creator_model.CategoryCreatorDto;
-import com.springframework.csscapstone.services.model_dto.custom.return_model.category.CategoryReturnDto;
-import com.springframework.csscapstone.services.model_dto.custom.search_model.CategorySearchDto;
-import com.springframework.csscapstone.services.model_dto.custom.update_model.CategoryUpdaterDto;
-import com.springframework.csscapstone.data.domain.*;
+import com.springframework.csscapstone.data.domain.Account;
+import com.springframework.csscapstone.data.domain.Category;
+import com.springframework.csscapstone.data.domain.Category_;
+import com.springframework.csscapstone.data.domain.Product;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.data.repositories.CategoryRepository;
 import com.springframework.csscapstone.data.repositories.ProductImageRepository;
 import com.springframework.csscapstone.data.repositories.ProductRepository;
 import com.springframework.csscapstone.data.status.CategoryStatus;
 import com.springframework.csscapstone.data.status.ProductImageType;
+import com.springframework.csscapstone.services.business.CategoryService;
+import com.springframework.csscapstone.services.model_dto.basic.CategoryDto;
+import com.springframework.csscapstone.services.model_dto.custom.Image;
+import com.springframework.csscapstone.services.model_dto.custom.creator_model.CategoryCreatorDto;
+import com.springframework.csscapstone.services.model_dto.custom.return_model.category.CategoryReturnDto;
+import com.springframework.csscapstone.services.model_dto.custom.search_model.CategorySearchDto;
+import com.springframework.csscapstone.services.model_dto.custom.update_model.CategoryUpdaterDto;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.category_exception.CategoryInvalidException;
 import com.springframework.csscapstone.utils.mapper_utils.MapperDTO;
@@ -101,9 +101,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     /**
      * Get List Image of product by type
-     * @param product
-     * @param type
-     * @return
      */
     private List<Image> getProductImages(Product product, ProductImageType type) {
         return this.productImageRepository
