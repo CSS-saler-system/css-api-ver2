@@ -9,10 +9,7 @@ import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 
 @Getter
@@ -34,7 +31,10 @@ public class RequestSellingProduct {
     private RequestStatus requestStatus;
 
     @Column(name = "quantity_product")
-    private long quantityProduct;
+    private Long quantityProduct;
+
+//    @OneToMany(mappedBy = "sellingProduct")
+//    private List<OrderDetail> orderDetail = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "product_id")

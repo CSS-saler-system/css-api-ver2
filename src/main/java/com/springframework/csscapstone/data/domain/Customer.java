@@ -9,6 +9,8 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -29,7 +31,18 @@ public class Customer {
     private String address;
     private LocalDate dob;
 
+    @ManyToOne
+    @JoinColumn(name = "account_creator_id")
+    private Account accountCreator;
+
+    @ManyToOne
+    @JoinColumn(name = "account_updater_id")
+    private Account accountUpdater;
+
     @Lob
     private String description;
+
+    @OneToMany(mappedBy = "customer")
+    private List<Order> orders = new ArrayList<>();
 
 }

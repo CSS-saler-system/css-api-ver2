@@ -41,6 +41,10 @@ public class OrderDetail {
     @JoinColumn(name = "product_id")
     private Product product;
 
+//    @ManyToOne
+//    @JoinColumn(name = "selling_product_id")
+//    private RequestSellingProduct sellingProduct;
+
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;
@@ -67,7 +71,7 @@ public class OrderDetail {
                 ", nameProduct='" + nameProduct + '\'' +
                 ", quantity=" + quantity +
                 ", totalPriceProduct=" + totalPriceProduct +
-                ", product=" + product +
+//                ", product=" + product +
                 ", order=" + order +
                 '}';
     }

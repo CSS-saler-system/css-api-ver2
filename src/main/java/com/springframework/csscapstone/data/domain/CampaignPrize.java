@@ -8,11 +8,11 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.util.UUID;
 
-@Getter
-@Setter
 @NoArgsConstructor
 @Entity
 @Table(name = "campaign_prize")
+@Getter
+@Setter
 public class CampaignPrize {
 
     @Id

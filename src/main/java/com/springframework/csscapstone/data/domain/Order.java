@@ -26,9 +26,9 @@ public class Order {
     @CreatedDate
     private LocalDateTime createDate;
 
-    private double totalPrice;
+    private Double totalPrice;
     @Column(name = "total_point_award")
-    private double totalPointSale;
+    private Double totalPointSale;
 
     private String customerName;
 
@@ -47,7 +47,29 @@ public class Order {
     @OneToMany(mappedBy = "order")
     private List<OrderDetail> orderDetails = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "orders")
-    private Set<Account> accounts = new HashSet<>();
+//    @ManyToMany(mappedBy = "orders")
+//    private Set<Account> accounts = new HashSet<>();
 
+    @ManyToOne
+    @JoinColumn(name = "account_id")
+    private Account account;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Order)) return false;
+
+        Order order = (Order) o;
+
+        return getId() != null ? getId().equals(order.getId()) : order.getId() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return getId() != null ? getId().hashCode() : 0;
+    }
 }

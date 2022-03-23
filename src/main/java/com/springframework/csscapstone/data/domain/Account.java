@@ -53,10 +53,10 @@ public class Account {
     private String description;
 
     @Column(name = "gender")
-    private boolean gender;
+    private Boolean gender;
 
     @Column(name = "point")
-    private double point;
+    private Double point;
 
     @Column(name = "is_active")
     private Boolean isActive = Boolean.TRUE;
@@ -82,6 +82,12 @@ public class Account {
     @ElementCollection
     @Column(name = "tokens")
     private List<String> tokens = new ArrayList<>();
+
+    @OneToMany(mappedBy = "accountCreator")
+    private List<Customer> customerCreatorList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "accountUpdater")
+    private List<Customer> customerUpdaterList = new ArrayList<>();
 
     @OneToMany(mappedBy = "account")
     @ToString.Exclude
@@ -110,13 +116,16 @@ public class Account {
             inverseJoinColumns = @JoinColumn(name = "transaction_id"))
     @ToString.Exclude
     private Set<Transactions> transactions = new HashSet<>();
+//
+//    @ManyToMany
+//    @JoinTable(name = "account_order",
+//            joinColumns = @JoinColumn(name = "account_id"),
+//            inverseJoinColumns = @JoinColumn(name = "order_id"))
+//    @ToString.Exclude
+//    private Set<Order> orders = new HashSet<>();
 
-    @ManyToMany
-    @JoinTable(name = "account_order",
-            joinColumns = @JoinColumn(name = "account_id"),
-            inverseJoinColumns = @JoinColumn(name = "order_id"))
-    @ToString.Exclude
-    private Set<Order> orders = new HashSet<>();
+    @OneToMany(mappedBy = "account")
+    private List<Order> orders = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(name = "account_request",
