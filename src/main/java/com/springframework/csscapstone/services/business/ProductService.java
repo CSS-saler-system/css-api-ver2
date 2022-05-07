@@ -1,5 +1,6 @@
 package com.springframework.csscapstone.services.business;
 
+import com.springframework.csscapstone.data.domain.Product;
 import com.springframework.csscapstone.data.status.ProductStatus;
 import com.springframework.csscapstone.services.model_dto.basic.ProductDto;
 import com.springframework.csscapstone.services.model_dto.custom.creator_model.ProductCreatorDto;
@@ -26,6 +27,8 @@ public interface ProductService {
     UUID updateProductDto(ProductDto dto) throws ProductNotFoundException, ProductInvalidException;
 
     void disableProduct(UUID id);
+
+    List<ProductDto> getListProductByName(String name);
 
 
 

@@ -1,6 +1,7 @@
 package com.springframework.csscapstone.controller.admin;
 
 import com.springframework.csscapstone.config.constant.MessageConstant;
+import com.springframework.csscapstone.data.domain.Product;
 import com.springframework.csscapstone.data.status.ProductStatus;
 import com.springframework.csscapstone.services.business.ProductService;
 import com.springframework.csscapstone.services.model_dto.basic.ProductDto;
@@ -10,6 +11,7 @@ import com.springframework.csscapstone.utils.exception_utils.product_exception.P
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,6 +57,13 @@ public class AdminProductController {
 
         return ok(result);
 
+    }
+
+    //todo test
+    @GetMapping(V1_SEARCH_BY_NAME_PRODUCT)
+    public ResponseEntity<?> getListProductByName(@RequestParam String name) {
+        List<ProductDto> listProductByName = service.getListProductByName(name);
+        return ok(listProductByName);
     }
 
     @GetMapping(V1_GET_PRODUCT + "/{id}")
