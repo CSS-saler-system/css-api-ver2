@@ -22,6 +22,7 @@ public class ApiEndPoint {
 
 
         public static final String V1_LIST_PRODUCT = v1_handler + "/list";
+        public static final String V1_SEARCH_BY_NAME_PRODUCT = v1_handler + "/search";
         public static final String V1_GET_PRODUCT = v1_handler + "/get";
         public static final String V1_CREATE_PRODUCT = v1_handler + "/new";
         public static final String V1_DELETE_PRODUCT = v1_handler + "/delete";

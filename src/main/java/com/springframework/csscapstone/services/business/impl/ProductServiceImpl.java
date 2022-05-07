@@ -117,6 +117,13 @@ public class ProductServiceImpl implements ProductService {
                 });
     }
 
+    @Override
+    public List<ProductDto> getListProductByName(String name) {
+        return this.repositories.findProductByNameLike(name)
+                .stream().map(MapperDTO.INSTANCE::toProductDto)
+                .collect(Collectors.toList());
+    }
+
     //===================Utils Methods====================
     //====================================================
     private Product toEntityFromCreator(ProductCreatorDto dto, Product x, Account account) {
