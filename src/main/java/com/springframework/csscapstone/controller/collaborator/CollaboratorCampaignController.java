@@ -1,26 +1,26 @@
 package com.springframework.csscapstone.controller.collaborator;
 
 import com.springframework.csscapstone.config.constant.DataConstraint;
-import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.payload.basic.CampaignDto;
-import com.springframework.csscapstone.payload.custom.creator_model.CampaignCreatorDto;
 import com.springframework.csscapstone.services.CampaignService;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
-import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignInvalidException;
-import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import static com.springframework.csscapstone.config.constant.ApiEndPoint.Campaign.*;
+import static com.springframework.csscapstone.config.constant.ApiEndPoint.Campaign.V3_GET_CAMPAIGN;
+import static com.springframework.csscapstone.config.constant.ApiEndPoint.Campaign.V3_LIST_CAMPAIGN;
 import static com.springframework.csscapstone.utils.request_utils.RequestUtils.getRequestParam;
 import static org.springframework.http.ResponseEntity.ok;
 

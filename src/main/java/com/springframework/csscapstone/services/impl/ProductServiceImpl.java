@@ -154,7 +154,7 @@ public class ProductServiceImpl implements ProductService {
     //===================Utils Methods====================
     //====================================================
     private Supplier<ProductNotFoundException> handlerNotFoundProduct() {
-        return () -> new ProductNotFoundException(MessageConstant.Product.NOT_FOUND);
+        return () -> new ProductNotFoundException(MessagesUtils.getMessage(MessageConstant.Product.NOT_FOUND));
     }
 
     //===================Utils Methods====================

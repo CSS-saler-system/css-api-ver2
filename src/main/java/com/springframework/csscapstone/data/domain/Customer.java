@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.Accessors;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @Setter
 @ToString
 @RequiredArgsConstructor
+@Accessors(chain = true)
 @Entity
 public class Customer {
     @Id
@@ -27,8 +29,12 @@ public class Customer {
     private UUID id;
 
     private String name;
+
+    @Column(unique = true, nullable = false)
     private String phone;
+
     private String address;
+
     private LocalDate dob;
 
     @ManyToOne
@@ -43,6 +49,7 @@ public class Customer {
     private String description;
 
     @OneToMany(mappedBy = "customer")
+    @ToString.Exclude
     private List<Order> orders = new ArrayList<>();
 
 }

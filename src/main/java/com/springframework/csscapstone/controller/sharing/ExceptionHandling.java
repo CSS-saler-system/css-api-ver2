@@ -19,12 +19,35 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+
+import javax.security.auth.login.AccountNotFoundException;
+
 import static org.springframework.http.HttpStatus.*;
 
 @RestControllerAdvice
 public class ExceptionHandling implements ErrorController {
+
+    /**
+     * TODO Not Found Exception Handling
+     * @param exception
+     * @return
+     */
+    @ExceptionHandler({
+            AccountNotFoundException.class,
+            ProductNotFoundException.class,
+            CategoryNotFoundException.class
+    })
+    public ResponseEntity<?> notFoundException(RuntimeException exception) {
+        return createHttpResponse(NOT_FOUND, exception.getMessage());
+    }
     // ================== handler exception ===============================
     // ================== Login was wrong =================================
+
+    /**
+     * TODO Forbidden for Authentication Exception Handling
+     * @param exception
+     * @return
+     */
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<?> authenticationException(AuthenticationException exception) {
         String message = exception.getMessage();
@@ -35,84 +58,35 @@ public class ExceptionHandling implements ErrorController {
     }
     // ================== handler exception ===============================
     // ================== Argument was wrong ==============================
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+
+    /**
+     * TODO Bad Exception Handling
+     * @param exception
+     * @return
+     */
+    @ExceptionHandler({
+            MethodArgumentNotValidException.class,
+            AccountExistException.class,
+            AccountInvalidException.class,
+            CampaignInvalidException.class,
+            ProductInvalidException.class,
+            CategoryInvalidException.class,
+            FirebaseAuthException.class
+    })
     public ResponseEntity<?> methodArgumentNotValidException(MethodArgumentNotValidException exception) {
         return createHttpResponse(BAD_REQUEST, exception.getMessage());
     }
 
-    // ================== handler exception ===============================
-    // ================== Account =========================================
-    @ExceptionHandler(AccountExistException.class)
-    public ResponseEntity<HttpResponse> accountExistException(AccountExistException exception) {
-        return createHttpResponse(BAD_REQUEST, exception.getMessage());
-    }
-
-    @ExceptionHandler(AccountInvalidException.class)
-    public ResponseEntity<HttpResponse> accountInvalidException(AccountInvalidException exception) {
-        exception.printStackTrace();
-        return createHttpResponse(BAD_REQUEST, exception.getMessage());
-    }
-
-    // ================== handler exception ================================
-    // ================== Campaign =========================================
-//
-//    @ExceptionHandler(CampaignNotFoundException.class)
-//    public ResponseEntity<HttpResponse> campaignNotFoundException(CampaignNotFoundException exception) {
-//        return createHttpResponse(BAD_REQUEST, exception.getMessage());
-//    }
-
-
-
-    @ExceptionHandler(CampaignInvalidException.class)
-    public ResponseEntity<HttpResponse> campaignInvalidException(CampaignInvalidException exception) {
-        exception.printStackTrace();
-        return createHttpResponse(BAD_REQUEST, exception.getMessage());
-    }
-
-    // ================== handler exception ================================
-    // ================== Campaign =========================================
-    @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<HttpResponse> productNotFoundException(ProductNotFoundException exception) {
-        return createHttpResponse(NOT_FOUND, exception.getMessage());
-    }
-
-    @ExceptionHandler(ProductInvalidException.class)
-    public ResponseEntity<HttpResponse> productNotFoundException(ProductInvalidException exception) {
-        return createHttpResponse(BAD_REQUEST, exception.getMessage());
-    }
-
-    // ================== handler exception ================================
-    // ================== Category =========================================
-    @ExceptionHandler(CategoryNotFoundException.class)
-    public ResponseEntity<HttpResponse> categoryNotFoundException(CategoryNotFoundException exception) {
-        return createHttpResponse(NOT_FOUND, exception.getMessage());
-    }
-
-    @ExceptionHandler(CategoryInvalidException.class)
-    public ResponseEntity<HttpResponse> categoryNotFoundException(CategoryInvalidException exception) {
-        return createHttpResponse(BAD_REQUEST, exception.getMessage());
-    }
-
-    //===========================Common Exception=================================
-    //============================================================================
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<?> runtimeException(RuntimeException exception) {
-        return createHttpResponse(BAD_REQUEST, exception.getMessage());
-    }
-
-    @ExceptionHandler(JWTDecodeException.class)
+    /**
+     * TODO Forbidden Exception Handling
+     * @param exception
+     * @return
+     */
+    @ExceptionHandler({
+            JWTDecodeException.class,
+            AccountLoginWithEmailException.class,
+    })
     public ResponseEntity<?> jwtVerificationException(JWTDecodeException exception) {
-        return createHttpResponse(FORBIDDEN, exception.getMessage());
-    }
-
-    @ExceptionHandler(FirebaseAuthException.class)
-    public ResponseEntity<?> firebaseAuthException(FirebaseAuthException exception) {
-
-        return createHttpResponse(BAD_REQUEST, exception.getMessage());
-    }
-
-    @ExceptionHandler(AccountLoginWithEmailException.class)
-    public ResponseEntity<?> authenticationException(AccountLoginWithEmailException exception) {
         return createHttpResponse(FORBIDDEN, exception.getMessage());
     }
 

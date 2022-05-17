@@ -47,4 +47,8 @@ public class MessageConstant {
         public static final String CANT_CREATE = "order_detail.error.cant_create";
         public static final String NOT_FOUND = "order_detail.error.not_found";
     }
+
+    public static class Customer {
+        public static final String NOT_FOUND = "customer.error.not-found";
+    }
 }

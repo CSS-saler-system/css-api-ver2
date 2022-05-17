@@ -117,7 +117,7 @@ public class ApiEndPoint {
         public static final String V3_DELETE_CATEGORY = v3_handler + "/delete";
     }
 
-    public class OrderDetail {
+    public static class OrderDetail {
         private static final String v1_handler = ADMIN + "/order-detail";
         private static final String v2_handler = ENTERPRISE + "/order-detail";
         private static final String v3_handler = COLLABORATOR + "/order-datail";
@@ -130,5 +130,16 @@ public class ApiEndPoint {
 
 
     }
+    public static class Customer {
+        private static final String v1_handler = ADMIN + "/customer";
+        private static final String v2_handler = ENTERPRISE + "/customer";
+        private static final String v3_handler = COLLABORATOR + "/customer";
+
+        public static final String V3_LIST_CUSTOMER = v3_handler + "/list";
+        public static final String V3_GET_CUSTOMER = v3_handler + "/get";
+        public static final String V3_UPDATE_CUSTOMER = v3_handler + "/update";
+        public static final String V3_CREATE_CUSTOMER = v3_handler + "/new";
+    }
+
 
 }

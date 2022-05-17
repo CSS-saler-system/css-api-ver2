@@ -7,11 +7,11 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 
 @Configuration
 public class MessageConfig {
-
     @Bean
     public MessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasename("classpath:messages");
+        messageSource.setBasename("classpath:application-messages");
+        messageSource.setCacheSeconds(10);
         return messageSource;
     }
 
