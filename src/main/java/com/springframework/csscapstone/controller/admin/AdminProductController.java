@@ -68,11 +68,12 @@ public class AdminProductController {
     public ResponseEntity<ProductDto> getProductById(@PathVariable("id") UUID id) throws ProductNotFoundException {
         return ok(service.findById(id));
     }
-//
-//    @PutMapping(V1_UPDATE_PRODUCT)
-//    public ResponseEntity<UUID> updateProduct(@RequestBody ProductDto dto) throws ProductNotFoundException, ProductInvalidException {
-//        return ok(service.updateProductDto(dto));
-//    }
+
+    @PutMapping(V1_ACTIVE_PRODUCT + "/{id}")
+    public ResponseEntity<String> updateProduct(@PathVariable("id") UUID id) throws ProductNotFoundException, ProductInvalidException {
+        service.activeProduct(id);
+        return ok("If your product address exists in our database, you will active a product");
+    }
 
     @PostMapping(V1_CREATE_PRODUCT)
     public ResponseEntity<UUID> addNewProduct(@RequestBody ProductCreatorDto dto) throws ProductNotFoundException, ProductInvalidException {
