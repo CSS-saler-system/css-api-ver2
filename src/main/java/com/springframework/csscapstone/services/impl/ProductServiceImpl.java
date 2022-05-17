@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
-    private final ProductRepository repositories;
+    private final ProductRepository productRepository;
     private final AccountRepository accountRepository;
     private final ProductDAO productDAO;
 
@@ -57,7 +57,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto findById(UUID id) throws ProductNotFoundException {
-        return repositories.findById(id)
+        return productRepository.findById(id)
                 .map(MapperDTO.INSTANCE::toProductDto)
                 .orElseThrow(handlerNotFoundProduct());
     }
@@ -78,7 +78,7 @@ public class ProductServiceImpl implements ProductService {
                 .map(x -> toEntityFromCreator(dto, x, account))
                 .orElseThrow(handlerInvalidFormat());
 
-        Product creatorProduct = repositories.save(product);
+        Product creatorProduct = productRepository.save(product);
         accountRepository.save(account);
         return creatorProduct.getId();
     }
@@ -90,7 +90,7 @@ public class ProductServiceImpl implements ProductService {
             throw new ProductInvalidException(MessagesUtils.getMessage(MessageConstant.Product.INVALID));
         }
 
-        Product entity = this.repositories
+        Product entity = this.productRepository
                 .findById(dto.getId())
                 .orElseThrow(handlerNotFoundProduct());
 
@@ -109,27 +109,27 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void activeProduct(UUID id) {
-        this.repositories.findById(id)
+        this.productRepository.findById(id)
                 .filter(product -> product.getProductStatus().equals(ProductStatus.DISABLE))
                 .ifPresent(product -> {
                     product.setProductStatus(ProductStatus.ACTIVE);
-                    this.repositories.save(product);
+                    this.productRepository.save(product);
                 });
     }
 
     @Transactional
     @Override
     public void disableProduct(UUID id) {
-        this.repositories.findById(id)
+        this.productRepository.findById(id)
                 .ifPresent(x -> {
                     x.setProductStatus(ProductStatus.DISABLE);
-                    this.repositories.save(x);
+                    this.productRepository.save(x);
                 });
     }
 
     @Override
     public List<ProductDto> getListProductByName(String name) {
-        return this.repositories.findProductByNameLike(name)
+        return this.productRepository.findProductByNameLike(name)
                 .stream().map(MapperDTO.INSTANCE::toProductDto)
                 .collect(Collectors.toList());
     }
