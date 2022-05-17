@@ -1,17 +1,15 @@
 package com.springframework.csscapstone.controller.admin;
 
 import com.springframework.csscapstone.config.constant.MessageConstant;
-import com.springframework.csscapstone.data.domain.Product;
 import com.springframework.csscapstone.data.status.ProductStatus;
-import com.springframework.csscapstone.services.business.ProductService;
-import com.springframework.csscapstone.services.model_dto.basic.ProductDto;
-import com.springframework.csscapstone.services.model_dto.custom.creator_model.ProductCreatorDto;
+import com.springframework.csscapstone.services.ProductService;
+import com.springframework.csscapstone.payload.basic.ProductDto;
+import com.springframework.csscapstone.payload.custom.creator_model.ProductCreatorDto;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

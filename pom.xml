@@ -109,12 +109,14 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
         </dependency>
-        <!--Other dependencies-->
+        <!--End Other dependencies-->
+        <!--Azure dependencies-->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
+            <groupId>com.azure.spring</groupId>
+            <artifactId>spring-cloud-azure-starter-storage-blob</artifactId>
+            <version>4.1.0</version>
         </dependency>
-
+        <!--End Azure dependencies-->
     </dependencies>
 
     <build>

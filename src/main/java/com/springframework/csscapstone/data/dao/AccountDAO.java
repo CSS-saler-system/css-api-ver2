@@ -1,6 +1,6 @@
 package com.springframework.csscapstone.data.dao;
 
-import com.springframework.csscapstone.services.model_dto.basic.AccountDto;
+import com.springframework.csscapstone.payload.basic.AccountDto;
 
 import java.util.List;
 
