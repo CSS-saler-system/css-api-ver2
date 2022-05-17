@@ -1,7 +1,6 @@
 package com.springframework.csscapstone.controller.admin;
 
 import com.springframework.csscapstone.data.status.CategoryStatus;
-import com.springframework.csscapstone.payload.custom.update_model.CategoryUpdaterDto;
 import com.springframework.csscapstone.services.CategoryService;
 import com.springframework.csscapstone.payload.basic.CategoryDto;
 import com.springframework.csscapstone.payload.custom.creator_model.CategoryCreatorDto;
@@ -25,7 +24,7 @@ import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @RequiredArgsConstructor
-public class CategoryController {
+public class AdminCategoryController {
     private final CategoryService services;
 
 
