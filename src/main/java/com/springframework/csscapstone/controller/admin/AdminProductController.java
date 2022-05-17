@@ -29,7 +29,7 @@ public class AdminProductController {
     private final ProductService service;
 
     @GetMapping(V1_LIST_PRODUCT)
-    public ResponseEntity<List<ProductDto>> getListDto(
+    public ResponseEntity<List<ProductDto>> getListProductDto(
             @RequestParam(value = "productName", required = false) String name,
             @RequestParam(value = "brand", required = false) String brand,
             @RequestParam(value = "weight", required = false) Double weight,
@@ -56,14 +56,6 @@ public class AdminProductController {
         return ok(result);
 
     }
-//
-//    //todo test
-//    @GetMapping(V1_SEARCH_BY_NAME_PRODUCT)
-//    public ResponseEntity<?> getListProductByName(@RequestParam String name) {
-//        List<ProductDto> listProductByName = service.getListProductByName(name);
-//        return ok(listProductByName);
-//    }
-
     @GetMapping(V1_GET_PRODUCT + "/{id}")
     public ResponseEntity<ProductDto> getProductById(@PathVariable("id") UUID id) throws ProductNotFoundException {
         return ok(service.findById(id));

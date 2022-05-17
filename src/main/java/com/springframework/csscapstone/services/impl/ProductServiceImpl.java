@@ -111,7 +111,10 @@ public class ProductServiceImpl implements ProductService {
     public void activeProduct(UUID id) {
         this.repositories.findById(id)
                 .filter(product -> product.getProductStatus().equals(ProductStatus.DISABLE))
-                .ifPresent(product -> product.setProductStatus(ProductStatus.ACTIVE));
+                .ifPresent(product -> {
+                    product.setProductStatus(ProductStatus.ACTIVE);
+                    this.repositories.save(product);
+                });
     }
 
     @Transactional
