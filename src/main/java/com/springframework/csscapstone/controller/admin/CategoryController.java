@@ -1,6 +1,7 @@
 package com.springframework.csscapstone.controller.admin;
 
 import com.springframework.csscapstone.data.status.CategoryStatus;
+import com.springframework.csscapstone.payload.custom.update_model.CategoryUpdaterDto;
 import com.springframework.csscapstone.services.CategoryService;
 import com.springframework.csscapstone.payload.basic.CategoryDto;
 import com.springframework.csscapstone.payload.custom.creator_model.CategoryCreatorDto;
@@ -50,12 +51,12 @@ public class CategoryController {
         UUID category = this.services.createCategory(dto);
         return ok(category);
     }
-
+//
 //    @PutMapping(V1_UPDATE_CATEGORY)
 //    public ResponseEntity<UUID> updateCategory(@RequestBody CategoryUpdaterDto dto) {
 //
 //    }
-//
+
 //    @DeleteMapping(V1_DELETE_CATEGORY)
 
 }

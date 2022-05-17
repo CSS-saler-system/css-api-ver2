@@ -25,6 +25,8 @@ public interface ProductService {
 
     UUID updateProductDto(ProductDto dto) throws ProductNotFoundException, ProductInvalidException;
 
+    void activeProduct(UUID id);
+
     void disableProduct(UUID id);
 
     List<ProductDto> getListProductByName(String name);

@@ -107,6 +107,13 @@ public class ProductServiceImpl implements ProductService {
         return entity.getId();
     }
 
+    @Override
+    public void activeProduct(UUID id) {
+        this.repositories.findById(id)
+                .filter(product -> product.getProductStatus().equals(ProductStatus.DISABLE))
+                .ifPresent(product -> product.setProductStatus(ProductStatus.ACTIVE));
+    }
+
     @Transactional
     @Override
     public void disableProduct(UUID id) {
