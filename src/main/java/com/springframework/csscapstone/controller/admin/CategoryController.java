@@ -1,18 +1,16 @@
 package com.springframework.csscapstone.controller.admin;
 
 import com.springframework.csscapstone.data.status.CategoryStatus;
-import com.springframework.csscapstone.services.business.CategoryService;
-import com.springframework.csscapstone.services.model_dto.basic.CategoryDto;
-import com.springframework.csscapstone.services.model_dto.custom.creator_model.CategoryCreatorDto;
-import com.springframework.csscapstone.services.model_dto.custom.return_model.category.CategoryReturnDto;
-import com.springframework.csscapstone.services.model_dto.custom.search_model.CategorySearchDto;
+import com.springframework.csscapstone.services.CategoryService;
+import com.springframework.csscapstone.payload.basic.CategoryDto;
+import com.springframework.csscapstone.payload.custom.creator_model.CategoryCreatorDto;
+import com.springframework.csscapstone.payload.custom.return_model.category.CategoryReturnDto;
+import com.springframework.csscapstone.payload.custom.search_model.CategorySearchDto;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.category_exception.CategoryInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.category_exception.CategoryNotFoundException;
 import com.springframework.csscapstone.utils.request_utils.RequestUtils;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

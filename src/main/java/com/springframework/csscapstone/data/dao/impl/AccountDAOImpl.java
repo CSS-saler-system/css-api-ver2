@@ -3,7 +3,7 @@ package com.springframework.csscapstone.data.dao.impl;
 import com.springframework.csscapstone.data.dao.AccountDAO;
 import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.Account_;
-import com.springframework.csscapstone.services.model_dto.basic.AccountDto;
+import com.springframework.csscapstone.payload.basic.AccountDto;
 import com.springframework.csscapstone.utils.mapper_utils.MapperDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

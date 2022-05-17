@@ -1,17 +1,15 @@
 package com.springframework.csscapstone.controller.admin;
 
 import com.springframework.csscapstone.config.constant.MessageConstant;
-import com.springframework.csscapstone.data.domain.Product;
 import com.springframework.csscapstone.data.status.ProductStatus;
-import com.springframework.csscapstone.services.business.ProductService;
-import com.springframework.csscapstone.services.model_dto.basic.ProductDto;
-import com.springframework.csscapstone.services.model_dto.custom.creator_model.ProductCreatorDto;
+import com.springframework.csscapstone.services.ProductService;
+import com.springframework.csscapstone.payload.basic.ProductDto;
+import com.springframework.csscapstone.payload.custom.creator_model.ProductCreatorDto;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -58,31 +56,31 @@ public class AdminProductController {
         return ok(result);
 
     }
-
-    //todo test
-    @GetMapping(V1_SEARCH_BY_NAME_PRODUCT)
-    public ResponseEntity<?> getListProductByName(@RequestParam String name) {
-        List<ProductDto> listProductByName = service.getListProductByName(name);
-        return ok(listProductByName);
-    }
+//
+//    //todo test
+//    @GetMapping(V1_SEARCH_BY_NAME_PRODUCT)
+//    public ResponseEntity<?> getListProductByName(@RequestParam String name) {
+//        List<ProductDto> listProductByName = service.getListProductByName(name);
+//        return ok(listProductByName);
+//    }
 
     @GetMapping(V1_GET_PRODUCT + "/{id}")
-    public ResponseEntity<ProductDto> getAccountById(@PathVariable("id") UUID id) throws ProductNotFoundException {
+    public ResponseEntity<ProductDto> getProductById(@PathVariable("id") UUID id) throws ProductNotFoundException {
         return ok(service.findById(id));
     }
-
-    @PutMapping(V1_UPDATE_PRODUCT)
-    public ResponseEntity<UUID> updateAccount(@RequestBody ProductDto dto) throws ProductNotFoundException, ProductInvalidException {
-        return ok(service.updateProductDto(dto));
-    }
+//
+//    @PutMapping(V1_UPDATE_PRODUCT)
+//    public ResponseEntity<UUID> updateProduct(@RequestBody ProductDto dto) throws ProductNotFoundException, ProductInvalidException {
+//        return ok(service.updateProductDto(dto));
+//    }
 
     @PostMapping(V1_CREATE_PRODUCT)
-    public ResponseEntity<UUID> addNewAccount(@RequestBody ProductCreatorDto dto) throws ProductNotFoundException, ProductInvalidException {
+    public ResponseEntity<UUID> addNewProduct(@RequestBody ProductCreatorDto dto) throws ProductNotFoundException, ProductInvalidException {
         return ok(service.createProduct(dto));
     }
 
     @DeleteMapping(V1_DELETE_PRODUCT + "/{id}")
-    public ResponseEntity<String> disableAccount(@PathVariable("id") UUID id) {
+    public ResponseEntity<String> disableProduct(@PathVariable("id") UUID id) {
         this.service.disableProduct(id);
         return ResponseEntity.ok(MessagesUtils.getMessage(MessageConstant.REQUEST_SUCCESS));
     }
