@@ -1,4 +1,4 @@
-package com.springframework.csscapstone.utils.exception_utils.customer;
+package com.springframework.csscapstone.utils.exception_utils.customer_exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

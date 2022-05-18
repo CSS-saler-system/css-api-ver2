@@ -9,23 +9,27 @@ import org.mapstruct.factory.Mappers;
 public interface MapperDTO {
     MapperDTO INSTANCE = Mappers.getMapper(MapperDTO.class);
 
-    AccountDto toAccountDto(Account dto);
+    AccountDto toAccountDto(Account entity);
 
-    CampaignDto toCampaignDto(Campaign dto);
+    CampaignDto toCampaignDto(Campaign entity);
 
-    CategoryDto toCategoryDto(Category dto);
+    CategoryDto toCategoryDto(Category entity);
 
-    OrderDto toOrderDto(Order dto);
+    OrderDto toOrderDto(Order entity);
 
-    PrizeDto toPrizeDto(Prize dto);
+    PrizeDto toPrizeDto(Prize entity);
 
-    OrderDetailDto toOrderDetailDto(OrderDetail dto);
+    OrderDetailDto toOrderDetailDto(OrderDetail entity);
 
-    ProductDto toProductDto(Product dto);
+    ProductDto toProductDto(Product entity);
 
-    RequestSellingProductDto RequestSellingProductDto(RequestSellingProduct dto);
+    RequestSellingProductDto RequestSellingProductDto(RequestSellingProduct entity);
 
-    RoleDto toRoleDto(Role dto);
+    RoleDto toRoleDto(Role entity);
 
-    TransactionsDto toTransactionsDto(Transactions dto);
+    TransactionsDto toTransactionsDto(Transactions entity);
+
+    //TODO Response DTO
+    CustomerResponseDto toCustomerResponseDto(Customer entity);
+
 }

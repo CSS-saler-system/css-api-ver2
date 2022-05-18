@@ -16,7 +16,7 @@ public class MessageConstant {
     public static class Category {
 
         public static final String NOT_FOUND = "category.error.not-found";
-        public static final String INVALID = "category.error.not-found";
+        public static final String INVALID = "category.error.invalid";
     }
 
     public static class Product{
@@ -50,5 +50,6 @@ public class MessageConstant {
 
     public static class Customer {
         public static final String NOT_FOUND = "customer.error.not-found";
+        public static final String EXISTED = "customer.error.existed";
     }
 }

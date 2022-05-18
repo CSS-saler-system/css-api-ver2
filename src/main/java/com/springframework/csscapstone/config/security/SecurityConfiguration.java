@@ -2,7 +2,7 @@ package com.springframework.csscapstone.config.security;
 
 import com.springframework.csscapstone.config.security.services.JwtAccessDeniedHandler;
 import com.springframework.csscapstone.config.security.services.JwtAuthenticationEntryPoint;
-import com.springframework.csscapstone.controller.sharing.filter.AuthenticationHandlerFilter;
+import com.springframework.csscapstone.config.security.services.AuthenticationHandlerFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

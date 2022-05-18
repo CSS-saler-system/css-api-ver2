@@ -1,4 +1,4 @@
-package com.springframework.csscapstone.controller.sharing.filter;
+package com.springframework.csscapstone.config.security.services;
 
 import com.springframework.csscapstone.utils.security_provider.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;

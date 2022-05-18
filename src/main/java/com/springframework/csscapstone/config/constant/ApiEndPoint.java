@@ -136,6 +136,7 @@ public class ApiEndPoint {
         private static final String v3_handler = COLLABORATOR + "/customer";
 
         public static final String V3_LIST_CUSTOMER = v3_handler + "/list";
+        public static final String V3_GET_CUSTOMER_BY_PHONE = v3_handler +  "/retrieve";
         public static final String V3_GET_CUSTOMER = v3_handler + "/get";
         public static final String V3_UPDATE_CUSTOMER = v3_handler + "/update";
         public static final String V3_CREATE_CUSTOMER = v3_handler + "/new";
