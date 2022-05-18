@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.query.Param;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.security.auth.login.AccountNotFoundException;
@@ -20,6 +21,7 @@ import java.util.UUID;
 
 import static com.springframework.csscapstone.config.constant.ApiEndPoint.Customer.*;
 import static org.springframework.http.ResponseEntity.ok;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -49,7 +51,7 @@ public class CollaboratorCustomerController {
     }
 
     @PutMapping(V3_UPDATE_CUSTOMER)
-    public ResponseEntity<?> updateCustomer(@RequestBody CustomerUpdatorDto dto) throws AccountNotFoundException {
+    public ResponseEntity<?> updateCustomer(@Valid @RequestBody CustomerUpdatorDto dto) throws AccountNotFoundException {
         return ok(this.customerService.updateCustomer(dto));
     }
 }

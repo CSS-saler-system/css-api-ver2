@@ -18,7 +18,7 @@ public interface CustomerService {
     UUID createCustomer(CustomerCreatorDto dto) throws AccountNotFoundException;
 
     //TODO update Customer
-    Customer updateCustomer(CustomerUpdatorDto dto) throws AccountNotFoundException;
+    UUID updateCustomer(CustomerUpdatorDto dto) throws AccountNotFoundException;
 
     CustomerResponseDto getCustomerById(UUID id);
 

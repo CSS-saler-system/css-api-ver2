@@ -48,7 +48,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .orElseThrow(getCustomerNotFoundExceptionSupplier());
     }
 
-    //TODO add order to customer
+    //TODO create customer
     @Override
     public UUID createCustomer(CustomerCreatorDto dto) throws AccountNotFoundException {
 
@@ -72,17 +72,22 @@ public class CustomerServiceImpl implements CustomerService {
 
     //TODO update Customer
     @Override
-    public Customer updateCustomer(CustomerUpdatorDto dto) throws AccountNotFoundException {
+    public UUID updateCustomer(CustomerUpdatorDto dto) {
         Account accountUpdator = this.accountRepository.findById(dto.getAccountUpdater().getId())
                 .orElseThrow(getAccountNotFoundExceptionSupplier());
-        Customer customer = new Customer()
+
+        Customer customer = this.customerRepository
+                .findById(dto.getId())
+                .orElseThrow(getCustomerNotFoundExceptionSupplier());
+
+        customer
                 .setAddress(dto.getAddress())
                 .setDescription(dto.getDescription())
                 .setDob(dto.getDob())
                 .setPhone(dto.getPhone())
                 .setName(dto.getName())
-                .setAccountCreator(accountUpdator);
-        return this.customerRepository.save(customer);
+                .setAccountUpdater(accountUpdator);
+        return this.customerRepository.save(customer).getId();
     }
 
     @Override
