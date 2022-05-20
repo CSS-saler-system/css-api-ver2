@@ -23,7 +23,7 @@ import static org.springframework.http.ResponseEntity.ok;
 public class CollaboratorOrderController {
     private final OrderDetailService orderDetailService;
 
-    @GetMapping(V2_GET_ORDER_DETAIL + "{id}")
+    @GetMapping(V2_GET_ORDER_DETAIL + "/{id}")
     public ResponseEntity<?> getOrderDetail(@PathVariable UUID id) {
       return ok(MapperDTO.INSTANCE.toOrderDetailDto(orderDetailService.findById(id)));
     }
@@ -34,7 +34,7 @@ public class CollaboratorOrderController {
         return ok(id);
     }
 
-    @PutMapping(V2_UPDATE_ORDER_DETAIL + "{id}")
+    @PutMapping(V2_UPDATE_ORDER_DETAIL + "/{id}")
     public ResponseEntity<?> updateOrderDetail(@PathVariable UUID id, @RequestBody OrderDetailUpdater dto) throws OrderDetailException, ProductNotFoundException {
         UUID uuid = this.orderDetailService.updateOrderDetail(id, dto);
         return ok(id);

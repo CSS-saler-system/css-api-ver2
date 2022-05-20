@@ -9,7 +9,8 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 public class MessageConfig {
     @Bean
     public MessageSource messageSource() {
-        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+        ReloadableResourceBundleMessageSource messageSource =
+                new ReloadableResourceBundleMessageSource();
         messageSource.setBasename("classpath:application-messages");
         messageSource.setCacheSeconds(10);
         return messageSource;

@@ -9,8 +9,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
-@EnableJpaAuditing
-@EnableCaching
 public class CssCapstoneApplication {
 
     public static void main(String[] args) {
