@@ -1,4 +1,4 @@
-package com.springframework.csscapstone.utils.id_generator;
+package com.springframework.csscapstone.utils.id_generator_utils;
 
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;

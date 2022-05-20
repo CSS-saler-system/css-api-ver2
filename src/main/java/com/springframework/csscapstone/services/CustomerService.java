@@ -1,9 +1,8 @@
 package com.springframework.csscapstone.services;
 
-import com.springframework.csscapstone.data.domain.Customer;
-import com.springframework.csscapstone.data.domain.CustomerResponseDto;
-import com.springframework.csscapstone.payload.request_dto.customer.CustomerCreatorDto;
-import com.springframework.csscapstone.payload.request_dto.customer.CustomerUpdatorDto;
+import com.springframework.csscapstone.payload.request_dto.customer.collaborator.CustomerCreatorDto;
+import com.springframework.csscapstone.payload.request_dto.customer.collaborator.CustomerUpdatorDto;
+import com.springframework.csscapstone.payload.response_dto.collaborator.CustomerResponseDto;
 
 import javax.security.auth.login.AccountNotFoundException;
 import java.util.List;

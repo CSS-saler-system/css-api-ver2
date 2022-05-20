@@ -7,8 +7,10 @@ import com.springframework.csscapstone.services.LoginService;
 import com.springframework.csscapstone.payload.custom.creator_model.AccountRegisterDto;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountExistException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountLoginWithEmailException;
-import com.springframework.csscapstone.utils.security_provider.JwtTokenProvider;
+import com.springframework.csscapstone.utils.security_provider_utils.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpHeaders;
@@ -37,18 +39,19 @@ public class LoginController {
     private final JwtTokenProvider jwtTokenProvider;
     private final AccountService services;
     private final LoginService loginService;
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     @Value("${jwt.token.header}")
     private String tokenHeader;
 
     @PostMapping(USER_LOGIN)
-    public ResponseEntity<UserDetails> login(@RequestBody UserLogin userLogin) {
-        authentication(userLogin.getUsername(), userLogin.getPassword());
-        UserDetails _principal = userDetailsService.loadUserByUsername(userLogin.getUsername());
+    public ResponseEntity<UserDetails> login(@Valid @RequestBody UserLogin userLogin) {
+        authentication(userLogin.getEmail(), userLogin.getPassword());
+        UserDetails _principal = userDetailsService.loadUserByUsername(userLogin.getEmail());
         HttpHeaders jwtHeader = getHeader(_principal);
+        LOGGER.info("The authentication {}", _principal);
         return new ResponseEntity<>(_principal, jwtHeader, OK);
     }
-
 
     @PostMapping(USER_OPEN_LOGIN)
     public ResponseEntity<?> openLogin(@RequestParam String firebaseToken)
@@ -61,13 +64,13 @@ public class LoginController {
     @PostMapping(USER_REGISTER)
     public ResponseEntity<?> register(@Valid @RequestBody AccountRegisterDto dto) throws AccountExistException {
         UUID uuid = this.services.registerAccount(dto);
-        UserDetails _principal = userDetailsService.loadUserByUsername(dto.getUsername());
+        UserDetails _principal = userDetailsService.loadUserByUsername(dto.getEmail());
         HttpHeaders jwtHeader = getHeader(_principal);
         return new ResponseEntity<>(_principal, jwtHeader, OK);
     }
 
-    private void authentication(String username, String password) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+    private void authentication(String email, String password) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
     }
 
     private HttpHeaders getHeader(UserDetails principal) {

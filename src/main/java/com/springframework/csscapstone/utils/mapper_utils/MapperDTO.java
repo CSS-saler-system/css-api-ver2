@@ -2,6 +2,8 @@ package com.springframework.csscapstone.utils.mapper_utils;
 
 import com.springframework.csscapstone.data.domain.*;
 import com.springframework.csscapstone.payload.basic.*;
+import com.springframework.csscapstone.payload.response_dto.collaborator.EnterpriseResponseDto;
+import com.springframework.csscapstone.payload.response_dto.collaborator.CustomerResponseDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -30,6 +32,12 @@ public interface MapperDTO {
     TransactionsDto toTransactionsDto(Transactions entity);
 
     //TODO Response DTO
+    //TODO [ROLE] - Collaborator
     CustomerResponseDto toCustomerResponseDto(Customer entity);
+
+    EnterpriseResponseDto toEnterpriseResponseDto(Account entity);
+
+    //todo mapper entity to <ENTERPRISE_DTO>
+    EnterpriseDto toEnterpriseDto(Account entity);
 
 }
