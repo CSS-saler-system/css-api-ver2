@@ -116,7 +116,14 @@
             <artifactId>spring-cloud-azure-starter-storage-blob</artifactId>
             <version>4.1.0</version>
         </dependency>
+
         <!--End Azure dependencies-->
+        <!-- Jackson -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
+        <!-- end Jackson -->
     </dependencies>
 
     <build>

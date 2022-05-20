@@ -1,7 +1,6 @@
-package com.springframework.csscapstone.config.security.model.model_exception;
+package com.springframework.csscapstone.payload.response_dto.exception;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import lombok.Data;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.http.HttpStatus;
@@ -9,8 +8,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
 import javax.validation.ConstraintViolation;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Data

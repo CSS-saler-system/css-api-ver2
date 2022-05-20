@@ -3,11 +3,11 @@ package com.springframework.csscapstone.services.impl;
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.Customer;
-import com.springframework.csscapstone.data.domain.CustomerResponseDto;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.data.repositories.CustomerRepository;
-import com.springframework.csscapstone.payload.request_dto.customer.CustomerCreatorDto;
-import com.springframework.csscapstone.payload.request_dto.customer.CustomerUpdatorDto;
+import com.springframework.csscapstone.payload.request_dto.customer.collaborator.CustomerCreatorDto;
+import com.springframework.csscapstone.payload.request_dto.customer.collaborator.CustomerUpdatorDto;
+import com.springframework.csscapstone.payload.response_dto.collaborator.CustomerResponseDto;
 import com.springframework.csscapstone.services.CustomerService;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.customer_exception.CustomerExistedException;
@@ -19,8 +19,6 @@ import org.springframework.stereotype.Service;
 
 import javax.security.auth.login.AccountNotFoundException;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 

@@ -25,7 +25,7 @@ public class Account {
     @GenericGenerator(name = "UUID",
             strategy = "org.hibernate.id.UUIDGenerator")
     @Column(nullable = false, columnDefinition = "uniqueIdentifier")
-    private UUID id; //Long
+    private UUID id;
 
     @Column(name = "name")
     private String name;
@@ -39,8 +39,6 @@ public class Account {
     @Column(name = "email", unique = true)
     private String email;
 
-    @Column(name = "username")
-    private String username;
     @Column(name="password")
     private String password;
 
@@ -65,12 +63,12 @@ public class Account {
     private Boolean nonLock = Boolean.TRUE;
 
     @OneToMany(mappedBy = "account")
-    @Where(clause = "ID_CARD")
+    @Where(clause = "type = 'ID_CARD' ")
     @ToString.Exclude
     private List<AccountImage> idCardAccountImage = new ArrayList<>();
 
     @OneToMany(mappedBy = "account")
-    @Where(clause = "AVATAR")
+    @Where(clause = "type = 'AVATAR'")
     @ToString.Exclude
     private List<AccountImage> avatar = new ArrayList<>();
 

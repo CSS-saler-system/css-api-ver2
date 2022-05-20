@@ -9,7 +9,7 @@ import org.hibernate.annotations.Parameter;
 import javax.persistence.*;
 import java.util.List;
 
-import static com.springframework.csscapstone.utils.id_generator.CustomIdentifiedGenerator.PREFIX_VALUE;
+import static com.springframework.csscapstone.utils.id_generator_utils.CustomIdentifiedGenerator.PREFIX_VALUE;
 import static javax.persistence.GenerationType.IDENTITY;
 import static org.hibernate.id.enhanced.SequenceStyleGenerator.INCREMENT_PARAM;
 
@@ -24,7 +24,7 @@ public class Role {
     @GeneratedValue(strategy = IDENTITY, generator = "my_generator")
     @GenericGenerator(
             name = "my_generator",
-            strategy = "com.springframework.csscapstone.utils.id_generator.CustomIdentifiedGenerator",
+            strategy = "com.springframework.csscapstone.utils.id_generator_utils.CustomIdentifiedGenerator",
             parameters = {
                     @Parameter(name = PREFIX_VALUE, value = "ROLE_"),
                     @Parameter(name = INCREMENT_PARAM, value = "10")

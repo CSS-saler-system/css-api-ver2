@@ -2,7 +2,7 @@ package com.springframework.csscapstone.config.security.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springframework.csscapstone.config.constant.MessageConstant;
-import com.springframework.csscapstone.config.security.model.model_exception.HttpResponse;
+import com.springframework.csscapstone.payload.response_dto.exception.HttpResponse;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;

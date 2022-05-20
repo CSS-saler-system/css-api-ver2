@@ -1,22 +1,17 @@
 package com.springframework.csscapstone.controller.collaborator;
 
 import com.springframework.csscapstone.config.constant.RegexConstant;
-import com.springframework.csscapstone.data.domain.Customer;
-import com.springframework.csscapstone.payload.request_dto.customer.CustomerCreatorDto;
-import com.springframework.csscapstone.payload.request_dto.customer.CustomerUpdatorDto;
+import com.springframework.csscapstone.payload.request_dto.customer.collaborator.CustomerCreatorDto;
+import com.springframework.csscapstone.payload.request_dto.customer.collaborator.CustomerUpdatorDto;
 import com.springframework.csscapstone.services.CustomerService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.security.auth.login.AccountNotFoundException;
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
-import java.time.LocalDate;
 import java.util.UUID;
 
 import static com.springframework.csscapstone.config.constant.ApiEndPoint.Customer.*;
