@@ -6,6 +6,7 @@ import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.Role;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.data.repositories.RoleRepository;
+import com.springframework.csscapstone.payload.response_dto.collaborator.EnterpriseResponseDto;
 import com.springframework.csscapstone.services.AccountService;
 import com.springframework.csscapstone.payload.basic.AccountDto;
 import com.springframework.csscapstone.payload.custom.creator_model.AccountRegisterDto;
@@ -26,11 +27,13 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiPredicate;
 
+import static java.util.stream.Collectors.toList;
+
 @Service
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
     private final PasswordEncoder passwordEncoder;
-    private final AccountRepository repositories;
+    private final AccountRepository accountRepository;
     private final RoleRepository roleRepository;
     private final AccountDAO accountDAO;
     private final Logger LOGGER = LoggerFactory.getLogger(CategoryServiceImpl.class);
@@ -41,7 +44,7 @@ public class AccountServiceImpl implements AccountService {
     BiPredicate<AccountRepository, AccountRegisterDto> _checkDuplicationPredicate = (repository, dto) -> {
 
         //check duplicate username
-        repository.findAccountByUsername(dto.getUsername()).ifPresent(x -> {
+        repository.findAccountByEmail(dto.getEmail()).ifPresent(x -> {
             throw new IllegalArgumentException(MessagesUtils.getMessage(MessageConstant.Account.USER_NAME_EXISTED));
         });
 
@@ -65,7 +68,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountDto getById(UUID id) throws AccountInvalidException {
-        return repositories.findById(id)
+        return accountRepository.findById(id)
                 .map(MapperDTO.INSTANCE::toAccountDto)
                 .orElseThrow(() -> new AccountInvalidException(MessagesUtils.getMessage(MessageConstant.Account.NOT_FOUND)));
     }
@@ -73,7 +76,7 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     @Override
     public UUID registerAccount(AccountRegisterDto dto) throws AccountExistException {
-        boolean test = _checkDuplicationPredicate.test(repositories, dto);
+        boolean test = _checkDuplicationPredicate.test(accountRepository, dto);
         //true ..., else throws exception
         if (test) {
             Role role = roleRepository.getById(dto.getRole().getId());
@@ -90,14 +93,13 @@ public class AccountServiceImpl implements AccountService {
                 .setDob(dto.getDayOfBirth())
                 .setPhone(dto.getPhone())
                 .setEmail(dto.getEmail())
-                .setUsername(dto.getUsername())
                 .setPassword(passwordEncoder.encode(dto.getPassword()))
                 .setAddress(dto.getAddress())
                 .setDescription(dto.getDescription())
                 .setGender(dto.getGender())
                 .addRole(role);
 
-        this.repositories.save(account);
+        this.accountRepository.save(account);
         this.roleRepository.save(account.getRole());
         return account.getId();
     }
@@ -105,7 +107,7 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     @Override
     public UUID updateAccount(AccountUpdaterDto dto) throws AccountInvalidException {
-        Account entity = repositories.findById(dto.getId())
+        Account entity = accountRepository.findById(dto.getId())
                 .filter(x -> x.getId().equals(dto.getId()))
                 .filter(x -> x.getEmail().equals(dto.getEmail()))
                 .filter(x -> x.getPhone().equals(dto.getPhone()))
@@ -116,17 +118,25 @@ public class AccountServiceImpl implements AccountService {
                 .setAddress(dto.getAddress())
                 .setDescription(dto.getDescription())
                 .setGender(dto.isGender());
-        this.repositories.save(entity);
+        this.accountRepository.save(entity);
         return entity.getId();
     }
 
     @Transactional
     @Override
     public void disableAccount(UUID id) {
-        repositories.findById(id).ifPresent(x -> {
+        accountRepository.findById(id).ifPresent(x -> {
             x.setIsActive(false);
-            repositories.save(x);
+            accountRepository.save(x);
         });
+    }
+
+    @Override
+    public List<EnterpriseResponseDto> getAllHavingEnterpriseRole() {
+        return this.accountRepository
+                .findAccountByRole("Enterprise")
+                .stream().map(MapperDTO.INSTANCE::toEnterpriseResponseDto)
+                .collect(toList());
     }
 
 }

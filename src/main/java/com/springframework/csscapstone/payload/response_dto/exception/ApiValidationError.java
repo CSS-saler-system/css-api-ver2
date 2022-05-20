@@ -1,4 +1,4 @@
-package com.springframework.csscapstone.config.security.model.model_exception;
+package com.springframework.csscapstone.payload.response_dto.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

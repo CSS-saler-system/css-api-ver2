@@ -2,7 +2,7 @@ package com.springframework.csscapstone.controller.sharing;
 
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.google.firebase.auth.FirebaseAuthException;
-import com.springframework.csscapstone.config.security.model.model_exception.HttpResponse;
+import com.springframework.csscapstone.payload.response_dto.exception.HttpResponse;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountExistException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountInvalidException;
@@ -18,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -98,7 +97,7 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler {
     public ResponseEntity<?> handleUnAuthentication(AuthenticationException exception) {
         String message = exception.getMessage();
         if (exception.getMessage().equals("Bad credentials")) {
-            message = "The username or password was wrong";
+            message = "The email or password was wrong";
         }
         return createHttpResponse(FORBIDDEN, message);
     }

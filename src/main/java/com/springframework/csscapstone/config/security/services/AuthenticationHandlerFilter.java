@@ -1,6 +1,6 @@
 package com.springframework.csscapstone.config.security.services;
 
-import com.springframework.csscapstone.utils.security_provider.JwtTokenProvider;
+import com.springframework.csscapstone.utils.security_provider_utils.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -41,12 +41,12 @@ public class AuthenticationHandlerFilter extends OncePerRequestFilter {
             return;
         }
         String token = authorizationHeader.substring(tokenPrefix.length());
-        String username = jwtTokenProvider.getSubject(token);
+        String email = jwtTokenProvider.getSubject(token);
 
-        if (jwtTokenProvider.isTokenValid(username , token)
+        if (jwtTokenProvider.isTokenValid(email , token)
                 && SecurityContextHolder.getContext().getAuthentication() == null) {
             List<GrantedAuthority> authorities = jwtTokenProvider.getAuthorities(token);
-            Authentication authentication = jwtTokenProvider.getAuthentication(username, authorities, request);
+            Authentication authentication = jwtTokenProvider.getAuthentication(email, authorities, request);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } else {
             SecurityContextHolder.clearContext();

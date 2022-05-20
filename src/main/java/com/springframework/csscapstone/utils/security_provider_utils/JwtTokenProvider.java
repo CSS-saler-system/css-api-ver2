@@ -1,4 +1,4 @@
-package com.springframework.csscapstone.utils.security_provider;
+package com.springframework.csscapstone.utils.security_provider_utils;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -68,9 +68,9 @@ public class JwtTokenProvider {
 
 
 
-    public boolean isTokenValid(String username, String token) {
+    public boolean isTokenValid(String email, String token) {
         JWTVerifier verifier = getVerifier();
-        return StringUtils.isNotEmpty(username)
+        return StringUtils.isNotEmpty(email)
                 || !verifier.verify(token).getExpiresAt().before(new Date());
     }
 

@@ -4,6 +4,7 @@ package com.springframework.csscapstone.services;
 import com.springframework.csscapstone.payload.basic.AccountDto;
 import com.springframework.csscapstone.payload.custom.creator_model.AccountRegisterDto;
 import com.springframework.csscapstone.payload.custom.update_model.AccountUpdaterDto;
+import com.springframework.csscapstone.payload.response_dto.collaborator.EnterpriseResponseDto;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountExistException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountInvalidException;
 
@@ -21,6 +22,8 @@ public interface AccountService {
     UUID updateAccount(AccountUpdaterDto dto) throws AccountInvalidException;
 
     void disableAccount(UUID id);
+
+    List<EnterpriseResponseDto> getAllHavingEnterpriseRole();
 
 //    UUID createAccount(AccountDto dto);
 

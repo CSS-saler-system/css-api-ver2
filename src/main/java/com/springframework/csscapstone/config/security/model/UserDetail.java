@@ -30,7 +30,7 @@ public class UserDetail implements UserDetails {
 
     @Override
     public String getUsername() {
-        return entity.getUsername();
+        return entity.getEmail();
     }
 
     @Override

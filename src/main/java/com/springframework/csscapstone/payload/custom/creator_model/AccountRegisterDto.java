@@ -19,9 +19,6 @@ public class AccountRegisterDto {
     @Email(message = "Email is not correct format")
     private final String email;
 
-    @NotNull(message = "username is mandatory")
-    private final String username;
-
     @NotNull(message = "password is mandatory")
     private final String password;
     private final String address;
