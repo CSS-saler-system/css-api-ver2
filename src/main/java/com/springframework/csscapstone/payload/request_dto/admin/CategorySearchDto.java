@@ -1,4 +1,4 @@
-package com.springframework.csscapstone.payload.custom.search_model;
+package com.springframework.csscapstone.payload.request_dto.admin;
 
 import com.springframework.csscapstone.data.status.CategoryStatus;
 import lombok.Data;

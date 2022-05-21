@@ -2,7 +2,7 @@ package com.springframework.csscapstone.services;
 
 import com.springframework.csscapstone.data.status.ProductStatus;
 import com.springframework.csscapstone.payload.basic.ProductDto;
-import com.springframework.csscapstone.payload.custom.creator_model.ProductCreatorDto;
+import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorDto;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
 

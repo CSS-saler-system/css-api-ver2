@@ -9,7 +9,7 @@ import com.springframework.csscapstone.data.repositories.ProductRepository;
 import com.springframework.csscapstone.data.status.ProductStatus;
 import com.springframework.csscapstone.services.ProductService;
 import com.springframework.csscapstone.payload.basic.ProductDto;
-import com.springframework.csscapstone.payload.custom.creator_model.ProductCreatorDto;
+import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorDto;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
 import com.springframework.csscapstone.utils.mapper_utils.MapperDTO;
@@ -47,7 +47,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     /**
-     * todo find product by account
+     * todo find product by account <Completed></>
      */
     @Override
     public List<ProductDto> findByIdAccount(UUID accountId) throws AccountNotFoundException {

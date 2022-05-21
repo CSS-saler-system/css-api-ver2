@@ -1,4 +1,4 @@
-package com.springframework.csscapstone.payload.request_dto.customer.collaborator;
+package com.springframework.csscapstone.payload.request_dto.collaborator;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;

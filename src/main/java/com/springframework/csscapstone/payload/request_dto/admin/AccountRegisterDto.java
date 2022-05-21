@@ -1,32 +1,40 @@
-package com.springframework.csscapstone.payload.custom.creator_model;
+package com.springframework.csscapstone.payload.request_dto.admin;
 
 import com.springframework.csscapstone.payload.basic.RoleDto;
 import lombok.Data;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Data
 public class AccountRegisterDto {
-
+    @NotEmpty(message = "The name must be not empty")
     private final String name;
     private final LocalDate dayOfBirth;
 
-    @NotNull(message = "phone is mandatory")
+    @NotEmpty(message = "The phone must be not empty")
     private final String phone;
 
+    @NotEmpty(message = "The email must be not empty")
     @Email(message = "Email is not correct format")
     private final String email;
 
-    @NotNull(message = "password is mandatory")
+    @NotEmpty(message = "The password must be not empty")
     private final String password;
-    private final String address;
-    private final String description;
-    private final Boolean gender;
-    private RoleDto role;
 
-//    private double point = 0.0;
+    @NotEmpty(message = "The address must be not empty")
+    private final String address;
+
+    @NotEmpty(message = "The description must be not empty")
+    private final String description;
+
+    @NotNull(message = "The gender must be not empty")
+    private final Boolean gender;
+
+    @NotNull(message = "The role must be not empty")
+    private RoleDto role;
     private Boolean isActive = true;
     private Boolean nonLock = true;
 }

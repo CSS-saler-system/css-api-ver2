@@ -19,7 +19,4 @@ public class AccountDto implements Serializable {
     private final boolean gender;
     private final double point;
     private final List<String> tokens;
-
-
-
 }

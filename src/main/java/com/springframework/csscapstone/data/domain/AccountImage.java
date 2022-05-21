@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.Objects;
 import java.util.UUID;
 
 @Getter
@@ -27,7 +28,7 @@ public class AccountImage {
     private String path;
 
     @ManyToOne
-    @JoinColumn(name = "accunt_id")
+    @JoinColumn(name = "account_id")
     private Account account;
 
     @Override
@@ -37,7 +38,7 @@ public class AccountImage {
 
         AccountImage that = (AccountImage) o;
 
-        return id != null ? id.equals(that.id) : that.id == null;
+        return Objects.equals(id, that.id);
     }
 
     @Override

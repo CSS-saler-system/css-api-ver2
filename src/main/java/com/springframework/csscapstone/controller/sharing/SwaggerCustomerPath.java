@@ -12,4 +12,7 @@ public class SwaggerCustomerPath {
     public RedirectView redirectToSwagger() {
         return new RedirectView("/swagger-ui/index.html");
     }
+
+
+
 }

@@ -26,6 +26,6 @@ public interface AccountRepository extends PagingAndSortingRepository<Account, U
     List<Account> findAccountByRole(@Param("role") String role);
 
     @Query("SELECT a FROM Account a")
-    Page<Account> getAllByAvatar(Pageable pageable);
+    Page<Account> getAllEnterprise(Pageable pageable);
 
 }

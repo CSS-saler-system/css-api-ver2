@@ -5,7 +5,7 @@ import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.services.CampaignService;
 import com.springframework.csscapstone.payload.basic.CampaignDto;
-import com.springframework.csscapstone.payload.custom.creator_model.CampaignCreatorDto;
+import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorDto;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignInvalidException;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;

@@ -1,8 +1,8 @@
-package com.springframework.csscapstone.payload.custom.return_model.category;
+package com.springframework.csscapstone.payload.response_dto.admin;
 
 import com.springframework.csscapstone.data.status.CategoryStatus;
 import com.springframework.csscapstone.data.status.ProductStatus;
-import com.springframework.csscapstone.payload.custom.Image;
+import com.springframework.csscapstone.payload.request_dto.admin.ProductImageDto;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -28,8 +28,8 @@ public class CategoryReturnDto implements Serializable {
         private final Double price;
         private final Double pointSale;
         private final ProductStatus productStatus;
-        private final List<Image> image;
-        private final List<Image> certificateImageProduct;
+        private final List<ProductImageDto> image;
+        private final List<ProductImageDto> certificateImageProduct;
 
     }
 }

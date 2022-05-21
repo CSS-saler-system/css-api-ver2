@@ -1,4 +1,4 @@
-package com.springframework.csscapstone.payload.custom.creator_model;
+package com.springframework.csscapstone.payload.request_dto.admin;
 
 import lombok.Data;
 

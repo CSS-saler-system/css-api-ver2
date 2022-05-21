@@ -71,7 +71,7 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler {
 
 
     /**
-     * TODO Not Found Exception Handling
+     * TODO Not Found Exception Handling <Completed></>
      * @param exception
      * @return
      */
@@ -89,7 +89,7 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler {
     // ================== Login was wrong =================================
 
     /**
-     * TODO Forbidden for Authentication Exception Handling
+     * TODO Forbidden for Authentication Exception Handling <Completed></>
      * @param exception
      * @return
      */
@@ -105,7 +105,7 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler {
     // ================== Argument was wrong ==============================
 
     /**
-     * TODO Bad Exception Handling
+     * TODO Bad Exception Handling <Completed></>
      * @param exception
      * @return
      */
@@ -123,7 +123,7 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * TODO Forbidden Exception Handling
+     * TODO Forbidden Exception Handling <Completed></>
      * @param exception
      * @return
      */

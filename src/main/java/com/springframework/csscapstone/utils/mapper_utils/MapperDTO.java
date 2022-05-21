@@ -31,13 +31,13 @@ public interface MapperDTO {
 
     TransactionsDto toTransactionsDto(Transactions entity);
 
-    //TODO Response DTO
-    //TODO [ROLE] - Collaborator
+    //TODO Response DTO <Completed></>
+    //TODO [ROLE] - Collaborator <Completed></>
     CustomerResponseDto toCustomerResponseDto(Customer entity);
 
     EnterpriseResponseDto toEnterpriseResponseDto(Account entity);
 
-    //todo mapper entity to <ENTERPRISE_DTO>
+    //todo mapper entity to <ENTERPRISE_DTO> <Completed></>
     EnterpriseDto toEnterpriseDto(Account entity);
 
 }

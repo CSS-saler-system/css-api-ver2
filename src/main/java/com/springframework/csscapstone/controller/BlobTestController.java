@@ -26,22 +26,8 @@ import static org.springframework.http.ResponseEntity.ok;
 public class BlobTestController {
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
-    //https://csssalersystem.blob.core.windows.net/css-image
-    //azure-blob://<your-container-name>/<your-blob-name>
-    @Value("azure-blob://css-image/Screenshot (375).png")
-    private Resource blobFile;
-
-    @PostMapping("/writeBlobFile")
-    public String writeBlobFile(@RequestBody String data) throws IOException {
-        try (OutputStream os = ((WritableResource) this.blobFile).getOutputStream()) {
-            os.write(data.getBytes());
-        }
-        return "file was updated";
-    }
-
     @PostMapping(value = "/upload", consumes = {MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> uploadImageTest(
-            @RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<?> uploadImageTest(@RequestParam("file") MultipartFile file) throws IOException {
         String consStr = "DefaultEndpointsProtocol=https;AccountName=csssalersystem;AccountKey=jCb20BfSP2CkB1IduJlPAxcQWX+GgwrBp+aobpk5ggaUpKa2dSGf9iSH4QggdFb9Nwjm/o+un2X3ScNdjrpovA==;EndpointSuffix=core.windows.net";
         BlobContainerClient container = new BlobContainerClientBuilder()
                 .connectionString(consStr)
@@ -53,11 +39,6 @@ public class BlobTestController {
         blobClient.upload(file.getInputStream(), file.getSize(), true);
         return ok(blobName);
 
-    }
-
-    @GetMapping("/readBlobFile")
-    public String readBlobFile() throws IOException {
-        return StreamUtils.copyToString(this.blobFile.getInputStream(), Charset.defaultCharset());
     }
 
 }
