@@ -124,6 +124,14 @@
             <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
         <!-- end Jackson -->
+        <!-- Common File Upload-->
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.4</version>
+        </dependency>
+
+        <!-- End Common File Upload-->
     </dependencies>
 
     <build>

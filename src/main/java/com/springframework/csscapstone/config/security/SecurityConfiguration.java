@@ -27,7 +27,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final AuthenticationHandlerFilter authenticationHandlerFilter;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    public static final String[] PUBLIC_URLS = {"/", "/user/**", "/user/image/**",};
+    public static final String[] PUBLIC_URLS = {"/", "/user/**", "/user/image/**", "/blob/**"};
 
     @Override
     public void configure(WebSecurity web) {
