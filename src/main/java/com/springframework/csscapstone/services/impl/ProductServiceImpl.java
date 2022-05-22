@@ -1,85 +1,167 @@
 package com.springframework.csscapstone.services.impl;
 
+import com.azure.storage.blob.BlobClient;
+import com.azure.storage.blob.BlobContainerClient;
+import com.azure.storage.blob.BlobContainerClientBuilder;
 import com.springframework.csscapstone.config.constant.MessageConstant;
-import com.springframework.csscapstone.data.dao.ProductDAO;
+import com.springframework.csscapstone.data.dao.specifications.ProductSpecifications;
 import com.springframework.csscapstone.data.domain.Account;
+import com.springframework.csscapstone.data.domain.Category;
 import com.springframework.csscapstone.data.domain.Product;
+import com.springframework.csscapstone.data.domain.ProductImage;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
+import com.springframework.csscapstone.data.repositories.CategoryRepository;
 import com.springframework.csscapstone.data.repositories.ProductRepository;
+import com.springframework.csscapstone.data.status.ProductImageType;
 import com.springframework.csscapstone.data.status.ProductStatus;
-import com.springframework.csscapstone.services.ProductService;
 import com.springframework.csscapstone.payload.basic.ProductDto;
-import com.springframework.csscapstone.payload.custom.creator_model.ProductCreatorDto;
+import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorDto;
+import com.springframework.csscapstone.payload.response_dto.PageImplResponse;
+import com.springframework.csscapstone.services.ProductService;
+import com.springframework.csscapstone.utils.exception_utils.category_exception.CategoryNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
 import com.springframework.csscapstone.utils.mapper_utils.MapperDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.security.auth.login.AccountNotFoundException;
+import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
+
 @Service
 @RequiredArgsConstructor
+@PropertySource(value = "classpath:application-storage.properties")
 public class ProductServiceImpl implements ProductService {
+    @Value("${product_image_container}")
+    private String productContainer;
     private final ProductRepository productRepository;
     private final AccountRepository accountRepository;
-    private final ProductDAO productDAO;
+    private final CategoryRepository categoryRepository;
 
     @Override
-    public List<ProductDto> findAllProduct(
-            String name, String brand, Double weight,
-            String shortDescription, String description,
-            Long inStock, Double price, Double pointSale,
-            ProductStatus productStatus) {
+    public PageImplResponse<ProductDto> findAllProduct(
+            String name, String brand, Long inStock, Double minPrice, Double maxPrice,
+            Double minPoint, Double maxPoint, ProductStatus productStatus,
+            Integer pageNumber, Integer pageSize) {
 
-        return productDAO.searchProduct(name, brand, weight,
-                        shortDescription, description,
-                        inStock, price, pointSale,
-                        productStatus).stream().map(MapperDTO.INSTANCE::toProductDto)
-                .collect(Collectors.toList());
+        Specification<Product> search = Specification
+                .where(Objects.isNull(name) ? null : ProductSpecifications.nameContains(name))
+                .and(Objects.isNull(brand) ? null : ProductSpecifications.brandContains(brand))
+                .and(Objects.isNull(minPrice) ? null : ProductSpecifications.priceGreaterThan(minPrice))
+                .and(Objects.isNull(maxPrice) ? null : ProductSpecifications.priceLessThan(maxPrice))
+                .and(Objects.isNull(minPoint) ? null : ProductSpecifications.pointGreaterThan(minPoint))
+                .and(Objects.isNull(maxPoint) ? null : ProductSpecifications.pointLessThan(maxPoint))
+                .and(Objects.isNull(productStatus) ? null : ProductSpecifications.statusEquals(productStatus));
+
+        pageSize = Objects.isNull(pageSize) || (pageSize <= 0) ? 10 : pageSize;
+        pageNumber = Objects.isNull(pageNumber) || (pageNumber <= 1) ? 1 : pageNumber;
+
+        Page<Product> page = this.productRepository.findAll(search, PageRequest.of(pageNumber - 1, pageSize));
+
+        List<ProductDto> data = page.stream().map(MapperDTO.INSTANCE::toProductDto).collect(toList());
+
+        return new PageImplResponse<>(
+                data, page.getNumber() + 1, page.getSize(),
+                page.getTotalElements(), page.getTotalPages(),
+                page.isFirst(), page.isLast());
     }
 
     /**
-     * todo find product by account
+     * todo find product by account <Completed></>
      */
     @Override
-    public List<ProductDto> findByIdAccount(UUID accountId) throws AccountNotFoundException {
-        Account account = this.accountRepository.findById(accountId).orElseThrow(accountNotFoundException());
-        return account.getProducts().stream().map(MapperDTO.INSTANCE::toProductDto).collect(Collectors.toList());
+    public List<ProductDto> findProductByIdAccount(UUID accountId) throws AccountNotFoundException {
+        Account account = this.accountRepository.findById(accountId).orElseThrow(handlerAccountNotFound());
+        return account.getProducts().stream().map(MapperDTO.INSTANCE::toProductDto).collect(toList());
     }
 
     @Override
     public ProductDto findById(UUID id) throws ProductNotFoundException {
         return productRepository.findById(id)
                 .map(MapperDTO.INSTANCE::toProductDto)
-                .orElseThrow(handlerNotFoundProduct());
+                .orElseThrow(handlerProductNotFound());
     }
 
+    /**
+     * dto has validation exception on account_id and category_id so no need checking null them
+     *
+     * @param dto
+     * @return
+     * @throws ProductInvalidException
+     * @throws AccountNotFoundException
+     */
     @Transactional
     @Override
-    public UUID createProduct(ProductCreatorDto dto) throws ProductInvalidException {
-
-        if (dto.getAccountId() == null) {
-            throw new ProductInvalidException(MessagesUtils.getMessage(MessageConstant.Product.INVALID));
-        }
+    public UUID createProduct(
+            ProductCreatorDto dto,
+            List<MultipartFile> typeImages,
+            List<MultipartFile> certificationImages)
+            throws ProductInvalidException, AccountNotFoundException, IOException {
 
         Account account = accountRepository
-                .findById(dto.getAccountId())
-                .orElseThrow(handlerInvalidFormat());
+                .findById(dto.getCreatorAccountId())
+                .orElseThrow(handlerAccountCreatorNotFound());
 
-        Product product = Optional.of(new Product())
-                .map(x -> toEntityFromCreator(dto, x, account))
-                .orElseThrow(handlerInvalidFormat());
+        Category category = categoryRepository
+                .findById(dto.getCategoryId())
+                .orElseThrow(handlerCategoryNotFound());
 
-        Product creatorProduct = productRepository.save(product);
-        accountRepository.save(account);
+        Product newProduct = new Product()
+                .setName(dto.getName())
+                .setBrand(dto.getBrand())
+                .setPrice(dto.getPrice())
+                .setDescription(dto.getDescription())
+                .setShortDescription(dto.getShortDescription())
+                .setProductStatus(ProductStatus.ACTIVE)
+                .setQuantityInStock(dto.getQuantity())
+                .setPointSale(dto.getPointSale())
+                .addAccount(account)
+                .addCategory(category);
+
+
+        Product creatorProduct = productRepository.save(newProduct);
+
+        String prefix_image = creatorProduct.getId() + "/";
+
+        //create productImage
+        Map<String, MultipartFile> image = typeImages
+                .stream()
+                .collect(Collectors.toMap(x -> prefix_image + x.getName(), x -> x));
+
+        //set image into product
+        ProductImage[] productImages = image.keySet().stream()
+                .map(x -> new ProductImage(ProductImageType.NORMAL, x))
+                .toArray(ProductImage[]::new);
+        newProduct.addProductImage(productImages);
+
+        //deploy
+        for(Map.Entry<String, MultipartFile> entry : image.entrySet()) {
+
+            BlobContainerClient blobContainer = new BlobContainerClientBuilder()
+                    .containerName(productContainer)
+                    .buildClient();
+
+            BlobClient blobClient = blobContainer.getBlobClient(entry.getKey());
+            blobClient.upload(
+                    entry.getValue().getInputStream(),
+                    entry.getValue().getSize(),true);
+        }
         return creatorProduct.getId();
     }
 
@@ -92,7 +174,7 @@ public class ProductServiceImpl implements ProductService {
 
         Product entity = this.productRepository
                 .findById(dto.getId())
-                .orElseThrow(handlerNotFoundProduct());
+                .orElseThrow(handlerProductNotFound());
 
         entity.setName(dto.getName())
                 .setBrand(dto.getBrand())
@@ -100,7 +182,6 @@ public class ProductServiceImpl implements ProductService {
                 .setShortDescription(dto.getShortDescription())
                 .setPointSale(dto.getPointSale())
                 .setPrice(dto.getPrice())
-                .setWeight(dto.getWeight())
                 .setQuantityInStock(dto.getQuantityInStock())
                 .setProductStatus(dto.getProductStatus());
 
@@ -108,11 +189,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void activeProduct(UUID id) {
+    public void changeStatusProduct(UUID id, ProductStatus status) {
         this.productRepository.findById(id)
-                .filter(product -> product.getProductStatus().equals(ProductStatus.DISABLE))
+//                .filter(product -> product.getProductStatus().equals(ProductStatus.DISABLE))
                 .ifPresent(product -> {
-                    product.setProductStatus(ProductStatus.ACTIVE);
+                    product.setProductStatus(status);
                     this.productRepository.save(product);
                 });
     }
@@ -127,43 +208,21 @@ public class ProductServiceImpl implements ProductService {
                 });
     }
 
-    @Override
-    public List<ProductDto> getListProductByName(String name) {
-        return this.productRepository.findProductByNameLike(name)
-                .stream().map(MapperDTO.INSTANCE::toProductDto)
-                .collect(Collectors.toList());
-    }
-
     //===================Utils Methods====================
     //====================================================
-    private Product toEntityFromCreator(ProductCreatorDto dto, Product x, Account account) {
-        x.setName(dto.getName())
-                .setBrand(dto.getBrand())
-                .setWeight(dto.getWeight())
-                .setDescription(dto.getDescription())
-                .setShortDescription(dto.getShortDescription())
-                .setQuantityInStock(dto.getQuantity())
-                .setPrice(dto.getPrice())
-                .setPointSale(dto.getPointSale())
-                .setProductStatus(dto.getStatus())
-                //==== bi-direction: account <=> product
-                .addAccount(account);
-        return x;
-    }
-
-    //===================Utils Methods====================
-    //====================================================
-    private Supplier<ProductNotFoundException> handlerNotFoundProduct() {
+    private Supplier<ProductNotFoundException> handlerProductNotFound() {
         return () -> new ProductNotFoundException(MessagesUtils.getMessage(MessageConstant.Product.NOT_FOUND));
     }
 
-    //===================Utils Methods====================
-    //====================================================
-    private Supplier<ProductInvalidException> handlerInvalidFormat() {
-        return () -> new ProductInvalidException(MessagesUtils.getMessage(MessageConstant.Product.INVALID));
+    private Supplier<CategoryNotFoundException> handlerCategoryNotFound() {
+        return () -> new CategoryNotFoundException(MessagesUtils.getMessage(MessageConstant.Category.NOT_FOUND));
     }
 
-    private Supplier<AccountNotFoundException> accountNotFoundException() {
+    private Supplier<AccountNotFoundException> handlerAccountCreatorNotFound() {
+        return () -> new AccountNotFoundException(MessagesUtils.getMessage(MessageConstant.Account.CREATOR_NOT_FOUND));
+    }
+
+    private Supplier<AccountNotFoundException> handlerAccountNotFound() {
         return () -> new AccountNotFoundException(MessagesUtils.getMessage(MessageConstant.Account.NOT_FOUND));
     }
 }

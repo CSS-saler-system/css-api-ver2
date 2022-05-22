@@ -1,11 +1,11 @@
 package com.springframework.csscapstone.controller.admin;
 
 import com.springframework.csscapstone.data.status.CategoryStatus;
+import com.springframework.csscapstone.payload.request_dto.admin.CategoryCreatorDto;
+import com.springframework.csscapstone.payload.response_dto.admin.CategoryReturnDto;
 import com.springframework.csscapstone.services.CategoryService;
 import com.springframework.csscapstone.payload.basic.CategoryDto;
-import com.springframework.csscapstone.payload.custom.creator_model.CategoryCreatorDto;
-import com.springframework.csscapstone.payload.custom.return_model.category.CategoryReturnDto;
-import com.springframework.csscapstone.payload.custom.search_model.CategorySearchDto;
+import com.springframework.csscapstone.payload.request_dto.admin.CategorySearchDto;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.category_exception.CategoryInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.category_exception.CategoryNotFoundException;
@@ -27,8 +27,7 @@ import static org.springframework.http.ResponseEntity.ok;
 public class AdminCategoryController {
     private final CategoryService services;
 
-
-    @GetMapping(V1_GET_CATEGORY + "{id}")
+    @GetMapping(V1_GET_CATEGORY + "/{id}")
     public ResponseEntity<CategoryReturnDto> getCategory(@PathVariable("id") UUID id) throws CategoryNotFoundException, EntityNotFoundException {
         CategoryReturnDto category = this.services.findCategoryById(id);
         return ok(category);

@@ -11,13 +11,13 @@ import com.springframework.csscapstone.data.repositories.ProductImageRepository;
 import com.springframework.csscapstone.data.repositories.ProductRepository;
 import com.springframework.csscapstone.data.status.CategoryStatus;
 import com.springframework.csscapstone.data.status.ProductImageType;
-import com.springframework.csscapstone.services.CategoryService;
 import com.springframework.csscapstone.payload.basic.CategoryDto;
-import com.springframework.csscapstone.payload.custom.Image;
-import com.springframework.csscapstone.payload.custom.creator_model.CategoryCreatorDto;
-import com.springframework.csscapstone.payload.custom.return_model.category.CategoryReturnDto;
-import com.springframework.csscapstone.payload.custom.search_model.CategorySearchDto;
-import com.springframework.csscapstone.payload.custom.update_model.CategoryUpdaterDto;
+import com.springframework.csscapstone.payload.request_dto.admin.CategoryCreatorDto;
+import com.springframework.csscapstone.payload.request_dto.admin.CategorySearchDto;
+import com.springframework.csscapstone.payload.request_dto.admin.CategoryUpdaterDto;
+import com.springframework.csscapstone.payload.request_dto.admin.ProductImageDto;
+import com.springframework.csscapstone.payload.response_dto.admin.CategoryReturnDto;
+import com.springframework.csscapstone.services.CategoryService;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.category_exception.CategoryInvalidException;
 import com.springframework.csscapstone.utils.mapper_utils.MapperDTO;
@@ -34,6 +34,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -84,7 +85,6 @@ public class CategoryServiceImpl implements CategoryService {
                         product.getId(),
                         product.getName(),
                         product.getBrand(),
-                        product.getWeight(),
                         product.getShortDescription(),
                         product.getDescription(),
                         product.getQuantityInStock(),
@@ -100,13 +100,14 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     /**
+     * TODO NEED MODIFIED
      * Get List Image of product by type
      */
-    private List<Image> getProductImages(Product product, ProductImageType type) {
+    private List<ProductImageDto> getProductImages(Product product, ProductImageType type) {
         return this.productImageRepository
                 .findProductImageByProduct(product)
                 .stream().filter(x ->x.getType().equals(type))
-                .map(x -> new Image(x.getId(), x.getType(), x.getPath()))
+                .map(x -> new ProductImageDto(x.getId(), x.getPath()))
                 .collect(toList());
     }
 

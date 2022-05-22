@@ -1,8 +1,8 @@
 package com.springframework.csscapstone.controller.collaborator;
 
 import com.springframework.csscapstone.config.constant.RegexConstant;
-import com.springframework.csscapstone.payload.request_dto.customer.collaborator.CustomerCreatorDto;
-import com.springframework.csscapstone.payload.request_dto.customer.collaborator.CustomerUpdatorDto;
+import com.springframework.csscapstone.payload.request_dto.collaborator.CustomerCreatorDto;
+import com.springframework.csscapstone.payload.request_dto.collaborator.CustomerUpdatorDto;
 import com.springframework.csscapstone.services.CustomerService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

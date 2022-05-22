@@ -1,10 +1,10 @@
 package com.springframework.csscapstone.services;
 
 import com.springframework.csscapstone.payload.basic.CategoryDto;
-import com.springframework.csscapstone.payload.custom.creator_model.CategoryCreatorDto;
-import com.springframework.csscapstone.payload.custom.return_model.category.CategoryReturnDto;
-import com.springframework.csscapstone.payload.custom.search_model.CategorySearchDto;
-import com.springframework.csscapstone.payload.custom.update_model.CategoryUpdaterDto;
+import com.springframework.csscapstone.payload.request_dto.admin.CategoryCreatorDto;
+import com.springframework.csscapstone.payload.request_dto.admin.CategorySearchDto;
+import com.springframework.csscapstone.payload.request_dto.admin.CategoryUpdaterDto;
+import com.springframework.csscapstone.payload.response_dto.admin.CategoryReturnDto;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.category_exception.CategoryInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.category_exception.CategoryNotFoundException;
