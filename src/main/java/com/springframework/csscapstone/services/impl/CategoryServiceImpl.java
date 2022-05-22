@@ -85,7 +85,6 @@ public class CategoryServiceImpl implements CategoryService {
                         product.getId(),
                         product.getName(),
                         product.getBrand(),
-                        product.getWeight(),
                         product.getShortDescription(),
                         product.getDescription(),
                         product.getQuantityInStock(),
@@ -101,13 +100,14 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     /**
+     * TODO NEED MODIFIED
      * Get List Image of product by type
      */
     private List<ProductImageDto> getProductImages(Product product, ProductImageType type) {
         return this.productImageRepository
                 .findProductImageByProduct(product)
                 .stream().filter(x ->x.getType().equals(type))
-                .map(x -> new ProductImageDto(x.getId(), x.getType(), x.getPath()))
+                .map(x -> new ProductImageDto(x.getId(), x.getPath()))
                 .collect(toList());
     }
 

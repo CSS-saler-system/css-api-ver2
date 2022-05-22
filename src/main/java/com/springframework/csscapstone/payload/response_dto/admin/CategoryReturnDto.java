@@ -21,7 +21,6 @@ public class CategoryReturnDto implements Serializable {
         private final UUID id;
         private final String name;
         private final String brand;
-        private final Double weight;
         private final String shortDescription;
         private final String description;
         private final Long quantityInStock;

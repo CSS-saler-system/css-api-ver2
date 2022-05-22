@@ -1,21 +1,73 @@
 package com.springframework.csscapstone.payload.request_dto.admin;
 
-import com.springframework.csscapstone.data.status.ProductStatus;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.util.List;
 import java.util.UUID;
 
 @Data
-public class ProductCreatorDto {
-    private UUID accountId;
+public class ProductCreatorDto implements Serializable {
+    @NotNull(message = "The creator account id must be not null")
+    private UUID creatorAccountId;
 
-    private String name;
-    private String brand;
-    private Double weight;
-    private String shortDescription;
-    private String description;
-    private Long quantity;
-    private Double price;
-    private Double pointSale;
-    private ProductStatus status = ProductStatus.IN_STOCK;
+    @NotNull(message = "The category id must be not null")
+    private UUID categoryId;
+
+    @NotEmpty(message = "The name must be not empty")
+    private final String name;
+
+    @NotEmpty(message = "The name must be not empty")
+    private final String brand;
+
+    private final String shortDescription;
+
+    @NotEmpty(message = "The description must be not empty")
+    private final String description;
+
+    @NotNull(message = "The quantity must be not null")
+    private final Long quantity;
+
+    @NotNull(message = "The point must be not null")
+    private final Double price;
+
+    @NotNull(message = "The point must be not null")
+    private final Double pointSale;
+
+//    @NotNull(message = "The type image not null")
+//    private final MultipartFile[] typeImage;
+//
+//    @NotNull(message = "The type image not null")
+//    private final MultipartFile[] certificationImage;
+
+    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    public ProductCreatorDto(
+            @JsonProperty("creatorAccountId") UUID creatorAccountId,
+            @JsonProperty("categoryId") UUID categoryId,
+            @JsonProperty("name") String name,
+            @JsonProperty("brand") String brand,
+            @JsonProperty("shortDescription") String shortDescription,
+            @JsonProperty("description") String description,
+            @JsonProperty("quantity") Long quantity,
+            @JsonProperty("price") Double price,
+            @JsonProperty("pointSale") Double pointSale
+//            @JsonProperty("typeImage") MultipartFile[] typeImage,
+//            @JsonProperty("certificationImage") MultipartFile[] certificationImage) {
+    ) { this.creatorAccountId = creatorAccountId;
+        this.categoryId = categoryId;
+        this.name = name;
+        this.brand = brand;
+        this.shortDescription = shortDescription;
+        this.description = description;
+        this.quantity = quantity;
+        this.price = price;
+        this.pointSale = pointSale;
+//        this.typeImage = typeImage;
+//        this.certificationImage = certificationImage;
+    }
 }

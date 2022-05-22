@@ -9,8 +9,10 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.*;
 
+import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 
 
@@ -32,16 +34,12 @@ public class Product {
 
     @Column(name = "product_brand")
     private String brand;
-    private Double weight;
-
     private String shortDescription;
-
     @Lob
     private String description;
     private Long quantityInStock;
     private Double price;
     private Double pointSale;
-
     @Enumerated(EnumType.STRING)
     private ProductStatus productStatus;
 
@@ -53,7 +51,7 @@ public class Product {
     @Where(clause = "type = 'CERTIFICATION'")
     private List<ProductImage> certificateImageProduct = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
 
@@ -63,7 +61,7 @@ public class Product {
     @OneToMany(mappedBy = "product")
     private List<RequestSellingProduct> requestSellingProducts = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "account_id")
     private Account account;
 
@@ -91,7 +89,6 @@ public class Product {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", brand='" + brand + '\'' +
-                ", weight=" + weight +
                 ", shortDescription='" + shortDescription + '\'' +
                 ", description='" + description + '\'' +
                 ", quantityInStock=" + quantityInStock +
@@ -108,4 +105,24 @@ public class Product {
         this.setAccount(account);
         return this;
     }
+
+    //=================Utils=========================
+    //=================Category=========================
+    public Product addCategory(Category category) {
+        category.getProducts().add(this);
+        this.setCategory(category);
+        return this;
+    }
+
+    //=================Utils=========================
+    //=================Category=========================
+    public Product addProductImage(ProductImage... image) {
+        this.image.addAll(Arrays.asList(image));
+        Arrays
+                .stream(image)
+                .forEach(x -> x.setProduct(this));
+        return this;
+    }
+
+
 }

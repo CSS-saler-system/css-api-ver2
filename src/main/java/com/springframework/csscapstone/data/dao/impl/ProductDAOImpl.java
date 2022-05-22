@@ -34,7 +34,6 @@ public class ProductDAOImpl implements ProductDAO {
         predicate = builder.and(predicate, builder.like(root.get(Product_.BRAND), brand));
         predicate = builder.and(predicate, builder.like(root.get(Product_.SHORT_DESCRIPTION), shortDescription));
         predicate = builder.and(predicate, builder.like(root.get(Product_.DESCRIPTION), description));
-        predicate = builder.and(predicate, builder.greaterThanOrEqualTo(root.get(Product_.WEIGHT), weight));
         predicate = builder.and(predicate, builder.greaterThanOrEqualTo(root.get(Product_.QUANTITY_IN_STOCK), inStock));
         predicate = builder.and(predicate, builder.greaterThanOrEqualTo(root.get(Product_.PRICE), price));
         predicate = builder.and(predicate, builder.greaterThanOrEqualTo(root.get(Product_.POINT_SALE), pointSale));

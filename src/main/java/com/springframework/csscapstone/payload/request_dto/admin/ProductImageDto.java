@@ -14,18 +14,14 @@ import java.util.UUID;
 public class ProductImageDto implements Serializable {
     @NotNull(message = "The id product must be not null")
     private final Long id;
-    @NotNull(message = "The type product must be not null")
-    private final ProductImageType type;
     @NotEmpty(message = "The type product must be not null")
     private final String path;
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public ProductImageDto(
             @JsonProperty("id") Long id,
-            @JsonProperty("image_product") ProductImageType type,
             @JsonProperty("path") String path) {
         this.id = id;
-        this.type = type;
         this.path = path;
     }
 }
