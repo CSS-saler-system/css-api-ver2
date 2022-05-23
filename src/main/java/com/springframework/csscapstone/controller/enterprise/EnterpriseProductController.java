@@ -1,6 +1,7 @@
 package com.springframework.csscapstone.controller.enterprise;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.status.ProductStatus;
 import com.springframework.csscapstone.payload.basic.ProductDto;
@@ -21,21 +22,23 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.security.auth.login.AccountNotFoundException;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.springframework.csscapstone.config.constant.ApiEndPoint.Product.*;
-import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
-import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
+import static org.springframework.http.MediaType.*;
 import static org.springframework.http.ResponseEntity.ok;
 
-@RestController
-@RequiredArgsConstructor
 @Tag(name = "Product (Enterprise)")
+@RequiredArgsConstructor
+@RestController
 public class EnterpriseProductController {
     private final ProductService productService;
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
@@ -62,22 +65,23 @@ public class EnterpriseProductController {
     }
 
     @GetMapping(V2_GET_PRODUCT + "/{id}")
-    public ResponseEntity<ProductDto> getProductById(@PathVariable("id") UUID id) throws ProductNotFoundException {
+    public ResponseEntity<?> getProductById(@PathVariable("id") UUID id) throws ProductNotFoundException {
         return ok(productService.findById(id));
     }
 
 
-    @PostMapping(value = V2_CREATE_PRODUCT, consumes = {"multipart/form-data"})
-    public ResponseEntity<UUID> addNewProduct(
-            @RequestPart("product") ProductCreatorDto dto,
-            @RequestPart(value = "type_image") MultipartFile typeImages,
-            @RequestPart(value = "certification_image") MultipartFile certificationImages
+    @PostMapping(value = V2_CREATE_PRODUCT,
+            consumes = {"multipart/form-data"})
+    public ResponseEntity<?> addNewProduct(
+            @RequestPart(value = "type_image") @Valid MultipartFile[] typeImages,
+            @RequestPart(value = "certification_image") @Valid MultipartFile[] certificationImages,
+            @RequestPart(value = "product") String dto
     ) throws ProductInvalidException, AccountNotFoundException, IOException {
-//        List<MultipartFile> collect = Arrays.stream(typeImages).collect(Collectors.toList());
-//        List<MultipartFile> _collect = Arrays.stream(certificationImages).collect(Collectors.toList());
-        List<MultipartFile> collect = Collections.singletonList(typeImages);
-        List<MultipartFile> _collect = Collections.singletonList(certificationImages);
-        return ok(productService.createProduct(dto, collect, _collect));
+        List<MultipartFile> collect = Stream.of(typeImages).collect(Collectors.toList());
+        List<MultipartFile> _collect = Stream.of(certificationImages).collect(Collectors.toList());
+        ProductCreatorDto productCreatorDto = new ObjectMapper().readValue(dto, ProductCreatorDto.class);
+
+        return ok(this.productService.createProduct(productCreatorDto, collect, _collect));
     }
 
     @PostMapping(value = V2_CREATE_TEST_PRODUCT, consumes = {MULTIPART_FORM_DATA_VALUE})

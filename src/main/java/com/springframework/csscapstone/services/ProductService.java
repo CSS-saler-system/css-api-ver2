@@ -4,6 +4,7 @@ import com.springframework.csscapstone.data.status.ProductStatus;
 import com.springframework.csscapstone.payload.basic.ProductDto;
 import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResponse;
+import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResponseDto;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,7 +28,7 @@ public interface ProductService {
 
     List<ProductDto> findProductByIdAccount(UUID accountId) throws AccountNotFoundException;
 
-    ProductDto findById(UUID id) throws ProductNotFoundException;
+    ProductResponseDto findById(UUID id) throws ProductNotFoundException;
 
     UUID createProduct(
             ProductCreatorDto dto,

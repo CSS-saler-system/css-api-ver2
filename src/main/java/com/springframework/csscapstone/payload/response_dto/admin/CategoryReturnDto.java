@@ -28,7 +28,6 @@ public class CategoryReturnDto implements Serializable {
         private final Double pointSale;
         private final ProductStatus productStatus;
         private final List<ProductImageDto> image;
-        private final List<ProductImageDto> certificateImageProduct;
 
     }
 }

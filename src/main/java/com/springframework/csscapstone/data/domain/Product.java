@@ -44,12 +44,7 @@ public class Product {
     private ProductStatus productStatus;
 
     @OneToMany(mappedBy = "product")
-    @Where(clause = "type = 'DESCRIPTION'")
     private List<ProductImage> image = new ArrayList<>();
-
-    @OneToMany(mappedBy = "product")
-    @Where(clause = "type = 'CERTIFICATION'")
-    private List<ProductImage> certificateImageProduct = new ArrayList<>();
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "category_id")

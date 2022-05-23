@@ -91,9 +91,8 @@ public class CategoryServiceImpl implements CategoryService {
                         product.getPrice(),
                         product.getPointSale(),
                         product.getProductStatus(),
-                        getProductImages(product, ProductImageType.NORMAL),
-                        getProductImages(product, ProductImageType.CERTIFICATION))
-                ).collect(toList());
+                        getProductImages(product, ProductImageType.NORMAL)
+                )).collect(toList());
 
         return new CategoryReturnDto(_category.getId(), _category.getCategoryName(), _category.getStatus(), products);
 

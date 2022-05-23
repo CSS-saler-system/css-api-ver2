@@ -11,12 +11,14 @@ import com.springframework.csscapstone.data.domain.Product;
 import com.springframework.csscapstone.data.domain.ProductImage;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.data.repositories.CategoryRepository;
+import com.springframework.csscapstone.data.repositories.ProductImageRepository;
 import com.springframework.csscapstone.data.repositories.ProductRepository;
 import com.springframework.csscapstone.data.status.ProductImageType;
 import com.springframework.csscapstone.data.status.ProductStatus;
 import com.springframework.csscapstone.payload.basic.ProductDto;
 import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResponse;
+import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResponseDto;
 import com.springframework.csscapstone.services.ProductService;
 import com.springframework.csscapstone.utils.exception_utils.category_exception.CategoryNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductInvalidException;
@@ -29,16 +31,15 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.security.auth.login.AccountNotFoundException;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.lang.reflect.Array;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -50,9 +51,13 @@ import static java.util.stream.Collectors.toList;
 public class ProductServiceImpl implements ProductService {
     @Value("${product_image_container}")
     private String productContainer;
+
+    @Value("${endpoint}")
+    private String endpoint;
     private final ProductRepository productRepository;
     private final AccountRepository accountRepository;
     private final CategoryRepository categoryRepository;
+    private final ProductImageRepository imageRepository;
 
     @Override
     public PageImplResponse<ProductDto> findAllProduct(
@@ -92,9 +97,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto findById(UUID id) throws ProductNotFoundException {
+    public ProductResponseDto findById(UUID id) throws ProductNotFoundException {
         return productRepository.findById(id)
-                .map(MapperDTO.INSTANCE::toProductDto)
+                .map(MapperDTO.INSTANCE::toProductResponseDto)
                 .orElseThrow(handlerProductNotFound());
     }
 
@@ -137,32 +142,53 @@ public class ProductServiceImpl implements ProductService {
 
         Product creatorProduct = productRepository.save(newProduct);
 
-        String prefix_image = creatorProduct.getId() + "/";
+        handleImage(typeImages, creatorProduct, ProductImageType.NORMAL);
+        handleImage(certificationImages, creatorProduct, ProductImageType.CERTIFICATION);
+
+        return creatorProduct.getId();
+    }
+
+    /**
+     * this method todo <>
+     * Add image to product
+     * Upload image to aure storage
+     * </>
+     *
+     * @param typeImages
+     * @param creatorProduct
+     * @param type
+     * @throws IOException
+     */
+    private void handleImage(List<MultipartFile> typeImages, Product creatorProduct, ProductImageType type) throws IOException {
+        String prefix_image = endpoint + productContainer + creatorProduct.getId() + "/";
 
         //create productImage
         Map<String, MultipartFile> image = typeImages
                 .stream()
-                .collect(Collectors.toMap(x -> prefix_image + x.getName(), x -> x));
+                .collect(Collectors.toMap(x -> prefix_image + x.getOriginalFilename(), x -> x));
 
         //set image into product
         ProductImage[] productImages = image.keySet().stream()
-                .map(x -> new ProductImage(ProductImageType.NORMAL, x))
+                .map(x -> new ProductImage(type, x))
                 .toArray(ProductImage[]::new);
-        newProduct.addProductImage(productImages);
+        creatorProduct.addProductImage(productImages);
 
         //deploy
-        for(Map.Entry<String, MultipartFile> entry : image.entrySet()) {
+        for (Map.Entry<String, MultipartFile> entry : image.entrySet()) {
 
             BlobContainerClient blobContainer = new BlobContainerClientBuilder()
                     .containerName(productContainer)
+                    .connectionString("DefaultEndpointsProtocol=https;AccountName=csssalersystem;AccountKey=jCb20BfSP2CkB1IduJlPAxcQWX+GgwrBp+aobpk5ggaUpKa2dSGf9iSH4QggdFb9Nwjm/o+un2X3ScNdjrpovA==;EndpointSuffix=core.windows.net")
                     .buildClient();
 
             BlobClient blobClient = blobContainer.getBlobClient(entry.getKey());
+
             blobClient.upload(
                     entry.getValue().getInputStream(),
-                    entry.getValue().getSize(),true);
+                    entry.getValue().getSize(), true);
         }
-        return creatorProduct.getId();
+        this.imageRepository.saveAll(Arrays.asList(productImages));
+        this.productRepository.save(creatorProduct);
     }
 
     @Transactional

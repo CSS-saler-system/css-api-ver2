@@ -48,7 +48,7 @@ public class CollaboratorProductController {
         return ok(result);
     }
     @GetMapping(V3_GET_PRODUCT + "/{id}")
-    public ResponseEntity<ProductDto> getProductById(@PathVariable("id") UUID id) throws ProductNotFoundException {
+    public ResponseEntity<?> getProductById(@PathVariable("id") UUID id) throws ProductNotFoundException {
         return ok(service.findById(id));
     }
 }

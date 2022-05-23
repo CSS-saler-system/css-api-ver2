@@ -43,7 +43,7 @@ public class AdminProductController {
         return ok(result);
     }
     @GetMapping(V1_GET_PRODUCT + "/{id}")
-    public ResponseEntity<ProductDto> getProductById(@PathVariable("id") UUID id) throws ProductNotFoundException {
+    public ResponseEntity<?> getProductById(@PathVariable("id") UUID id) throws ProductNotFoundException {
         return ok(productService.findById(id));
     }
 
