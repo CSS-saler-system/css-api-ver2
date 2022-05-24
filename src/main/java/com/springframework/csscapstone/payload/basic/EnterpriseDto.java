@@ -1,4 +1,4 @@
-package com.springframework.csscapstone.data.domain;
+package com.springframework.csscapstone.payload.basic;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -31,14 +31,14 @@ public class EnterpriseDto implements Serializable {
     private final String description;
     private final List<ProductDto> products;
 
-    public EnterpriseDto(@JsonProperty("account_id") UUID id,
-                         @JsonProperty("name") String name,
-                         @JsonProperty("dob") LocalDate dob,
-                         @JsonProperty("phone") String phone,
-                         @JsonProperty("email") String email,
-                         @JsonProperty("address") String address,
-                         @JsonProperty("description") String description,
-                         @JsonProperty("products") List<ProductDto> products) {
+    public EnterpriseDto(@JsonProperty UUID id,
+                         @JsonProperty String name,
+                         @JsonProperty LocalDate dob,
+                         @JsonProperty String phone,
+                         @JsonProperty String email,
+                         @JsonProperty String address,
+                         @JsonProperty String description,
+                         @JsonProperty List<ProductDto> products) {
         this.id = id;
         this.name = name;
         this.dob = dob;
@@ -64,16 +64,16 @@ public class EnterpriseDto implements Serializable {
 
         @JsonCreator(mode = PROPERTIES)
         public ProductDto(
-                @JsonProperty("product_id") UUID id,
-                @JsonProperty("product_name") String name,
-                @JsonProperty("brand") String brand,
-                @JsonProperty("weight") double weight,
-                @JsonProperty("short_description") String shortDescription,
-                @JsonProperty("description") String description,
-                @JsonProperty("in_stock") long quantityInStock,
-                @JsonProperty("price") double price,
-                @JsonProperty("pointSale") double pointSale,
-                @JsonProperty("product_status") ProductStatus productStatus
+                @JsonProperty UUID id,
+                @JsonProperty String name,
+                @JsonProperty String brand,
+                @JsonProperty double weight,
+                @JsonProperty String shortDescription,
+                @JsonProperty String description,
+                @JsonProperty long quantityInStock,
+                @JsonProperty double price,
+                @JsonProperty double pointSale,
+                @JsonProperty ProductStatus productStatus
         ) {
             this.id = id;
             this.name = name;

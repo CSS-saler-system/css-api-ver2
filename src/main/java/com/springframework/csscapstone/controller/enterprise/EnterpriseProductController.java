@@ -6,7 +6,9 @@ import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.status.ProductStatus;
 import com.springframework.csscapstone.payload.basic.ProductDto;
 import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorDto;
+import com.springframework.csscapstone.payload.request_dto.enterprise.ProductUpdaterDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResponse;
+import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResponseDto;
 import com.springframework.csscapstone.services.ProductService;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
@@ -37,8 +39,8 @@ import static org.springframework.http.MediaType.*;
 import static org.springframework.http.ResponseEntity.ok;
 
 @Tag(name = "Product (Enterprise)")
-@RequiredArgsConstructor
 @RestController
+@RequiredArgsConstructor
 public class EnterpriseProductController {
     private final ProductService productService;
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
@@ -57,7 +59,7 @@ public class EnterpriseProductController {
             @RequestParam(value = "page_size", required = false) Integer pageSize
     ) {
 
-        PageImplResponse<ProductDto> result = productService.findAllProduct(
+        PageImplResponse<ProductResponseDto> result = productService.findAllProduct(
                 name, brand, inStock, minPrice, maxPrice,
                 minPointSale, maxPointSale, productStatus,
                 pageNumber, pageSize);
@@ -84,20 +86,11 @@ public class EnterpriseProductController {
         return ok(this.productService.createProduct(productCreatorDto, collect, _collect));
     }
 
-    @PostMapping(value = V2_CREATE_TEST_PRODUCT, consumes = {MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<UUID> getMultipatt(
-            @RequestPart("type_image") List<MultipartFile> typeImages,
-            @RequestPart("certification_image") List<MultipartFile> certificationImages
-    ) throws ProductInvalidException, AccountNotFoundException, IOException {
-//        return ok(productService.createProduct(dto, typeImages, certificationImages));
-        return ok(UUID.randomUUID());
-    }
 
-//
-//    @PutMapping
-//    public ResponseEntity<?> updateProduct(@Valid @RequestBody ProductUpdaterDto dto) {
-//
-//    }
+    @PutMapping(V2_UPDATE_PRODUCT)
+    public ResponseEntity<?> updateProduct(@Valid @RequestBody ProductUpdaterDto dto) {
+        return ok(this.productService.updateProductDto(dto));
+    }
 
     @DeleteMapping(V2_DELETE_PRODUCT + "/{id}")
     public ResponseEntity<String> disableProduct(@PathVariable("id") UUID id) {

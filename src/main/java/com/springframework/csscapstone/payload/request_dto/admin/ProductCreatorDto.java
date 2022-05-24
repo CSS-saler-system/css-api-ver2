@@ -45,17 +45,15 @@ public class ProductCreatorDto implements Serializable {
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public ProductCreatorDto(
-            @JsonProperty("creatorAccountId") UUID creatorAccountId,
-            @JsonProperty("categoryId") UUID categoryId,
-            @JsonProperty("name") String name,
-            @JsonProperty("brand") String brand,
-            @JsonProperty("shortDescription") String shortDescription,
-            @JsonProperty("description") String description,
-            @JsonProperty("quantity") Long quantity,
-            @JsonProperty("price") Double price,
-            @JsonProperty("pointSale") Double pointSale
-//            @JsonProperty("typeImage") MultipartFile[] typeImage,
-//            @JsonProperty("certificationImage") MultipartFile[] certificationImage) {
+            @JsonProperty UUID creatorAccountId,
+            @JsonProperty UUID categoryId,
+            @JsonProperty String name,
+            @JsonProperty String brand,
+            @JsonProperty String shortDescription,
+            @JsonProperty String description,
+            @JsonProperty Long quantity,
+            @JsonProperty Double price,
+            @JsonProperty Double pointSale
     ) { this.creatorAccountId = creatorAccountId;
         this.categoryId = categoryId;
         this.name = name;
@@ -65,7 +63,5 @@ public class ProductCreatorDto implements Serializable {
         this.quantity = quantity;
         this.price = price;
         this.pointSale = pointSale;
-//        this.typeImage = typeImage;
-//        this.certificationImage = certificationImage;
     }
 }

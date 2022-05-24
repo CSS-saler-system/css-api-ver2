@@ -129,6 +129,14 @@ public class ApiEndPoint {
         public static final String V2_CREATE_ORDER_DETAIL = v2_handler + "/new";
         public static final String V2_DELETE_ORDER_DETAIL = v2_handler + "/delete";
 
+        public static final String V3_LIST_ORDER_DETAIL = v3_handler + "/list";
+        public static final String V3_GET_ORDER_DETAIL = v3_handler + "/get";
+        public static final String V3_UPDATE_ORDER_DETAIL = v3_handler + "/update";
+        public static final String V3_CREATE_ORDER_DETAIL = v3_handler + "/new";
+        public static final String V3_DELETE_ORDER_DETAIL = v3_handler + "/delete";
+
+
+
 
     }
     public static class Customer {

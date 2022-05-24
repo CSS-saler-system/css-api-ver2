@@ -2,14 +2,8 @@ package com.springframework.csscapstone.payload.response_dto.collaborator;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.springframework.csscapstone.data.domain.EnterpriseDto;
-import com.springframework.csscapstone.payload.basic.AccountDto;
+import com.springframework.csscapstone.payload.basic.EnterpriseDto;
 import lombok.Data;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import java.io.Serializable;
 import java.util.List;
@@ -27,13 +21,13 @@ public class EnterprisePageImpl  implements Serializable {
 
     @JsonCreator(mode = PROPERTIES)
     public EnterprisePageImpl(
-            @JsonProperty("data") List<EnterpriseDto> data,
-            @JsonProperty("page_number") int number,
-            @JsonProperty("page_size") int size,
-            @JsonProperty("total_elements") long totalElements,
-            @JsonProperty("totalPages") int totalPages,
-            @JsonProperty("first_page") boolean first,
-            @JsonProperty("last_page") boolean last
+            @JsonProperty List<EnterpriseDto> data,
+            @JsonProperty int number,
+            @JsonProperty int size,
+            @JsonProperty long totalElements,
+            @JsonProperty int totalPages,
+            @JsonProperty boolean first,
+            @JsonProperty boolean last
     ) {
         this.data = data;
         this.number = number;

@@ -33,13 +33,13 @@ public class CustomerUpdatorDto implements Serializable {
 
     @JsonCreator
     public CustomerUpdatorDto(
-            @JsonProperty("id") UUID id,
-            @JsonProperty("name") String name,
-            @JsonProperty("phone") String phone,
-            @JsonProperty("address") String address,
-            @JsonProperty("dob") LocalDate dob,
-            @JsonProperty("accountUpdater") AccountDto accountUpdater,
-            @JsonProperty("description") String description) {
+            @JsonProperty UUID id,
+            @JsonProperty String name,
+            @JsonProperty String phone,
+            @JsonProperty String address,
+            @JsonProperty LocalDate dob,
+            @JsonProperty AccountDto accountUpdater,
+            @JsonProperty String description) {
         this.id = id;
         this.name = name;
         this.phone = phone;
@@ -55,7 +55,7 @@ public class CustomerUpdatorDto implements Serializable {
         private final UUID id;
 
         @JsonCreator
-        public AccountDto(@JsonProperty("id") UUID id) {
+        public AccountDto(@JsonProperty UUID id) {
             this.id = id;
         }
     }

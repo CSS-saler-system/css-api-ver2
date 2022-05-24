@@ -3,6 +3,7 @@ package com.springframework.csscapstone.controller.collaborator;
 import com.springframework.csscapstone.data.status.ProductStatus;
 import com.springframework.csscapstone.payload.basic.ProductDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResponse;
+import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResponseDto;
 import com.springframework.csscapstone.services.ProductService;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -41,7 +42,7 @@ public class CollaboratorProductController {
             @RequestParam(value = "page_size", required = false) Integer pageSize
     ) {
 
-        PageImplResponse<ProductDto> result = service.findAllProduct(
+        PageImplResponse<ProductResponseDto> result = service.findAllProduct(
                 name, brand, inStock, minPrice, maxPrice,
                 minPointSale, maxPointSale, productStatus,
                 pageNumber, pageSize);

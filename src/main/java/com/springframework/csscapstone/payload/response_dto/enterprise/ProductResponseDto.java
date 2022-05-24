@@ -17,7 +17,7 @@ public class ProductResponseDto implements Serializable {
     private final String brand;
     private final String shortDescription;
     private final String description;
-    private final Long quantityInStock;
+    private final Long quantity;
     private final Double price;
     private final Double pointSale;
     private final ProductStatus productStatus;
@@ -27,24 +27,24 @@ public class ProductResponseDto implements Serializable {
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public ProductResponseDto(
-            @JsonProperty("id") UUID id,
-            @JsonProperty("name") String name,
-            @JsonProperty("brand") String brand,
-            @JsonProperty("short_description") String shortDescription,
-            @JsonProperty("description") String description,
-            @JsonProperty("quantity_in_stock") Long quantityInStock,
-            @JsonProperty("price") Double price,
-            @JsonProperty("pointSale") Double pointSale,
-            @JsonProperty("productStatus") ProductStatus productStatus,
-            @JsonProperty("image") List<CertificationImage> image,
-            @JsonProperty("category") CategoryDto category,
-            @JsonProperty("account") AccountDto account) {
+            @JsonProperty UUID id,
+            @JsonProperty String name,
+            @JsonProperty String brand,
+            @JsonProperty String shortDescription,
+            @JsonProperty String description,
+            @JsonProperty Long quantity,
+            @JsonProperty Double price,
+            @JsonProperty Double pointSale,
+            @JsonProperty ProductStatus productStatus,
+            @JsonProperty List<CertificationImage> image,
+            @JsonProperty CategoryDto category,
+            @JsonProperty AccountDto account) {
         this.id = id;
         this.name = name;
         this.brand = brand;
         this.shortDescription = shortDescription;
         this.description = description;
-        this.quantityInStock = quantityInStock;
+        this.quantity = quantity;
         this.price = price;
         this.pointSale = pointSale;
         this.productStatus = productStatus;
@@ -63,9 +63,9 @@ public class ProductResponseDto implements Serializable {
         @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
 
         public ProductImageDto(
-                @JsonProperty("id") Long id,
-                @JsonProperty("type") ProductImageType type,
-                @JsonProperty("path") String path) {
+                @JsonProperty Long id,
+                @JsonProperty ProductImageType type,
+                @JsonProperty String path) {
             this.id = id;
             this.type = type;
             this.path = path;
@@ -80,9 +80,9 @@ public class ProductResponseDto implements Serializable {
 
         @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
         public CertificationImage(
-                @JsonProperty("id") Long id,
-                @JsonProperty("type") ProductImageType type,
-                @JsonProperty("path") String path) {
+                @JsonProperty Long id,
+                @JsonProperty ProductImageType type,
+                @JsonProperty String path) {
             this.id = id;
             this.type = type;
             this.path = path;
@@ -95,7 +95,7 @@ public class ProductResponseDto implements Serializable {
         private final String categoryName;
 
         @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-        public CategoryDto(@JsonProperty("id") UUID id, @JsonProperty("category_name") String categoryName) {
+        public CategoryDto(@JsonProperty UUID id, @JsonProperty String categoryName) {
             this.id = id;
             this.categoryName = categoryName;
         }

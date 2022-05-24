@@ -8,6 +8,7 @@ import com.springframework.csscapstone.payload.request_dto.admin.AccountRegister
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountExistException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountLoginWithEmailException;
 import com.springframework.csscapstone.utils.security_provider_utils.JwtTokenProvider;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,7 @@ import static org.springframework.http.HttpStatus.OK;
 @RestController
 @RequiredArgsConstructor
 @PropertySource(value = "classpath:application-securities.properties")
+@Tag(name = "Login (User)")
 public class LoginController {
     private final UserDetailsService userDetailsService;
     private final AuthenticationManager authenticationManager;

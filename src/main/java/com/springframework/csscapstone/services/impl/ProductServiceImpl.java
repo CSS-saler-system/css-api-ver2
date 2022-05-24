@@ -15,8 +15,8 @@ import com.springframework.csscapstone.data.repositories.ProductImageRepository;
 import com.springframework.csscapstone.data.repositories.ProductRepository;
 import com.springframework.csscapstone.data.status.ProductImageType;
 import com.springframework.csscapstone.data.status.ProductStatus;
-import com.springframework.csscapstone.payload.basic.ProductDto;
 import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorDto;
+import com.springframework.csscapstone.payload.request_dto.enterprise.ProductUpdaterDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResponse;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResponseDto;
 import com.springframework.csscapstone.services.ProductService;
@@ -31,14 +31,12 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.security.auth.login.AccountNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -58,9 +56,11 @@ public class ProductServiceImpl implements ProductService {
     private final AccountRepository accountRepository;
     private final CategoryRepository categoryRepository;
     private final ProductImageRepository imageRepository;
+    @Value("${connection-string}")
+    private String connectionString;
 
     @Override
-    public PageImplResponse<ProductDto> findAllProduct(
+    public PageImplResponse<ProductResponseDto> findAllProduct(
             String name, String brand, Long inStock, Double minPrice, Double maxPrice,
             Double minPoint, Double maxPoint, ProductStatus productStatus,
             Integer pageNumber, Integer pageSize) {
@@ -79,7 +79,7 @@ public class ProductServiceImpl implements ProductService {
 
         Page<Product> page = this.productRepository.findAll(search, PageRequest.of(pageNumber - 1, pageSize));
 
-        List<ProductDto> data = page.stream().map(MapperDTO.INSTANCE::toProductDto).collect(toList());
+        List<ProductResponseDto> data = page.stream().map(MapperDTO.INSTANCE::toProductResponseDto).collect(toList());
 
         return new PageImplResponse<>(
                 data, page.getNumber() + 1, page.getSize(),
@@ -91,9 +91,9 @@ public class ProductServiceImpl implements ProductService {
      * todo find product by account <Completed></>
      */
     @Override
-    public List<ProductDto> findProductByIdAccount(UUID accountId) throws AccountNotFoundException {
+    public List<ProductResponseDto> findProductByIdAccount(UUID accountId) throws AccountNotFoundException {
         Account account = this.accountRepository.findById(accountId).orElseThrow(handlerAccountNotFound());
-        return account.getProducts().stream().map(MapperDTO.INSTANCE::toProductDto).collect(toList());
+        return account.getProducts().stream().map(MapperDTO.INSTANCE::toProductResponseDto).collect(toList());
     }
 
     @Override
@@ -181,7 +181,7 @@ public class ProductServiceImpl implements ProductService {
 
             BlobContainerClient blobContainer = new BlobContainerClientBuilder()
                     .containerName(productContainer)
-                    .connectionString("DefaultEndpointsProtocol=https;AccountName=csssalersystem;AccountKey=jCb20BfSP2CkB1IduJlPAxcQWX+GgwrBp+aobpk5ggaUpKa2dSGf9iSH4QggdFb9Nwjm/o+un2X3ScNdjrpovA==;EndpointSuffix=core.windows.net")
+                    .connectionString(connectionString)
                     .buildClient();
 
             BlobClient blobClient = blobContainer.getBlobClient(entry.getKey());
@@ -194,12 +194,12 @@ public class ProductServiceImpl implements ProductService {
         this.productRepository.save(creatorProduct);
     }
 
+
+    //TODO Changing
     @Transactional
     @Override
-    public UUID updateProductDto(ProductDto dto) throws ProductNotFoundException, ProductInvalidException {
-        if (dto.getId() == null) {
-            throw new ProductInvalidException(MessagesUtils.getMessage(MessageConstant.Product.INVALID));
-        }
+    public UUID updateProductDto(ProductUpdaterDto dto) throws ProductNotFoundException, ProductInvalidException {
+        if (dto.getId() == null) throw handlerProductInvalidException().get();
 
         Product entity = this.productRepository
                 .findById(dto.getId())
@@ -211,11 +211,11 @@ public class ProductServiceImpl implements ProductService {
                 .setShortDescription(dto.getShortDescription())
                 .setPointSale(dto.getPointSale())
                 .setPrice(dto.getPrice())
-                .setQuantityInStock(dto.getQuantityInStock())
-                .setProductStatus(dto.getProductStatus());
-
+                .setQuantityInStock(dto.getQuantity());
+        this.productRepository.save(entity);
         return entity.getId();
     }
+
 
     @Override
     public void changeStatusProduct(UUID id, ProductStatus status) {
@@ -253,5 +253,8 @@ public class ProductServiceImpl implements ProductService {
 
     private Supplier<AccountNotFoundException> handlerAccountNotFound() {
         return () -> new AccountNotFoundException(MessagesUtils.getMessage(MessageConstant.Account.NOT_FOUND));
+    }
+    private Supplier<ProductInvalidException> handlerProductInvalidException() {
+        return () -> new ProductInvalidException(MessagesUtils.getMessage(MessageConstant.Product.INVALID));
     }
 }

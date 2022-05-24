@@ -2,7 +2,6 @@ package com.springframework.csscapstone.payload.response_dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.springframework.csscapstone.data.domain.EnterpriseDto;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -22,13 +21,13 @@ public class PageImplResponse<T> implements Serializable {
 
     @JsonCreator(mode = PROPERTIES)
     public PageImplResponse(
-            @JsonProperty("data") List<T> data,
-            @JsonProperty("page_number") int number,
-            @JsonProperty("page_size") int size,
-            @JsonProperty("total_elements") long totalElements,
-            @JsonProperty("totalPages") int totalPages,
-            @JsonProperty("first_page") boolean first,
-            @JsonProperty("last_page") boolean last
+            @JsonProperty List<T> data,
+            @JsonProperty int number,
+            @JsonProperty int size,
+            @JsonProperty long totalElements,
+            @JsonProperty int totalPages,
+            @JsonProperty boolean first,
+            @JsonProperty boolean last
     ) {
         this.data = data;
         this.number = number;

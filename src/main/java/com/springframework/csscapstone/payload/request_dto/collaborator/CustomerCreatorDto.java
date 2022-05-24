@@ -34,12 +34,12 @@ public class CustomerCreatorDto implements Serializable {
     private final String description;
 
     @JsonCreator
-    public CustomerCreatorDto(@JsonProperty("name") String name,
-                              @JsonProperty("phone") String phone,
-                              @JsonProperty("address") String address,
-                              @JsonProperty("dob") LocalDate dob,
-                              @JsonProperty("accountCreator") AccountDto accountCreator,
-                              @JsonProperty("description") String description) {
+    public CustomerCreatorDto(@JsonProperty String name,
+                              @JsonProperty String phone,
+                              @JsonProperty String address,
+                              @JsonProperty LocalDate dob,
+                              @JsonProperty AccountDto accountCreator,
+                              @JsonProperty String description) {
         super();
         this.phone = phone;
         this.address = address;
@@ -54,7 +54,7 @@ public class CustomerCreatorDto implements Serializable {
         @NotEmpty(message = "The dto id must not be empty")
         private final UUID id;
         @JsonCreator
-        public AccountDto(@JsonProperty("id") UUID id) {
+        public AccountDto(@JsonProperty UUID id) {
             this.id = id;
         }
     }

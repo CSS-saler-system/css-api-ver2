@@ -16,7 +16,7 @@ public class UserLogin {
     private final String password;
     @JsonCreator
 
-    public UserLogin(@JsonProperty("email") String email, @JsonProperty("password") String password) {
+    public UserLogin(@JsonProperty String email, @JsonProperty String password) {
         this.email = email;
         this.password = password;
     }

@@ -10,6 +10,7 @@ import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundExcep
 import com.springframework.csscapstone.utils.exception_utils.category_exception.CategoryInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.category_exception.CategoryNotFoundException;
 import com.springframework.csscapstone.utils.request_utils.RequestUtils;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,7 @@ import java.util.UUID;
 import static com.springframework.csscapstone.config.constant.ApiEndPoint.Category.*;
 import static org.springframework.http.ResponseEntity.ok;
 
+@Tag(name = "Category (Admin)")
 @RestController
 @RequiredArgsConstructor
 public class AdminCategoryController {
