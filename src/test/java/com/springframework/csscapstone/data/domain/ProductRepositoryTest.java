@@ -1,5 +1,6 @@
 package com.springframework.csscapstone.data.domain;
 
+import com.springframework.csscapstone.data.repositories.ProductImageRepository;
 import com.springframework.csscapstone.data.repositories.ProductRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.Replace;
@@ -20,8 +21,15 @@ public class ProductRepositoryTest {
     @Autowired
     ProductRepository productRepository;
 
+    @Autowired
+    ProductImageRepository productImageRepository;
     @Test
     void getAllProductRepositoryTest() {
         this.productRepository.findAll().forEach(System.out::println);
+    }
+
+    @Test
+    void getAllImageAzureStorageTest() {
+        productImageRepository.findAll().forEach(System.out::println);
     }
 }

@@ -33,4 +33,13 @@ public class ProductImage {
         this.type = type;
         this.path = path;
     }
+
+    @Override
+    public String toString() {
+        return "ProductImage{" +
+                "id=" + id +
+                ", type=" + type +
+                ", path='" + path + '\'' +
+                '}';
+    }
 }

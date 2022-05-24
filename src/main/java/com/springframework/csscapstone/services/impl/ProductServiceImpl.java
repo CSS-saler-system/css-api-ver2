@@ -119,6 +119,9 @@ public class ProductServiceImpl implements ProductService {
             List<MultipartFile> certificationImages)
             throws ProductInvalidException, AccountNotFoundException, IOException {
 
+        if (Objects.isNull(dto.getCategoryId())) throw handlerCategoryNotFound().get();
+        if (Objects.isNull(dto.getCreatorAccountId())) throw handlerAccountCreatorNotFound().get();
+
         Account account = accountRepository
                 .findById(dto.getCreatorAccountId())
                 .orElseThrow(handlerAccountCreatorNotFound());
