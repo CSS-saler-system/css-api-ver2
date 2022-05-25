@@ -4,7 +4,6 @@ package com.springframework.csscapstone.controller.enterprise;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.status.ProductStatus;
-import com.springframework.csscapstone.payload.basic.ProductDto;
 import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.ProductUpdaterDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResponse;
@@ -17,25 +16,19 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.security.auth.login.AccountNotFoundException;
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.springframework.csscapstone.config.constant.ApiEndPoint.Product.*;
-import static org.springframework.http.MediaType.*;
 import static org.springframework.http.ResponseEntity.ok;
 
 @Tag(name = "Product (Enterprise)")
@@ -70,7 +63,6 @@ public class EnterpriseProductController {
     public ResponseEntity<?> getProductById(@PathVariable("id") UUID id) throws ProductNotFoundException {
         return ok(productService.findById(id));
     }
-
 
     @PostMapping(value = V2_CREATE_PRODUCT,
             consumes = {"multipart/form-data"})

@@ -6,10 +6,12 @@ public class ApiEndPoint {
     public static final String COLLABORATOR = "/api/v3.0/collaborator";
 
     public static final String USER = "/user";
-    public static final String USER_REGISTER = "/user/register";
-    public static final String USER_LOGIN = "/user/login";
-    public static final String USER_LOGOUT = "/user/logout";
+
     public static final String USER_OPEN_LOGIN = "user/open-login";
+    public static final String USER_LOGOUT = "/logout";
+    public static final String ADMIN_LOGIN = ADMIN + "/login";
+    public static final String COLLABORATOR_LOGIN = COLLABORATOR + "/login";
+    public static final String ENTERPRISE_LOGIN = ENTERPRISE + "/login";
 
     static class AdminConfiguration {
         private static final String v1_handler = ADMIN + "/config";

@@ -63,12 +63,10 @@ public class Account {
     private Boolean nonLock = Boolean.TRUE;
 
     @OneToMany(mappedBy = "account")
-    @Where(clause = "type = 'ID_CARD' ")
     @ToString.Exclude
     private List<AccountImage> idCardAccountImage = new ArrayList<>();
 
     @OneToMany(mappedBy = "account")
-    @Where(clause = "type = 'AVATAR'")
     @ToString.Exclude
     private List<AccountImage> avatar = new ArrayList<>();
 

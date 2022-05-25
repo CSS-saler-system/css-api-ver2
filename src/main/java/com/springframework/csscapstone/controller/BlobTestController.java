@@ -40,6 +40,7 @@ public class BlobTestController {
 //
         String consStr = "";
         BlobContainerClient container = new BlobContainerClientBuilder()
+//                .connectionString()
                 .containerName(this.productContainer)
                 .buildClient();
 

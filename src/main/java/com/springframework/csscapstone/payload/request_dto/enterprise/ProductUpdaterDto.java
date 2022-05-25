@@ -28,14 +28,15 @@ public class ProductUpdaterDto {
     private final Long quantity;
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-    public ProductUpdaterDto(@JsonProperty UUID id,
-                             @JsonProperty String name,
-                             @JsonProperty String brand,
-                             @JsonProperty String shortDescription,
-                             @JsonProperty String description,
-                             @JsonProperty Double price,
-                             @JsonProperty Double pointSale,
-                             @JsonProperty Long quantity) {
+    public ProductUpdaterDto(
+            @JsonProperty UUID id,
+            @JsonProperty String name,
+            @JsonProperty String brand,
+            @JsonProperty String shortDescription,
+            @JsonProperty String description,
+            @JsonProperty Double price,
+            @JsonProperty Double pointSale,
+            @JsonProperty Long quantity) {
         this.id = id;
         this.name = name;
         this.brand = brand;

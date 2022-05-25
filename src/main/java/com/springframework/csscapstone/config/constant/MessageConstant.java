@@ -39,6 +39,7 @@ public class MessageConstant {
         public static final String PHONE_EXISTED = "account.error.phone_exited";
         public static final String FAIL_LOGIN_EMAIL = "account.error.email_not_existed";
         public static final String CREATOR_NOT_FOUND = "account.error.creator_not_found";
+        public static final String EMAIL_NOT_BLANK = "account.error.email_not_empty";
 
     }
 

@@ -43,4 +43,5 @@ public interface ProductService {
 
     void disableProduct(UUID id);
 
+    Object createTestProduct(List<MultipartFile> collect, List<MultipartFile> collect1) throws IOException;
 }

@@ -27,18 +27,18 @@ public class ProductResponseDto implements Serializable {
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public ProductResponseDto(
-            @JsonProperty UUID id,
-            @JsonProperty String name,
-            @JsonProperty String brand,
-            @JsonProperty String shortDescription,
-            @JsonProperty String description,
-            @JsonProperty Long quantity,
-            @JsonProperty Double price,
-            @JsonProperty Double pointSale,
-            @JsonProperty ProductStatus productStatus,
-            @JsonProperty List<CertificationImage> image,
-            @JsonProperty CategoryDto category,
-            @JsonProperty AccountDto account) {
+            @JsonProperty("id") UUID id,
+            @JsonProperty("name") String name,
+            @JsonProperty("brand") String brand,
+            @JsonProperty("short_description") String shortDescription,
+            @JsonProperty("description") String description,
+            @JsonProperty("quantity") Long quantity,
+            @JsonProperty("price") Double price,
+            @JsonProperty("point_sale") Double pointSale,
+            @JsonProperty("product_status") ProductStatus productStatus,
+            @JsonProperty("certification_images") List<CertificationImage> image,
+            @JsonProperty("category") CategoryDto category,
+            @JsonProperty("account") AccountDto account) {
         this.id = id;
         this.name = name;
         this.brand = brand;
@@ -61,11 +61,10 @@ public class ProductResponseDto implements Serializable {
         private final String path;
 
         @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-
         public ProductImageDto(
-                @JsonProperty Long id,
-                @JsonProperty ProductImageType type,
-                @JsonProperty String path) {
+                @JsonProperty("id") Long id,
+                @JsonProperty("type") ProductImageType type,
+                @JsonProperty("path") String path) {
             this.id = id;
             this.type = type;
             this.path = path;
@@ -80,9 +79,9 @@ public class ProductResponseDto implements Serializable {
 
         @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
         public CertificationImage(
-                @JsonProperty Long id,
-                @JsonProperty ProductImageType type,
-                @JsonProperty String path) {
+                @JsonProperty("id") Long id,
+                @JsonProperty("type") ProductImageType type,
+                @JsonProperty("path") String path) {
             this.id = id;
             this.type = type;
             this.path = path;
@@ -95,7 +94,7 @@ public class ProductResponseDto implements Serializable {
         private final String categoryName;
 
         @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-        public CategoryDto(@JsonProperty UUID id, @JsonProperty String categoryName) {
+        public CategoryDto(@JsonProperty("id") UUID id, @JsonProperty("category_name") String categoryName) {
             this.id = id;
             this.categoryName = categoryName;
         }
@@ -106,7 +105,7 @@ public class ProductResponseDto implements Serializable {
         private final UUID id;
 
         @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-        public AccountDto(UUID id) {
+        public AccountDto(@JsonProperty("id") UUID id) {
             this.id = id;
         }
     }

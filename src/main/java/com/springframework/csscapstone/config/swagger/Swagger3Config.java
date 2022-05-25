@@ -53,20 +53,20 @@ public class Swagger3Config {
     }
     @Bean
     public GroupedOpenApi adminGroupApi() {
-        String[] api = {ADMIN+ "/**", USER_LOGIN};
+        String[] api = {ADMIN+ "/**"};
         String nameGroup = "css_system_api admin";
         return createGroupApi(api, nameGroup);
     }
 
     @Bean
     public GroupedOpenApi enterpriseGroupApi() {
-        String[] api = {ENTERPRISE + "/**", USER_LOGIN};
+        String[] api = {ENTERPRISE + "/**"};
         String nameGroup = "css_system_api enterprise";
         return createGroupApi(api, nameGroup);
     }
     @Bean
     public GroupedOpenApi collaboratorGroupApi() {
-        String[] api = {COLLABORATOR + "/**", USER_LOGIN};
+        String[] api = {COLLABORATOR + "/**"};
         String nameGroup = "css_system_api collaborator";
         return createGroupApi(api, nameGroup);
     }

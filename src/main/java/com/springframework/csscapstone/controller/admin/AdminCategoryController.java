@@ -51,12 +51,5 @@ public class AdminCategoryController {
         UUID category = this.services.createCategory(dto);
         return ok(category);
     }
-//
-//    @PutMapping(V1_UPDATE_CATEGORY)
-//    public ResponseEntity<UUID> updateCategory(@RequestBody CategoryUpdaterDto dto) {
-//
-//    }
-
-//    @DeleteMapping(V1_DELETE_CATEGORY)
 
 }

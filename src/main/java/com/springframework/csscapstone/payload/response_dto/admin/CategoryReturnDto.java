@@ -1,5 +1,6 @@
 package com.springframework.csscapstone.payload.response_dto.admin;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.springframework.csscapstone.data.status.CategoryStatus;
 import com.springframework.csscapstone.data.status.ProductStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.ProductImageDto;
@@ -16,6 +17,16 @@ public class CategoryReturnDto implements Serializable {
     private final CategoryStatus status;
     private final List<_ProductDto> products;
 
+    public CategoryReturnDto(@JsonProperty("id") UUID id,
+                             @JsonProperty("category_name") String categoryName,
+                             @JsonProperty("status") CategoryStatus status,
+                             @JsonProperty("products") List<_ProductDto> products) {
+        this.id = id;
+        this.categoryName = categoryName;
+        this.status = status;
+        this.products = products;
+    }
+
     @Data
     public static class _ProductDto implements Serializable {
         private final UUID id;
@@ -29,5 +40,26 @@ public class CategoryReturnDto implements Serializable {
         private final ProductStatus productStatus;
         private final List<ProductImageDto> image;
 
+        public _ProductDto(@JsonProperty("id") UUID id,
+                           @JsonProperty("name") String name,
+                           @JsonProperty("brand") String brand,
+                           @JsonProperty("short_description") String shortDescription,
+                           @JsonProperty("description") String description,
+                           @JsonProperty("quantity") Long quantityInStock,
+                           @JsonProperty("price") Double price,
+                           @JsonProperty("point_sale") Double pointSale,
+                           @JsonProperty("product_status") ProductStatus productStatus,
+                           @JsonProperty("images") List<ProductImageDto> image) {
+            this.id = id;
+            this.name = name;
+            this.brand = brand;
+            this.shortDescription = shortDescription;
+            this.description = description;
+            this.quantityInStock = quantityInStock;
+            this.price = price;
+            this.pointSale = pointSale;
+            this.productStatus = productStatus;
+            this.image = image;
+        }
     }
 }

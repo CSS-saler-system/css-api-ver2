@@ -1,6 +1,7 @@
 package com.springframework.csscapstone.payload.response_dto.collaborator;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -28,6 +29,27 @@ public class CustomerResponseDto implements Serializable {
     private final String description;
 
     private final List<OrderDto> orders;
+
+    public CustomerResponseDto(
+            @JsonProperty("id") UUID id,
+            @JsonProperty("name") String name,
+            @JsonProperty("phone") String phone,
+            @JsonProperty("address") String address,
+            @JsonProperty("dob") LocalDate dob,
+            @JsonProperty("account_creator") AccountCreatorDto accountCreator,
+            @JsonProperty("account_updater") AccountUpdaterDto accountUpdater,
+            @JsonProperty("description") String description,
+            @JsonProperty("orders") List<OrderDto> orders) {
+        this.id = id;
+        this.name = name;
+        this.phone = phone;
+        this.address = address;
+        this.dob = dob;
+        this.accountCreator = accountCreator;
+        this.accountUpdater = accountUpdater;
+        this.description = description;
+        this.orders = orders;
+    }
 
     @Data
     public static class AccountCreatorDto implements Serializable {

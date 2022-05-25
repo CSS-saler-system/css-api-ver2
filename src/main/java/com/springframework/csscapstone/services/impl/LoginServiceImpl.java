@@ -5,7 +5,8 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import com.google.firebase.auth.UserRecord;
 import com.springframework.csscapstone.config.constant.MessageConstant;
-import com.springframework.csscapstone.config.security.model.UserDetail;
+import com.springframework.csscapstone.config.security.model.WebUserDetail;
+import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.services.LoginService;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountLoginWithEmailException;
@@ -16,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class LoginServiceImpl implements LoginService {
@@ -23,16 +26,49 @@ public class LoginServiceImpl implements LoginService {
     private final FirebaseAuth firebaseAuth;
     private final AccountRepository accountRepository;
 
-    //todo This admit out useDetails
+    /**
+     * case 1: user not in DB,
+     * case 2: user in DB
+     * Login By Enterprises
+     * @param firebaseToken
+     * @return
+     * @throws FirebaseAuthException
+     * @throws AccountLoginWithEmailException
+     */
     @Override
-    public UserDetails loginByFirebaseService(String firebaseToken) throws FirebaseAuthException, AccountLoginWithEmailException {
+    public UserDetails enterpriseLoginByFirebaseService(String firebaseToken) throws FirebaseAuthException, AccountLoginWithEmailException {
         FirebaseToken verifiedToken = firebaseAuth.verifyIdToken(firebaseToken);
         UserRecord _user = FirebaseAuth.getInstance().getUser(verifiedToken.getUid());
         String email = _user.getEmail();
 
-        return accountRepository.findAccountByEmail(email)
-                .map(UserDetail::new)
-                .orElseThrow(this::getAccountLoginWithEmailException);
+        Optional<Account> accountByEmail = accountRepository.findAccountByEmail(email);
+        if (accountByEmail.isPresent()) {
+            return accountByEmail.map(WebUserDetail::new).get();
+        }
+        Account account = new Account().setEmail(email);
+        Account savedAccount = accountRepository.save(account);
+        return new WebUserDetail(savedAccount);
+    }
+
+    /**
+     * Login By Collaborator:
+     *
+     * @param firebaseToken
+     * @return
+     */
+    @Override
+    public UserDetails collaboratorLoginByFirebaseService(String firebaseToken) throws FirebaseAuthException {
+        FirebaseToken verifiedToken = firebaseAuth.verifyIdToken(firebaseToken);
+        UserRecord _user = FirebaseAuth.getInstance().getUser(verifiedToken.getUid());
+        String phone = _user.getPhoneNumber();
+
+        Optional<Account> accountByPhoneNumber = accountRepository.findAccountByEmail(phone);
+        if (accountByPhoneNumber.isPresent()) {
+            return accountByPhoneNumber.map(WebUserDetail::new).get();
+        }
+        Account account = new Account().setPhone(phone);
+        Account savedAccount = accountRepository.save(account);
+        return new WebUserDetail(savedAccount);
     }
 
     private AccountLoginWithEmailException getAccountLoginWithEmailException() {

@@ -21,13 +21,13 @@ public class EnterprisePageImpl  implements Serializable {
 
     @JsonCreator(mode = PROPERTIES)
     public EnterprisePageImpl(
-            @JsonProperty List<EnterpriseDto> data,
-            @JsonProperty int number,
-            @JsonProperty int size,
-            @JsonProperty long totalElements,
-            @JsonProperty int totalPages,
-            @JsonProperty boolean first,
-            @JsonProperty boolean last
+            @JsonProperty("data") List<EnterpriseDto> data,
+            @JsonProperty("number") int number,
+            @JsonProperty("size") int size,
+            @JsonProperty("total_elements") long totalElements,
+            @JsonProperty("total_pages") int totalPages,
+            @JsonProperty("is_first") boolean first,
+            @JsonProperty("is_last") boolean last
     ) {
         this.data = data;
         this.number = number;

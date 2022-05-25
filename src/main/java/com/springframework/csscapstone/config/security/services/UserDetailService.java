@@ -1,6 +1,6 @@
 package com.springframework.csscapstone.config.security.services;
 
-import com.springframework.csscapstone.config.security.model.UserDetail;
+import com.springframework.csscapstone.config.security.model.WebUserDetail;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -20,7 +20,7 @@ public class UserDetailService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) {
         LOGGER.info("The email: {}", email);
         return repository.findAccountByEmail(email)
-                .map(UserDetail::new)
+                .map(WebUserDetail::new)
                 .orElseThrow(() -> new UsernameNotFoundException("The user: " + email + " cant be not found"));
     }
 

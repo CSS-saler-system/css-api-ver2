@@ -54,16 +54,5 @@ public class AdminProductController {
         productService.changeStatusProduct(id, status);
         return ok("If product id exists in our database,status of product will changed");
     }
-//
-//    @PostMapping(V1_CREATE_PRODUCT)
-//    public ResponseEntity<UUID> addNewProduct(@RequestBody ProductCreatorDto dto) throws ProductNotFoundException, ProductInvalidException {
-//        return ok(productService.createProduct(dto));
-//    }
-//
-//    @DeleteMapping(V1_DELETE_PRODUCT + "/{id}")
-//    public ResponseEntity<String> disableProduct(@PathVariable("id") UUID id) {
-//        this.productService.disableProduct(id);
-//        return ResponseEntity.ok(MessagesUtils.getMessage(MessageConstant.REQUEST_SUCCESS));
-//    }
 
 }

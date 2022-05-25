@@ -26,6 +26,9 @@ import com.springframework.csscapstone.utils.exception_utils.product_exception.P
 import com.springframework.csscapstone.utils.mapper_utils.MapperDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
@@ -47,6 +50,7 @@ import static java.util.stream.Collectors.toList;
 @RequiredArgsConstructor
 @PropertySource(value = "classpath:application-storage.properties")
 public class ProductServiceImpl implements ProductService {
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
     @Value("${product_image_container}")
     private String productContainer;
 
@@ -66,8 +70,8 @@ public class ProductServiceImpl implements ProductService {
             Integer pageNumber, Integer pageSize) {
 
         Specification<Product> search = Specification
-                .where(Objects.isNull(name) ? null : ProductSpecifications.nameContains(name))
-                .and(Objects.isNull(brand) ? null : ProductSpecifications.brandContains(brand))
+                .where(StringUtils.isNotBlank(name) ? null : ProductSpecifications.nameContains(name))
+                .and(StringUtils.isNotBlank(brand) ? null : ProductSpecifications.brandContains(brand))
                 .and(Objects.isNull(minPrice) ? null : ProductSpecifications.priceGreaterThan(minPrice))
                 .and(Objects.isNull(maxPrice) ? null : ProductSpecifications.priceLessThan(maxPrice))
                 .and(Objects.isNull(minPoint) ? null : ProductSpecifications.pointGreaterThan(minPoint))
@@ -163,7 +167,7 @@ public class ProductServiceImpl implements ProductService {
      * @throws IOException
      */
     private void handleImage(List<MultipartFile> typeImages, Product creatorProduct, ProductImageType type) throws IOException {
-        String prefix_image = endpoint + productContainer + creatorProduct.getId() + "/";
+        String prefix_image = creatorProduct.getId() + "/";
 
         //create productImage
         Map<String, MultipartFile> image = typeImages
@@ -235,6 +239,38 @@ public class ProductServiceImpl implements ProductService {
                     x.setProductStatus(ProductStatus.DISABLE);
                     this.productRepository.save(x);
                 });
+    }
+
+    @Override
+    public Object createTestProduct(List<MultipartFile> collect, List<MultipartFile> collect1) throws IOException {
+
+        String prefix_image = UUID.randomUUID() + "/";
+
+        //create productImage
+        Map<String, MultipartFile> image = collect
+                .stream()
+                .peek(x -> LOGGER.info("name {}", x.getOriginalFilename()))
+                .collect(Collectors.toMap(x -> prefix_image + x.getOriginalFilename(), x -> x));
+
+        //set image into product
+        ProductImage[] productImages = image.keySet().stream()
+                .map(x -> new ProductImage(ProductImageType.NORMAL, x))
+                .toArray(ProductImage[]::new);
+
+        //deploy
+        for(Map.Entry<String, MultipartFile> entry : image.entrySet()) {
+
+            BlobContainerClient blobContainer = new BlobContainerClientBuilder()
+                    .connectionString("DefaultEndpointsProtocol=https;AccountName=csssalersystem;AccountKey=jCb20BfSP2CkB1IduJlPAxcQWX+GgwrBp+aobpk5ggaUpKa2dSGf9iSH4QggdFb9Nwjm/o+un2X3ScNdjrpovA==;EndpointSuffix=core.windows.net")
+                    .containerName(productContainer)
+                    .buildClient();
+
+            BlobClient blobClient = blobContainer.getBlobClient(entry.getKey());
+            blobClient.upload(
+                    entry.getValue().getInputStream(),
+                    entry.getValue().getSize(),true);
+        }
+        return null;
     }
 
     //===================Utils Methods====================

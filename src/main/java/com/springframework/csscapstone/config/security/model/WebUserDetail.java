@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor
-public class UserDetail implements UserDetails {
+public class WebUserDetail implements UserDetails {
     private final Account entity;
 
     @Override
