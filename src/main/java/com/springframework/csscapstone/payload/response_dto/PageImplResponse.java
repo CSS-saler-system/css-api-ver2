@@ -38,4 +38,16 @@ public class PageImplResponse<T> implements Serializable {
         this.last = last;
     }
 
+    @Override
+    public String toString() {
+        return "PageImplResponse{" +
+                "data=" + data +
+                ", number=" + number +
+                ", size=" + size +
+                ", totalElement=" + totalElement +
+                ", totalPage=" + totalPage +
+                ", first=" + first +
+                ", last=" + last +
+                '}';
+    }
 }

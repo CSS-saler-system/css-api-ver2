@@ -4,8 +4,8 @@ import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.config.constant.RegexConstant;
 import com.springframework.csscapstone.payload.basic.AccountDto;
 import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorDto;
-import com.springframework.csscapstone.payload.request_dto.admin.AccountUpdaterDto;
 import com.springframework.csscapstone.payload.response_dto.PageAccountDto;
+import com.springframework.csscapstone.payload.sharing.AccountUpdaterDto;
 import com.springframework.csscapstone.services.AccountService;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountExistException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountInvalidException;
@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.security.auth.login.AccountNotFoundException;
+import javax.validation.Valid;
 import java.util.UUID;
 
 import static com.springframework.csscapstone.config.constant.ApiEndPoint.Account.*;
@@ -42,12 +43,12 @@ public class AdminAccountController {
 
     @GetMapping(V1_GET_ACCOUNT + "/{id}")
     public ResponseEntity<AccountDto> getAccountById(@PathVariable("id") UUID id)
-            throws AccountInvalidException {
+            throws AccountInvalidException, AccountNotFoundException {
         return ok(service.getById(id));
     }
 
     @PutMapping(V1_UPDATE_ACCOUNT)
-    public ResponseEntity<UUID> updateAccount(@RequestBody AccountUpdaterDto dto) throws AccountInvalidException {
+    public ResponseEntity<UUID> updateAccount(@Valid @RequestBody AccountUpdaterDto dto) throws AccountInvalidException {
         UUID accountUUID = service.updateAccount(dto);
         return ok(accountUUID);
     }

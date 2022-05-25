@@ -60,4 +60,18 @@ public class EnterpriseResponseDto implements Serializable {
             this.path = path;
         }
     }
+
+    @Override
+    public String toString() {
+        return "EnterpriseResponseDto{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", phone='" + phone + '\'' +
+                ", email='" + email + '\'' +
+                ", address='" + address + '\'' +
+                ", description='" + description + '\'' +
+                ", dob=" + dob +
+                ", avatar=" + avatar +
+                '}';
+    }
 }

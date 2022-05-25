@@ -2,31 +2,23 @@ package com.springframework.csscapstone.services.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springframework.csscapstone.data.domain.Account;
+import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.payload.response_dto.PageAccountDto;
 import com.springframework.csscapstone.services.AccountService;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.util.Strings;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.stereotype.Component;
 import org.springframework.test.context.ActiveProfiles;
 
-import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
-
-//@DataJpaTest
-//@AutoConfigureTestDatabase(replace = NONE)
-//@DataJpaTest
-//@AutoConfigureTestDatabase(replace = NONE)
 @SpringBootTest
 @ActiveProfiles(value = "test")
-//@ComponentScan(basePackages = "com.springframework.csscapstone")
 class AccountServiceImplTest {
     @Autowired
     AccountService accountService;
+
+    @Autowired
+    AccountRepository accountRepository;
 
     @Test
     void getAllDto() throws JsonProcessingException {
@@ -36,13 +28,17 @@ class AccountServiceImplTest {
     }
 
     @Test
-    void emptyStringTest() {
-        boolean notEmpty = StringUtils.isNotBlank(null);
-        System.out.println(notEmpty);
+    void findAllAccount() {
+        //Lazy load
+        this.accountRepository.findAll()
+                .stream()
+                .map(Account::getId)
+                .forEach(System.out::println);
     }
 
     @Test
     void getById() {
+//        accountService.getById()
     }
 
     @Test

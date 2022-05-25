@@ -19,7 +19,8 @@ public class CollaboratorEnterpriseController {
 
     @GetMapping(V3_LIST_ACCOUNT)
     public ResponseEntity<?> getListAccountEnterprise() {
-        return ok(accountService.getAllHavingEnterpriseRole());
+//        return ok(accountService.getAllHavingEnterpriseRole());
+        return null;
     }
 
 }

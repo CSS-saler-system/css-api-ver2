@@ -33,7 +33,7 @@ public class Role {
 
     private String name;
 
-    @OneToMany(mappedBy = "role")
+    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
     private List<Account> account;
 
     public Role(String name) {

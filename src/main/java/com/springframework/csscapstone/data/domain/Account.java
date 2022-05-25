@@ -13,6 +13,8 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.*;
 
+import static javax.persistence.FetchType.LAZY;
+
 @Getter
 @Setter
 @Accessors(chain = true)
@@ -64,16 +66,7 @@ public class Account {
 
     @OneToMany(mappedBy = "account")
     @ToString.Exclude
-    private List<AccountImage> idCardAccountImage = new ArrayList<>();
-
-    @OneToMany(mappedBy = "account")
-    @ToString.Exclude
-    private List<AccountImage> avatar = new ArrayList<>();
-
-    @OneToMany(mappedBy = "account")
-    @Where(clause = "type = 'LICENSE'")
-    @ToString.Exclude
-    private List<AccountImage> businessLicense = new ArrayList<>();
+    private List<AccountImage> images = new ArrayList<>();
 
     @ElementCollection
     @Column(name = "tokens")
@@ -112,13 +105,6 @@ public class Account {
             inverseJoinColumns = @JoinColumn(name = "transaction_id"))
     @ToString.Exclude
     private Set<Transactions> transactions = new HashSet<>();
-//
-//    @ManyToMany
-//    @JoinTable(name = "account_order",
-//            joinColumns = @JoinColumn(name = "account_id"),
-//            inverseJoinColumns = @JoinColumn(name = "order_id"))
-//    @ToString.Exclude
-//    private Set<Order> orders = new HashSet<>();
 
     @OneToMany(mappedBy = "account")
     private List<Order> orders = new ArrayList<>();

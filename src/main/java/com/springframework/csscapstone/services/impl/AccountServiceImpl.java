@@ -8,10 +8,11 @@ import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.data.repositories.RoleRepository;
 import com.springframework.csscapstone.payload.basic.AccountDto;
 import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorDto;
-import com.springframework.csscapstone.payload.request_dto.admin.AccountUpdaterDto;
 import com.springframework.csscapstone.payload.response_dto.PageAccountDto;
+import com.springframework.csscapstone.payload.response_dto.PageEnterpriseDto;
 import com.springframework.csscapstone.payload.response_dto.admin.AccountResponseDto;
 import com.springframework.csscapstone.payload.response_dto.collaborator.EnterpriseResponseDto;
+import com.springframework.csscapstone.payload.sharing.AccountUpdaterDto;
 import com.springframework.csscapstone.services.AccountService;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountExistException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountInvalidException;
@@ -67,15 +68,23 @@ public class AccountServiceImpl implements AccountService {
 
 
     @Override
-    public AccountDto getById(UUID id) throws AccountInvalidException {
+    public AccountDto getById(UUID id) throws AccountInvalidException, AccountNotFoundException {
         return accountRepository.findById(id)
                 .map(MapperDTO.INSTANCE::toAccountDto)
-                .orElseThrow(() -> new AccountInvalidException(MessagesUtils.getMessage(MessageConstant.Account.NOT_FOUND)));
+                .orElseThrow(handlerAccountNotFound());
     }
 
+
+    /**
+     * TODO Using By Admin creates Account
+     *
+     * @param dto
+     * @return
+     * @throws AccountExistException
+     */
     @Transactional
     @Override
-    public UUID createAccount(AccountCreatorDto dto) throws AccountExistException, AccountNotFoundException {
+    public UUID createAccount(AccountCreatorDto dto) throws AccountExistException {
         Role role = roleRepository.findById(dto.getRole()).orElse(new Role("Collaborator"));
         Account account = new Account()
                 .setName(dto.getName())
@@ -91,27 +100,30 @@ public class AccountServiceImpl implements AccountService {
         return save.getId();
     }
 
-    private Supplier<AccountNotFoundException> handlerAccountNotFound() {
-        return () -> new AccountNotFoundException(MessagesUtils.getMessage(MessageConstant.Account.NOT_FOUND));
-    }
-
+    /**
+     * TODO Update Account No Yet Images
+     *
+     * @param dto
+     * @return
+     * @throws AccountInvalidException
+     */
     @Transactional
     @Override
     public UUID updateAccount(AccountUpdaterDto dto) throws AccountInvalidException {
-        Account entity = accountRepository.findById(dto.getId())
-                .filter(x -> x.getId().equals(dto.getId()))
-                .filter(x -> x.getEmail().equals(dto.getEmail()))
-                .filter(x -> x.getPhone().equals(dto.getPhone()))
-                .orElseThrow(() -> new AccountInvalidException(MessagesUtils.getMessage(MessageConstant.Account.INVALID)));
+        Account entity = accountRepository.findById(dto.getId()).orElseThrow(handlerAccountInvalid());
 
         entity.setName(dto.getName())
+                .setEmail(dto.getEmail())
+                .setPhone(dto.getPhone())
                 .setDob(dto.getDob())
                 .setAddress(dto.getAddress())
                 .setDescription(dto.getDescription())
-                .setGender(dto.isGender());
+                .setGender(dto.getGender());
+
         this.accountRepository.save(entity);
         return entity.getId();
     }
+
 
     @Transactional
     @Override
@@ -121,14 +133,31 @@ public class AccountServiceImpl implements AccountService {
             accountRepository.save(x);
         });
     }
-
     //TODO BUG
     @Override
-    public List<EnterpriseResponseDto> getAllHavingEnterpriseRole() {
-        return this.accountRepository
-                .findAccountByRole("Enterprise")
-                .stream().map(MapperDTO.INSTANCE::toEnterpriseResponseDto)
+    public PageEnterpriseDto getAllHavingEnterpriseRole(Integer pageNumber, Integer pageSize) {
+        pageNumber = Objects.isNull(pageNumber) || pageNumber <= 1 ? 1 : pageNumber;
+        pageSize = Objects.isNull(pageSize) || pageSize <= 1 ? 1 : pageSize;
+
+        Page<Account> page = this.accountRepository
+                .findAccountByRole("Enterprise", PageRequest.of(pageNumber - 1, pageSize));
+        List<EnterpriseResponseDto> data = page
+                .getContent().stream()
+                .map(MapperDTO.INSTANCE::toEnterpriseResponseDto)
                 .collect(toList());
+        return new PageEnterpriseDto(
+                data, page.getNumber() + 1,
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages(),
+                page.isFirst(), page.isLast());
     }
 
+    private Supplier<AccountInvalidException> handlerAccountInvalid() {
+        return () -> new AccountInvalidException(MessagesUtils.getMessage(MessageConstant.Account.INVALID));
+    }
+
+    private Supplier<AccountNotFoundException> handlerAccountNotFound() {
+        return () -> new AccountNotFoundException(MessagesUtils.getMessage(MessageConstant.Account.NOT_FOUND));
+    }
 }
