@@ -5,6 +5,8 @@ import com.springframework.csscapstone.data.domain.Product_;
 import com.springframework.csscapstone.data.status.ProductStatus;
 import org.springframework.data.jpa.domain.Specification;
 
+import static com.springframework.csscapstone.data.dao.specifications.ContainsString.contains;
+
 public final class ProductSpecifications {
 
     public static Specification<Product> nameContains(String searchName) {
@@ -43,9 +45,5 @@ public final class ProductSpecifications {
     public static Specification<Product> statusEquals(ProductStatus status) {
         return (root, query, criteriaBuilder) -> criteriaBuilder
                 .equal(root.get(Product_.PRODUCT_STATUS), status);
-    }
-
-    private static String contains(String searchName) {
-        return String.format("%%%s%%", searchName);
     }
 }

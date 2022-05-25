@@ -14,7 +14,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.List;
 
-@Component
+//@Component
 @RequiredArgsConstructor
 public class ProductDAOImpl implements ProductDAO {
     private final EntityManager em;

@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import static com.springframework.csscapstone.config.constant.ApiEndPoint.COLLABORATOR_LOGIN;
 import static com.springframework.csscapstone.config.constant.ApiEndPoint.ENTERPRISE_LOGIN;
 
-@Tag(name = "Login - (ENTERPRISE)")
+@Tag(name = "Login - (Enterprise)")
 @PropertySource(value = "classpath:application-securities.properties")
 @RestController
 @RequiredArgsConstructor

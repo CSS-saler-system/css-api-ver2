@@ -28,7 +28,4 @@ public interface AccountRepository extends PagingAndSortingRepository<Account, U
     @Query("SELECT a FROM Account a LEFT JOIN FETCH a.role LEFT JOIN FETCH a.avatar WHERE a.role.name = :role")
     List<Account> findAccountByRole(@Param("role") String role);
 
-    @Query("SELECT a FROM Account a")
-    Page<Account> getAllEnterprise(Pageable pageable);
-
 }

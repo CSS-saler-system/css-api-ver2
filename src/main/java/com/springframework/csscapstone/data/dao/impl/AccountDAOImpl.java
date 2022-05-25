@@ -15,7 +15,7 @@ import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component
+//@Component
 @RequiredArgsConstructor
 public class AccountDAOImpl implements AccountDAO {
     private final EntityManager em;
