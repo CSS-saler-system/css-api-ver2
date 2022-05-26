@@ -7,6 +7,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.springframework.csscapstone.utils.id_generator_utils.CustomIdentifiedGenerator.PREFIX_VALUE;
@@ -33,8 +34,8 @@ public class Role {
 
     private String name;
 
-    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
-    private List<Account> account;
+    @OneToMany(mappedBy = "role")
+    private List<Account> account = new ArrayList<>();
 
     public Role(String name) {
         this.name = name;

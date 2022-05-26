@@ -64,7 +64,7 @@ public class Account {
     @Column(name = "non_locked")
     private Boolean nonLock = Boolean.TRUE;
 
-    @OneToMany(mappedBy = "account")
+    @OneToMany(mappedBy = "account", fetch = LAZY)
     @ToString.Exclude
     private List<AccountImage> images = new ArrayList<>();
 
@@ -118,7 +118,7 @@ public class Account {
 
     @ManyToOne
     @JoinColumn(name = "role_id")
-    private Role role = new Role("ROLE_3", "Collaborator");
+    private Role role;
 
     public Account(String name, LocalDate dob, String phone, String email, String address) {
         this.name = name;
@@ -145,12 +145,31 @@ public class Account {
 
     @Override
     public String toString() {
-        return "data.Account{" +
-                "id='" + id + '\'' +
+        return "Account{" +
+                "id=" + id +
                 ", name='" + name + '\'' +
+                ", dob=" + dob +
+                ", phone='" + phone + '\'' +
                 ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", address='" + address + '\'' +
+                ", description='" + description + '\'' +
                 ", gender=" + gender +
                 ", point=" + point +
+                ", isActive=" + isActive +
+                ", nonLock=" + nonLock +
+                ", images=" + images +
+                ", tokens=" + tokens +
+//                ", customerCreatorList=" + customerCreatorList +
+//                ", customerUpdaterList=" + customerUpdaterList +
+//                ", categories=" + categories +
+//                ", products=" + products +
+//                ", campaigns=" + campaigns +
+//                ", campaignsPrizes=" + campaignsPrizes +
+//                ", prizes=" + prizes +/
+//                ", transactions=" + transactions +
+//                ", orders=" + orders +
+//                ", requests=" + requests +
                 ", role=" + role +
                 '}';
     }
