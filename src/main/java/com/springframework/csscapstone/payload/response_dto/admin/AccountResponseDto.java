@@ -32,19 +32,25 @@ public class AccountResponseDto implements Serializable {
     private final Boolean gender;
     private final Double point;
     private final List<AccountImageDto> avatar;
+
+    private final List<AccountImageDto> licenses;
+    private final List<AccountImageDto> idCard;
     private final RoleDto role;
 
-    public AccountResponseDto(@JsonProperty("id") UUID id,
-                              @JsonProperty("name") String name,
-                              @JsonProperty("dob") LocalDate dob,
-                              @JsonProperty("phone") String phone,
-                              @JsonProperty("email") String email,
-                              @JsonProperty("address") String address,
-                              @JsonProperty("description") String description,
-                              @JsonProperty("gender") Boolean gender,
-                              @JsonProperty("point") Double point,
-                              @JsonProperty("avatar") List<AccountImageDto> avatar,
-                              @JsonProperty("role") RoleDto role) {
+    public AccountResponseDto(
+            @JsonProperty("id") UUID id,
+            @JsonProperty("name") String name,
+            @JsonProperty("dob") LocalDate dob,
+            @JsonProperty("phone") String phone,
+            @JsonProperty("email") String email,
+            @JsonProperty("address") String address,
+            @JsonProperty("description") String description,
+            @JsonProperty("gender") Boolean gender,
+            @JsonProperty("point") Double point,
+            @JsonProperty("avatar") List<AccountImageDto> avatar,
+            @JsonProperty("licenses") List<AccountImageDto> licenses,
+            @JsonProperty("idCard") List<AccountImageDto> idCard,
+            @JsonProperty("role") RoleDto role) {
         this.id = id;
         this.name = name;
         this.dob = dob;
@@ -55,6 +61,8 @@ public class AccountResponseDto implements Serializable {
         this.gender = gender;
         this.point = point;
         this.avatar = avatar;
+        this.licenses = licenses;
+        this.idCard = idCard;
         this.role = role;
     }
 
@@ -65,9 +73,10 @@ public class AccountResponseDto implements Serializable {
         private final String path;
 
         @JsonCreator(mode = PROPERTIES)
-        public AccountImageDto(@JsonProperty("id") UUID id,
-                               @JsonProperty("image_type") AccountImageType type,
-                               @JsonProperty("path") String path) {
+        public AccountImageDto(
+                @JsonProperty("id") UUID id,
+                @JsonProperty("image_type") AccountImageType type,
+                @JsonProperty("path") String path) {
             this.id = id;
             this.type = type;
             this.path = path;
@@ -78,6 +87,7 @@ public class AccountResponseDto implements Serializable {
     public static class RoleDto implements Serializable {
         private final String id;
         private final String name;
+
         @JsonCreator(mode = PROPERTIES)
         public RoleDto(@JsonProperty("id") String id, @JsonProperty("name") String name) {
             this.id = id;

@@ -10,6 +10,8 @@ import javax.persistence.*;
 import java.util.Objects;
 import java.util.UUID;
 
+import static javax.persistence.FetchType.LAZY;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -30,6 +32,11 @@ public class AccountImage {
     @ManyToOne
     @JoinColumn(name = "account_id")
     private Account account;
+
+    public AccountImage(AccountImageType type, String path) {
+        this.type = type;
+        this.path = path;
+    }
 
     @Override
     public boolean equals(Object o) {

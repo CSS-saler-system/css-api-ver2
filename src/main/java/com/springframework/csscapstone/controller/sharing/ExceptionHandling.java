@@ -1,7 +1,9 @@
 package com.springframework.csscapstone.controller.sharing;
 
 import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.firebase.auth.FirebaseAuthException;
+import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.payload.response_dto.exception.HttpResponse;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountExistException;
@@ -14,6 +16,7 @@ import com.springframework.csscapstone.utils.exception_utils.customer_exception.
 import com.springframework.csscapstone.utils.exception_utils.customer_exception.CustomerNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
+import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +40,14 @@ import static org.springframework.http.HttpStatus.*;
 public class ExceptionHandling extends ResponseEntityExceptionHandler {
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
+    /**
+     * TODO handle invalid DTO
+     * @param ex the exception
+     * @param headers the headers to be written to the response
+     * @param status the selected response status
+     * @param request the current request
+     * @return
+     */
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex,
@@ -49,9 +60,16 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler {
         httpResponse.addValidationErrors(ex.getBindingResult().getFieldErrors());
         httpResponse.addValidationError(ex.getBindingResult().getGlobalErrors());
         return this.buildResponseEntity(httpResponse);
-//        return super.handleMethodArgumentNotValid(ex, headers, status, request);
     }
 
+    /**
+     * TODO handle request is not readable
+     * @param ex the exception
+     * @param headers the headers to be written to the response
+     * @param status the selected response status
+     * @param request the current request
+     * @return
+     */
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(
             HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
@@ -60,18 +78,22 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler {
         return buildResponseEntity(httpResponse);
     }
 
+    /**
+     * TODO backend error wrong type constraints validation
+     * @param exception
+     * @return
+     */
     @ExceptionHandler(UnexpectedTypeException.class)
     public ResponseEntity<?> handleUnexpectedTypeException(UnexpectedTypeException exception) {
         HttpResponse httpResponse = new HttpResponse();
         httpResponse.setDebugMessage(exception.getLocalizedMessage());
         httpResponse.setHttpStatus(BAD_REQUEST);
-//        createHttpResponse(httpResponse)
         return new ResponseEntity<>(httpResponse, BAD_REQUEST);
     }
 
 
     /**
-     * TODO Not Found Exception Handling <Completed></>
+     * TODO Not Found Exception Handling
      * @param exception
      * @return
      */
@@ -85,11 +107,9 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler {
     public ResponseEntity<?> handleNotFound(RuntimeException exception) {
         return createHttpResponse(NOT_FOUND, exception.getMessage());
     }
-    // ================== handler exception ===============================
-    // ================== Login was wrong =================================
 
     /**
-     * TODO Forbidden for Authentication Exception Handling <Completed></>
+     * TODO Forbidden for Authentication Exception Handling
      * @param exception
      * @return
      */
@@ -101,11 +121,9 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler {
         }
         return createHttpResponse(FORBIDDEN, message);
     }
-    // ================== handler exception ===============================
-    // ================== Argument was wrong ==============================
 
     /**
-     * TODO Bad Exception Handling <Completed></>
+     * TODO Bad Exception Handling
      * @param exception
      * @return
      */
@@ -123,7 +141,7 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * TODO Forbidden Exception Handling <Completed></>
+     * TODO Forbidden Exception Handling
      * @param exception
      * @return
      */
@@ -133,6 +151,16 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler {
     })
     public ResponseEntity<?> handleJWTInvalid(JWTDecodeException exception) {
         return createHttpResponse(FORBIDDEN, exception.getMessage());
+    }
+
+    /**
+     * TODO String JSON was malformations
+     * @param exception
+     * @return
+     */
+    @ExceptionHandler(JsonProcessingException.class)
+    public ResponseEntity<?> handleJsonProcessingException(JsonProcessingException exception) {
+        return createHttpResponse(BAD_REQUEST, MessagesUtils.getMessage(MessageConstant.EXCEPTION.JSON_ERROR));
     }
 
     // ================== handler exception ================================

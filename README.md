@@ -4,3 +4,17 @@
 
 
 "@Processing(https://docs.google.com/spreadsheets/d/1rDqd08oqSDx8zCZpwptwkM08bClxDIj8mrbsULxApjE/edit#gid=692238097)"
+
+
+<h4>AccountCreator - Json</h4>
+{
+"name" : "",<br>
+"phone" : "",<br>
+"email" : "",<br>
+"password" : "",<br>
+"address" : "",<br>
+"description" : "",<br>
+"gender" : true,<br>
+"role" : "",<br>
+"dayOfBirth" : "2022/05/26"
+}no

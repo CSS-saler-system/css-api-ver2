@@ -1,7 +1,12 @@
 package com.springframework.csscapstone.payload.request_dto.admin;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import lombok.Data;
 
 import javax.validation.constraints.Email;
@@ -14,6 +19,10 @@ public class AccountCreatorDto {
 
     @NotEmpty(message = "The name must be not empty")
     private final String name;
+
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonFormat(pattern = "yyyy/MM/dd")
     private final LocalDate dayOfBirth;
 
     @NotEmpty(message = "The phone must be not empty")

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.springframework.csscapstone.data.domain.AccountImage;
+import com.springframework.csscapstone.payload.response_dto.admin.AccountResponseDto;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
@@ -42,9 +43,9 @@ public class AccountUpdaterDto {
     private final Boolean gender;
 
     //todo maybe separate following role
-    private List<AccountImage> identityImage;
-    private List<AccountImage> avatar;
-    private List<AccountImage> license;
+    private AccountResponseDto.AccountImageDto identityImage;
+    private AccountResponseDto.AccountImageDto avatar;
+    private AccountResponseDto.AccountImageDto license;
 
     public AccountUpdaterDto(
             @JsonProperty("id") UUID id,

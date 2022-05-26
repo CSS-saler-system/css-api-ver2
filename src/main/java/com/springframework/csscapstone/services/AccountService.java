@@ -5,10 +5,12 @@ import com.springframework.csscapstone.payload.basic.AccountDto;
 import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorDto;
 import com.springframework.csscapstone.payload.response_dto.PageAccountDto;
 import com.springframework.csscapstone.payload.response_dto.PageEnterpriseDto;
+import com.springframework.csscapstone.payload.response_dto.admin.AccountResponseDto;
 import com.springframework.csscapstone.payload.response_dto.collaborator.EnterpriseResponseDto;
 import com.springframework.csscapstone.payload.sharing.AccountUpdaterDto;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountExistException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountInvalidException;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.security.auth.login.AccountNotFoundException;
 import java.util.List;
@@ -19,9 +21,13 @@ public interface AccountService {
             String name, String phone,
             String email, String address, Integer pageSize, Integer pageNumber);
 
-    AccountDto getById(UUID id) throws AccountInvalidException, AccountNotFoundException;
+    AccountResponseDto getById(UUID id) throws AccountInvalidException, AccountNotFoundException;
 
-    UUID createAccount(AccountCreatorDto dto) throws AccountExistException, AccountNotFoundException;
+    UUID createAccount(
+            AccountCreatorDto dto,
+            MultipartFile avatar,
+            MultipartFile license,
+            MultipartFile idCards) throws AccountExistException, AccountNotFoundException;
 
     UUID updateAccount(AccountUpdaterDto dto) throws AccountInvalidException;
 

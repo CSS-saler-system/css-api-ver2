@@ -1,8 +1,8 @@
 package com.springframework.csscapstone.controller.admin;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springframework.csscapstone.config.constant.MessageConstant;
-import com.springframework.csscapstone.config.constant.RegexConstant;
-import com.springframework.csscapstone.payload.basic.AccountDto;
 import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorDto;
 import com.springframework.csscapstone.payload.response_dto.PageAccountDto;
 import com.springframework.csscapstone.payload.sharing.AccountUpdaterDto;
@@ -12,14 +12,17 @@ import com.springframework.csscapstone.utils.exception_utils.account_exception.A
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.security.auth.login.AccountNotFoundException;
 import javax.validation.Valid;
 import java.util.UUID;
 
 import static com.springframework.csscapstone.config.constant.ApiEndPoint.Account.*;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
@@ -42,7 +45,7 @@ public class AdminAccountController {
     }
 
     @GetMapping(V1_GET_ACCOUNT + "/{id}")
-    public ResponseEntity<AccountDto> getAccountById(@PathVariable("id") UUID id)
+    public ResponseEntity<?> getAccountById(@PathVariable("id") UUID id)
             throws AccountInvalidException, AccountNotFoundException {
         return ok(service.getById(id));
     }
@@ -53,16 +56,30 @@ public class AdminAccountController {
         return ok(accountUUID);
     }
 
-    @PostMapping(V1_CREATE_ACCOUNT)
-    public ResponseEntity<UUID> addNewAccount(@RequestBody AccountCreatorDto dto)
-            throws AccountExistException, AccountNotFoundException {
-        if (!dto.getRole().matches(RegexConstant.REGEX_ROLE) || dto.getRole() == null) {
-            dto.setRole("ROLE_3");
-        }
-        UUID account = service.createAccount(dto);
+    /**
+     * TODO Multipart transfer images avatars
+     * @param dto
+     * @return
+     * @throws AccountExistException
+     * @throws AccountNotFoundException
+     */
+    @PostMapping(value = V1_CREATE_ACCOUNT, consumes = {MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<UUID> addNewAccount(
+            @RequestPart("account") String dto,
+            @RequestPart(value = "avatar", required = false)  MultipartFile avatars,
+            @RequestPart(value = "license", required = false) MultipartFile licenses,
+            @RequestPart(value = "id_card", required = false) MultipartFile idCards)
+            throws AccountExistException, AccountNotFoundException, JsonProcessingException {
+        AccountCreatorDto accountCreatorDto = new ObjectMapper().readValue(dto, AccountCreatorDto.class);
+        UUID account = service.createAccount(accountCreatorDto, avatars, licenses, idCards);
         return ok(account);
     }
 
+    /**
+     * TODO Admin disable account entity
+     * @param id
+     * @return
+     */
     @DeleteMapping(V1_DELETE_ACCOUNT + "/{id}")
     public ResponseEntity<String> disableAccount(@PathVariable("id") UUID id) {
         service.disableAccount(id);
