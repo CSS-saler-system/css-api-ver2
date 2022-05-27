@@ -50,10 +50,25 @@ public class AdminAccountController {
         return ok(service.getById(id));
     }
 
+    /**
+     * todo update account by admin
+     * @return
+     * @throws AccountInvalidException
+     */
     @PutMapping(V1_UPDATE_ACCOUNT)
-    public ResponseEntity<UUID> updateAccount(@Valid @RequestBody AccountUpdaterDto dto) throws AccountInvalidException {
-        UUID accountUUID = service.updateAccount(dto);
-        return ok(accountUUID);
+    public ResponseEntity<UUID> updateAccount(
+//            @Valid @RequestBody AccountUpdaterDto dto
+            @RequestPart("account") String dto,
+            @RequestPart(value = "avatar", required = false)  MultipartFile avatars,
+            @RequestPart(value = "license", required = false) MultipartFile licenses,
+            @RequestPart(value = "id_card", required = false) MultipartFile idCards
+
+    ) throws AccountInvalidException, JsonProcessingException {
+//        UUID accountUUID = service.updateAccount(dto);
+//        return ok(accountUUID);
+        AccountUpdaterDto accountUpdaterDto = new ObjectMapper().readValue(dto, AccountUpdaterDto.class);
+        this.service.updateAccount(accountUpdaterDto, avatars, licenses, idCards);
+        return null;
     }
 
     /**

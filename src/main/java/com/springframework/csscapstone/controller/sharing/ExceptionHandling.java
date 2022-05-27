@@ -160,7 +160,7 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(JsonProcessingException.class)
     public ResponseEntity<?> handleJsonProcessingException(JsonProcessingException exception) {
-        return createHttpResponse(BAD_REQUEST, MessagesUtils.getMessage(MessageConstant.EXCEPTION.JSON_ERROR));
+        return createHttpResponse(BAD_REQUEST, MessagesUtils.getMessage(MessageConstant.Exception.JSON_ERROR));
     }
 
     // ================== handler exception ================================

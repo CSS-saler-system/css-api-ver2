@@ -29,7 +29,10 @@ public interface AccountService {
             MultipartFile license,
             MultipartFile idCards) throws AccountExistException, AccountNotFoundException;
 
-    UUID updateAccount(AccountUpdaterDto dto) throws AccountInvalidException;
+    UUID updateAccount(AccountUpdaterDto accountUpdaterDto,
+                       MultipartFile avatars,
+                       MultipartFile licenses,
+                       MultipartFile idCards) throws AccountInvalidException;
 
     void disableAccount(UUID id);
 

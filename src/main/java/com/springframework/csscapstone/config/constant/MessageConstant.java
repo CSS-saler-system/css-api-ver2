@@ -4,7 +4,7 @@ public class MessageConstant {
 
     public static final String REQUEST_SUCCESS = "request.success.message";
     public static final String REQUEST_FAILURE = "request.false.message";
-    public static class EXCEPTION {
+    public static class Exception {
         public static final String JSON_ERROR = "json.error.no_readable";
     }
 

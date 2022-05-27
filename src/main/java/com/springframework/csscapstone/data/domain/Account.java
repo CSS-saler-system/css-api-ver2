@@ -182,5 +182,13 @@ public class Account {
         role.getAccount().add(this);
         return this;
     }
+    //=================Utils=========================
+    //=================Image=========================
+
+    public Account addImage(AccountImage images) {
+        images.setAccount(this);
+        this.getImages().add(images);
+        return this;
+    }
 
 }

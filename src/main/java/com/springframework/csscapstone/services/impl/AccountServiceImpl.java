@@ -13,7 +13,6 @@ import com.springframework.csscapstone.data.repositories.AccountImageRepository;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.data.repositories.RoleRepository;
 import com.springframework.csscapstone.data.status.AccountImageType;
-import com.springframework.csscapstone.payload.basic.AccountDto;
 import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorDto;
 import com.springframework.csscapstone.payload.response_dto.PageAccountDto;
 import com.springframework.csscapstone.payload.response_dto.PageEnterpriseDto;
@@ -48,7 +47,6 @@ import java.util.stream.Stream;
 
 import static com.springframework.csscapstone.config.constant.RegexConstant.REGEX_ROLE;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.ArrayUtils.toArray;
 
 @Service
 @RequiredArgsConstructor
@@ -166,17 +164,16 @@ public class AccountServiceImpl implements AccountService {
     //todo mapping to account
     private Account imageHandler(MultipartFile avatar, MultipartFile licenses, MultipartFile idCards, Account account) {
         if (Objects.nonNull(avatar)) {
-            AccountImage[] _avatar = uploadAzureHandler(avatar, account.getId(), AccountImageType.AVATAR);
-            account.addImage(_avatar);
+            saveAccountImageEntity(avatar, account.getId(), AccountImageType.AVATAR)
+                    .ifPresent(account::addImage);
         }
         if (Objects.nonNull(idCards)) {
-            AccountImage[] _idCards = uploadAzureHandler(idCards, account.getId(), AccountImageType.ID_CARD);
-            account.addImage(_idCards);
-
+            saveAccountImageEntity(idCards, account.getId(), AccountImageType.ID_CARD)
+                    .ifPresent(account::addImage);
         }
         if (Objects.nonNull(idCards)) {
-            AccountImage[] _licenses = uploadAzureHandler(licenses, account.getId(), AccountImageType.LICENSE);
-            account.addImage(_licenses);
+            saveAccountImageEntity(licenses, account.getId(), AccountImageType.LICENSE)
+                    .ifPresent(account::addImage);
         }
 
         return account;
@@ -184,12 +181,11 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * //todo Create save Account-Image
-     * //todo upload in cloud
      *
      * @param images
      * @return
      */
-    private AccountImage[] uploadAzureHandler(MultipartFile images, UUID id, AccountImageType type) {
+    private Optional<AccountImage> saveAccountImageEntity(MultipartFile images, UUID id, AccountImageType type) {
 
         String nameImageOnAzure = id + "/";
 
@@ -202,9 +198,10 @@ public class AccountServiceImpl implements AccountService {
 
         //Create save Account-Image
         return imageMap.keySet().stream()
-                .map(imageName -> new AccountImage(type, endpoint + this.accountContainer + "/" + imageName))
+                .map(imageName -> new AccountImage(type,
+                        endpoint + this.accountContainer + "/" + imageName))
                 .peek(this.accountImageRepository::save)
-                .toArray(AccountImage[]::new);
+                .findFirst();
     }
 
     /**
@@ -232,9 +229,15 @@ public class AccountServiceImpl implements AccountService {
      */
     @Transactional
     @Override
-    public UUID updateAccount(AccountUpdaterDto dto) throws AccountInvalidException {
-        Account entity = accountRepository.findById(dto.getId()).orElseThrow(handlerAccountInvalid());
+    public UUID updateAccount(AccountUpdaterDto dto,
+                              MultipartFile avatars,
+                              MultipartFile licenses,
+                              MultipartFile idCards) throws AccountInvalidException {
+        //check exist entity
+        Account entity = accountRepository.findById(dto.getId())
+                .orElseThrow(handlerAccountInvalid());
 
+        //update entity
         entity.setName(dto.getName())
                 .setEmail(dto.getEmail())
                 .setPhone(dto.getPhone())
@@ -242,10 +245,10 @@ public class AccountServiceImpl implements AccountService {
                 .setAddress(dto.getAddress())
                 .setDescription(dto.getDescription())
                 .setGender(dto.getGender());
-//        Account _account = imageHandler(dto.getAvatar(), dto.getLicense(), dto.getIdentityImage(),
-//                entity);
 
-        this.accountRepository.save(entity);
+        Account account = imageHandler(avatars, licenses, idCards, entity);
+
+        this.accountRepository.save(account);
         return entity.getId();
     }
 

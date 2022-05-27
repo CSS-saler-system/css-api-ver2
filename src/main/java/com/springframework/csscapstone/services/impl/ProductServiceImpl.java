@@ -70,15 +70,15 @@ public class ProductServiceImpl implements ProductService {
             Integer pageNumber, Integer pageSize) {
 
         Specification<Product> search = Specification
-                .where(StringUtils.isNotBlank(name) ? null : ProductSpecifications.nameContains(name))
-                .and(StringUtils.isNotBlank(brand) ? null : ProductSpecifications.brandContains(brand))
+                .where(StringUtils.isBlank(name) ? null : ProductSpecifications.nameContains(name))
+                .and(StringUtils.isBlank(brand) ? null : ProductSpecifications.brandContains(brand))
                 .and(Objects.isNull(minPrice) ? null : ProductSpecifications.priceGreaterThan(minPrice))
                 .and(Objects.isNull(maxPrice) ? null : ProductSpecifications.priceLessThan(maxPrice))
                 .and(Objects.isNull(minPoint) ? null : ProductSpecifications.pointGreaterThan(minPoint))
                 .and(Objects.isNull(maxPoint) ? null : ProductSpecifications.pointLessThan(maxPoint))
                 .and(Objects.isNull(productStatus) ? null : ProductSpecifications.statusEquals(productStatus));
 
-        pageSize = Objects.isNull(pageSize) || (pageSize <= 0) ? 10 : pageSize;
+        pageSize = Objects.isNull(pageSize) || (pageSize <= 1) ? 50 : pageSize;
         pageNumber = Objects.isNull(pageNumber) || (pageNumber <= 1) ? 1 : pageNumber;
 
         Page<Product> page = this.productRepository.findAll(search, PageRequest.of(pageNumber - 1, pageSize));

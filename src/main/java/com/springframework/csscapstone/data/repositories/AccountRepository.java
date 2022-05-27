@@ -26,7 +26,11 @@ public interface AccountRepository extends JpaRepository<Account, UUID>, JpaSpec
     Optional<List<Account>> findAccountByEmailOrPhone(String email, String phone);
 
     @Transactional(readOnly = true)
-    @Query("SELECT a FROM Account a LEFT JOIN FETCH a.role LEFT JOIN FETCH a.images WHERE a.role.name = :role")
+    @Query(value = "SELECT a " +
+            "FROM Account a " +
+            "LEFT JOIN FETCH a.images " +
+            "WHERE a.role.name = :role",
+    countQuery = "SELECT a FROM Account a WHERE a.role.name =: role")
     Page<Account> findAccountByRole(@Param("role") String role, Pageable pageable);
 
     @Transactional(readOnly = true)
