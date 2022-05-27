@@ -21,6 +21,7 @@ import com.springframework.csscapstone.payload.response_dto.admin.AccountRespons
 import com.springframework.csscapstone.payload.response_dto.collaborator.EnterpriseResponseDto;
 import com.springframework.csscapstone.payload.sharing.AccountUpdaterDto;
 import com.springframework.csscapstone.services.AccountService;
+import com.springframework.csscapstone.utils.blob_utils.BlobUploadImages;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountExistException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountInvalidException;
@@ -61,17 +62,14 @@ public class AccountServiceImpl implements AccountService {
     private final RoleRepository roleRepository;
     private final AccountImageRepository accountImageRepository;
 
-    @Value("${account_image_container}")
-    private String accountContainer;
+    private final Logger LOGGER = LoggerFactory.getLogger(CategoryServiceImpl.class);
+
 
     @Value("${endpoint}")
     private String endpoint;
 
-    @Value("${connection-string}")
-    private String connectionString;
-
-
-    private final Logger LOGGER = LoggerFactory.getLogger(CategoryServiceImpl.class);
+    @Value("${account_image_container}")
+    private static String accountContainer;
 
     /**
      * TODO Admin get All Account
@@ -214,7 +212,7 @@ public class AccountServiceImpl implements AccountService {
                 .collect(Collectors.toMap(x -> nameImageOnAzure + x.getOriginalFilename(), x -> x));
 
         //upload to Azure:
-        imageMap.forEach(this::azureStorageHandler);
+        imageMap.forEach(BlobUploadImages::azureAccountStorageHandler);
 
         //Create save Account-Image
         return imageMap.keySet().stream()
@@ -222,22 +220,6 @@ public class AccountServiceImpl implements AccountService {
                         endpoint + this.accountContainer + "/" + imageName))
                 .peek(this.accountImageRepository::save)
                 .findFirst();
-    }
-
-    /**
-     * TODO Upload Image
-     *
-     * @param key
-     * @param value
-     */
-    @SneakyThrows
-    private void azureStorageHandler(String key, MultipartFile value) {
-        BlobContainerClient container = new BlobContainerClientBuilder()
-                .containerName(this.accountContainer)
-                .connectionString(this.connectionString)
-                .buildClient();
-        BlobClient blobClient = container.getBlobClient(key);
-        blobClient.upload(value.getInputStream(), value.getSize(), true);
     }
 
     /**
@@ -318,7 +300,7 @@ public class AccountServiceImpl implements AccountService {
                     .collect(Collectors.toMap(x -> imageOriginalPath + x.getOriginalFilename(), x -> x));
 
             //upload to Azure:
-            imageMap.forEach(this::azureStorageHandler);
+            imageMap.forEach(BlobUploadImages::azureAccountStorageHandler);
 
             //update database:
             String path = endpoint + accountContainer + "/" + imageOriginalPath + image.getOriginalFilename();
@@ -330,7 +312,10 @@ public class AccountServiceImpl implements AccountService {
         return Optional.empty();
     }
 
-
+    /**
+     * todo for admin disable account
+     * @param id
+     */
     @Transactional
     @Override
     public void disableAccount(UUID id) {
@@ -345,14 +330,15 @@ public class AccountServiceImpl implements AccountService {
     public PageEnterpriseDto getAllHavingEnterpriseRole(Integer pageNumber, Integer pageSize) {
         pageNumber = Objects.isNull(pageNumber) || pageNumber <= 1 ? 1 : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize <= 1 ? 1 : pageSize;
-//
-//        Page<Account> page = this.accountRepository
-//                .findAccountByRole("Enterprise", PageRequest.of(pageNumber - 1, pageSize));
         Page<Account> page = this.accountRepository.findAccountByRole("Enterprise", PageRequest.of(pageNumber - 1, pageSize));
         List<EnterpriseResponseDto> data = page.getContent().stream().map(MapperDTO.INSTANCE::toEnterpriseResponseDto).collect(toList());
         return new PageEnterpriseDto(data, page.getNumber() + 1, page.getSize(), page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
     }
 
+    /**
+     * Exception handler
+     * @return
+     */
     private Supplier<AccountInvalidException> handlerAccountInvalid() {
         return () -> new AccountInvalidException(MessagesUtils.getMessage(MessageConstant.Account.INVALID));
     }

@@ -18,6 +18,12 @@ class CssCapstoneApplicationTest {
     AccountService accountService;
 
     @Test
+    void getAllHavingEnterpriseRoleTest() {
+        accountService.getAllHavingEnterpriseRole(0, 100)
+                .getData().forEach(System.out::println);
+    }
+
+    @Test
     void getAllDto() throws JsonProcessingException {
         //lazy loading
         PageAccountDto allDto = accountService.getAccountDto("", "", "", "", null, null);
