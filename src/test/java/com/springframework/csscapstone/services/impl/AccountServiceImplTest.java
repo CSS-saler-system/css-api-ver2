@@ -31,8 +31,8 @@ class AccountServiceImplTest {
     void findAllAccount() {
         //Lazy load
         this.accountRepository.findAll()
-                .stream()
-                .map(Account::getId)
+//                .stream()
+//                .map(Account::getId)
                 .forEach(System.out::println);
     }
 

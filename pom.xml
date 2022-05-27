@@ -132,12 +132,6 @@
         </dependency>
 
         <!-- End Common File Upload-->
-        <!--String Libraries-->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <!--End String Libraries-->
     </dependencies>
 
     <build>

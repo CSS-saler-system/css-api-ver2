@@ -10,10 +10,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
-import java.awt.*;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.List;
 
 import static javax.persistence.FetchType.LAZY;
 
@@ -43,7 +41,7 @@ public class Account {
     @Column(name = "email", unique = true)
     private String email;
 
-    @Column(name = "password")
+    @Column(name="password")
     private String password;
 
     @Lob
@@ -66,8 +64,8 @@ public class Account {
     @Column(name = "non_locked")
     private Boolean nonLock = Boolean.TRUE;
 
-    @OneToMany(mappedBy = "account")
-//    @ToString.Exclude
+    @OneToMany(mappedBy = "account", fetch = LAZY)
+    @ToString.Exclude
     private List<AccountImage> images = new ArrayList<>();
 
     @ElementCollection
@@ -118,7 +116,7 @@ public class Account {
     @ToString.Exclude
     private Set<RequestSellingProduct> requests = new HashSet<>();
 
-    @ManyToOne(fetch = LAZY)
+    @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
 
@@ -161,51 +159,28 @@ public class Account {
                 ", isActive=" + isActive +
                 ", nonLock=" + nonLock +
                 ", images=" + images +
-//                ", tokens=" + tokens +
+                ", tokens=" + tokens +
 //                ", customerCreatorList=" + customerCreatorList +
 //                ", customerUpdaterList=" + customerUpdaterList +
 //                ", categories=" + categories +
 //                ", products=" + products +
 //                ", campaigns=" + campaigns +
 //                ", campaignsPrizes=" + campaignsPrizes +
-//                ", prizes=" + prizes +
+//                ", prizes=" + prizes +/
 //                ", transactions=" + transactions +
 //                ", orders=" + orders +
 //                ", requests=" + requests +
                 ", role=" + role +
                 '}';
     }
+
     //=================Utils=========================
     //=================Role=========================
+
     public Account addRole(Role role) {
         this.setRole(role);
         role.getAccount().add(this);
         return this;
     }
-    //=================Utils=========================
-    //================= Image =========================
-    public Account addImage(AccountImage... image) {
-        Arrays.stream(image)
-                .peek(img -> img.setAccount(this))
-                .forEach(this.getImages()::add);
-        return this;
-    }
-
-    //=================Utils=========================
-    //================= Image =========================
-    public Account addCreatorCustomer(Customer customer) {
-        customer.setAccountCreator(this);
-        this.getCustomerCreatorList().add(customer);
-        return this;
-    }
-    //=================Utils=========================
-    //================= Image =========================
-    public Account addUpdaterCustomer(Customer customer) {
-        customer.setAccountUpdater(this);
-        this.getCustomerUpdaterList().add(customer);
-        return this;
-    }
-
-
 
 }
