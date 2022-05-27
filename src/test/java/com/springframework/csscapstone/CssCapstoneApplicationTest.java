@@ -3,11 +3,16 @@ package com.springframework.csscapstone;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springframework.csscapstone.payload.response_dto.PageAccountDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResponseDto;
 import com.springframework.csscapstone.services.AccountService;
+import com.springframework.csscapstone.services.ProductService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+
+import javax.security.auth.login.AccountNotFoundException;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
@@ -17,47 +22,31 @@ class CssCapstoneApplicationTest {
     @Autowired
     AccountService accountService;
 
+    @Autowired
+    ProductService productService;
+
     @Test
-    void getAllHavingEnterpriseRoleTest() {
-        accountService.getAllHavingEnterpriseRole(0, 100)
-                .getData().forEach(System.out::println);
+    void getAllAccountTest() {
     }
 
     @Test
-    void getAllDto() throws JsonProcessingException {
-        //lazy loading
-        PageAccountDto allDto = accountService.getAccountDto("", "", "", "", null, null);
-        System.out.println(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(allDto));
+    void getProductByAccountTest() throws AccountNotFoundException {
+        productService
+                .findProductByIdAccount(UUID.fromString("939ad7c1-9dfb-0d4c-b8d6-ffd3b7643fe3"))
+                .stream()
+                .map(x -> {
+                    try {
+                        return new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(x);
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .forEach(System.out::println);
     }
 
     @Test
-    void findAllAccount() throws JsonProcessingException {
-        PageAccountDto accountDto = accountService.getAccountDto(
-                null, null, null, null, 100,
-                null);
-        String json = new ObjectMapper().writerWithDefaultPrettyPrinter()
-                .writeValueAsString(accountDto);
-        System.out.println(json);
-    }
-
-    @Test
-    void getById() {
-//        accountService.getById()
-    }
-
-    @Test
-    void registerAccount() {
-    }
-
-    @Test
-    void updateAccount() {
-    }
-
-    @Test
-    void disableAccount() {
-    }
-
-    @Test
-    void getAllHavingEnterpriseRole() {
+    void getProductByIdTest() throws JsonProcessingException {
+        ProductResponseDto result = productService.findById(UUID.fromString("f690e575-13d0-8942-b6e2-53601e98433e"));
+        System.out.println(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(result));
     }
 }

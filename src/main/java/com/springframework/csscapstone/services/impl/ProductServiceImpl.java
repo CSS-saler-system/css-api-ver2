@@ -40,6 +40,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.security.auth.login.AccountNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -122,14 +123,17 @@ public class ProductServiceImpl implements ProductService {
             List<MultipartFile> typeImages,
             List<MultipartFile> certificationImages)
             throws ProductInvalidException, AccountNotFoundException, IOException {
-
+        //check null category
         if (Objects.isNull(dto.getCategoryId())) throw handlerCategoryNotFound().get();
+        //check null account
         if (Objects.isNull(dto.getCreatorAccountId())) throw handlerAccountCreatorNotFound().get();
 
+        //check existed account
         Account account = accountRepository
                 .findById(dto.getCreatorAccountId())
                 .orElseThrow(handlerAccountCreatorNotFound());
 
+        //check existed category
         Category category = categoryRepository
                 .findById(dto.getCategoryId())
                 .orElseThrow(handlerCategoryNotFound());
@@ -149,10 +153,32 @@ public class ProductServiceImpl implements ProductService {
 
         Product creatorProduct = productRepository.save(newProduct);
 
-        handleImage(typeImages, creatorProduct, ProductImageType.NORMAL);
-        handleImage(certificationImages, creatorProduct, ProductImageType.CERTIFICATION);
+//        handleImage(typeImages, creatorProduct, ProductImageType.NORMAL);
+//        handleImage(certificationImages, creatorProduct, ProductImageType.CERTIFICATION);
+        handleImage(typeImages, certificationImages, creatorProduct);
 
         return creatorProduct.getId();
+    }
+    //TODO BUG
+    private Product handleImage(List<MultipartFile> typeImages, List<MultipartFile> certificate, Product entity) {
+        if (!typeImages.isEmpty()) {
+            saveProductImageEntity(typeImages, entity.getId(), ProductImageType.NORMAL)
+                    .ifPresent(entity::addProductImage);
+        }
+        if (!certificate.isEmpty()) {
+            saveProductImageEntity(certificate, entity.getId(), ProductImageType.CERTIFICATION)
+                    .ifPresent(entity::addProductImage);
+        }
+        return null;
+    }
+
+    private Optional<ProductImage[]> saveProductImageEntity(List<MultipartFile> images, UUID id, ProductImageType type) {
+        String nameImageOnAzure = id + "/";
+
+        Map<String, MultipartFile> imageMap = images.stream()
+                .collect(Collectors.toMap(x -> nameImageOnAzure + x.getOriginalFilename(), x -> x));
+
+        return Optional.empty();
     }
 
     /**
@@ -258,7 +284,7 @@ public class ProductServiceImpl implements ProductService {
                 .toArray(ProductImage[]::new);
 
         //deploy
-        for(Map.Entry<String, MultipartFile> entry : image.entrySet()) {
+        for (Map.Entry<String, MultipartFile> entry : image.entrySet()) {
 
             BlobContainerClient blobContainer = new BlobContainerClientBuilder()
                     .connectionString("DefaultEndpointsProtocol=https;AccountName=csssalersystem;AccountKey=jCb20BfSP2CkB1IduJlPAxcQWX+GgwrBp+aobpk5ggaUpKa2dSGf9iSH4QggdFb9Nwjm/o+un2X3ScNdjrpovA==;EndpointSuffix=core.windows.net")
@@ -268,7 +294,7 @@ public class ProductServiceImpl implements ProductService {
             BlobClient blobClient = blobContainer.getBlobClient(entry.getKey());
             blobClient.upload(
                     entry.getValue().getInputStream(),
-                    entry.getValue().getSize(),true);
+                    entry.getValue().getSize(), true);
         }
         return null;
     }
@@ -290,6 +316,7 @@ public class ProductServiceImpl implements ProductService {
     private Supplier<AccountNotFoundException> handlerAccountNotFound() {
         return () -> new AccountNotFoundException(MessagesUtils.getMessage(MessageConstant.Account.NOT_FOUND));
     }
+
     private Supplier<ProductInvalidException> handlerProductInvalidException() {
         return () -> new ProductInvalidException(MessagesUtils.getMessage(MessageConstant.Product.INVALID));
     }

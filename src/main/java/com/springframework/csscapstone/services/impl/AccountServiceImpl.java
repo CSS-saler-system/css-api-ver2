@@ -105,7 +105,8 @@ public class AccountServiceImpl implements AccountService {
                 .peek(dto -> dto.setIdCard(idCard))
                 .collect(toList());
 
-        return new PageAccountDto(data, page.getNumber() + 1, page.getSize(), page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
+        return new PageAccountDto(data, page.getNumber() + 1, data.size(),
+                page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
     }
 
     /**
@@ -325,7 +326,7 @@ public class AccountServiceImpl implements AccountService {
         });
     }
 
-    //TODO BUG
+    //todo for collaborator
     @Override
     public PageEnterpriseDto getAllHavingEnterpriseRole(Integer pageNumber, Integer pageSize) {
         pageNumber = Objects.isNull(pageNumber) || pageNumber <= 1 ? 1 : pageNumber;
