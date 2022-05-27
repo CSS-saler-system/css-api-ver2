@@ -25,6 +25,7 @@ public interface AccountRepository extends JpaRepository<Account, UUID>, JpaSpec
     @Transactional(readOnly = true)
     Optional<List<Account>> findAccountByEmailOrPhone(String email, String phone);
 
+
     @Transactional(readOnly = true)
     @Query(value = "SELECT a " +
             "FROM Account a " +

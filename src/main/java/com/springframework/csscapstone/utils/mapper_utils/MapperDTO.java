@@ -7,11 +7,27 @@ import com.springframework.csscapstone.payload.response_dto.collaborator.Enterpr
 import com.springframework.csscapstone.payload.response_dto.collaborator.CustomerResponseDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResponseDto;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface MapperDTO {
     MapperDTO INSTANCE = Mappers.getMapper(MapperDTO.class);
+
+    //========================= Image ============================
+    AccountImageDto toAccountImageDto(AccountImage entity);
+
+    ProductImageDto toProductImageDto(ProductImage entity);
+
+
+    //========================= End Image ========================
+    //========================= Role ============================
+
+    RoleDto toRoleDto(Role entity);
+
+    //========================= End Role ========================
+
+
 
     AccountDto toAccountDto(Account entity);
 
@@ -29,19 +45,17 @@ public interface MapperDTO {
 
     RequestSellingProductDto RequestSellingProductDto(RequestSellingProduct entity);
 
-    RoleDto toRoleDto(Role entity);
-
     TransactionsDto toTransactionsDto(Transactions entity);
 
-    //TODO Response DTO <Completed></>
-    //TODO [ROLE] - Collaborator <Completed></>
+    //TODO Response DTO
+    //TODO [ROLE] - Collaborator
     CustomerResponseDto toCustomerResponseDto(Customer entity);
 
     EnterpriseResponseDto toEnterpriseResponseDto(Account entity);
 
-    //todo mapper entity to <ENTERPRISE_DTO> <Completed></>
+    //todo mapper entity to <ENTERPRISE_DTO>
     EnterpriseDto toEnterpriseDto(Account entity);
-    //todo mapper entity to <ProductResponseDTO> <Completed></>
+    //todo mapper entity to <ProductResponseDTO>
     ProductResponseDto toProductResponseDto(Product entity);
 
     //TODO Admin Role convert to AccountResponseDTO

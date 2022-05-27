@@ -1,9 +1,7 @@
-package com.springframework.csscapstone.services.impl;
+package com.springframework.csscapstone;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springframework.csscapstone.data.domain.Account;
-import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.payload.response_dto.PageAccountDto;
 import com.springframework.csscapstone.services.AccountService;
 import org.junit.jupiter.api.Test;
@@ -11,29 +9,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @ActiveProfiles(value = "test")
-class AccountServiceImplTest {
-    @Autowired
-    AccountService accountService;
+class CssCapstoneApplicationTest {
 
     @Autowired
-    AccountRepository accountRepository;
+    AccountService accountService;
 
     @Test
     void getAllDto() throws JsonProcessingException {
         //lazy loading
-        PageAccountDto allDto = accountService.getAllDto("", "", "", "", null, null);
+        PageAccountDto allDto = accountService.getAccountDto("", "", "", "", null, null);
         System.out.println(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(allDto));
     }
 
     @Test
-    void findAllAccount() {
-        //Lazy load
-        this.accountRepository.findAll()
-//                .stream()
-//                .map(Account::getId)
-                .forEach(System.out::println);
+    void findAllAccount() throws JsonProcessingException {
+        PageAccountDto accountDto = accountService.getAccountDto(
+                null, null, null, null, 100,
+                null);
+        String json = new ObjectMapper().writerWithDefaultPrettyPrinter()
+                .writeValueAsString(accountDto);
+        System.out.println(json);
     }
 
     @Test

@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.security.auth.login.AccountNotFoundException;
-import javax.validation.Valid;
 import java.util.UUID;
 
 import static com.springframework.csscapstone.config.constant.ApiEndPoint.Account.*;
@@ -40,7 +39,7 @@ public class AdminAccountController {
             @RequestParam(value = "page_number", required = false) Integer pageNumber,
             @RequestParam(value = "page_size", required = false) Integer pageSize
     ) {
-        PageAccountDto page = service.getAllDto(accountName, phone, email, address, pageSize, pageNumber);
+        PageAccountDto page = service.getAccountDto(accountName, phone, email, address, pageSize, pageNumber);
         return ResponseEntity.ok(page);
     }
 
@@ -55,20 +54,16 @@ public class AdminAccountController {
      * @return
      * @throws AccountInvalidException
      */
-    @PutMapping(V1_UPDATE_ACCOUNT)
+    @PutMapping(value = V1_UPDATE_ACCOUNT, consumes = {MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<UUID> updateAccount(
-//            @Valid @RequestBody AccountUpdaterDto dto
             @RequestPart("account") String dto,
             @RequestPart(value = "avatar", required = false)  MultipartFile avatars,
             @RequestPart(value = "license", required = false) MultipartFile licenses,
             @RequestPart(value = "id_card", required = false) MultipartFile idCards
 
     ) throws AccountInvalidException, JsonProcessingException {
-//        UUID accountUUID = service.updateAccount(dto);
-//        return ok(accountUUID);
         AccountUpdaterDto accountUpdaterDto = new ObjectMapper().readValue(dto, AccountUpdaterDto.class);
-        this.service.updateAccount(accountUpdaterDto, avatars, licenses, idCards);
-        return null;
+        return ok(this.service.updateAccount(accountUpdaterDto, avatars, licenses, idCards));
     }
 
     /**

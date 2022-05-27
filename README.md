@@ -17,4 +17,19 @@
 "gender" : true,<br>
 "role" : "",<br>
 "dayOfBirth" : "2022/05/26"
-}no
+}
+<h4>AccountUpdater - Json</h4>
+{
+"id" : null,
+"name" : "",
+"dob" : null,
+"phone" : "",
+"email" : "",
+"address" : "",
+"description" : "",
+"gender" : null,
+"identityImage" : null,
+"avatar" : null,
+"license" : null
+}
+

@@ -18,6 +18,7 @@ import com.springframework.csscapstone.utils.exception_utils.product_exception.P
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.security.auth.login.AccountNotFoundException;
 import javax.validation.UnexpectedTypeException;
 
 import static org.springframework.http.HttpStatus.*;
@@ -78,6 +80,11 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler {
         return buildResponseEntity(httpResponse);
     }
 
+    @ExceptionHandler(FileSizeLimitExceededException.class)
+    public ResponseEntity<?> handleFileSizeLimitExceededException(FileSizeLimitExceededException exception) {
+        return createHttpResponse(BAD_REQUEST, MessagesUtils.getMessage(MessageConstant.Exception.MAX_SIZE_FILE));
+    }
+
     /**
      * TODO backend error wrong type constraints validation
      * @param exception
@@ -102,7 +109,7 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler {
             CategoryNotFoundException.class,
             CategoryNotFoundException.class,
             EntityNotFoundException.class,
-            CustomerNotFoundException.class
+            CustomerNotFoundException.class,
     })
     public ResponseEntity<?> handleNotFound(RuntimeException exception) {
         return createHttpResponse(NOT_FOUND, exception.getMessage());

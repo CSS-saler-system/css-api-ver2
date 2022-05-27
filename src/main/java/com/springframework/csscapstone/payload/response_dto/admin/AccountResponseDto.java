@@ -7,15 +7,13 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import com.springframework.csscapstone.data.status.AccountImageType;
+import com.springframework.csscapstone.payload.basic.AccountImageDto;
+import com.springframework.csscapstone.payload.basic.RoleDto;
 import lombok.Data;
-
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
-
-import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 
 @Data
 public class AccountResponseDto implements Serializable {
@@ -31,12 +29,12 @@ public class AccountResponseDto implements Serializable {
     private final String description;
     private final Boolean gender;
     private final Double point;
-    private final List<AccountImageDto> avatar;
 
-    private final List<AccountImageDto> licenses;
-    private final List<AccountImageDto> idCard;
+    private List<AccountImageDto> avatar;
+    private List<AccountImageDto> licenses;
+    private List<AccountImageDto> idCard;
     private final RoleDto role;
-
+    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public AccountResponseDto(
             @JsonProperty("id") UUID id,
             @JsonProperty("name") String name,
@@ -47,9 +45,6 @@ public class AccountResponseDto implements Serializable {
             @JsonProperty("description") String description,
             @JsonProperty("gender") Boolean gender,
             @JsonProperty("point") Double point,
-            @JsonProperty("avatar") List<AccountImageDto> avatar,
-            @JsonProperty("licenses") List<AccountImageDto> licenses,
-            @JsonProperty("idCard") List<AccountImageDto> idCard,
             @JsonProperty("role") RoleDto role) {
         this.id = id;
         this.name = name;
@@ -60,38 +55,10 @@ public class AccountResponseDto implements Serializable {
         this.description = description;
         this.gender = gender;
         this.point = point;
-        this.avatar = avatar;
-        this.licenses = licenses;
-        this.idCard = idCard;
         this.role = role;
     }
 
-    @Data
-    public static class AccountImageDto implements Serializable {
-        private final UUID id;
-        private final AccountImageType type;
-        private final String path;
 
-        @JsonCreator(mode = PROPERTIES)
-        public AccountImageDto(
-                @JsonProperty("id") UUID id,
-                @JsonProperty("image_type") AccountImageType type,
-                @JsonProperty("path") String path) {
-            this.id = id;
-            this.type = type;
-            this.path = path;
-        }
-    }
 
-    @Data
-    public static class RoleDto implements Serializable {
-        private final String id;
-        private final String name;
 
-        @JsonCreator(mode = PROPERTIES)
-        public RoleDto(@JsonProperty("id") String id, @JsonProperty("name") String name) {
-            this.id = id;
-            this.name = name;
-        }
-    }
 }

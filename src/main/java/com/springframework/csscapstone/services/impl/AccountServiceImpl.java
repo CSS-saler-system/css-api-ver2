@@ -13,6 +13,7 @@ import com.springframework.csscapstone.data.repositories.AccountImageRepository;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.data.repositories.RoleRepository;
 import com.springframework.csscapstone.data.status.AccountImageType;
+import com.springframework.csscapstone.payload.basic.AccountImageDto;
 import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorDto;
 import com.springframework.csscapstone.payload.response_dto.PageAccountDto;
 import com.springframework.csscapstone.payload.response_dto.PageEnterpriseDto;
@@ -20,6 +21,7 @@ import com.springframework.csscapstone.payload.response_dto.admin.AccountRespons
 import com.springframework.csscapstone.payload.response_dto.collaborator.EnterpriseResponseDto;
 import com.springframework.csscapstone.payload.sharing.AccountUpdaterDto;
 import com.springframework.csscapstone.services.AccountService;
+import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountExistException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountInvalidException;
 import com.springframework.csscapstone.utils.mapper_utils.MapperDTO;
@@ -41,11 +43,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.security.auth.login.AccountNotFoundException;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.springframework.csscapstone.config.constant.RegexConstant.REGEX_ROLE;
+import static com.springframework.csscapstone.data.status.AccountImageType.*;
 import static java.util.stream.Collectors.toList;
 
 @Service
@@ -81,17 +85,27 @@ public class AccountServiceImpl implements AccountService {
      * @return
      */
     @Override
-    public PageAccountDto getAllDto(String name, String phone, String email, String address, Integer pageSize, Integer pageNumber) {
+    public PageAccountDto getAccountDto(String name, String phone, String email, String address, Integer pageSize, Integer pageNumber) {
         Specification<Account> specifications = Specification
                 .where(Objects.nonNull(name) ? AccountSpecifications.nameContains(name) : null)
                 .and(StringUtils.isNotBlank(phone) ? AccountSpecifications.phoneEquals(phone) : null)
-                .and(StringUtils.isNotBlank(email) ? AccountSpecifications.emailEquals(email) : null)
-                .and(StringUtils.isNotBlank(address) ? AccountSpecifications.addressEquals(address) : null);
-        pageSize = Objects.nonNull(pageSize) && (pageSize >= 0) ? pageSize : 10;
+                .and(StringUtils.isNotBlank(email) ? AccountSpecifications.emailEquals(email) : null);
         pageNumber = Objects.nonNull(pageNumber) && (pageNumber >= 1) ? pageNumber : 1;
 
+        List<AccountImageDto> avatar = new ArrayList<>();
+        List<AccountImageDto> licenses = new ArrayList<>();
+        List<AccountImageDto> idCard = new ArrayList<>();
+
         Page<Account> page = this.accountRepository.findAll(specifications, PageRequest.of(pageNumber - 1, pageSize));
-        List<AccountResponseDto> data = page.stream().map(MapperDTO.INSTANCE::toAccountResponseDto).collect(toList());
+        List<AccountResponseDto> data = page.stream()
+                .peek(avatarConsumer(avatar, AccountImageType.AVATAR))
+                .peek(avatarConsumer(licenses, AccountImageType.LICENSE))
+                .peek(avatarConsumer(idCard, AccountImageType.ID_CARD))
+                .map(MapperDTO.INSTANCE::toAccountResponseDto)
+                .peek(dto -> dto.setAvatar(avatar))
+                .peek(dto -> dto.setLicenses(licenses))
+                .peek(dto -> dto.setIdCard(idCard))
+                .collect(toList());
 
         return new PageAccountDto(data, page.getNumber() + 1, page.getSize(), page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
     }
@@ -108,24 +122,28 @@ public class AccountServiceImpl implements AccountService {
     public AccountResponseDto getById(UUID id) throws AccountInvalidException, AccountNotFoundException {
         Account result = accountRepository.findById(id).orElseThrow(handlerAccountNotFound());
 
-        List<AccountResponseDto.AccountImageDto> avatar = result.getImages().stream().filter(x -> x.getType().equals(AccountImageType.AVATAR))
-                .map(x -> new AccountResponseDto.AccountImageDto(x.getId(), x.getType(), x.getPath()))
+        List<AccountImageDto> avatar = result.getImages().stream()
+                .filter(x -> x.getType().equals(AccountImageType.AVATAR))
+                .map(MapperDTO.INSTANCE::toAccountImageDto)
                 .collect(toList());
 
-        List<AccountResponseDto.AccountImageDto> licenses = result.getImages().stream()
+        List<AccountImageDto> licenses = result.getImages().stream()
                 .filter(x -> x.getType().equals(AccountImageType.LICENSE))
-                .map(x -> new AccountResponseDto.AccountImageDto(x.getId(), x.getType(), x.getPath()))
+                .map(MapperDTO.INSTANCE::toAccountImageDto)
                 .collect(toList());
 
-        List<AccountResponseDto.AccountImageDto> idCard = result.getImages().stream()
+        List<AccountImageDto> idCard = result.getImages().stream()
                 .filter(x -> x.getType().equals(AccountImageType.ID_CARD))
-                .map(x -> new AccountResponseDto.AccountImageDto(x.getId(), x.getType(), x.getPath()))
+                .map(MapperDTO.INSTANCE::toAccountImageDto)
                 .collect(toList());
-
-        return new AccountResponseDto(
+        AccountResponseDto dto = new AccountResponseDto(
                 result.getId(), result.getName(), result.getDob(), result.getPhone(), result.getEmail(), result.getAddress(),
-                result.getDescription(), result.getGender(), result.getPoint(), avatar, licenses, idCard,
-                new AccountResponseDto.RoleDto(result.getRole().getId(), result.getRole().getName()));
+                result.getDescription(), result.getGender(), result.getPoint(),
+                MapperDTO.INSTANCE.toRoleDto(result.getRole()));
+        dto.setAvatar(avatar);
+        dto.setLicenses(licenses);
+        dto.setIdCard(idCard);
+        return dto;
 
     }
 
@@ -140,6 +158,8 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public UUID createAccount(AccountCreatorDto dto, MultipartFile avatar, MultipartFile licenses, MultipartFile idCards)
             throws AccountExistException {
+
+        //TODO check ROlE null <BUG>
         Specification
                 .where(RoleSpecification.equalNames(StringUtils.isEmpty(dto.getRole()) || !dto.getRole().matches(REGEX_ROLE) ? "Collaborator" : dto.getRole()));
         Role role = roleRepository
@@ -167,7 +187,7 @@ public class AccountServiceImpl implements AccountService {
             saveAccountImageEntity(avatar, account.getId(), AccountImageType.AVATAR)
                     .ifPresent(account::addImage);
         }
-        if (Objects.nonNull(idCards)) {
+        if (Objects.nonNull(licenses)) {
             saveAccountImageEntity(idCards, account.getId(), AccountImageType.ID_CARD)
                     .ifPresent(account::addImage);
         }
@@ -246,10 +266,68 @@ public class AccountServiceImpl implements AccountService {
                 .setDescription(dto.getDescription())
                 .setGender(dto.getGender());
 
-        Account account = imageHandler(avatars, licenses, idCards, entity);
+        //override image in database
+        Account account = imageUpdateHandler(avatars, licenses, idCards, entity);
 
         this.accountRepository.save(account);
         return entity.getId();
+    }
+
+    /**
+     * todo create AccountImage
+     *
+     * @param avatars
+     * @param licenses
+     * @param idCards
+     * @param entity
+     * @return
+     */
+    private Account imageUpdateHandler(
+            MultipartFile avatars,
+            MultipartFile licenses,
+            MultipartFile idCards,
+            Account entity) {
+
+        //load image from database
+        updateImage(avatars, entity, AVATAR).ifPresent(image -> {
+            this.accountImageRepository.save(image);
+            entity.addImage(image);
+        });
+        updateImage(licenses, entity, LICENSE).ifPresent(image -> {
+            this.accountImageRepository.save(image);
+            entity.addImage(image);
+        });
+        updateImage(idCards, entity, ID_CARD).ifPresent(image -> {
+            this.accountImageRepository.save(image);
+            entity.addImage(image);
+        });;
+
+        return entity;
+    }
+
+    private Optional<AccountImage> updateImage(MultipartFile image, Account entity, AccountImageType type) {
+        String imageOriginalPath = entity.getId() + "/";
+        if (Objects.nonNull(image)) {
+            AccountImage accountImage = this
+                    .accountImageRepository
+                    .findByAccountAndType(entity.getId(), type)
+                    .orElse(new AccountImage());
+
+            //Map<name, multiple-file>
+            Map<String, MultipartFile> imageMap = Stream.of(image)
+                    .collect(Collectors.toMap(x -> imageOriginalPath + x.getOriginalFilename(), x -> x));
+
+            //upload to Azure:
+            imageMap.forEach(this::azureStorageHandler);
+
+            //update database:
+            String path = endpoint + accountContainer + "/" + imageOriginalPath + image.getOriginalFilename();
+            accountImage.setPath(path).setAccount(entity).setType(type);
+
+            LOGGER.info("path image for update {}", path);
+            return Optional.of(accountImage);
+        }
+        return Optional.empty();
     }
 
 
@@ -279,7 +357,22 @@ public class AccountServiceImpl implements AccountService {
         return () -> new AccountInvalidException(MessagesUtils.getMessage(MessageConstant.Account.INVALID));
     }
 
-    private Supplier<AccountNotFoundException> handlerAccountNotFound() {
-        return () -> new AccountNotFoundException(MessagesUtils.getMessage(MessageConstant.Account.NOT_FOUND));
+    private Supplier<EntityNotFoundException> handlerAccountNotFound() {
+        return () -> new EntityNotFoundException(MessagesUtils.getMessage(MessageConstant.Account.NOT_FOUND));
     }
+
+    /**
+     * todo Consume image of Account
+     *
+     * @param collection
+     * @param type
+     * @return
+     */
+    private Consumer<Account> avatarConsumer(List<AccountImageDto> collection, AccountImageType type) {
+        return x -> collection.addAll(x.getImages().stream()
+                .filter(image -> image.getType().equals(type))
+                .map(MapperDTO.INSTANCE::toAccountImageDto)
+                .collect(toList()));
+    }
+
 }
