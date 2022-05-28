@@ -42,6 +42,4 @@ public interface ProductService {
     void changeStatusProduct(UUID id, ProductStatus status);
 
     void disableProduct(UUID id);
-
-    Object createTestProduct(List<MultipartFile> collect, List<MultipartFile> collect1) throws IOException;
 }

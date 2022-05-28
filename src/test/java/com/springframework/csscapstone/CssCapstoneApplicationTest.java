@@ -2,6 +2,7 @@ package com.springframework.csscapstone;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorDto;
 import com.springframework.csscapstone.payload.response_dto.PageAccountDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResponseDto;
 import com.springframework.csscapstone.services.AccountService;
@@ -24,6 +25,8 @@ class CssCapstoneApplicationTest {
 
     @Autowired
     ProductService productService;
+
+
 
     @Test
     void getAllAccountTest() {
@@ -48,5 +51,21 @@ class CssCapstoneApplicationTest {
     void getProductByIdTest() throws JsonProcessingException {
         ProductResponseDto result = productService.findById(UUID.fromString("f690e575-13d0-8942-b6e2-53601e98433e"));
         System.out.println(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(result));
+    }
+
+    @Test
+    void printJsonProductDtoTest() throws JsonProcessingException {
+        ProductCreatorDto jsonObject = new ProductCreatorDto(null, null, "",
+                "", "", "",
+                0L, 0.0, 13.0);
+        String s = new ObjectMapper().writerWithDefaultPrettyPrinter()
+                .writeValueAsString(jsonObject);
+        System.out.println(s);
+    }
+
+    @Test
+    void createProductServiceTest() {
+
+//        this.productService.createProduct()
     }
 }

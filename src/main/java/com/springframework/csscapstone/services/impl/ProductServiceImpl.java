@@ -1,5 +1,6 @@
 package com.springframework.csscapstone.services.impl;
 
+import com.azure.core.implementation.Option;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobContainerClientBuilder;
@@ -16,10 +17,12 @@ import com.springframework.csscapstone.data.repositories.ProductRepository;
 import com.springframework.csscapstone.data.status.ProductImageType;
 import com.springframework.csscapstone.data.status.ProductStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorDto;
+import com.springframework.csscapstone.payload.request_dto.admin.ProductImageDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.ProductUpdaterDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResponse;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResponseDto;
 import com.springframework.csscapstone.services.ProductService;
+import com.springframework.csscapstone.utils.blob_utils.BlobUploadImages;
 import com.springframework.csscapstone.utils.exception_utils.category_exception.CategoryNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
@@ -137,7 +140,7 @@ public class ProductServiceImpl implements ProductService {
         Category category = categoryRepository
                 .findById(dto.getCategoryId())
                 .orElseThrow(handlerCategoryNotFound());
-
+        //create product
         Product newProduct = new Product()
                 .setName(dto.getName())
                 .setBrand(dto.getBrand())
@@ -149,15 +152,12 @@ public class ProductServiceImpl implements ProductService {
                 .setPointSale(dto.getPointSale())
                 .addAccount(account)
                 .addCategory(category);
-
-
+        //saved product
         Product creatorProduct = productRepository.save(newProduct);
+        //add image to product
+        Product savedProduct = handleImage(typeImages, certificationImages, creatorProduct);
 
-//        handleImage(typeImages, creatorProduct, ProductImageType.NORMAL);
-//        handleImage(certificationImages, creatorProduct, ProductImageType.CERTIFICATION);
-        handleImage(typeImages, certificationImages, creatorProduct);
-
-        return creatorProduct.getId();
+        return this.productRepository.save(savedProduct).getId();
     }
     //TODO BUG
     private Product handleImage(List<MultipartFile> typeImages, List<MultipartFile> certificate, Product entity) {
@@ -169,19 +169,33 @@ public class ProductServiceImpl implements ProductService {
             saveProductImageEntity(certificate, entity.getId(), ProductImageType.CERTIFICATION)
                     .ifPresent(entity::addProductImage);
         }
-        return null;
+        return entity;
     }
 
-    private Optional<ProductImage[]> saveProductImageEntity(List<MultipartFile> images, UUID id, ProductImageType type) {
-        String nameImageOnAzure = id + "/";
+    private Optional<ProductImage[]> saveProductImageEntity(
+            List<MultipartFile> images, UUID id, ProductImageType type) {
+        if (!images.isEmpty()) {
+            String nameImageOnAzure = id + "/";
 
-        Map<String, MultipartFile> imageMap = images.stream()
-                .collect(Collectors.toMap(x -> nameImageOnAzure + x.getOriginalFilename(), x -> x));
+            Map<String, MultipartFile> imageMap = images.stream()
+                    .collect(Collectors.toMap(x -> nameImageOnAzure + x.getOriginalFilename(), x -> x));
 
+            imageMap.forEach(BlobUploadImages::azureProductStorageHandler);
+
+            ProductImage[] productImages = images
+                    .stream()
+                    .map(x -> endpoint + productContainer + "/" + nameImageOnAzure + x.getOriginalFilename())
+                    .map(name -> new ProductImage().setPath(name).setType(type))
+                    .peek(this.imageRepository::save)
+                    .toArray(ProductImage[]::new);
+            return Optional.of(productImages);
+        }
         return Optional.empty();
     }
 
     /**
+     *
+     * Depreciation
      * this method todo <>
      * Add image to product
      * Upload image to aure storage
@@ -265,38 +279,6 @@ public class ProductServiceImpl implements ProductService {
                     x.setProductStatus(ProductStatus.DISABLE);
                     this.productRepository.save(x);
                 });
-    }
-
-    @Override
-    public Object createTestProduct(List<MultipartFile> collect, List<MultipartFile> collect1) throws IOException {
-
-        String prefix_image = UUID.randomUUID() + "/";
-
-        //create productImage
-        Map<String, MultipartFile> image = collect
-                .stream()
-                .peek(x -> LOGGER.info("name {}", x.getOriginalFilename()))
-                .collect(Collectors.toMap(x -> prefix_image + x.getOriginalFilename(), x -> x));
-
-        //set image into product
-        ProductImage[] productImages = image.keySet().stream()
-                .map(x -> new ProductImage(ProductImageType.NORMAL, x))
-                .toArray(ProductImage[]::new);
-
-        //deploy
-        for (Map.Entry<String, MultipartFile> entry : image.entrySet()) {
-
-            BlobContainerClient blobContainer = new BlobContainerClientBuilder()
-                    .connectionString("DefaultEndpointsProtocol=https;AccountName=csssalersystem;AccountKey=jCb20BfSP2CkB1IduJlPAxcQWX+GgwrBp+aobpk5ggaUpKa2dSGf9iSH4QggdFb9Nwjm/o+un2X3ScNdjrpovA==;EndpointSuffix=core.windows.net")
-                    .containerName(productContainer)
-                    .buildClient();
-
-            BlobClient blobClient = blobContainer.getBlobClient(entry.getKey());
-            blobClient.upload(
-                    entry.getValue().getInputStream(),
-                    entry.getValue().getSize(), true);
-        }
-        return null;
     }
 
     //===================Utils Methods====================

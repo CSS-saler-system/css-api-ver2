@@ -89,12 +89,15 @@ public class AccountServiceImpl implements AccountService {
                 .and(StringUtils.isNotBlank(phone) ? AccountSpecifications.phoneEquals(phone) : null)
                 .and(StringUtils.isNotBlank(email) ? AccountSpecifications.emailEquals(email) : null);
         pageNumber = Objects.nonNull(pageNumber) && (pageNumber >= 1) ? pageNumber : 1;
+        pageSize = Objects.nonNull(pageSize) && (pageSize >= 1) ? pageNumber : 10;
 
         List<AccountImageDto> avatar = new ArrayList<>();
         List<AccountImageDto> licenses = new ArrayList<>();
         List<AccountImageDto> idCard = new ArrayList<>();
 
+
         Page<Account> page = this.accountRepository.findAll(specifications, PageRequest.of(pageNumber - 1, pageSize));
+
         List<AccountResponseDto> data = page.stream()
                 .peek(avatarConsumer(avatar, AccountImageType.AVATAR))
                 .peek(avatarConsumer(licenses, AccountImageType.LICENSE))

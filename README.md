@@ -33,3 +33,41 @@
 "license" : null
 }
 
+<h4>Product Creator</h4>
+{
+"creatorAccountId" : null,<br>
+"categoryId" : null,<br>
+"name" : "",<br>
+"brand" : "",<br>
+"shortDescription" : "",<br>
+"description" : "",<br>
+"quantity" : 0,<br>
+"price" : 0.0,<br>
+"pointSale" : 13.0
+}
+
+=================================================================
+{
+"creatorAccountId" : "81aec658-ce38-2e4d-be22-06e05ea06259",
+"categoryId" : "687c91a0-0012-c04d-8e73-17f616d4f8ec",
+"name" : "TV LCD",
+"brand" : "LG",
+"shortDescription" : "The best tv for cheap price",
+"description" : "the best led tv, ",
+"quantity" : 13.3,
+"price" : 13.0,
+"pointSale" : 13.0
+}
+
+{
+"name" : "Josh Long",
+"phone" : "123498",
+"email" : "Long@gmail.com",
+"password" : "123",
+"address" : "Texas",
+"description" : "This person good at java",
+"gender" : true,
+"role" : "Enterprise",
+"dayOfBirth" : "2022/05/26"
+}
+

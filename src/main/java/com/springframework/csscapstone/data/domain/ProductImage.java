@@ -4,6 +4,7 @@ import com.springframework.csscapstone.data.status.ProductImageType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 
@@ -12,6 +13,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Setter
 @Getter
 @NoArgsConstructor
+@Accessors(chain = true)
 @Entity
 @Table(name = "product_image")
 public class ProductImage {
