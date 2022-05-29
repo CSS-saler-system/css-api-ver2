@@ -4,6 +4,8 @@ public class MessageConstant {
 
     public static final String REQUEST_SUCCESS = "request.success.message";
     public static final String REQUEST_FAILURE = "request.false.message";
+
+
     public static class Exception {
         public static final String JSON_ERROR = "json.error.no_readable";
         public static final String MAX_SIZE_FILE = "file.error.maz_size";
@@ -23,14 +25,14 @@ public class MessageConstant {
         public static final String INVALID = "category.error.invalid";
     }
 
-    public static class Product{
-        public static final String NOT_FOUND= "product.error.not-found";
+    public static class Product {
+        public static final String NOT_FOUND = "product.error.not-found";
         public static final String INVALID = "product.error.invalid";
 
     }
 
     public static class Campaign {
-        public static final  String NOT_FOUND = "campaign.error.not-found";
+        public static final String NOT_FOUND = "campaign.error.not-found";
         public static final String INVALID = "campaign.error.invalid";
     }
 
@@ -50,6 +52,7 @@ public class MessageConstant {
     public static class Order {
         public static final String NOT_FOUND = "order.error.not_found";
     }
+
     public static class OrderDetail {
         public static final String CANT_CREATE = "order_detail.error.cant_create";
         public static final String NOT_FOUND = "order_detail.error.not_found";
@@ -59,4 +62,9 @@ public class MessageConstant {
         public static final String NOT_FOUND = "customer.error.not-found";
         public static final String EXISTED = "customer.error.existed";
     }
+
+    public static class RequestSellingProduct {
+        public static final String NOT_FOUND = "request_selling_product.error.not_found";
+    }
+
 }

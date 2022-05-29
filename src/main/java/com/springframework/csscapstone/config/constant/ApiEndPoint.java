@@ -153,5 +153,13 @@ public class ApiEndPoint {
         public static final String V3_CREATE_CUSTOMER = v3_handler + "/new";
     }
 
+    public static class RequestSellingProduct {
+        private static final String v1_handler = ADMIN + "/customer";
+        private static final String v2_handler = ENTERPRISE + "/customer";
+        private static final String v3_handler = COLLABORATOR + "/customer";
+
+        public static final String V2_LIST_REQUEST = v2_handler + "/list";
+        public static final String V2_UPDATE_REQUEST = v2_handler + "/update";
+    }
 
 }

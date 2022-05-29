@@ -27,7 +27,7 @@ class RequestSellingProductServiceImplTest {
     void getAllRequestRequest() {
 
         List<RequestSellingProductDto> allRequestRequest =
-                requestSellingProductService.getAllRequestRequest();
+                requestSellingProductService.getAllRequest();
 
         allRequestRequest.forEach(x -> {
             try {

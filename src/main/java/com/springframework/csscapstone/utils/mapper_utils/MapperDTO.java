@@ -66,7 +66,7 @@ public interface MapperDTO {
 
     ProductDto toProductDto(Product entity);
 
-    RequestSellingProductDto RequestSellingProductDto(RequestSellingProduct entity);
+    RequestSellingProductDto toRequestSellingProductDto(RequestSellingProduct entity);
 
     TransactionsDto toTransactionsDto(Transactions entity);
 
