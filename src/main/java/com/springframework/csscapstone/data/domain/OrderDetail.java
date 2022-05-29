@@ -40,7 +40,6 @@ public class OrderDetail {
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
-
 //    @ManyToOne
 //    @JoinColumn(name = "selling_product_id")
 //    private RequestSellingProduct sellingProduct;
