@@ -61,6 +61,7 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final RoleRepository roleRepository;
     private final AccountImageRepository accountImageRepository;
+    private final BlobUploadImages blobUploadImages;
 
     private final Logger LOGGER = LoggerFactory.getLogger(CategoryServiceImpl.class);
 
@@ -216,7 +217,7 @@ public class AccountServiceImpl implements AccountService {
                 .collect(Collectors.toMap(x -> nameImageOnAzure + x.getOriginalFilename(), x -> x));
 
         //upload to Azure:
-        imageMap.forEach(BlobUploadImages::azureAccountStorageHandler);
+        imageMap.forEach(blobUploadImages::azureAccountStorageHandler);
 
         //Create save Account-Image
         return imageMap.keySet().stream()
@@ -304,7 +305,7 @@ public class AccountServiceImpl implements AccountService {
                     .collect(Collectors.toMap(x -> imageOriginalPath + x.getOriginalFilename(), x -> x));
 
             //upload to Azure:
-            imageMap.forEach(BlobUploadImages::azureAccountStorageHandler);
+            imageMap.forEach(blobUploadImages::azureAccountStorageHandler);
 
             //update database:
             String path = endpoint + accountContainer + "/" + imageOriginalPath + image.getOriginalFilename();

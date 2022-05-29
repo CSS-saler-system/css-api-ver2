@@ -3,22 +3,26 @@ package com.springframework.csscapstone.utils.blob_utils;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobContainerClientBuilder;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
+@Component
+@RequiredArgsConstructor
 public class BlobUploadImages {
 
     @Value("${account_image_container}")
-    private static String accountContainer;
+    private String accountContainer;
 
     @Value("${connection-string}")
-    private static String connectionString;
+    private String connectionString;
 
     @Value("${product_image_container}")
-    private static String productContainer;
+    private String productContainer;
 
 
     /**
@@ -28,7 +32,7 @@ public class BlobUploadImages {
      * @param value
      */
     @SneakyThrows
-    public static void azureAccountStorageHandler(String key, MultipartFile value) {
+    public void azureAccountStorageHandler(String key, MultipartFile value) {
         BlobContainerClient container = new BlobContainerClientBuilder()
                 .containerName(accountContainer)
                 .connectionString(connectionString)
@@ -37,7 +41,7 @@ public class BlobUploadImages {
         blobClient.upload(value.getInputStream(), value.getSize(), true);
     }
     @SneakyThrows
-    public static void azureProductStorageHandler(String key, MultipartFile value) {
+    public void azureProductStorageHandler(String key, MultipartFile value) {
         BlobContainerClient container = new BlobContainerClientBuilder()
                 .containerName(productContainer)
                 .connectionString(connectionString)

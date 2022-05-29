@@ -66,6 +66,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductImageRepository imageRepository;
     @Value("${connection-string}")
     private String connectionString;
+    private final BlobUploadImages blobUploadImages;
 
     @Override
     public PageImplResponse<ProductResponseDto> findAllProduct(
@@ -180,7 +181,7 @@ public class ProductServiceImpl implements ProductService {
             Map<String, MultipartFile> imageMap = images.stream()
                     .collect(Collectors.toMap(x -> nameImageOnAzure + x.getOriginalFilename(), x -> x));
 
-            imageMap.forEach(BlobUploadImages::azureProductStorageHandler);
+            imageMap.forEach(blobUploadImages::azureProductStorageHandler);
 
             ProductImage[] productImages = images
                     .stream()
@@ -192,52 +193,6 @@ public class ProductServiceImpl implements ProductService {
         }
         return Optional.empty();
     }
-
-    /**
-     *
-     * Depreciation
-     * this method todo <>
-     * Add image to product
-     * Upload image to aure storage
-     * </>
-     *
-     * @param typeImages
-     * @param creatorProduct
-     * @param type
-     * @throws IOException
-     */
-    private void handleImage(List<MultipartFile> typeImages, Product creatorProduct, ProductImageType type) throws IOException {
-        String prefix_image = creatorProduct.getId() + "/";
-
-        //create productImage
-        Map<String, MultipartFile> image = typeImages
-                .stream()
-                .collect(Collectors.toMap(x -> prefix_image + x.getOriginalFilename(), x -> x));
-
-        //set image into product
-        ProductImage[] productImages = image.keySet().stream()
-                .map(x -> new ProductImage(type, x))
-                .toArray(ProductImage[]::new);
-        creatorProduct.addProductImage(productImages);
-
-        //deploy
-        for (Map.Entry<String, MultipartFile> entry : image.entrySet()) {
-
-            BlobContainerClient blobContainer = new BlobContainerClientBuilder()
-                    .containerName(productContainer)
-                    .connectionString(connectionString)
-                    .buildClient();
-
-            BlobClient blobClient = blobContainer.getBlobClient(entry.getKey());
-
-            blobClient.upload(
-                    entry.getValue().getInputStream(),
-                    entry.getValue().getSize(), true);
-        }
-        this.imageRepository.saveAll(Arrays.asList(productImages));
-        this.productRepository.save(creatorProduct);
-    }
-
 
     //TODO Changing
     @Transactional
