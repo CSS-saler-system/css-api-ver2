@@ -1,7 +1,9 @@
 package com.springframework.csscapstone.controller.enterprise;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springframework.csscapstone.config.constant.ApiEndPoint;
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.status.ProductStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorDto;
@@ -11,11 +13,13 @@ import com.springframework.csscapstone.payload.response_dto.enterprise.ProductRe
 import com.springframework.csscapstone.services.ProductService;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
+import com.springframework.csscapstone.utils.mapper_utils.MapperDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,6 +33,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.springframework.csscapstone.config.constant.ApiEndPoint.Product.*;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 import static org.springframework.http.ResponseEntity.ok;
 
 @Tag(name = "Product (Enterprise)")
@@ -79,10 +84,15 @@ public class EnterpriseProductController {
     }
 
 
-    @PutMapping(V2_UPDATE_PRODUCT)
-    public ResponseEntity<?> updateProduct(@Valid @RequestBody ProductUpdaterDto dto) {
-        return ok(this.productService.updateProductDto(dto));
+    @PutMapping(value = V2_UPDATE_PRODUCT, consumes = {MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> updateProduct(
+            @RequestPart String dto,
+            @RequestPart List<MultipartFile> normalType,
+            @RequestPart List<MultipartFile> certificationType) throws JsonProcessingException {
+        ProductUpdaterDto object = new ObjectMapper().readValue(dto, ProductUpdaterDto.class);
+        return ok(this.productService.updateProductDto(object, normalType, certificationType));
     }
+
 
     @DeleteMapping(V2_DELETE_PRODUCT + "/{id}")
     public ResponseEntity<String> disableProduct(@PathVariable("id") UUID id) {

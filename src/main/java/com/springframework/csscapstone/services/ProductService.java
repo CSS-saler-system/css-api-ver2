@@ -37,7 +37,10 @@ public interface ProductService {
             List<MultipartFile> typeImages,
             List<MultipartFile> certificationImages) throws ProductNotFoundException, ProductInvalidException, AccountNotFoundException, IOException;
 
-    UUID updateProductDto(ProductUpdaterDto dto) throws ProductNotFoundException, ProductInvalidException;
+    UUID updateProductDto(
+            ProductUpdaterDto dto,
+            List<MultipartFile> normalType,
+            List<MultipartFile> certificationType) throws ProductNotFoundException, ProductInvalidException;
 
     void changeStatusProduct(UUID id, ProductStatus status);
 

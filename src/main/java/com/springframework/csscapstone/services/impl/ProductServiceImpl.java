@@ -160,6 +160,7 @@ public class ProductServiceImpl implements ProductService {
 
         return this.productRepository.save(savedProduct).getId();
     }
+
     //TODO BUG
     private Product handleImage(List<MultipartFile> typeImages, List<MultipartFile> certificate, Product entity) {
         if (!typeImages.isEmpty()) {
@@ -183,9 +184,10 @@ public class ProductServiceImpl implements ProductService {
 
             imageMap.forEach(blobUploadImages::azureProductStorageHandler);
 
-            ProductImage[] productImages = images
+            ProductImage[] productImages = imageMap.keySet()
                     .stream()
-                    .map(x -> endpoint + productContainer + "/" + nameImageOnAzure + x.getOriginalFilename())
+                    .map(x -> endpoint + productContainer + "/" + x)
+                    .peek(x -> System.out.println("This is image: " + x))
                     .map(name -> new ProductImage().setPath(name).setType(type))
                     .peek(this.imageRepository::save)
                     .toArray(ProductImage[]::new);
@@ -197,7 +199,9 @@ public class ProductServiceImpl implements ProductService {
     //TODO Changing
     @Transactional
     @Override
-    public UUID updateProductDto(ProductUpdaterDto dto) throws ProductNotFoundException, ProductInvalidException {
+    public UUID updateProductDto(ProductUpdaterDto dto,
+                                 List<MultipartFile> normalType,
+                                 List<MultipartFile> certificationType) throws ProductNotFoundException, ProductInvalidException {
         if (dto.getId() == null) throw handlerProductInvalidException().get();
 
         Product entity = this.productRepository
@@ -211,8 +215,46 @@ public class ProductServiceImpl implements ProductService {
                 .setPointSale(dto.getPointSale())
                 .setPrice(dto.getPrice())
                 .setQuantityInStock(dto.getQuantity());
-        this.productRepository.save(entity);
+
+        Product product = imageHandler(normalType, certificationType, entity);
+
+        this.productRepository.save(product);
         return entity.getId();
+    }
+
+    private Product imageHandler(List<MultipartFile> normalType, List<MultipartFile> certificationType, Product entity) {
+        if (Objects.nonNull(normalType) && !normalType.isEmpty()) {
+            saveProductImage(normalType, entity.getId(), ProductImageType.NORMAL)
+                    .ifPresent(entity::addProductImage);
+        }
+        if (Objects.nonNull(normalType) && !normalType.isEmpty()) {
+            saveProductImage(certificationType, entity.getId(), ProductImageType.CERTIFICATION)
+                    .ifPresent(entity::addProductImage);
+        }
+        return entity;
+    }
+
+    //create ProductImage
+    //save in database
+    private Optional<ProductImage[]> saveProductImage(List<MultipartFile> normalType, UUID id, ProductImageType type) {
+        String nameImageOnAzure = id + "/";
+        Map<String, MultipartFile> collect = normalType.stream()
+                .peek(x -> System.out.println("Image: " + nameImageOnAzure + x.getOriginalFilename()))
+                .collect(Collectors.toMap(
+                        x -> nameImageOnAzure + x.getOriginalFilename(),
+                        x -> x));
+        //update to azure
+        collect.forEach(blobUploadImages::azureProductStorageHandler);
+
+        return Optional.of(collect.keySet()
+                .stream()
+//                 .map(x -> endpoint + productContainer + "/" + x)
+                .map(name -> new ProductImage(type,
+                        endpoint + this.productContainer + "/" + name))
+                .peek(this.imageRepository::save)
+                .toArray(ProductImage[]::new)
+        );
+
     }
 
 
