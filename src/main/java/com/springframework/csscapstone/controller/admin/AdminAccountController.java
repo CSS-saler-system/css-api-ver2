@@ -4,7 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorDto;
-import com.springframework.csscapstone.payload.response_dto.PageAccountDto;
+import com.springframework.csscapstone.payload.response_dto.PageImplResponse;
+import com.springframework.csscapstone.payload.response_dto.admin.AccountResponseDto;
 import com.springframework.csscapstone.payload.sharing.AccountUpdaterDto;
 import com.springframework.csscapstone.services.AccountService;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountExistException;
@@ -12,7 +13,6 @@ import com.springframework.csscapstone.utils.exception_utils.account_exception.A
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,7 +39,8 @@ public class AdminAccountController {
             @RequestParam(value = "page_number", required = false) Integer pageNumber,
             @RequestParam(value = "page_size", required = false) Integer pageSize
     ) {
-        PageAccountDto page = service.getAccountDto(accountName, phone, email, address, pageSize, pageNumber);
+//        PageAccountDto page = service.getAccountDto(accountName, phone, email, address, pageSize, pageNumber);
+        PageImplResponse<AccountResponseDto> page = service.getAccountDto(accountName, phone, email, address, pageSize, pageNumber);
         return ResponseEntity.ok(page);
     }
 

@@ -2,8 +2,8 @@ package com.springframework.csscapstone.services;
 
 
 import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorDto;
-import com.springframework.csscapstone.payload.response_dto.PageAccountDto;
 import com.springframework.csscapstone.payload.response_dto.PageEnterpriseDto;
+import com.springframework.csscapstone.payload.response_dto.PageImplResponse;
 import com.springframework.csscapstone.payload.response_dto.admin.AccountResponseDto;
 import com.springframework.csscapstone.payload.sharing.AccountUpdaterDto;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountExistException;
@@ -14,7 +14,7 @@ import javax.security.auth.login.AccountNotFoundException;
 import java.util.UUID;
 
 public interface AccountService {
-    PageAccountDto getAccountDto(
+    PageImplResponse<AccountResponseDto> getAccountDto(
             String name, String phone,
             String email, String address, Integer pageSize, Integer pageNumber);
 

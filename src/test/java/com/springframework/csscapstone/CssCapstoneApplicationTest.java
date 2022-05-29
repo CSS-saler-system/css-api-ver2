@@ -3,7 +3,6 @@ package com.springframework.csscapstone;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorDto;
-import com.springframework.csscapstone.payload.response_dto.PageAccountDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResponseDto;
 import com.springframework.csscapstone.services.AccountService;
 import com.springframework.csscapstone.services.ProductService;
@@ -15,7 +14,6 @@ import org.springframework.test.context.ActiveProfiles;
 import javax.security.auth.login.AccountNotFoundException;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @ActiveProfiles(value = "test")
 class CssCapstoneApplicationTest {

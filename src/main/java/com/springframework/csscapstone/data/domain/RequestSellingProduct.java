@@ -4,6 +4,7 @@ import com.springframework.csscapstone.data.status.RequestStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -14,6 +15,7 @@ import java.util.*;
 
 @Getter
 @Setter
+@Accessors(chain = true)
 @NoArgsConstructor
 @Entity
 public class RequestSellingProduct {
@@ -32,9 +34,6 @@ public class RequestSellingProduct {
 
     @Column(name = "quantity_product")
     private Long quantityProduct;
-
-//    @OneToMany(mappedBy = "sellingProduct")
-//    private List<OrderDetail> orderDetail = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "product_id")

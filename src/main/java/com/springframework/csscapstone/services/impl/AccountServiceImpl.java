@@ -1,8 +1,5 @@
 package com.springframework.csscapstone.services.impl;
 
-import com.azure.storage.blob.BlobClient;
-import com.azure.storage.blob.BlobContainerClient;
-import com.azure.storage.blob.BlobContainerClientBuilder;
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.dao.specifications.AccountSpecifications;
 import com.springframework.csscapstone.data.dao.specifications.RoleSpecification;
@@ -15,8 +12,8 @@ import com.springframework.csscapstone.data.repositories.RoleRepository;
 import com.springframework.csscapstone.data.status.AccountImageType;
 import com.springframework.csscapstone.payload.basic.AccountImageDto;
 import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorDto;
-import com.springframework.csscapstone.payload.response_dto.PageAccountDto;
 import com.springframework.csscapstone.payload.response_dto.PageEnterpriseDto;
+import com.springframework.csscapstone.payload.response_dto.PageImplResponse;
 import com.springframework.csscapstone.payload.response_dto.admin.AccountResponseDto;
 import com.springframework.csscapstone.payload.response_dto.collaborator.EnterpriseResponseDto;
 import com.springframework.csscapstone.payload.sharing.AccountUpdaterDto;
@@ -28,7 +25,6 @@ import com.springframework.csscapstone.utils.exception_utils.account_exception.A
 import com.springframework.csscapstone.utils.mapper_utils.MapperDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,7 +80,7 @@ public class AccountServiceImpl implements AccountService {
      * @return
      */
     @Override
-    public PageAccountDto getAccountDto(String name, String phone, String email, String address, Integer pageSize, Integer pageNumber) {
+    public PageImplResponse<AccountResponseDto> getAccountDto(String name, String phone, String email, String address, Integer pageSize, Integer pageNumber) {
         Specification<Account> specifications = Specification
                 .where(Objects.nonNull(name) ? AccountSpecifications.nameContains(name) : null)
                 .and(StringUtils.isNotBlank(phone) ? AccountSpecifications.phoneEquals(phone) : null)
@@ -109,7 +105,7 @@ public class AccountServiceImpl implements AccountService {
                 .peek(dto -> dto.setIdCard(idCard))
                 .collect(toList());
 
-        return new PageAccountDto(data, page.getNumber() + 1, data.size(),
+        return new PageImplResponse<>(data, page.getNumber() + 1, data.size(),
                 page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
     }
 
