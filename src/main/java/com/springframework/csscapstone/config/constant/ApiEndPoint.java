@@ -162,4 +162,13 @@ public class ApiEndPoint {
         public static final String V2_UPDATE_REQUEST = v2_handler + "/update";
     }
 
+    public static class Order {
+        private static final String v1_handler = ADMIN + "/customer";
+        private static final String v2_handler = ENTERPRISE + "/customer";
+        private static final String v3_handler = COLLABORATOR + "/customer";
+
+        public static final String V2_ORDER_UPDATE_STATUS = v2_handler + "/order";
+        public static final String V2_ORDER_COMPLETE = v2_handler + "/complete";
+    }
+
 }

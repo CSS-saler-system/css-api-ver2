@@ -13,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import javax.security.auth.login.AccountNotFoundException;
 import java.util.UUID;
+import java.util.function.Function;
 
 @SpringBootTest
 @ActiveProfiles(value = "test")
@@ -25,24 +26,18 @@ class CssCapstoneApplicationTest {
     ProductService productService;
 
 
-
     @Test
     void getAllAccountTest() {
     }
 
+
     @Test
     void getProductByAccountTest() throws AccountNotFoundException {
-        productService
-                .findProductByIdAccount(UUID.fromString("939ad7c1-9dfb-0d4c-b8d6-ffd3b7643fe3"))
-                .stream()
-                .map(x -> {
-                    try {
-                        return new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(x);
-                    } catch (JsonProcessingException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-                .forEach(System.out::println);
+//        productService
+//                .findProductByIdAccount(UUID.fromString("939ad7c1-9dfb-0d4c-b8d6-ffd3b7643fe3"))
+//                .stream()
+//                .map(wrap(x -> new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(x)))
+//                .forEach(System.out::println);
     }
 
     @Test
