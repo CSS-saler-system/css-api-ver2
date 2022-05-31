@@ -8,6 +8,7 @@ import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.config.security.model.WebUserDetail;
 import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
+import com.springframework.csscapstone.data.repositories.RoleRepository;
 import com.springframework.csscapstone.services.LoginService;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountLoginWithEmailException;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
@@ -16,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -25,6 +27,7 @@ public class LoginServiceImpl implements LoginService {
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
     private final FirebaseAuth firebaseAuth;
     private final AccountRepository accountRepository;
+    private final RoleRepository roleRepository;
 
     /**
      * case 1: user not in DB,
@@ -36,7 +39,9 @@ public class LoginServiceImpl implements LoginService {
      * @throws AccountLoginWithEmailException
      */
     @Override
-    public UserDetails enterpriseLoginByFirebaseService(String firebaseToken) throws FirebaseAuthException, AccountLoginWithEmailException {
+    public UserDetails enterpriseLoginByFirebaseService(String firebaseToken)
+            throws FirebaseAuthException, AccountLoginWithEmailException {
+
         FirebaseToken verifiedToken = firebaseAuth.verifyIdToken(firebaseToken);
         UserRecord _user = FirebaseAuth.getInstance().getUser(verifiedToken.getUid());
         String email = _user.getEmail();
@@ -56,6 +61,7 @@ public class LoginServiceImpl implements LoginService {
      * @param firebaseToken
      * @return
      */
+    @Transactional
     @Override
     public UserDetails collaboratorLoginByFirebaseService(String firebaseToken) throws FirebaseAuthException {
         FirebaseToken verifiedToken = firebaseAuth.verifyIdToken(firebaseToken);
@@ -67,6 +73,7 @@ public class LoginServiceImpl implements LoginService {
             return accountByPhoneNumber.map(WebUserDetail::new).get();
         }
         Account account = new Account().setPhone(phone);
+        account.addRole(this.roleRepository.getById("ROLE_3"));
         Account savedAccount = accountRepository.save(account);
         return new WebUserDetail(savedAccount);
     }
