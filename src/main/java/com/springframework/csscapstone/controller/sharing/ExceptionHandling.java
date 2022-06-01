@@ -140,7 +140,7 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler {
             CampaignInvalidException.class,
             ProductInvalidException.class,
             CategoryInvalidException.class,
-            FirebaseAuthException.class,
+//            FirebaseAuthException.class,
             CustomerExistedException.class
     })
     public ResponseEntity<?> handleMethodArgNotValid(RuntimeException exception) {
@@ -168,6 +168,11 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler {
     @ExceptionHandler(JsonProcessingException.class)
     public ResponseEntity<?> handleJsonProcessingException(JsonProcessingException exception) {
         return createHttpResponse(BAD_REQUEST, MessagesUtils.getMessage(MessageConstant.Exception.JSON_ERROR));
+    }
+
+    @ExceptionHandler(FirebaseAuthException.class)
+    public ResponseEntity<?> handleFirebaseAuthException(FirebaseAuthException exception) {
+        return createHttpResponse(FORBIDDEN, exception.getMessage());
     }
 
     // ================== handler exception ================================

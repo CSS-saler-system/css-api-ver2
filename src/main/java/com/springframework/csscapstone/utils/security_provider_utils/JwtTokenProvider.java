@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
+import com.springframework.csscapstone.data.domain.Account;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,13 +44,51 @@ public class JwtTokenProvider {
     @Value("${jwt.token.exp-time}")
     private String expiredTime;
 
+    /**
+     * TODO old versions login in this app
+     * @param principal
+     * @return
+     */
     public String generateJwtToken(UserDetails principal) {
-        String result = getClaimsFromUser(principal);
+        String role = getClaimsFromUser(principal);
+
         return JWT.create()
                 .withIssuer(issuer)
                 .withAudience(audience)
                 .withSubject(principal.getUsername())
-                .withClaim(authorityHeader, result)
+                .withClaim(authorityHeader, role)
+                .withExpiresAt(new Date(System.currentTimeMillis() + Long.parseLong(expiredTime)))
+                .sign(Algorithm.HMAC512(this.secretString.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    /**
+     * TODO Generate token by using email For Service
+     * @param role
+     * @param email
+     * @return
+     */
+    public String generateJwtTokenForWeb(String role, String email) {
+        return JWT.create()
+                .withIssuer(issuer)
+                .withAudience(audience)
+                .withSubject(email)
+                .withClaim(authorityHeader, role)
+                .withExpiresAt(new Date(System.currentTimeMillis() + Long.parseLong(expiredTime)))
+                .sign(Algorithm.HMAC512(this.secretString.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    /**
+     * TODO Generate token by using phone for Service
+     * @param role
+     * @param phone
+     * @return
+     */
+    public String generateJwtTokenForCollaborator(String role, String phone) {
+        return JWT.create()
+                .withIssuer(issuer)
+                .withAudience(audience)
+                .withSubject(phone)
+                .withClaim(authorityHeader, role)
                 .withExpiresAt(new Date(System.currentTimeMillis() + Long.parseLong(expiredTime)))
                 .sign(Algorithm.HMAC512(this.secretString.getBytes(StandardCharsets.UTF_8)));
     }
