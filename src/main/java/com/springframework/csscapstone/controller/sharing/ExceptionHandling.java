@@ -28,6 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -35,6 +36,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import javax.security.auth.login.AccountNotFoundException;
 import javax.validation.UnexpectedTypeException;
+import javax.validation.constraints.NotNull;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -42,6 +44,11 @@ import static org.springframework.http.HttpStatus.*;
 @RequiredArgsConstructor
 public class ExceptionHandling extends ResponseEntityExceptionHandler {
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
+
+    @Override
+    protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        return super.handleMissingServletRequestParameter(ex, headers, status, request);
+    }
 
     /**
      * TODO handle invalid DTO

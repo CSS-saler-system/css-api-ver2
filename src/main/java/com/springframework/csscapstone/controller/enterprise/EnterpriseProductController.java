@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.springframework.csscapstone.config.constant.MessageConstant;
+import com.springframework.csscapstone.config.web.ProductCreatorConvertor;
 import com.springframework.csscapstone.data.status.ProductStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.ProductUpdaterDto;
@@ -43,6 +44,7 @@ import static org.springframework.http.ResponseEntity.ok;
 public class EnterpriseProductController {
     private final ProductService productService;
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
+    private final ProductCreatorConvertor productCreatorConvertor;
 
     @GetMapping(V2_LIST_PRODUCT)
     public ResponseEntity<?> getListProductDto(
@@ -93,8 +95,7 @@ public class EnterpriseProductController {
     ) throws ProductInvalidException, AccountNotFoundException, IOException {
         List<MultipartFile> collect = Stream.of(typeImages).collect(Collectors.toList());
         List<MultipartFile> _collect = Stream.of(certificationImages).collect(Collectors.toList());
-        ProductCreatorDto productCreatorDto = new ObjectMapper().readValue(dto, ProductCreatorDto.class);
-
+        ProductCreatorDto productCreatorDto = this.productCreatorConvertor.convert(dto);
         return ok(this.productService.createProduct(productCreatorDto, collect, _collect));
     }
 
