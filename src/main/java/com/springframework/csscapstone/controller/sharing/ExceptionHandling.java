@@ -1,6 +1,7 @@
 package com.springframework.csscapstone.controller.sharing;
 
 import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.azure.core.http.rest.Response;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.springframework.csscapstone.config.constant.MessageConstant;
@@ -140,7 +141,7 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler {
             CampaignInvalidException.class,
             ProductInvalidException.class,
             CategoryInvalidException.class,
-            FirebaseAuthException.class,
+//            FirebaseAuthException.class,
             CustomerExistedException.class
     })
     public ResponseEntity<?> handleMethodArgNotValid(RuntimeException exception) {
@@ -168,6 +169,11 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler {
     @ExceptionHandler(JsonProcessingException.class)
     public ResponseEntity<?> handleJsonProcessingException(JsonProcessingException exception) {
         return createHttpResponse(BAD_REQUEST, MessagesUtils.getMessage(MessageConstant.Exception.JSON_ERROR));
+    }
+
+    @ExceptionHandler(FirebaseAuthException.class)
+    public ResponseEntity<?> handleFirebaseAuthException(FirebaseAuthException exception) {
+        return createHttpResponse(FORBIDDEN, exception.getMessage());
     }
 
     // ================== handler exception ================================

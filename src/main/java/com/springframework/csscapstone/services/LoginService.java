@@ -10,4 +10,6 @@ public interface LoginService {
 
     UserDetails collaboratorLoginByFirebaseService(String firebaseToken) throws FirebaseAuthException;
 
+//    AppCollaboratorResponse collaboratorLogin(String firebaseToken);
+
 }

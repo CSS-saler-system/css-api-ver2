@@ -6,12 +6,14 @@ import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorD
 import com.springframework.csscapstone.payload.request_dto.enterprise.ProductUpdaterDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResponse;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResponseDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.ProductWithQuantityDTO;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.security.auth.login.AccountNotFoundException;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,4 +47,6 @@ public interface ProductService {
     void changeStatusProduct(UUID id, ProductStatus status);
 
     void disableProduct(UUID id);
+
+    PageImplResponse<ProductWithQuantityDTO> getListProductWithCountOrder(UUID id, LocalDate startDate, LocalDate endDate);
 }

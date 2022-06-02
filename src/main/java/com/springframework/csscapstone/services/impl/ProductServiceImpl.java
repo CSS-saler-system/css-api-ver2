@@ -21,6 +21,7 @@ import com.springframework.csscapstone.payload.request_dto.admin.ProductImageDto
 import com.springframework.csscapstone.payload.request_dto.enterprise.ProductUpdaterDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResponse;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResponseDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.ProductWithQuantityDTO;
 import com.springframework.csscapstone.services.ProductService;
 import com.springframework.csscapstone.utils.blob_utils.BlobUploadImages;
 import com.springframework.csscapstone.utils.exception_utils.category_exception.CategoryNotFoundException;
@@ -44,6 +45,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.security.auth.login.AccountNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -276,6 +278,18 @@ public class ProductServiceImpl implements ProductService {
                     x.setProductStatus(ProductStatus.DISABLE);
                     this.productRepository.save(x);
                 });
+    }
+
+    @Override
+    public PageImplResponse<ProductWithQuantityDTO> getListProductWithCountOrder(UUID id, LocalDate startDate, LocalDate endDate) {
+        /**
+         * Order Date in time startDate and endDate;
+            select product, Sum(quantity) From Order_Detail join Order_detail.order o where o.Date >= .... && o <= Date...
+            group by pro
+         */
+
+
+        return null;
     }
 
     //===================Utils Methods====================

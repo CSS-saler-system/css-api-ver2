@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
+import com.springframework.csscapstone.data.domain.Account;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,7 +27,7 @@ import java.util.stream.Stream;
 @Component
 @RequiredArgsConstructor
 @PropertySource(value = "classpath:application-securities.properties")
-public class JwtTokenProvider {
+public class JwtTokenProvider implements TokenProvider {
 
     @Value("${security.secret-string}")
     private String secretString;
@@ -43,13 +44,16 @@ public class JwtTokenProvider {
     @Value("${jwt.token.exp-time}")
     private String expiredTime;
 
+    @Override
     public String generateJwtToken(UserDetails principal) {
-        String result = getClaimsFromUser(principal);
+        //todo get role
+        String role = getClaimsFromUser(principal);
+
         return JWT.create()
                 .withIssuer(issuer)
                 .withAudience(audience)
                 .withSubject(principal.getUsername())
-                .withClaim(authorityHeader, result)
+                .withClaim(authorityHeader, role)
                 .withExpiresAt(new Date(System.currentTimeMillis() + Long.parseLong(expiredTime)))
                 .sign(Algorithm.HMAC512(this.secretString.getBytes(StandardCharsets.UTF_8)));
     }
@@ -61,13 +65,14 @@ public class JwtTokenProvider {
                 .collect(Collectors.joining(","));
     }
 
+    @Override
     public String getSubject(String token) {
         JWTVerifier verifier = getVerifier();
         return verifier.verify(token).getSubject();
     }
 
 
-
+    @Override
     public boolean isTokenValid(String email, String token) {
         JWTVerifier verifier = getVerifier();
         return StringUtils.isNotEmpty(email)
@@ -75,7 +80,7 @@ public class JwtTokenProvider {
     }
 
 
-
+    @Override
     public List<GrantedAuthority> getAuthorities(String token) {
         JWTVerifier verifier = getVerifier();
 
@@ -85,6 +90,7 @@ public class JwtTokenProvider {
                 .findFirst().get();
     }
 
+    @Override
     public Authentication getAuthentication(String username, List<GrantedAuthority> authorities, HttpServletRequest request) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(username, null, authorities);

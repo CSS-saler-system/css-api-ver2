@@ -31,9 +31,9 @@ public class ApiEndPoint {
         public static final String V1_ACTIVE_PRODUCT = v1_handler + "/active";
 
         public static final String V2_LIST_PRODUCT = v2_handler + "/list";
+        public static final String V2_COUNT_LIST_PRODUCT = v2_handler + "/count-list";
         public static final String V2_GET_PRODUCT = v2_handler + "/get";
         public static final String V2_CREATE_PRODUCT = v2_handler + "/new";
-        public static final String V2_CREATE_TEST_PRODUCT = v2_handler + "/test";
         public static final String V2_DELETE_PRODUCT = v2_handler + "/delete";
         public static final String V2_UPDATE_PRODUCT = v2_handler + "/update";
 
@@ -169,6 +169,19 @@ public class ApiEndPoint {
 
         public static final String V2_ORDER_UPDATE_STATUS = v2_handler + "/order";
         public static final String V2_ORDER_COMPLETE = v2_handler + "/complete";
+    }
+
+    public static class Prize {
+        private static final String v1_handler =ADMIN + "/prize";
+        private static final String v2_handler = ENTERPRISE + "/prize";
+        private static final String v3_handler = COLLABORATOR + "/prize";
+
+        public static final String V2_PRIZE_LIST = v2_handler + "/list";
+        public static final String V2_PRIZE_GET = v2_handler + "/get";
+        public static final String V2_PRIZE_RETRIEVE = v2_handler + "/retrieve";
+        public static final String V2_PRIZE_UPDATE = v2_handler + "/update";
+        public static final String V2_PRIZE_CREATE = v2_handler + "/list";
+
     }
 
 }

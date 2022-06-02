@@ -5,9 +5,12 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import com.google.firebase.auth.UserRecord;
 import com.springframework.csscapstone.config.constant.MessageConstant;
+import com.springframework.csscapstone.config.security.model.AppCollaboratorResponse;
 import com.springframework.csscapstone.config.security.model.WebUserDetail;
 import com.springframework.csscapstone.data.domain.Account;
+import com.springframework.csscapstone.data.domain.Role;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
+import com.springframework.csscapstone.data.repositories.RoleRepository;
 import com.springframework.csscapstone.services.LoginService;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountLoginWithEmailException;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
@@ -25,6 +28,7 @@ public class LoginServiceImpl implements LoginService {
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
     private final FirebaseAuth firebaseAuth;
     private final AccountRepository accountRepository;
+    private final RoleRepository roleRepository;
 
     /**
      * case 1: user not in DB,
@@ -36,7 +40,9 @@ public class LoginServiceImpl implements LoginService {
      * @throws AccountLoginWithEmailException
      */
     @Override
-    public UserDetails enterpriseLoginByFirebaseService(String firebaseToken) throws FirebaseAuthException, AccountLoginWithEmailException {
+    public UserDetails enterpriseLoginByFirebaseService(String firebaseToken)
+            throws FirebaseAuthException, AccountLoginWithEmailException {
+
         FirebaseToken verifiedToken = firebaseAuth.verifyIdToken(firebaseToken);
         UserRecord _user = FirebaseAuth.getInstance().getUser(verifiedToken.getUid());
         String email = _user.getEmail();
@@ -52,7 +58,6 @@ public class LoginServiceImpl implements LoginService {
 
     /**
      * Login By Collaborator:
-     *
      * @param firebaseToken
      * @return
      */
@@ -67,8 +72,13 @@ public class LoginServiceImpl implements LoginService {
             return accountByPhoneNumber.map(WebUserDetail::new).get();
         }
         Account account = new Account().setPhone(phone);
+        Role collaborator = this.roleRepository.findAllByName("Collaborator").get();
+
+        account.addRole(collaborator);
+
         Account savedAccount = accountRepository.save(account);
-        return new WebUserDetail(savedAccount);
+
+        return new AppCollaboratorResponse(savedAccount);
     }
 
     private AccountLoginWithEmailException getAccountLoginWithEmailException() {

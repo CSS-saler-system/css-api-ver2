@@ -3,6 +3,7 @@ package com.springframework.csscapstone.controller.collaborator;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.springframework.csscapstone.services.LoginService;
 import com.springframework.csscapstone.utils.security_provider_utils.JwtTokenProvider;
+import com.springframework.csscapstone.utils.security_provider_utils.TokenProvider;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -24,7 +25,7 @@ import static com.springframework.csscapstone.config.constant.ApiEndPoint.COLLAB
 @RequiredArgsConstructor
 @PropertySource(value = "classpath:application-securities.properties")
 public class CollaboratorLoginController {
-    private final JwtTokenProvider jwtTokenProvider;
+    private final TokenProvider jwtTokenProvider;
     private final LoginService loginService;
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 

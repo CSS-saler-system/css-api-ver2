@@ -1,9 +1,11 @@
 package com.springframework.csscapstone.controller.enterprise;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springframework.csscapstone.config.constant.ApiEndPoint;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.status.ProductStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorDto;
@@ -13,13 +15,11 @@ import com.springframework.csscapstone.payload.response_dto.enterprise.ProductRe
 import com.springframework.csscapstone.services.ProductService;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
-import com.springframework.csscapstone.utils.mapper_utils.MapperDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.security.auth.login.AccountNotFoundException;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -56,12 +57,26 @@ public class EnterpriseProductController {
             @RequestParam(value = "page_number", required = false) Integer pageNumber,
             @RequestParam(value = "page_size", required = false) Integer pageSize
     ) {
-
         PageImplResponse<ProductResponseDto> result = productService.findAllProduct(
                 name, brand, inStock, minPrice, maxPrice,
                 minPointSale, maxPointSale, productStatus,
                 pageNumber, pageSize);
         return ok(result);
+    }
+
+    @GetMapping(V2_COUNT_LIST_PRODUCT + "/{id}")
+    public ResponseEntity<?> getListTotalNumberOfProduct(
+            @PathVariable("id") UUID enterpriseId,
+            @RequestParam("start_date")
+            @JsonSerialize(using = LocalDateSerializer.class)
+            @JsonFormat(pattern = "yyyy/MM/dd") LocalDate startDate,
+            @RequestParam("end_date")
+            @JsonSerialize(using = LocalDateSerializer.class)
+            @JsonFormat(pattern = "yyyy/MM/dd") LocalDate endDate
+    ) {
+        this.productService.getListProductWithCountOrder(enterpriseId, startDate, endDate);
+        return null;
+
     }
 
     @GetMapping(V2_GET_PRODUCT + "/{id}")
@@ -83,7 +98,6 @@ public class EnterpriseProductController {
         return ok(this.productService.createProduct(productCreatorDto, collect, _collect));
     }
 
-
     @PutMapping(value = V2_UPDATE_PRODUCT, consumes = {MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> updateProduct(
             @RequestPart String dto,
@@ -92,7 +106,6 @@ public class EnterpriseProductController {
         ProductUpdaterDto object = new ObjectMapper().readValue(dto, ProductUpdaterDto.class);
         return ok(this.productService.updateProductDto(object, normalType, certificationType));
     }
-
 
     @DeleteMapping(V2_DELETE_PRODUCT + "/{id}")
     public ResponseEntity<String> disableProduct(@PathVariable("id") UUID id) {

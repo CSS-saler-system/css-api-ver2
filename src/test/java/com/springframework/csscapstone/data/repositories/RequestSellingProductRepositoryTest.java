@@ -28,4 +28,10 @@ class RequestSellingProductRepositoryTest {
                 .forEach(System.out::println);
 
     }
+//
+//    @Test
+//    void joinEnterpriseTest() {
+//        this.requestSellingProductRepository
+//                .findAllRequestSellingProduct()
+//    }
 }

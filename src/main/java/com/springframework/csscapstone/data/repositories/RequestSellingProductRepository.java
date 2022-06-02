@@ -9,12 +9,28 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Transactional(readOnly = true)
 public interface RequestSellingProductRepository extends JpaRepository<RequestSellingProduct, UUID> {
     @Query(value = "SELECT r FROM RequestSellingProduct r WHERE r.requestStatus = :requestStatus",
-    countQuery = "SELECT COUNT(r) FROM RequestSellingProduct r WHERE r.requestStatus = :requestStatus")
+            countQuery = "SELECT COUNT(r) FROM RequestSellingProduct r WHERE r.requestStatus = :requestStatus")
     Page<RequestSellingProduct> findAllByRequestStatus(@Param("requestStatus") RequestStatus requestStatus, Pageable pageable);
+
+    @Query(
+            value =
+                    "SELECT r FROM RequestSellingProduct r " +
+                            "JOIN r.accounts a " +
+                            "WHERE a.id = :enterpriseId " +
+                            "AND r.requestStatus = :status ",
+            countQuery =
+                    "SELECT COUNT(r) " +
+                            "FROM RequestSellingProduct r JOIN r.accounts a " +
+                            "WHERE a.id = :enterpriseId " +
+                            "AND r.requestStatus = :status")
+    Page<RequestSellingProduct> findAllRequestSellingProduct(
+            @Param("enterpriseId") UUID enterpriseId,
+            @Param("status") RequestStatus status, Pageable pageable);
 
 }

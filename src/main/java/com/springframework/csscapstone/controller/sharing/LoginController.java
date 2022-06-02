@@ -1,10 +1,7 @@
 package com.springframework.csscapstone.controller.sharing;
 
-import com.google.firebase.auth.FirebaseAuthException;
 import com.springframework.csscapstone.config.security.model.UserLogin;
-import com.springframework.csscapstone.services.LoginService;
-import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountLoginWithEmailException;
-import com.springframework.csscapstone.utils.security_provider_utils.JwtTokenProvider;
+import com.springframework.csscapstone.utils.security_provider_utils.TokenProvider;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -19,12 +16,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
-import static com.springframework.csscapstone.config.constant.ApiEndPoint.*;
+import static com.springframework.csscapstone.config.constant.ApiEndPoint.ADMIN_LOGIN;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
@@ -34,7 +30,7 @@ import static org.springframework.http.HttpStatus.OK;
 public class LoginController {
     private final UserDetailsService userDetailsService;
     private final AuthenticationManager authenticationManager;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final TokenProvider jwtTokenProvider;
 //    private final LoginService loginService;
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 

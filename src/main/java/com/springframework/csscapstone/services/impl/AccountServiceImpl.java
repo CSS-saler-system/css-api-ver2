@@ -5,11 +5,15 @@ import com.springframework.csscapstone.data.dao.specifications.AccountSpecificat
 import com.springframework.csscapstone.data.dao.specifications.RoleSpecification;
 import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.AccountImage;
+import com.springframework.csscapstone.data.domain.RequestSellingProduct;
 import com.springframework.csscapstone.data.domain.Role;
 import com.springframework.csscapstone.data.repositories.AccountImageRepository;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
+import com.springframework.csscapstone.data.repositories.RequestSellingProductRepository;
 import com.springframework.csscapstone.data.repositories.RoleRepository;
 import com.springframework.csscapstone.data.status.AccountImageType;
+import com.springframework.csscapstone.data.status.RequestStatus;
+import com.springframework.csscapstone.payload.basic.AccountDto;
 import com.springframework.csscapstone.payload.basic.AccountImageDto;
 import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorDto;
 import com.springframework.csscapstone.payload.response_dto.PageEnterpriseDto;
@@ -60,6 +64,8 @@ public class AccountServiceImpl implements AccountService {
     private final BlobUploadImages blobUploadImages;
 
     private final Logger LOGGER = LoggerFactory.getLogger(CategoryServiceImpl.class);
+
+    private final RequestSellingProductRepository requestSellingProductRepository;
 
 
     @Value("${endpoint}")
@@ -283,7 +289,8 @@ public class AccountServiceImpl implements AccountService {
         updateImage(idCards, entity, ID_CARD).ifPresent(image -> {
             this.accountImageRepository.save(image);
             entity.addImage(image);
-        });;
+        });
+        ;
 
         return entity;
     }
@@ -315,6 +322,7 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * todo for admin disable account
+     *
      * @param id
      */
     @Transactional
@@ -337,7 +345,40 @@ public class AccountServiceImpl implements AccountService {
     }
 
     /**
+     * TODO Get Collaborator by join Request and Account
+     * @param idEnterprise
+     * @return
+     */
+    @Override
+    public PageImplResponse<AccountResponseDto> getAllCollaboratorsOfEnterprise(
+            UUID idEnterprise, Integer pageNumber, Integer pageSize) {
+
+        if (Objects.isNull(idEnterprise)) throw handlerAccountNotFound().get();
+
+        pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
+        pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 1 : pageSize;
+
+        Page<RequestSellingProduct> requests = requestSellingProductRepository
+                .findAllRequestSellingProduct(
+                        idEnterprise, RequestStatus.REGISTERED,
+                        PageRequest.of(pageNumber - 1, pageSize));
+
+        List<AccountResponseDto> responseDto = requests
+                .stream()
+                .flatMap(r -> r.getAccounts().stream())
+                .filter(a -> !a.getId().equals(idEnterprise))
+                .map(MapperDTO.INSTANCE::toAccountResponseDto)
+                .collect(toList());
+
+        return new PageImplResponse<>(
+                responseDto, requests.getNumber() + 1,
+                responseDto.size(), requests.getTotalElements(),
+                requests.getTotalPages(), requests.isFirst(), requests.isLast());
+    }
+
+    /**
      * Exception handler
+     *
      * @return
      */
     private Supplier<AccountInvalidException> handlerAccountInvalid() {

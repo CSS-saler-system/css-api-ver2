@@ -8,6 +8,7 @@ import com.springframework.csscapstone.payload.response_dto.admin.AccountRespons
 import com.springframework.csscapstone.payload.sharing.AccountUpdaterDto;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountExistException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountInvalidException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.security.auth.login.AccountNotFoundException;
@@ -34,6 +35,8 @@ public interface AccountService {
     void disableAccount(UUID id);
 
     PageEnterpriseDto getAllHavingEnterpriseRole(Integer pageNumber, Integer pageSize);
+
+    PageImplResponse<AccountResponseDto> getAllCollaboratorsOfEnterprise(UUID idEnterprise, Integer pageNumber, Integer pageSize);
 
 //    UUID createAccount(AccountDto dto);
 

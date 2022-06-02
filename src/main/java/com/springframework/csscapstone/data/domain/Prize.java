@@ -34,8 +34,9 @@ public class Prize {
     @Lob
     private String description;
 
+    @Column(name = "status_prize")
     @Enumerated(EnumType.STRING)
-    private PrizeStatus statusPrize;
+    private PrizeStatus prizeStatus;
 
     @OneToMany(mappedBy = "prize")
     private List<PrizeImage> prizeImages = new ArrayList<>();

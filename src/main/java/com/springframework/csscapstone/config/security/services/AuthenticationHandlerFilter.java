@@ -1,6 +1,6 @@
 package com.springframework.csscapstone.config.security.services;
 
-import com.springframework.csscapstone.utils.security_provider_utils.JwtTokenProvider;
+import com.springframework.csscapstone.utils.security_provider_utils.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -24,7 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @PropertySource(value = "classpath:application-securities.properties")
 public class AuthenticationHandlerFilter extends OncePerRequestFilter {
-    private final JwtTokenProvider jwtTokenProvider;
+    private final TokenProvider jwtTokenProvider;
     private final Logger LOGGER = LoggerFactory.getLogger(AuthenticationHandlerFilter.class);
 
     @Value("${jwt.token.authorization}")
