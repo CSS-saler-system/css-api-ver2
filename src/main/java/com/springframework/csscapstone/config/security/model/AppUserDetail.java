@@ -9,13 +9,15 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor
-public class WebUserDetail implements UserDetails {
+public class AppUserDetail implements UserDetails, Serializable {
     private final Account entity;
+    private final String token;
     @JsonProperty("role")
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -24,16 +26,20 @@ public class WebUserDetail implements UserDetails {
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
     }
-    @JsonProperty("password")
+    @JsonIgnore
     @Override
     public String getPassword() {
         return entity.getPassword();
     }
-    @JsonProperty("email")
+
+    @JsonProperty("phone")
     @Override
     public String getUsername() {
-        return entity.getEmail();
+        return entity.getPhone();
     }
+
+    @JsonProperty("jwt_token")
+    public String getToken() {return this.token; }
 
     @JsonIgnore
     @Override

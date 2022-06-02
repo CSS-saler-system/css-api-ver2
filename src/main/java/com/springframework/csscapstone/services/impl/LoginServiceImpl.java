@@ -5,20 +5,21 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import com.google.firebase.auth.UserRecord;
 import com.springframework.csscapstone.config.constant.MessageConstant;
-import com.springframework.csscapstone.config.security.model.AppCollaboratorResponse;
+import com.springframework.csscapstone.config.security.model.AppUserDetail;
 import com.springframework.csscapstone.config.security.model.WebUserDetail;
 import com.springframework.csscapstone.data.domain.Account;
-import com.springframework.csscapstone.data.domain.Role;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.data.repositories.RoleRepository;
 import com.springframework.csscapstone.services.LoginService;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountLoginWithEmailException;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
+import com.springframework.csscapstone.utils.security_provider_utils.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -29,11 +30,13 @@ public class LoginServiceImpl implements LoginService {
     private final FirebaseAuth firebaseAuth;
     private final AccountRepository accountRepository;
     private final RoleRepository roleRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     /**
      * case 1: user not in DB,
      * case 2: user in DB
      * Login By Enterprises
+     *
      * @param firebaseToken
      * @return
      * @throws FirebaseAuthException
@@ -58,9 +61,11 @@ public class LoginServiceImpl implements LoginService {
 
     /**
      * Login By Collaborator:
+     *
      * @param firebaseToken
      * @return
      */
+    @Transactional
     @Override
     public UserDetails collaboratorLoginByFirebaseService(String firebaseToken) throws FirebaseAuthException {
         FirebaseToken verifiedToken = firebaseAuth.verifyIdToken(firebaseToken);
@@ -69,16 +74,20 @@ public class LoginServiceImpl implements LoginService {
 
         Optional<Account> accountByPhoneNumber = accountRepository.findAccountByEmail(phone);
         if (accountByPhoneNumber.isPresent()) {
-            return accountByPhoneNumber.map(WebUserDetail::new).get();
+            return accountByPhoneNumber
+                    .map(account -> new AppUserDetail(account, this.jwtTokenProvider
+                                    .generateJwtTokenForCollaborator(
+                                    account.getRole().getName(),
+                                    account.getPhone()))).get();
         }
         Account account = new Account().setPhone(phone);
-        Role collaborator = this.roleRepository.findAllByName("Collaborator").get();
-
-        account.addRole(collaborator);
-
+        account.addRole(this.roleRepository.getById("ROLE_3"));
         Account savedAccount = accountRepository.save(account);
 
-        return new AppCollaboratorResponse(savedAccount);
+        return new AppUserDetail(savedAccount,
+                jwtTokenProvider.generateJwtTokenForCollaborator(
+                        savedAccount.getRole().getName(),
+                        savedAccount.getPhone()));
     }
 
     private AccountLoginWithEmailException getAccountLoginWithEmailException() {

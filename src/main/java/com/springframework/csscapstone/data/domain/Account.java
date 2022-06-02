@@ -45,7 +45,7 @@ public class Account {
     private String password;
 
     @Lob
-    @Column(name = "address", nullable = false)
+    @Column(name = "address")
     private String address;
 
     @Lob

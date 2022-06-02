@@ -44,15 +44,50 @@ public class JwtTokenProvider implements TokenProvider {
     @Value("${jwt.token.exp-time}")
     private String expiredTime;
 
-    @Override
+    /**
+     * TODO old versions login in this app
+     * @param principal
+     * @return
+     */
     public String generateJwtToken(UserDetails principal) {
-        //todo get role
         String role = getClaimsFromUser(principal);
 
         return JWT.create()
                 .withIssuer(issuer)
                 .withAudience(audience)
                 .withSubject(principal.getUsername())
+                .withClaim(authorityHeader, role)
+                .withExpiresAt(new Date(System.currentTimeMillis() + Long.parseLong(expiredTime)))
+                .sign(Algorithm.HMAC512(this.secretString.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    /**
+     * TODO Generate token by using email For Service
+     * @param role
+     * @param email
+     * @return
+     */
+    public String generateJwtTokenForWeb(String role, String email) {
+        return JWT.create()
+                .withIssuer(issuer)
+                .withAudience(audience)
+                .withSubject(email)
+                .withClaim(authorityHeader, role)
+                .withExpiresAt(new Date(System.currentTimeMillis() + Long.parseLong(expiredTime)))
+                .sign(Algorithm.HMAC512(this.secretString.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    /**
+     * TODO Generate token by using phone for Service
+     * @param role
+     * @param phone
+     * @return
+     */
+    public String generateJwtTokenForCollaborator(String role, String phone) {
+        return JWT.create()
+                .withIssuer(issuer)
+                .withAudience(audience)
+                .withSubject(phone)
                 .withClaim(authorityHeader, role)
                 .withExpiresAt(new Date(System.currentTimeMillis() + Long.parseLong(expiredTime)))
                 .sign(Algorithm.HMAC512(this.secretString.getBytes(StandardCharsets.UTF_8)));
@@ -65,14 +100,13 @@ public class JwtTokenProvider implements TokenProvider {
                 .collect(Collectors.joining(","));
     }
 
-    @Override
     public String getSubject(String token) {
         JWTVerifier verifier = getVerifier();
         return verifier.verify(token).getSubject();
     }
 
 
-    @Override
+
     public boolean isTokenValid(String email, String token) {
         JWTVerifier verifier = getVerifier();
         return StringUtils.isNotEmpty(email)
@@ -80,7 +114,7 @@ public class JwtTokenProvider implements TokenProvider {
     }
 
 
-    @Override
+
     public List<GrantedAuthority> getAuthorities(String token) {
         JWTVerifier verifier = getVerifier();
 
@@ -90,7 +124,6 @@ public class JwtTokenProvider implements TokenProvider {
                 .findFirst().get();
     }
 
-    @Override
     public Authentication getAuthentication(String username, List<GrantedAuthority> authorities, HttpServletRequest request) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(username, null, authorities);
