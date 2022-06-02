@@ -41,12 +41,12 @@ public class AuthenticationHandlerFilter extends OncePerRequestFilter {
             return;
         }
         String token = authorizationHeader.substring(tokenPrefix.length());
-        String email = jwtTokenProvider.getSubject(token);
+        String subject = jwtTokenProvider.getSubject(token);
 
-        if (jwtTokenProvider.isTokenValid(email , token)
+        if (jwtTokenProvider.isTokenValid(subject , token)
                 && SecurityContextHolder.getContext().getAuthentication() == null) {
             List<GrantedAuthority> authorities = jwtTokenProvider.getAuthorities(token);
-            Authentication authentication = jwtTokenProvider.getAuthentication(email, authorities, request);
+            Authentication authentication = jwtTokenProvider.getAuthentication(subject, authorities, request);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } else {
             SecurityContextHolder.clearContext();

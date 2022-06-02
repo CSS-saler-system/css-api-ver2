@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static com.springframework.csscapstone.config.constant.ApiEndPoint.COLLABORATOR_LOGIN;
+import static org.springframework.http.ResponseEntity.ok;
 
 @Tag(name = "Login - (Collaborator)")
 @RestController
@@ -34,13 +35,14 @@ public class CollaboratorLoginController {
     @PostMapping(COLLABORATOR_LOGIN)
     public ResponseEntity<?> openLogin(@RequestParam String firebaseToken) throws FirebaseAuthException {
         UserDetails userDetails = this.loginService.collaboratorLoginByFirebaseService(firebaseToken);
-        HttpHeaders header = getHeader(userDetails);
-        return new ResponseEntity<>(userDetails, header, HttpStatus.OK);
+//        HttpHeaders header = getHeader(userDetails);
+//        return new ResponseEntity<>(userDetails, header, HttpStatus.OK);
+        return ok(userDetails);
     }
-
-    private HttpHeaders getHeader(UserDetails principal) {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(tokenHeader, jwtTokenProvider.generateJwtToken(principal));
-        return httpHeaders;
-    }
+//
+//    private HttpHeaders getHeader(UserDetails principal) {
+//        HttpHeaders httpHeaders = new HttpHeaders();
+//        httpHeaders.add(tokenHeader, jwtTokenProvider.generateJwtToken(principal));
+//        return httpHeaders;
+//    }
 }

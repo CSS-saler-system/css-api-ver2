@@ -27,7 +27,6 @@ public class AppUserDetail implements UserDetails, Serializable {
                         .collect(Collectors.toList());
     }
     @JsonIgnore
-//    @JsonProperty("password")
     @Override
     public String getPassword() {
         return entity.getPassword();
