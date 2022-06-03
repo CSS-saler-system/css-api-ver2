@@ -73,10 +73,8 @@ public class LoginServiceImpl implements LoginService {
         String phone = _user.getPhoneNumber();
 
         Optional<Account> accountByPhoneNumber = accountRepository.findAccountByEmail(phone);
-        if (accountByPhoneNumber.isPresent()) {
-            return accountByPhoneNumber
-                    .map(account -> new AppUserDetail(account, this.jwtTokenProvider
-                                    .generateJwtTokenForCollaborator(
+        if (accountByPhoneNumber.isPresent()) { return accountByPhoneNumber
+                    .map(account -> new AppUserDetail(account, this.jwtTokenProvider.generateJwtTokenForCollaborator(
                                     account.getRole().getName(),
                                     account.getPhone()))).get();
         }
@@ -84,8 +82,7 @@ public class LoginServiceImpl implements LoginService {
         account.addRole(this.roleRepository.getById("ROLE_3"));
         Account savedAccount = accountRepository.save(account);
 
-        return new AppUserDetail(savedAccount,
-                jwtTokenProvider.generateJwtTokenForCollaborator(
+        return new AppUserDetail(savedAccount, jwtTokenProvider.generateJwtTokenForCollaborator(
                         savedAccount.getRole().getName(),
                         savedAccount.getPhone()));
     }
