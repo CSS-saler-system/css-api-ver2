@@ -1,7 +1,7 @@
 package com.springframework.csscapstone.config.web;
 
 import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorDto;
-import com.springframework.csscapstone.utils.mapper_utils.ProductCreatorConvertor;
+import com.springframework.csscapstone.utils.mapper_utils.converter_mapper.ProductCreatorConvertor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -9,7 +9,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ActiveProfiles;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 
 @DataJpaTest

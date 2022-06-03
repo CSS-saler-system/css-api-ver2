@@ -1,4 +1,4 @@
-package com.springframework.csscapstone.utils.mapper_utils;
+package com.springframework.csscapstone.utils.mapper_utils.converter_mapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springframework.csscapstone.payload.request_dto.enterprise.ProductUpdaterDto;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class ProductUpdaterConvertor implements Converter<String, ProductUpdaterDto> {
+public class ProductDtoConvertor implements Converter<String, ProductUpdaterDto> {
 
     private final ObjectMapper objectMapper;
 

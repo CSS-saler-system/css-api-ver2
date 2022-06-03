@@ -1,9 +1,5 @@
 package com.springframework.csscapstone.services.impl;
 
-import com.azure.core.implementation.Option;
-import com.azure.storage.blob.BlobClient;
-import com.azure.storage.blob.BlobContainerClient;
-import com.azure.storage.blob.BlobContainerClientBuilder;
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.dao.specifications.ProductSpecifications;
 import com.springframework.csscapstone.data.domain.Account;
@@ -17,7 +13,6 @@ import com.springframework.csscapstone.data.repositories.ProductRepository;
 import com.springframework.csscapstone.data.status.ProductImageType;
 import com.springframework.csscapstone.data.status.ProductStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorDto;
-import com.springframework.csscapstone.payload.request_dto.admin.ProductImageDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.ProductUpdaterDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResponse;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResponseDto;
@@ -27,7 +22,7 @@ import com.springframework.csscapstone.utils.blob_utils.BlobUploadImages;
 import com.springframework.csscapstone.utils.exception_utils.category_exception.CategoryNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
-import com.springframework.csscapstone.utils.mapper_utils.MapperDTO;
+import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -44,7 +39,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.security.auth.login.AccountNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Supplier;
@@ -287,6 +281,8 @@ public class ProductServiceImpl implements ProductService {
             select product, Sum(quantity) From Order_Detail join Order_detail.order o where o.Date >= .... && o <= Date...
             group by pro
          */
+
+//        this.productRepository
 
 
         return null;

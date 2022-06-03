@@ -1,4 +1,4 @@
-package com.springframework.csscapstone.utils.mapper_utils;
+package com.springframework.csscapstone.utils.mapper_utils.dto_mapper;
 
 import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.AccountImage;

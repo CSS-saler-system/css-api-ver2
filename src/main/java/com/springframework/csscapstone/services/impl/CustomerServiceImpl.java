@@ -12,7 +12,7 @@ import com.springframework.csscapstone.services.CustomerService;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.customer_exception.CustomerExistedException;
 import com.springframework.csscapstone.utils.exception_utils.customer_exception.CustomerNotFoundException;
-import com.springframework.csscapstone.utils.mapper_utils.MapperDTO;
+import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

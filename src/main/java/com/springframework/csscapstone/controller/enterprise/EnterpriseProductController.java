@@ -15,7 +15,7 @@ import com.springframework.csscapstone.payload.response_dto.enterprise.ProductRe
 import com.springframework.csscapstone.services.ProductService;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
-import com.springframework.csscapstone.utils.mapper_utils.ProductCreatorConvertor;
+import com.springframework.csscapstone.utils.mapper_utils.converter_mapper.ProductCreatorConvertor;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

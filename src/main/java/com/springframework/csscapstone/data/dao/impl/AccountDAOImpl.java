@@ -4,9 +4,8 @@ import com.springframework.csscapstone.data.dao.AccountDAO;
 import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.Account_;
 import com.springframework.csscapstone.payload.basic.AccountDto;
-import com.springframework.csscapstone.utils.mapper_utils.MapperDTO;
+import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;

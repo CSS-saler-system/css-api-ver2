@@ -20,7 +20,7 @@ import com.springframework.csscapstone.payload.response_dto.admin.CategoryReturn
 import com.springframework.csscapstone.services.CategoryService;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.category_exception.CategoryInvalidException;
-import com.springframework.csscapstone.utils.mapper_utils.MapperDTO;
+import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -34,7 +34,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
-import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;

@@ -10,7 +10,7 @@ import com.springframework.csscapstone.payload.basic.CampaignDto;
 import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorDto;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignInvalidException;
-import com.springframework.csscapstone.utils.mapper_utils.MapperDTO;
+import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;

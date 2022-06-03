@@ -1,4 +1,4 @@
-package com.springframework.csscapstone.utils.mapper_utils;
+package com.springframework.csscapstone.utils.mapper_utils.converter_mapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springframework.csscapstone.payload.response_dto.collaborator.CustomerResponseDto;
