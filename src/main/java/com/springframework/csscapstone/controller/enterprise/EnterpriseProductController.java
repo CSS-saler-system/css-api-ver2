@@ -8,10 +8,12 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.status.ProductStatus;
+import com.springframework.csscapstone.payload.queries.ProductQueriesResponseDto;
 import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.ProductUpdaterDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResponse;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResponseDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.ProductWithQuantityDTO;
 import com.springframework.csscapstone.services.ProductService;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
@@ -21,6 +23,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -70,15 +73,20 @@ public class EnterpriseProductController {
     public ResponseEntity<?> getListTotalNumberOfProduct(
             @PathVariable("id") UUID enterpriseId,
             @RequestParam("start_date")
-            @JsonSerialize(using = LocalDateSerializer.class)
-            @JsonFormat(pattern = "yyyy/MM/dd") LocalDate startDate,
+//            @JsonSerialize(using = LocalDateSerializer.class)
+//            @JsonFormat(pattern = "yyyy/MM/dd")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate startDate,
             @RequestParam("end_date")
-            @JsonSerialize(using = LocalDateSerializer.class)
-            @JsonFormat(pattern = "yyyy/MM/dd") LocalDate endDate
+//            @JsonSerialize(using = LocalDateSerializer.class)
+//            @JsonFormat(pattern = "yyyy/MM/dd")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate endDate,
+            @RequestParam(value = "page_number", required = false) Integer pageNumber,
+            @RequestParam(value = "page_size", required = false) Integer pageSize
     ) {
-        this.productService.getListProductWithCountOrder(enterpriseId, startDate, endDate);
-        return null;
-
+        PageImplResponse<ProductQueriesResponseDto> result = this.productService.getListProductWithCountOrder(enterpriseId, startDate, endDate, pageNumber, pageSize);
+        return ok(result);
     }
 
     @GetMapping(V2_GET_PRODUCT + "/{id}")

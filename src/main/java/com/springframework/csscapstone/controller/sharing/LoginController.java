@@ -38,7 +38,7 @@ public class LoginController {
     private String tokenHeader;
 
     @PostMapping(ADMIN_LOGIN)
-    public ResponseEntity<UserDetails> login(@Valid @RequestBody UserLogin userLogin) {
+    public ResponseEntity<UserDetails> login(@RequestBody @Valid UserLogin userLogin) {
         authentication(userLogin.getEmail(), userLogin.getPassword());
         UserDetails _principal = userDetailsService.loadUserByUsername(userLogin.getEmail());
         HttpHeaders jwtHeader = getHeader(_principal);

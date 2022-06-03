@@ -18,12 +18,13 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public interface OrderDetailRepository extends JpaRepository<OrderDetail, UUID> {
     @Query(
-            value = "SELECT new com.springframework.csscapstone.payload.queries.QueriesProductDto(od.product.id, sum(od.quantity)) " +
+            value = "SELECT new com.springframework.csscapstone.payload.queries.QueriesProductDto(od.product, sum(od.quantity)) " +
                     "FROM OrderDetail od " +
                     "JOIN od.order o " +
                     "WHERE o.createDate >= :startDate  " +
                     "AND o.createDate <= :endDate " +
                     "AND o.status = :status " +
+                    "AND od.product.account.id = :enterpriseId " +
                     "group by od.product.id",
             countQuery = "SELECT count(distinct od.product.id) " +
                     "FROM OrderDetail od " +
@@ -31,8 +32,10 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, UUID> 
                     "WHERE o.createDate >= :startDate  " +
                     "AND o.createDate <= :endDate " +
                     "AND o.status = :status " +
+                    "AND od.product.account.id = :enterpriseId " +
                     "group by od.product.id")
     Page<QueriesProductDto> findAllSumInOrderDetailGroupingByProduct(
+            @Param("enterpriseId") UUID enterpriseId,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate,
             @Param("status") OrderStatus status,

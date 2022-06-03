@@ -11,11 +11,11 @@ import java.util.UUID;
 @Data
 public class QueriesProductDto {
 //    private final _ProductResponseDto product;
-    private final UUID product;
+    private final Product product;
     private final Long sumQuantity;
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-    public QueriesProductDto(UUID product, Long sumQuantity) {
+    public QueriesProductDto(Product product, Long sumQuantity) {
         this.product = product;
         this.sumQuantity = sumQuantity;
     }

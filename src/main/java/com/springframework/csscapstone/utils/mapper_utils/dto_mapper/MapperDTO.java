@@ -42,16 +42,10 @@ public interface MapperDTO {
 
     ProductImageDto toProductImageDto(ProductImage entity);
 
-
     //========================= End Image ========================
     //========================= Role ============================
-
     RoleDto toRoleDto(Role entity);
-
     //========================= End Role ========================
-
-
-
     AccountDto toAccountDto(Account entity);
 
     CampaignDto toCampaignDto(Campaign entity);

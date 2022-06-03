@@ -27,7 +27,7 @@ public interface AccountRepository extends JpaRepository<Account, UUID>, JpaSpec
             "FROM Account a " +
             "LEFT JOIN FETCH a.images " +
             "WHERE a.role.name = :role",
-    countQuery = "SELECT a FROM Account a WHERE a.role.name =: role")
+    countQuery = "SELECT count(a) FROM Account a WHERE a.role.name =: role")
     Page<Account> findAccountByRole(@Param("role") String role, Pageable pageable);
 
     @Query("SELECT a FROM Account a WHERE a.role.name =: role")

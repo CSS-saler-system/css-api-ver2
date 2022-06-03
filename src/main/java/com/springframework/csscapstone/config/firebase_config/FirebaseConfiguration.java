@@ -12,9 +12,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 @Configuration
 @RequiredArgsConstructor
@@ -26,11 +27,7 @@ public class FirebaseConfiguration {
 
     @PostConstruct
     public void setupFirebase() throws IOException {
-//        String configurationFile = "firebase_config.json";
-        InputStream inputStream = new FileInputStream(configurationFile);
-
-//        ResourceLoader resourceLoader = new DefaultResourceLoader();
-//        InputStream inputStream = resourceLoader.getResource("firebase_config.json").getInputStream();
+        InputStream inputStream = Files.newInputStream(Paths.get(configurationFile));
 
         FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.fromStream(inputStream))
