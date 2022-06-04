@@ -38,6 +38,8 @@ import javax.security.auth.login.AccountNotFoundException;
 import javax.validation.UnexpectedTypeException;
 import javax.validation.constraints.NotNull;
 
+import java.time.format.DateTimeParseException;
+
 import static org.springframework.http.HttpStatus.*;
 
 @RestControllerAdvice
@@ -135,6 +137,11 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler {
             message = "The email or password was wrong";
         }
         return createHttpResponse(FORBIDDEN, message);
+    }
+
+    @ExceptionHandler(DateTimeParseException.class)
+    public ResponseEntity<?> handleDateTimeParseException(DateTimeParseException exception) {
+        return createHttpResponse(BAD_REQUEST, exception.getMessage());
     }
 
     /**
