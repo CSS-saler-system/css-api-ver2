@@ -3,41 +3,65 @@ package com.springframework.csscapstone.payload.queries;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.springframework.csscapstone.data.domain.Product;
+import com.springframework.csscapstone.data.status.ProductStatus;
+import com.springframework.csscapstone.payload.basic.EnterpriseDto;
+import com.springframework.csscapstone.payload.basic.ProductImageDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResponseDto;
 import lombok.Data;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
 public class QueriesProductDto {
-//    private final _ProductResponseDto product;
-    private final UUID product;
+    //    private final _ProductResponseDto product;
+    private final Product product;
     private final Long sumQuantity;
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-    public QueriesProductDto(UUID product, Long sumQuantity) {
+    public QueriesProductDto(
+            @JsonProperty("product") Product product,
+            @JsonProperty("sum_quantity") Long sumQuantity) {
         this.product = product;
         this.sumQuantity = sumQuantity;
     }
-
-//
 //
 //    @Data
-//    static class _ProductResponseDto {
+//    public static class ProductBufferDto {
 //        private final UUID id;
 //        private final String name;
 //        private final String shortDescription;
+//        private final String description;
+//        private final Long quantityInStock;
+//        private final Double price;
+//        private final Double pointSale;
+//        private final ProductStatus productStatus;
+//        private final List<ProductImageDto> images;
 //
-//        @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-//
-//        public _ProductResponseDto(
+//        public ProductBufferDto(
 //                @JsonProperty("id") UUID id,
 //                @JsonProperty("name") String name,
-//                @JsonProperty("short_description") String shortDescription) {
+//                @JsonProperty("short_description") String shortDescription,
+//                @JsonProperty("description") String description,
+//
+//                @JsonProperty("quantity_in_stock") Long quantityInStock,
+//
+//                @JsonProperty("price") Double price,
+//
+//                @JsonProperty("point_sale") Double pointSale,
+//                @JsonProperty("status") ProductStatus productStatus,
+//                @JsonProperty("images") List<ProductImageDto> images) {
 //            this.id = id;
 //            this.name = name;
 //            this.shortDescription = shortDescription;
+//            this.quantityInStock = quantityInStock;
+//            this.description = description;
+//            this.price = price;
+//            this.pointSale = pointSale;
+//            this.productStatus = productStatus;
+//            this.images = images;
 //        }
 //    }
+
 
 }

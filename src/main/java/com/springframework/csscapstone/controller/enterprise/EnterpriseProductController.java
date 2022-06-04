@@ -13,6 +13,7 @@ import com.springframework.csscapstone.data.status.ProductStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.ProductUpdaterDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResponse;
+import com.springframework.csscapstone.payload.response_dto.enterprise.ProductCountOrderResponseDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResponseDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductWithQuantityDTO;
 import com.springframework.csscapstone.services.ProductService;
@@ -85,16 +86,19 @@ public class EnterpriseProductController {
 
             @RequestParam(value = "endDate", required = false, defaultValue = "08-06-2030")
             @Valid @Pattern(regexp = "^\\d{2}-\\d{2}-\\d{4}$")
-            String endDate
+            String endDate,
+
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize
     ) {
         LocalDate start = LocalDate.parse(startDate, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         LocalDate end = LocalDate.parse(endDate, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         LOGGER.info("The start date {}", start);
         LOGGER.info("The end date {}", end);
-        PageImplResponse<ProductWithQuantityDTO> result = this
+        PageImplResponse<ProductCountOrderResponseDto> page = this
                 .productService
-                .getListProductWithCountOrder(enterpriseId, start, end);
-        return ok(result);
+                .getListProductWithCountOrder(enterpriseId, start, end, pageNumber, pageSize);
+        return ok(page);
 
     }
 

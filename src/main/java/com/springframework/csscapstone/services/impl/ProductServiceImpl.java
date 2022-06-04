@@ -6,15 +6,15 @@ import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.Category;
 import com.springframework.csscapstone.data.domain.Product;
 import com.springframework.csscapstone.data.domain.ProductImage;
-import com.springframework.csscapstone.data.repositories.AccountRepository;
-import com.springframework.csscapstone.data.repositories.CategoryRepository;
-import com.springframework.csscapstone.data.repositories.ProductImageRepository;
-import com.springframework.csscapstone.data.repositories.ProductRepository;
+import com.springframework.csscapstone.data.repositories.*;
+import com.springframework.csscapstone.data.status.OrderStatus;
 import com.springframework.csscapstone.data.status.ProductImageType;
 import com.springframework.csscapstone.data.status.ProductStatus;
+import com.springframework.csscapstone.payload.queries.QueriesProductDto;
 import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.ProductUpdaterDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResponse;
+import com.springframework.csscapstone.payload.response_dto.enterprise.ProductCountOrderResponseDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResponseDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductWithQuantityDTO;
 import com.springframework.csscapstone.services.ProductService;
@@ -23,6 +23,7 @@ import com.springframework.csscapstone.utils.exception_utils.category_exception.
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
+import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperQueriesDto;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -63,6 +64,8 @@ public class ProductServiceImpl implements ProductService {
     @Value("${connection-string}")
     private String connectionString;
     private final BlobUploadImages blobUploadImages;
+
+    private final OrderDetailRepository orderDetailRepository;
 
     @Override
     public PageImplResponse<ProductResponseDto> findAllProduct(
@@ -275,17 +278,19 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public PageImplResponse<ProductWithQuantityDTO> getListProductWithCountOrder(UUID id, LocalDate startDate, LocalDate endDate) {
-        /**
-         * Order Date in time startDate and endDate;
-            select product, Sum(quantity) From Order_Detail join Order_detail.order o where o.Date >= .... && o <= Date...
-            group by pro
-         */
+    public PageImplResponse<ProductCountOrderResponseDto> getListProductWithCountOrder(
+            UUID id, LocalDate startDate, LocalDate endDate, Integer pageNumber, Integer pageSize) {
 
+        pageNumber =  Objects.isNull(pageNumber) || pageNumber <= 1 ? 1 : pageNumber;
+        pageSize = Objects.isNull(pageSize) || pageSize <= 1 ? 1 : pageSize;
 //        this.productRepository
-
-
-        return null;
+        Page<QueriesProductDto> page = this.orderDetailRepository.findAllSumInOrderDetailGroupingByProduct(
+                id, startDate.atTime(20, 10), endDate.atTime(20, 10),
+                OrderStatus.FINISH, PageRequest.of(pageNumber - 1, pageSize));
+        List<ProductCountOrderResponseDto> content = page.getContent().stream().map(MapperQueriesDto.INSTANCE::toQueriesProductDto)
+                .collect(toList());
+        return new PageImplResponse<>(content, page.getNumber(), content.size(), page.getTotalElements(),
+                page.getTotalPages(), page.isLast(), page.isFirst());
     }
 
     //===================Utils Methods====================
