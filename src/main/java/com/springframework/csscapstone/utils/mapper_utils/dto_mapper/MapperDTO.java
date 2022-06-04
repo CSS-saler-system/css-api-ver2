@@ -72,6 +72,7 @@ public interface MapperDTO {
 
     //todo mapper entity to <ENTERPRISE_DTO>
     EnterpriseDto toEnterpriseDto(Account entity);
+
     //todo mapper entity to <ProductResponseDTO>
     ProductResponseDto toProductResponseDto(Product entity);
 
