@@ -76,9 +76,9 @@ public class EnterpriseProductController {
     }
 
     @SneakyThrows
-    @GetMapping(V2_COUNT_LIST_PRODUCT + "/{id}")
+    @GetMapping(V2_COUNT_LIST_PRODUCT + "/{enterprise_id}")
     public ResponseEntity<?> getListTotalNumberOfProduct(
-            @PathVariable("id") UUID enterpriseId,
+            @PathVariable("enterprise_id") UUID enterpriseId,
 
             @RequestParam(value = "startDate", required = false, defaultValue = "08-06-1999")
             @Valid @Pattern(regexp = "^\\d{2}-\\d{2}-\\d{4}$")
@@ -97,7 +97,9 @@ public class EnterpriseProductController {
         LOGGER.info("The end date {}", end);
         PageImplResponse<ProductCountOrderResponseDto> page = this
                 .productService
-                .getListProductWithCountOrder(enterpriseId, start, end, pageNumber, pageSize);
+                .getListProductWithCountOrder(
+                        enterpriseId, start, end,
+                        pageNumber, pageSize);
         return ok(page);
 
     }

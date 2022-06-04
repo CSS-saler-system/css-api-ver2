@@ -2,6 +2,7 @@ package com.springframework.csscapstone.data.repositories;
 
 import com.springframework.csscapstone.data.domain.OrderDetail;
 import com.springframework.csscapstone.data.status.OrderStatus;
+import com.springframework.csscapstone.payload.queries.QueriesAccountProductSummingDto;
 import com.springframework.csscapstone.payload.queries.QueriesProductDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +40,11 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, UUID> 
             @Param("endDate") LocalDateTime endDate,
             @Param("status") OrderStatus status,
             Pageable pageable);
+
+    @Query(
+            value = "SELECT sum() FROM OrderDetail od" )
+    QueriesAccountProductSummingDto accountProductSumming();
+
 
 
 }

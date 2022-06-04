@@ -51,5 +51,5 @@ public interface ProductService {
     void disableProduct(UUID id);
 
     PageImplResponse<ProductCountOrderResponseDto> getListProductWithCountOrder(
-            UUID id, LocalDate startDate, LocalDate endDate, Integer pageNumber, Integer pageSize);
+            UUID id, LocalDate startDate, LocalDate endDate, Integer pageNumber, Integer pageSize) throws AccountNotFoundException;
 }

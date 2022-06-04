@@ -356,15 +356,17 @@ public class AccountServiceImpl implements AccountService {
 
         pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 1 : pageSize;
-
+        //todo get all request selling
         Page<RequestSellingProduct> requests = requestSellingProductRepository
                 .findAllRequestSellingProduct(
                         idEnterprise, RequestStatus.REGISTERED,
                         PageRequest.of(pageNumber - 1, pageSize));
 
+        //todo convert to Account response Dto
         List<AccountResponseDto> responseDto = requests
                 .stream()
                 .flatMap(r -> r.getAccounts().stream())
+                //todo Get All account of request except enterprise
                 .filter(a -> !a.getId().equals(idEnterprise))
                 .map(MapperDTO.INSTANCE::toAccountResponseDto)
                 .collect(toList());
@@ -373,6 +375,35 @@ public class AccountServiceImpl implements AccountService {
                 responseDto, requests.getNumber() + 1,
                 responseDto.size(), requests.getTotalElements(),
                 requests.getTotalPages(), requests.isFirst(), requests.isLast());
+    }
+    /**
+     * TODO Modified above method
+     * @param idEnterprise
+     * @return
+     */
+    @Override
+    public PageImplResponse<AccountResponseDto> collaboratorsOfEnterpriseIncludeNumberOfOrder(
+            UUID idEnterprise, Integer pageNumber, Integer pageSize) {
+
+        if (Objects.isNull(idEnterprise)) throw handlerAccountNotFound().get();
+
+        pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
+        pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 1 : pageSize;
+        //todo get all request selling
+        Page<RequestSellingProduct> requests = requestSellingProductRepository
+                .findAllRequestSellingProduct(
+                        idEnterprise, RequestStatus.REGISTERED,
+                        PageRequest.of(pageNumber - 1, pageSize));
+
+        //todo convert to Account response Dto
+        List<Account> collect = requests
+                .stream()
+                .flatMap(r -> r.getAccounts().stream())
+                //todo Get All account of request except enterprise
+                .filter(a -> !a.getId().equals(idEnterprise))
+//                .map(MapperDTO.INSTANCE::toAccountResponseDto)
+                .collect(toList());
+        return null;
     }
 
     /**

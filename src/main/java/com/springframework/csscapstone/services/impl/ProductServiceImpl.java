@@ -279,16 +279,19 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public PageImplResponse<ProductCountOrderResponseDto> getListProductWithCountOrder(
-            UUID id, LocalDate startDate, LocalDate endDate, Integer pageNumber, Integer pageSize) {
+            UUID id, LocalDate startDate, LocalDate endDate, Integer pageNumber, Integer pageSize) throws AccountNotFoundException {
+        if (Objects.isNull(id)) throw handlerAccountNotFound().get();
 
         pageNumber =  Objects.isNull(pageNumber) || pageNumber <= 1 ? 1 : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize <= 1 ? 1 : pageSize;
-//        this.productRepository
+
         Page<QueriesProductDto> page = this.orderDetailRepository.findAllSumInOrderDetailGroupingByProduct(
-                id, startDate.atTime(20, 10), endDate.atTime(20, 10),
+                id, startDate.atStartOfDay(), endDate.atStartOfDay(),
                 OrderStatus.FINISH, PageRequest.of(pageNumber - 1, pageSize));
+
         List<ProductCountOrderResponseDto> content = page.getContent().stream().map(MapperQueriesDto.INSTANCE::toQueriesProductDto)
                 .collect(toList());
+
         return new PageImplResponse<>(content, page.getNumber(), content.size(), page.getTotalElements(),
                 page.getTotalPages(), page.isLast(), page.isFirst());
     }

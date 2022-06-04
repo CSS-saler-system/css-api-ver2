@@ -3,14 +3,7 @@ package com.springframework.csscapstone.payload.queries;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.springframework.csscapstone.data.domain.Product;
-import com.springframework.csscapstone.data.status.ProductStatus;
-import com.springframework.csscapstone.payload.basic.EnterpriseDto;
-import com.springframework.csscapstone.payload.basic.ProductImageDto;
-import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResponseDto;
 import lombok.Data;
-
-import java.util.List;
-import java.util.UUID;
 
 @Data
 public class QueriesProductDto {
@@ -18,14 +11,14 @@ public class QueriesProductDto {
     private final Product product;
     private final Long sumQuantity;
 
-    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-    public QueriesProductDto(
-            @JsonProperty("product") Product product,
-            @JsonProperty("sum_quantity") Long sumQuantity) {
-        this.product = product;
-        this.sumQuantity = sumQuantity;
-    }
-//
+//    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+//    public QueriesProductDto(
+//            @JsonProperty("product") Product product,
+//            @JsonProperty("sum_quantity") Long sumQuantity) {
+//        this.product = product;
+//        this.sumQuantity = sumQuantity;
+//    }
+////
 //    @Data
 //    public static class ProductBufferDto {
 //        private final UUID id;

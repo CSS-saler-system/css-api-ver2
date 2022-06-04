@@ -38,6 +38,8 @@ public interface AccountService {
 
     PageImplResponse<AccountResponseDto> getAllCollaboratorsOfEnterprise(UUID idEnterprise, Integer pageNumber, Integer pageSize);
 
-//    UUID createAccount(AccountDto dto);
-
+    //    UUID createAccount(AccountDto dto);
+    //todo Test
+    PageImplResponse<AccountResponseDto> collaboratorsOfEnterpriseIncludeNumberOfOrder(
+            UUID idEnterprise, Integer pageNumber, Integer pageSize);
 }

@@ -26,6 +26,7 @@ public class EnterpriseCollaboratorsController {
 
         PageImplResponse<AccountResponseDto> allCollaboratorsOfEnterprise =
                 this.accountService.getAllCollaboratorsOfEnterprise(id, pageNumber, pageSize);
+
         return ok(allCollaboratorsOfEnterprise);
     }
 }
