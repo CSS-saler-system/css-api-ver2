@@ -32,9 +32,6 @@ public class RequestSellingProduct {
     @Enumerated(EnumType.STRING)
     private RequestStatus requestStatus;
 
-    @Column(name = "quantity_product")
-    private Long quantityProduct;
-
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
@@ -63,7 +60,6 @@ public class RequestSellingProduct {
                 "id=" + id +
                 ", dateTimeRequest=" + dateTimeRequest +
                 ", requestStatus=" + requestStatus +
-                ", quantityProduct=" + quantityProduct +
                 '}';
     }
 }
