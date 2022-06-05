@@ -40,7 +40,8 @@ public class CollaboratorCustomerController {
     }
 
     @PostMapping(V3_CREATE_CUSTOMER)
-    public ResponseEntity<UUID> createNewCustomer(@Valid @RequestBody CustomerCreatorReqDto dto)
+    public ResponseEntity<UUID> createNewCustomer(
+            @RequestBody @Valid CustomerCreatorReqDto dto)
             throws AccountNotFoundException {
         return ok(this.customerService.createCustomer(dto));
     }

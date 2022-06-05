@@ -3,6 +3,10 @@ package com.springframework.csscapstone.payload.request_dto.collaborator;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
@@ -22,9 +26,9 @@ public class CustomerCreatorReqDto implements Serializable {
 
     @NotEmpty(message = "The address must not be empty")
     private final String address;
-
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @NotNull(message = "The day of birth must be not null")
     private final LocalDate dob;
 
     private final AccountDto accountCreator;
@@ -34,12 +38,12 @@ public class CustomerCreatorReqDto implements Serializable {
 
     @JsonCreator
     public CustomerCreatorReqDto(
-            @JsonProperty String name,
-            @JsonProperty String phone,
-            @JsonProperty String address,
-            @JsonProperty LocalDate dob,
-            @JsonProperty AccountDto accountCreator,
-            @JsonProperty String description) {
+            @JsonProperty("name") String name,
+            @JsonProperty("phone") String phone,
+            @JsonProperty("address") String address,
+            @JsonProperty("day_of_birth") LocalDate dob,
+            @JsonProperty("account_creator") AccountDto accountCreator,
+            @JsonProperty("description") String description) {
         super();
         this.phone = phone;
         this.address = address;
@@ -55,7 +59,7 @@ public class CustomerCreatorReqDto implements Serializable {
         private final UUID id;
 
         @JsonCreator
-        public AccountDto(@JsonProperty UUID id) {
+        public AccountDto(@JsonProperty("id") UUID id) {
             this.id = id;
         }
     }
