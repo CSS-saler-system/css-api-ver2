@@ -63,6 +63,25 @@ public class Product {
     @ManyToMany(mappedBy = "products")
     private Set<Campaign> campaign = new HashSet<>();
 
+    public Product(String name,
+                   String brand,
+                   String shortDescription,
+                   String description,
+                   Long quantityInStock,
+                   Double price,
+                   Double pointSale,
+                   ProductStatus productStatus) {
+        this.name = name;
+        this.brand = brand;
+        this.shortDescription = shortDescription;
+        this.description = description;
+        this.quantityInStock = quantityInStock;
+        this.price = price;
+        this.pointSale = pointSale;
+        this.productStatus = productStatus;
+//        this.category = category;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
