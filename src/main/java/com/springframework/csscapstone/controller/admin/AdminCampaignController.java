@@ -4,8 +4,8 @@ import com.springframework.csscapstone.config.constant.DataConstraint;
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.services.CampaignService;
-import com.springframework.csscapstone.payload.basic.CampaignDto;
-import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorDto;
+import com.springframework.csscapstone.payload.basic.CampaignBasicDto;
+import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignInvalidException;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
@@ -32,7 +32,7 @@ public class AdminCampaignController {
     private final CampaignService campaignService;
 
     @GetMapping(V1_LIST_CAMPAIGN)
-    public ResponseEntity<List<CampaignDto>> getListDto(
+    public ResponseEntity<List<CampaignBasicDto>> getListDto(
             @RequestParam(value = "campaignName", required = false) String campaignName,
             @RequestParam(value = "createdDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createdDate,
             @RequestParam(value = "lastModifiedDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime lastModifiedDate,
@@ -51,24 +51,24 @@ public class AdminCampaignController {
         endDate = Objects.nonNull(endDate) ? endDate : DataConstraint.MAX_DATE;
         status = Objects.nonNull(status) ? status : CampaignStatus.FINISHED;
 
-        List<CampaignDto> CampaignDto = campaignService.findCampaign(campaignName, createdDate,
+        List<CampaignBasicDto> CampaignBasicDto = campaignService.findCampaign(campaignName, createdDate,
                 lastModifiedDate, startDate, endDate, description, kpi, status);
-        return ResponseEntity.ok(CampaignDto);
+        return ResponseEntity.ok(CampaignBasicDto);
     }
 
     @GetMapping(V1_GET_CAMPAIGN + "/{id}")
-    public ResponseEntity<CampaignDto> getCampaignById(@PathVariable("id") UUID id) throws EntityNotFoundException {
+    public ResponseEntity<CampaignBasicDto> getCampaignById(@PathVariable("id") UUID id) throws EntityNotFoundException {
         return ok(campaignService.findById(id));
     }
 
     @PutMapping(V1_UPDATE_CAMPAIGN)
-    public ResponseEntity<UUID> updateCampaign(@RequestBody CampaignDto dto) throws EntityNotFoundException {
+    public ResponseEntity<UUID> updateCampaign(@RequestBody CampaignBasicDto dto) throws EntityNotFoundException {
         UUID campaignUUID = campaignService.updateCampaign(dto);
         return ok(campaignUUID);
     }
 
     @PostMapping(V1_CREATE_CAMPAIGN)
-    public ResponseEntity<UUID> addNewCampaign(@RequestBody CampaignCreatorDto dto) throws CampaignInvalidException {
+    public ResponseEntity<UUID> addNewCampaign(@RequestBody CampaignCreatorReqDto dto) throws CampaignInvalidException {
         UUID campaign = campaignService.createCampaign(dto);
         return ok(campaign);
     }

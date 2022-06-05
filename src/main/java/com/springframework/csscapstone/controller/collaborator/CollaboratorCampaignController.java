@@ -2,7 +2,7 @@ package com.springframework.csscapstone.controller.collaborator;
 
 import com.springframework.csscapstone.config.constant.DataConstraint;
 import com.springframework.csscapstone.data.status.CampaignStatus;
-import com.springframework.csscapstone.payload.basic.CampaignDto;
+import com.springframework.csscapstone.payload.basic.CampaignBasicDto;
 import com.springframework.csscapstone.services.CampaignService;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,7 +32,7 @@ public class CollaboratorCampaignController {
     private final CampaignService campaignService;
 
     @GetMapping(V3_LIST_CAMPAIGN)
-    public ResponseEntity<List<CampaignDto>> getListDto(
+    public ResponseEntity<List<CampaignBasicDto>> getListDto(
             @RequestParam(value = "campaignName", required = false) String campaignName,
             @RequestParam(value = "createdDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createdDate,
             @RequestParam(value = "lastModifiedDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime lastModifiedDate,
@@ -51,13 +51,13 @@ public class CollaboratorCampaignController {
         endDate = Objects.nonNull(endDate) ? endDate : DataConstraint.MAX_DATE;
         status = Objects.nonNull(status) ? status : CampaignStatus.FINISHED;
 
-        List<CampaignDto> CampaignDto = campaignService.findCampaign(campaignName, createdDate,
+        List<CampaignBasicDto> CampaignBasicDto = campaignService.findCampaign(campaignName, createdDate,
                 lastModifiedDate, startDate, endDate, description, kpi, status);
-        return ResponseEntity.ok(CampaignDto);
+        return ResponseEntity.ok(CampaignBasicDto);
     }
 
     @GetMapping(V3_GET_CAMPAIGN + "/{id}")
-    public ResponseEntity<CampaignDto> getCampaignById(@PathVariable("id") UUID id) throws EntityNotFoundException {
+    public ResponseEntity<CampaignBasicDto> getCampaignById(@PathVariable("id") UUID id) throws EntityNotFoundException {
         return ok(campaignService.findById(id));
     }
 }

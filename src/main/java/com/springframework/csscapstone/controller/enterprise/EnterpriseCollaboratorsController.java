@@ -1,7 +1,7 @@
 package com.springframework.csscapstone.controller.enterprise;
 
-import com.springframework.csscapstone.payload.response_dto.PageImplResponse;
-import com.springframework.csscapstone.payload.response_dto.admin.AccountResponseDto;
+import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
+import com.springframework.csscapstone.payload.response_dto.admin.AccountResDto;
 import com.springframework.csscapstone.services.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +24,9 @@ public class EnterpriseCollaboratorsController {
             @RequestParam("page_number") Integer pageNumber,
             @RequestParam("page_size") Integer pageSize) {
 
-        PageImplResponse<AccountResponseDto> allCollaboratorsOfEnterprise =
+        PageImplResDto<AccountResDto> allCollaboratorsOfEnterprise =
                 this.accountService.getAllCollaboratorsOfEnterprise(id, pageNumber, pageSize);
+
         return ok(allCollaboratorsOfEnterprise);
     }
 }

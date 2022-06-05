@@ -1,43 +1,44 @@
 package com.springframework.csscapstone.services;
 
 
-import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorDto;
-import com.springframework.csscapstone.payload.response_dto.PageEnterpriseDto;
-import com.springframework.csscapstone.payload.response_dto.PageImplResponse;
-import com.springframework.csscapstone.payload.response_dto.admin.AccountResponseDto;
-import com.springframework.csscapstone.payload.sharing.AccountUpdaterDto;
+import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorReqDto;
+import com.springframework.csscapstone.payload.response_dto.PageEnterpriseResDto;
+import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
+import com.springframework.csscapstone.payload.response_dto.admin.AccountResDto;
+import com.springframework.csscapstone.payload.sharing.AccountUpdaterJsonDto;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountExistException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountInvalidException;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.security.auth.login.AccountNotFoundException;
 import java.util.UUID;
 
 public interface AccountService {
-    PageImplResponse<AccountResponseDto> getAccountDto(
+    PageImplResDto<AccountResDto> getAccountDto(
             String name, String phone,
             String email, String address, Integer pageSize, Integer pageNumber);
 
-    AccountResponseDto getById(UUID id) throws AccountInvalidException, AccountNotFoundException;
+    AccountResDto getById(UUID id) throws AccountInvalidException, AccountNotFoundException;
 
     UUID createAccount(
-            AccountCreatorDto dto,
+            AccountCreatorReqDto dto,
             MultipartFile avatar,
             MultipartFile license,
             MultipartFile idCards) throws AccountExistException, AccountNotFoundException;
 
-    UUID updateAccount(AccountUpdaterDto accountUpdaterDto,
+    UUID updateAccount(AccountUpdaterJsonDto accountUpdaterJsonDto,
                        MultipartFile avatars,
                        MultipartFile licenses,
                        MultipartFile idCards) throws AccountInvalidException;
 
     void disableAccount(UUID id);
 
-    PageEnterpriseDto getAllHavingEnterpriseRole(Integer pageNumber, Integer pageSize);
+    PageEnterpriseResDto getAllHavingEnterpriseRole(Integer pageNumber, Integer pageSize);
 
-    PageImplResponse<AccountResponseDto> getAllCollaboratorsOfEnterprise(UUID idEnterprise, Integer pageNumber, Integer pageSize);
+    PageImplResDto<AccountResDto> getAllCollaboratorsOfEnterprise(UUID idEnterprise, Integer pageNumber, Integer pageSize);
 
-//    UUID createAccount(AccountDto dto);
-
+    //    UUID createAccount(AccountDto dto);
+    //todo Test
+    PageImplResDto<AccountResDto> collaboratorsOfEnterpriseIncludeNumberOfOrder(
+            UUID idEnterprise, Integer pageNumber, Integer pageSize);
 }

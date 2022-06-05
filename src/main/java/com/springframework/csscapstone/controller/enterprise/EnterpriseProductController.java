@@ -1,18 +1,15 @@
 package com.springframework.csscapstone.controller.enterprise;
 
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.status.ProductStatus;
-import com.springframework.csscapstone.payload.queries.ProductQueriesResponseDto;
-import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorDto;
-import com.springframework.csscapstone.payload.request_dto.enterprise.ProductUpdaterDto;
-import com.springframework.csscapstone.payload.response_dto.PageImplResponse;
-import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResponseDto;
+import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorReqDto;
+import com.springframework.csscapstone.payload.request_dto.enterprise.ProductUpdaterReqDto;
+import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.ProductCountOrderResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResDto;
 import com.springframework.csscapstone.services.ProductService;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
@@ -20,17 +17,19 @@ import com.springframework.csscapstone.utils.mapper_utils.converter_mapper.Produ
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.security.auth.login.AccountNotFoundException;
 import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -61,31 +60,40 @@ public class EnterpriseProductController {
             @RequestParam(value = "page_number", required = false) Integer pageNumber,
             @RequestParam(value = "page_size", required = false) Integer pageSize
     ) {
-        PageImplResponse<ProductResponseDto> result = productService.findAllProduct(
+        PageImplResDto<ProductResDto> result = productService.findAllProduct(
                 name, brand, inStock, minPrice, maxPrice,
                 minPointSale, maxPointSale, productStatus,
                 pageNumber, pageSize);
         return ok(result);
     }
 
-    @GetMapping(V2_COUNT_LIST_PRODUCT + "/{id}")
+    @SneakyThrows
+    @GetMapping(V2_COUNT_LIST_PRODUCT + "/{enterprise_id}")
     public ResponseEntity<?> getListTotalNumberOfProduct(
-            @PathVariable("id") UUID enterpriseId,
-            @RequestParam("start_date")
-//            @JsonSerialize(using = LocalDateSerializer.class)
-//            @JsonFormat(pattern = "yyyy/MM/dd")
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            LocalDate startDate,
-            @RequestParam("end_date")
-//            @JsonSerialize(using = LocalDateSerializer.class)
-//            @JsonFormat(pattern = "yyyy/MM/dd")
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            LocalDate endDate,
-            @RequestParam(value = "page_number", required = false) Integer pageNumber,
-            @RequestParam(value = "page_size", required = false) Integer pageSize
+            @PathVariable("enterprise_id") UUID enterpriseId,
+
+            @RequestParam(value = "startDate", required = false, defaultValue = "08-06-1999")
+            @Valid @Pattern(regexp = "^\\d{2}-\\d{2}-\\d{4}$")
+            String startDate,
+
+            @RequestParam(value = "endDate", required = false, defaultValue = "08-06-2030")
+            @Valid @Pattern(regexp = "^\\d{2}-\\d{2}-\\d{4}$")
+            String endDate,
+
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize
     ) {
-        PageImplResponse<ProductQueriesResponseDto> result = this.productService.getListProductWithCountOrder(enterpriseId, startDate, endDate, pageNumber, pageSize);
-        return ok(result);
+        LocalDate start = LocalDate.parse(startDate, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        LocalDate end = LocalDate.parse(endDate, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        LOGGER.info("The start date {}", start);
+        LOGGER.info("The end date {}", end);
+        PageImplResDto<ProductCountOrderResDto> page = this
+                .productService
+                .getListProductWithCountOrder(
+                        enterpriseId, start, end,
+                        pageNumber, pageSize);
+        return ok(page);
+
     }
 
     @GetMapping(V2_GET_PRODUCT + "/{id}")
@@ -102,8 +110,8 @@ public class EnterpriseProductController {
     ) throws ProductInvalidException, AccountNotFoundException, IOException {
         List<MultipartFile> collect = Stream.of(typeImages).collect(Collectors.toList());
         List<MultipartFile> _collect = Stream.of(certificationImages).collect(Collectors.toList());
-        ProductCreatorDto productCreatorDto = this.productCreatorConvertor.convert(dto);
-        return ok(this.productService.createProduct(productCreatorDto, collect, _collect));
+        ProductCreatorReqDto productCreatorReqDto = this.productCreatorConvertor.convert(dto);
+        return ok(this.productService.createProduct(productCreatorReqDto, collect, _collect));
     }
 
     @PutMapping(value = V2_UPDATE_PRODUCT, consumes = {MULTIPART_FORM_DATA_VALUE})
@@ -111,7 +119,7 @@ public class EnterpriseProductController {
             @RequestPart String dto,
             @RequestPart List<MultipartFile> normalType,
             @RequestPart List<MultipartFile> certificationType) throws JsonProcessingException {
-        ProductUpdaterDto object = new ObjectMapper().readValue(dto, ProductUpdaterDto.class);
+        ProductUpdaterReqDto object = new ObjectMapper().readValue(dto, ProductUpdaterReqDto.class);
         return ok(this.productService.updateProductDto(object, normalType, certificationType));
     }
 

@@ -5,9 +5,9 @@ import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.Customer;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.data.repositories.CustomerRepository;
-import com.springframework.csscapstone.payload.request_dto.collaborator.CustomerCreatorDto;
-import com.springframework.csscapstone.payload.request_dto.collaborator.CustomerUpdatorDto;
-import com.springframework.csscapstone.payload.response_dto.collaborator.CustomerResponseDto;
+import com.springframework.csscapstone.payload.request_dto.collaborator.CustomerCreatorReqDto;
+import com.springframework.csscapstone.payload.request_dto.collaborator.CustomerUpdatorReqDto;
+import com.springframework.csscapstone.payload.response_dto.collaborator.CustomerResDto;
 import com.springframework.csscapstone.services.CustomerService;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.customer_exception.CustomerExistedException;
@@ -31,7 +31,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final AccountRepository accountRepository;
 
     @Override
-    public List<CustomerResponseDto> getAllCustomer() {
+    public List<CustomerResDto> getAllCustomer() {
         return this.customerRepository.findAll()
                 .stream()
                 .map(MapperDTO.INSTANCE::toCustomerResponseDto)
@@ -39,7 +39,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerResponseDto findCustomerByPhone(String phone) throws CustomerNotFoundException {
+    public CustomerResDto findCustomerByPhone(String phone) throws CustomerNotFoundException {
         return this.customerRepository
                 .getCustomerByPhone(phone)
                 .map(MapperDTO.INSTANCE::toCustomerResponseDto)
@@ -48,7 +48,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     //TODO create customer <Completed></>
     @Override
-    public UUID createCustomer(CustomerCreatorDto dto) throws AccountNotFoundException {
+    public UUID createCustomer(CustomerCreatorReqDto dto) {
 
         if (this.customerRepository.findByPhone(dto.getPhone()).isPresent()) {
             throw new CustomerExistedException(MessagesUtils.getMessage(MessageConstant.Customer.EXISTED));
@@ -70,7 +70,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     //TODO update Customer
     @Override
-    public UUID updateCustomer(CustomerUpdatorDto dto) {
+    public UUID updateCustomer(CustomerUpdatorReqDto dto) {
         Account accountUpdator = this.accountRepository.findById(dto.getAccountUpdater().getId())
                 .orElseThrow(getAccountNotFoundExceptionSupplier());
 
@@ -89,7 +89,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerResponseDto getCustomerById(UUID id) throws CustomerNotFoundException {
+    public CustomerResDto getCustomerById(UUID id) throws CustomerNotFoundException {
         return this.customerRepository.findById(id)
                 .map(MapperDTO.INSTANCE::toCustomerResponseDto)
                 .orElseThrow(this.getCustomerNotFoundExceptionSupplier());

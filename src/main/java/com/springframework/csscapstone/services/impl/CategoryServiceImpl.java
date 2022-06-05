@@ -11,12 +11,12 @@ import com.springframework.csscapstone.data.repositories.ProductImageRepository;
 import com.springframework.csscapstone.data.repositories.ProductRepository;
 import com.springframework.csscapstone.data.status.CategoryStatus;
 import com.springframework.csscapstone.data.status.ProductImageType;
-import com.springframework.csscapstone.payload.basic.CategoryDto;
-import com.springframework.csscapstone.payload.request_dto.admin.CategoryCreatorDto;
-import com.springframework.csscapstone.payload.request_dto.admin.CategorySearchDto;
-import com.springframework.csscapstone.payload.request_dto.admin.CategoryUpdaterDto;
-import com.springframework.csscapstone.payload.request_dto.admin.ProductImageDto;
-import com.springframework.csscapstone.payload.response_dto.admin.CategoryReturnDto;
+import com.springframework.csscapstone.payload.basic.CategoryBasicDto;
+import com.springframework.csscapstone.payload.request_dto.admin.CategoryCreatorReqDto;
+import com.springframework.csscapstone.payload.request_dto.admin.CategorySearchReqDto;
+import com.springframework.csscapstone.payload.request_dto.admin.CategoryUpdaterReqDto;
+import com.springframework.csscapstone.payload.request_dto.admin.ProductImageReqDto;
+import com.springframework.csscapstone.payload.response_dto.admin.CategoryResDto;
 import com.springframework.csscapstone.services.CategoryService;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.category_exception.CategoryInvalidException;
@@ -54,7 +54,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final EntityManager em;
 
     @Override
-    public List<CategoryDto> findCategories(CategorySearchDto dto) {
+    public List<CategoryBasicDto> findCategories(CategorySearchReqDto dto) {
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
         CriteriaQuery<Category> query = builder.createQuery(Category.class);
@@ -73,14 +73,14 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Cacheable(cacheNames = "cache_product_of_category")
-    public CategoryReturnDto findCategoryById(UUID id) throws EntityNotFoundException {
+    public CategoryResDto findCategoryById(UUID id) throws EntityNotFoundException {
         //get list category
         Category _category = categoryRepository.findById(id).orElseThrow(categoryErrorNotFound());
 
         //get list product
-        List<CategoryReturnDto._ProductDto> products = this.productRepository
+        List<CategoryResDto._ProductDto> products = this.productRepository
                 .findProductByCategory(_category)
-                .stream().map(product -> new CategoryReturnDto._ProductDto(
+                .stream().map(product -> new CategoryResDto._ProductDto(
                         product.getId(),
                         product.getName(),
                         product.getBrand(),
@@ -93,7 +93,7 @@ public class CategoryServiceImpl implements CategoryService {
                         getProductImages(product, ProductImageType.NORMAL)
                 )).collect(toList());
 
-        return new CategoryReturnDto(_category.getId(), _category.getCategoryName(), _category.getStatus(), products);
+        return new CategoryResDto(_category.getId(), _category.getCategoryName(), _category.getStatus(), products);
 
     }
 
@@ -101,18 +101,18 @@ public class CategoryServiceImpl implements CategoryService {
      * TODO NEED MODIFIED
      * Get List Image of product by type
      */
-    private List<ProductImageDto> getProductImages(Product product, ProductImageType type) {
+    private List<ProductImageReqDto> getProductImages(Product product, ProductImageType type) {
         return this.productImageRepository
                 .findProductImageByProduct(product)
                 .stream().filter(x ->x.getType().equals(type))
-                .map(x -> new ProductImageDto(x.getId(), x.getPath()))
+                .map(x -> new ProductImageReqDto(x.getId(), x.getPath()))
                 .collect(toList());
     }
 
     @Transactional
 
     @Override
-    public UUID createCategory(CategoryCreatorDto dto) throws CategoryInvalidException {
+    public UUID createCategory(CategoryCreatorReqDto dto) throws CategoryInvalidException {
 
         if (dto.getAccountId() == null) {
             throw new CategoryInvalidException(MessagesUtils.getMessage(MessageConstant.Category.INVALID));
@@ -128,7 +128,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
     @Transactional
     @Override
-    public UUID updateCategory(CategoryUpdaterDto dto) throws CategoryInvalidException {
+    public UUID updateCategory(CategoryUpdaterReqDto dto) throws CategoryInvalidException {
         Category category = this.categoryRepository.findById(dto.getId())
                 .orElseThrow(categoryErrorInvalid());
 
@@ -160,7 +160,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     //    =============================================
     //    ==================Utils======================
-    private Category createCategory(CategoryCreatorDto dto, Category x, Account account) {
+    private Category createCategory(CategoryCreatorReqDto dto, Category x, Account account) {
         x.setCategoryName(dto.getCategoryName())
                 .setStatus(dto.getStatus())
                 .addAccount(account);

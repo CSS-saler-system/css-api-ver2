@@ -8,4 +8,5 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public interface OrderRepository extends JpaRepository<Order, UUID> {
 
+
 }

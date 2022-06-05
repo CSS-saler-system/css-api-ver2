@@ -13,23 +13,13 @@ import com.springframework.csscapstone.data.domain.ProductImage;
 import com.springframework.csscapstone.data.domain.RequestSellingProduct;
 import com.springframework.csscapstone.data.domain.Role;
 import com.springframework.csscapstone.data.domain.Transactions;
-import com.springframework.csscapstone.payload.basic.AccountDto;
-import com.springframework.csscapstone.payload.basic.AccountImageDto;
-import com.springframework.csscapstone.payload.basic.CampaignDto;
-import com.springframework.csscapstone.payload.basic.CategoryDto;
-import com.springframework.csscapstone.payload.basic.EnterpriseDto;
-import com.springframework.csscapstone.payload.basic.OrderDetailDto;
-import com.springframework.csscapstone.payload.basic.OrderDto;
-import com.springframework.csscapstone.payload.basic.PrizeDto;
-import com.springframework.csscapstone.payload.basic.ProductDto;
-import com.springframework.csscapstone.payload.basic.ProductImageDto;
-import com.springframework.csscapstone.payload.response_dto.enterprise.RequestSellingProductDto;
-import com.springframework.csscapstone.payload.basic.RoleDto;
-import com.springframework.csscapstone.payload.basic.TransactionsDto;
-import com.springframework.csscapstone.payload.response_dto.admin.AccountResponseDto;
-import com.springframework.csscapstone.payload.response_dto.collaborator.EnterpriseResponseDto;
-import com.springframework.csscapstone.payload.response_dto.collaborator.CustomerResponseDto;
-import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResponseDto;
+import com.springframework.csscapstone.payload.basic.*;
+import com.springframework.csscapstone.payload.basic.AccountImageBasicDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.RequestSellingProductResDto;
+import com.springframework.csscapstone.payload.response_dto.admin.AccountResDto;
+import com.springframework.csscapstone.payload.response_dto.collaborator.EnterpriseResDto;
+import com.springframework.csscapstone.payload.response_dto.collaborator.CustomerResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -38,46 +28,51 @@ public interface MapperDTO {
     MapperDTO INSTANCE = Mappers.getMapper(MapperDTO.class);
 
     //========================= Image ============================
-    AccountImageDto toAccountImageDto(AccountImage entity);
+    AccountImageBasicDto toAccountImageDto(AccountImage entity);
 
-    ProductImageDto toProductImageDto(ProductImage entity);
+    ProductImageBasicDto toProductImageDto(ProductImage entity);
+
 
     //========================= End Image ========================
     //========================= Role ============================
-    RoleDto toRoleDto(Role entity);
+
+    RoleBasicDto toRoleDto(Role entity);
+
     //========================= End Role ========================
-    AccountDto toAccountDto(Account entity);
 
-    CampaignDto toCampaignDto(Campaign entity);
 
-    CategoryDto toCategoryDto(Category entity);
 
-    OrderDto toOrderDto(Order entity);
+    AccountBasicDto toAccountDto(Account entity);
 
-    PrizeDto toPrizeDto(Prize entity);
+    CampaignBasicDto toCampaignDto(Campaign entity);
 
-    OrderDetailDto toOrderDetailDto(OrderDetail entity);
+    CategoryBasicDto toCategoryDto(Category entity);
 
-    ProductDto toProductDto(Product entity);
+    OrderBasicDto toOrderDto(Order entity);
 
-    RequestSellingProductDto toRequestSellingProductDto(RequestSellingProduct entity);
+    PrizeBasicDto toPrizeDto(Prize entity);
 
-    TransactionsDto toTransactionsDto(Transactions entity);
+    OrderDetailBasicDto toOrderDetailDto(OrderDetail entity);
+
+    ProductBasicDto toProductDto(Product entity);
+
+    RequestSellingProductResDto toRequestSellingProductDto(RequestSellingProduct entity);
+
+    TransactionsBasicDto toTransactionsDto(Transactions entity);
 
     //TODO Response DTO
     //TODO [ROLE] - Collaborator
-    CustomerResponseDto toCustomerResponseDto(Customer entity);
+    CustomerResDto toCustomerResponseDto(Customer entity);
 
-    EnterpriseResponseDto toEnterpriseResponseDto(Account entity);
+    EnterpriseResDto toEnterpriseResponseDto(Account entity);
 
     //todo mapper entity to <ENTERPRISE_DTO>
-    EnterpriseDto toEnterpriseDto(Account entity);
-
+    EnterpriseBasicDto toEnterpriseDto(Account entity);
     //todo mapper entity to <ProductResponseDTO>
-    ProductResponseDto toProductResponseDto(Product entity);
+    ProductResDto toProductResponseDto(Product entity);
 
     //TODO Admin Role convert to AccountResponseDTO
-    AccountResponseDto toAccountResponseDto(Account entity);
+    AccountResDto toAccountResponseDto(Account entity);
 
 
 

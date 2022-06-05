@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -18,6 +19,7 @@ import java.util.*;
 @Accessors(chain = true)
 @NoArgsConstructor
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class RequestSellingProduct {
     @Id
     @GeneratedValue(generator = "UUID")
@@ -31,9 +33,6 @@ public class RequestSellingProduct {
 
     @Enumerated(EnumType.STRING)
     private RequestStatus requestStatus;
-
-    @Column(name = "quantity_product")
-    private Long quantityProduct;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
@@ -63,7 +62,21 @@ public class RequestSellingProduct {
                 "id=" + id +
                 ", dateTimeRequest=" + dateTimeRequest +
                 ", requestStatus=" + requestStatus +
-                ", quantityProduct=" + quantityProduct +
                 '}';
     }
+
+//============== Utils ===================
+
+    public RequestSellingProduct addProduct(Product product) {
+        product.getRequestSellingProducts().add(this);
+        this.setProduct(product);
+        return this;
+    }
+
+    public RequestSellingProduct addAccount(Account account) {
+        this.getAccounts().add(account);
+        account.getRequests().add(this);
+        return this;
+    }
+
 }

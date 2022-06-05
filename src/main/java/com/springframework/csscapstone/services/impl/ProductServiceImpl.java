@@ -10,26 +10,24 @@ import com.springframework.csscapstone.data.repositories.*;
 import com.springframework.csscapstone.data.status.OrderStatus;
 import com.springframework.csscapstone.data.status.ProductImageType;
 import com.springframework.csscapstone.data.status.ProductStatus;
-import com.springframework.csscapstone.payload.queries.ProductQueriesResponseDto;
-import com.springframework.csscapstone.payload.queries.QueriesProductDto;
-import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorDto;
-import com.springframework.csscapstone.payload.request_dto.enterprise.ProductUpdaterDto;
-import com.springframework.csscapstone.payload.response_dto.PageImplResponse;
-import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResponseDto;
-import com.springframework.csscapstone.payload.response_dto.enterprise.ProductWithQuantityDTO;
+import com.springframework.csscapstone.payload.queries.NumberProductOrderedQueryDto;
+import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorReqDto;
+import com.springframework.csscapstone.payload.request_dto.enterprise.ProductUpdaterReqDto;
+import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.ProductCountOrderResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResDto;
 import com.springframework.csscapstone.services.ProductService;
 import com.springframework.csscapstone.utils.blob_utils.BlobUploadImages;
 import com.springframework.csscapstone.utils.exception_utils.category_exception.CategoryNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
-import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperProductQueriesDto;
+import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperQueriesDto;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springdoc.core.converters.models.Pageable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
@@ -45,7 +43,6 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -59,16 +56,18 @@ public class ProductServiceImpl implements ProductService {
 
     @Value("${endpoint}")
     private String endpoint;
-
     private final ProductRepository productRepository;
     private final AccountRepository accountRepository;
     private final CategoryRepository categoryRepository;
     private final ProductImageRepository imageRepository;
+    @Value("${connection-string}")
+    private String connectionString;
     private final BlobUploadImages blobUploadImages;
+
     private final OrderDetailRepository orderDetailRepository;
 
     @Override
-    public PageImplResponse<ProductResponseDto> findAllProduct(
+    public PageImplResDto<ProductResDto> findAllProduct(
             String name, String brand, Long inStock, Double minPrice, Double maxPrice,
             Double minPoint, Double maxPoint, ProductStatus productStatus,
             Integer pageNumber, Integer pageSize) {
@@ -87,9 +86,9 @@ public class ProductServiceImpl implements ProductService {
 
         Page<Product> page = this.productRepository.findAll(search, PageRequest.of(pageNumber - 1, pageSize));
 
-        List<ProductResponseDto> data = page.stream().map(MapperDTO.INSTANCE::toProductResponseDto).collect(toList());
+        List<ProductResDto> data = page.stream().map(MapperDTO.INSTANCE::toProductResponseDto).collect(toList());
 
-        return new PageImplResponse<>(
+        return new PageImplResDto<>(
                 data, page.getNumber() + 1, page.getSize(),
                 page.getTotalElements(), page.getTotalPages(),
                 page.isFirst(), page.isLast());
@@ -99,13 +98,13 @@ public class ProductServiceImpl implements ProductService {
      * todo find product by account <Completed></>
      */
     @Override
-    public List<ProductResponseDto> findProductByIdAccount(UUID accountId) throws AccountNotFoundException {
+    public List<ProductResDto> findProductByIdAccount(UUID accountId) throws AccountNotFoundException {
         Account account = this.accountRepository.findById(accountId).orElseThrow(handlerAccountNotFound());
         return account.getProducts().stream().map(MapperDTO.INSTANCE::toProductResponseDto).collect(toList());
     }
 
     @Override
-    public ProductResponseDto findById(UUID id) throws ProductNotFoundException {
+    public ProductResDto findById(UUID id) throws ProductNotFoundException {
         return productRepository.findById(id)
                 .map(MapperDTO.INSTANCE::toProductResponseDto)
                 .orElseThrow(handlerProductNotFound());
@@ -122,7 +121,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     @Override
     public UUID createProduct(
-            ProductCreatorDto dto,
+            ProductCreatorReqDto dto,
             List<MultipartFile> typeImages,
             List<MultipartFile> certificationImages)
             throws ProductInvalidException, AccountNotFoundException, IOException {
@@ -198,7 +197,7 @@ public class ProductServiceImpl implements ProductService {
     //TODO Changing
     @Transactional
     @Override
-    public UUID updateProductDto(ProductUpdaterDto dto,
+    public UUID updateProductDto(ProductUpdaterReqDto dto,
                                  List<MultipartFile> normalType,
                                  List<MultipartFile> certificationType) throws ProductNotFoundException, ProductInvalidException {
         if (dto.getId() == null) throw handlerProductInvalidException().get();
@@ -246,12 +245,12 @@ public class ProductServiceImpl implements ProductService {
         collect.forEach(blobUploadImages::azureProductStorageHandler);
 
         return Optional.of(collect.keySet()
-                        .stream()
+                .stream()
 //                 .map(x -> endpoint + productContainer + "/" + x)
-                        .map(name -> new ProductImage(type,
-                                endpoint + this.productContainer + "/" + name))
-                        .peek(this.imageRepository::save)
-                        .toArray(ProductImage[]::new)
+                .map(name -> new ProductImage(type,
+                        endpoint + this.productContainer + "/" + name))
+                .peek(this.imageRepository::save)
+                .toArray(ProductImage[]::new)
         );
 
     }
@@ -277,39 +276,26 @@ public class ProductServiceImpl implements ProductService {
                 });
     }
 
-    /**
-     * todo Get all response dto and counter
-     * @param id
-     * @param startDate
-     * @param endDate
-     * @param pageNumber
-     * @param pageSize
-     * @return
-     */
     @Override
-    public PageImplResponse<ProductQueriesResponseDto> getListProductWithCountOrder(
-            UUID id, LocalDate startDate, LocalDate endDate, Integer pageNumber, Integer pageSize) {
+    public PageImplResDto<ProductCountOrderResDto> getListProductWithCountOrder(
+            UUID id, LocalDate startDate, LocalDate endDate, Integer pageNumber, Integer pageSize) throws AccountNotFoundException {
+        //throws exception if id not found
+        if (Objects.isNull(id)) throw handlerAccountNotFound().get();
 
-        pageNumber = Objects.isNull(pageNumber) || pageNumber <= 1 ? 1 : pageNumber;
+        pageNumber =  Objects.isNull(pageNumber) || pageNumber <= 1 ? 1 : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize <= 1 ? 1 : pageSize;
-        Page<QueriesProductDto> pageResults = this.orderDetailRepository
-                .findAllSumInOrderDetailGroupingByProduct(
-                        id, startDate.atStartOfDay(),
-                        endDate.atTime(23, 59, 29),
-                        OrderStatus.FINISH,
-                        PageRequest.of(pageNumber - 1, pageSize));
 
-        List<ProductQueriesResponseDto> list = pageResults.getContent()
-                .stream()
-                        .map(product -> MapperProductQueriesDto.INSTANCE
-                        .toProductQueriesDto(product.getProduct(), product.getSumQuantity()))
+        //get sum number in order-detail of order in during start date and end date
+        Page<NumberProductOrderedQueryDto> page = this.orderDetailRepository.findAllSumInOrderDetailGroupingByProduct(
+                id, startDate.atStartOfDay(), endDate.atStartOfDay(),
+                OrderStatus.FINISH, PageRequest.of(pageNumber - 1, pageSize));
+        //Convert to Product count order DTO
+        List<ProductCountOrderResDto> content = page.getContent().stream()
+                .map(MapperQueriesDto.INSTANCE::toQueriesProductDto)
                 .collect(toList());
 
-        return new PageImplResponse<>(
-                list, pageResults.getNumber(),
-                pageResults.getContent().size(),
-                pageResults.getTotalElements(), pageResults.getTotalPages(),
-                pageResults.isFirst(), pageResults.isLast());
+        return new PageImplResDto<>(content, page.getNumber(), content.size(), page.getTotalElements(),
+                page.getTotalPages(), page.isLast(), page.isFirst());
     }
 
     //===================Utils Methods====================
