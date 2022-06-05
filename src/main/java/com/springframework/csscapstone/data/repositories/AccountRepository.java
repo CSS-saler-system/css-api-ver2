@@ -1,6 +1,7 @@
 package com.springframework.csscapstone.data.repositories;
 
 import com.springframework.csscapstone.data.domain.Account;
+import com.springframework.csscapstone.data.status.RequestStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +17,9 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public interface AccountRepository extends JpaRepository<Account, UUID>, JpaSpecificationExecutor<Account> {
 //    Optional<Account> findAccountByUsername(String username);
+
+    @Query(value = "SELECT a FROM Account a WHERE a.role.name = :role")
+    List<Account> findSingleAccountByRole(@Param("role") String role);
 
     Optional<Account> findAccountByEmail(String email);
 

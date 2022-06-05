@@ -11,14 +11,14 @@ import java.util.UUID;
 public interface OrderRepository extends JpaRepository<Order, UUID> {
 
     //(collab, product) -> all order -> order detail -> sum quantity
-    @Query(
-            value = "SELECT sum(od.quantity) " +
-                    "FROM Order o " +
-                    "JOIN o.account " +
-                    "JOIN o.orderDetails od " +
-                    "WHERE od.product.id = :idProduct " +
-                    "AND o.account.id = :accountid "
-    )
-    QueriesAccountProductSummingDto getAllSummingProduct();
+//    @Query(
+//            value = "SELECT sum(od.quantity) " +
+//                    "FROM Order o " +
+//                    "JOIN o.account " +
+//                    "JOIN o.orderDetails od " +
+//                    "WHERE od.product.id = :idProduct " +
+//                    "AND o.account.id = :accountid "
+//    )
+//    QueriesAccountProductSummingDto getAllSummingProduct();
 
 }

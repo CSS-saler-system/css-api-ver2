@@ -12,7 +12,7 @@ public interface RequestSellingProductService {
 
     List<RequestSellingProductDto> getAllRequest();
 
-    PageImplResponse<RequestSellingProductDto> getAllRequestByStatus(RequestStatus status,  Integer pageNumber, Integer pageSize);
+    PageImplResponse<RequestSellingProductDto> getAllRequestByStatus(UUID enterpriseId, RequestStatus status,  Integer pageNumber, Integer pageSize);
 
     Optional<UUID> updateProduct(UUID idRequest, RequestStatus status);
 }

@@ -21,13 +21,14 @@ public class RequestSellingProductController {
 
     private final RequestSellingProductService requestSellingProductService;
 
-    @GetMapping(V2_LIST_REQUEST)
+    @GetMapping(V2_LIST_REQUEST + "/{enterpriseId}")
     public ResponseEntity<?> getListRequestSellingProduct(
+            @PathVariable("enterpriseId") UUID enterpriseId,
             @RequestParam(value = "status", required = false) RequestStatus status,
             @RequestParam(value = "page_size", required = false) Integer pageSize,
             @RequestParam(value = "page_number", required = false) Integer pageNumber
     ) {
-        return ok(requestSellingProductService.getAllRequestByStatus(status, pageSize, pageNumber));
+        return ok(requestSellingProductService.getAllRequestByStatus(enterpriseId, status, pageSize, pageNumber));
     }
 
     @PutMapping(V2_UPDATE_REQUEST + "/{id}")

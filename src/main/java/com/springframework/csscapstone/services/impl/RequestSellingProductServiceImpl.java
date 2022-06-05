@@ -37,12 +37,13 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
     }
 
     @Override
-    public PageImplResponse<RequestSellingProductDto> getAllRequestByStatus(RequestStatus status, Integer pageNumber, Integer pageSize) {
+    public PageImplResponse<RequestSellingProductDto> getAllRequestByStatus(
+            UUID enterpriseId, RequestStatus status, Integer pageNumber, Integer pageSize) {
         pageSize = Objects.nonNull(pageSize) && pageSize > 1 ? pageSize : 10;
         pageNumber = Objects.nonNull(pageNumber) && pageNumber > 1 ? pageNumber : 1;
 
         Page<RequestSellingProduct> page = this.requestSellingProductRepository
-                .findAllByRequestStatus(status, PageRequest.of(pageNumber - 1, pageSize));
+                .findAllByRequestStatus(enterpriseId, status, PageRequest.of(pageNumber - 1, pageSize));
         List<RequestSellingProductDto> data = page
                 .getContent().stream()
                 .map(MapperDTO.INSTANCE::toRequestSellingProductDto)
