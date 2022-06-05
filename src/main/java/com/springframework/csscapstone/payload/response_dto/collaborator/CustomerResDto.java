@@ -2,6 +2,10 @@ package com.springframework.csscapstone.payload.response_dto.collaborator;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -19,7 +23,9 @@ public class CustomerResDto implements Serializable {
 
     private final String address;
 
-    @JsonFormat(timezone = "yyyy-MM-dd")
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private final LocalDate dob;
 
     private final AccountCreatorDto accountCreator;

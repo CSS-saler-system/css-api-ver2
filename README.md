@@ -4,7 +4,11 @@
 
 
 "@Processing(https://docs.google.com/spreadsheets/d/1rDqd08oqSDx8zCZpwptwkM08bClxDIj8mrbsULxApjE/edit#gid=692238097)"
-
+==========================================================================================
+Bug parse LocalDate to Json: 
+@JsonSerialize(using = LocalDateSerializer.class)
+@JsonDeserialize(using = LocalDateDeserializer.class) 
+==========================================================================================
 
 <h4>AccountCreator - Json</h4>
 {
