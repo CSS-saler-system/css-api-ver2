@@ -7,7 +7,4 @@ import lombok.Data;
 public class QueriesAccountProductSummingDto {
     private final Account account;
     private final Long sumProduct;
-
-
-
 }

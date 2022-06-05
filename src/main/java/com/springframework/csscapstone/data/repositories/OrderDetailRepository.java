@@ -41,10 +41,5 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, UUID> 
             @Param("status") OrderStatus status,
             Pageable pageable);
 
-    @Query(
-            value = "SELECT sum() FROM OrderDetail od" )
-    QueriesAccountProductSummingDto accountProductSumming();
-
-
 
 }
