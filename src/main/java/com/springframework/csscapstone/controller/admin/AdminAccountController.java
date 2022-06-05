@@ -3,10 +3,10 @@ package com.springframework.csscapstone.controller.admin;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springframework.csscapstone.config.constant.MessageConstant;
-import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorDto;
-import com.springframework.csscapstone.payload.response_dto.PageImplResponse;
-import com.springframework.csscapstone.payload.response_dto.admin.AccountResponseDto;
-import com.springframework.csscapstone.payload.sharing.AccountUpdaterDto;
+import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorReqDto;
+import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
+import com.springframework.csscapstone.payload.response_dto.admin.AccountResDto;
+import com.springframework.csscapstone.payload.sharing.AccountUpdaterJsonDto;
 import com.springframework.csscapstone.services.AccountService;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountExistException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountInvalidException;
@@ -40,7 +40,7 @@ public class AdminAccountController {
             @RequestParam(value = "page_size", required = false) Integer pageSize
     ) {
 //        PageAccountDto page = service.getAccountDto(accountName, phone, email, address, pageSize, pageNumber);
-        PageImplResponse<AccountResponseDto> page = service.getAccountDto(accountName, phone, email, address, pageSize, pageNumber);
+        PageImplResDto<AccountResDto> page = service.getAccountDto(accountName, phone, email, address, pageSize, pageNumber);
         return ResponseEntity.ok(page);
     }
 
@@ -63,8 +63,8 @@ public class AdminAccountController {
             @RequestPart(value = "id_card", required = false) MultipartFile idCards
 
     ) throws AccountInvalidException, JsonProcessingException {
-        AccountUpdaterDto accountUpdaterDto = new ObjectMapper().readValue(dto, AccountUpdaterDto.class);
-        return ok(this.service.updateAccount(accountUpdaterDto, avatars, licenses, idCards));
+        AccountUpdaterJsonDto accountUpdaterJsonDto = new ObjectMapper().readValue(dto, AccountUpdaterJsonDto.class);
+        return ok(this.service.updateAccount(accountUpdaterJsonDto, avatars, licenses, idCards));
     }
 
     /**
@@ -81,8 +81,8 @@ public class AdminAccountController {
             @RequestPart(value = "license", required = false) MultipartFile licenses,
             @RequestPart(value = "id_card", required = false) MultipartFile idCards)
             throws AccountExistException, AccountNotFoundException, JsonProcessingException {
-        AccountCreatorDto accountCreatorDto = new ObjectMapper().readValue(dto, AccountCreatorDto.class);
-        UUID account = service.createAccount(accountCreatorDto, avatars, licenses, idCards);
+        AccountCreatorReqDto accountCreatorReqDto = new ObjectMapper().readValue(dto, AccountCreatorReqDto.class);
+        UUID account = service.createAccount(accountCreatorReqDto, avatars, licenses, idCards);
         return ok(account);
     }
 

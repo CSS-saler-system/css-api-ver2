@@ -4,8 +4,8 @@ import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.domain.RequestSellingProduct;
 import com.springframework.csscapstone.data.repositories.RequestSellingProductRepository;
 import com.springframework.csscapstone.data.status.RequestStatus;
-import com.springframework.csscapstone.payload.response_dto.PageImplResponse;
-import com.springframework.csscapstone.payload.response_dto.enterprise.RequestSellingProductDto;
+import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.RequestSellingProductResDto;
 import com.springframework.csscapstone.services.RequestSellingProductService;
 import com.springframework.csscapstone.utils.exception_utils.RequestNotFoundException;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
@@ -29,7 +29,7 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
     private final RequestSellingProductRepository requestSellingProductRepository;
 
     @Override
-    public List<RequestSellingProductDto> getAllRequest() {
+    public List<RequestSellingProductResDto> getAllRequest() {
         return requestSellingProductRepository.findAll()
                 .stream()
                 .map(MapperDTO.INSTANCE::toRequestSellingProductDto)
@@ -37,19 +37,19 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
     }
 
     @Override
-    public PageImplResponse<RequestSellingProductDto> getAllRequestByStatus(
+    public PageImplResDto<RequestSellingProductResDto> getAllRequestByStatus(
             UUID enterpriseId, RequestStatus status, Integer pageNumber, Integer pageSize) {
         pageSize = Objects.nonNull(pageSize) && pageSize > 1 ? pageSize : 10;
         pageNumber = Objects.nonNull(pageNumber) && pageNumber > 1 ? pageNumber : 1;
 
         Page<RequestSellingProduct> page = this.requestSellingProductRepository
                 .findAllByRequestStatus(enterpriseId, status, PageRequest.of(pageNumber - 1, pageSize));
-        List<RequestSellingProductDto> data = page
+        List<RequestSellingProductResDto> data = page
                 .getContent().stream()
                 .map(MapperDTO.INSTANCE::toRequestSellingProductDto)
                 .collect(Collectors.toList());
 
-        return new PageImplResponse<>(data, page.getNumber() + 1, data.size(), page.getTotalElements(),
+        return new PageImplResDto<>(data, page.getNumber() + 1, data.size(), page.getTotalElements(),
                 page.getTotalPages(), page.isFirst(), page.isLast());
     }
     @Transactional

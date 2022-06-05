@@ -1,11 +1,11 @@
 package com.springframework.csscapstone.controller.admin;
 
 import com.springframework.csscapstone.data.status.CategoryStatus;
-import com.springframework.csscapstone.payload.request_dto.admin.CategoryCreatorDto;
-import com.springframework.csscapstone.payload.response_dto.admin.CategoryReturnDto;
+import com.springframework.csscapstone.payload.request_dto.admin.CategoryCreatorReqDto;
+import com.springframework.csscapstone.payload.response_dto.admin.CategoryResDto;
 import com.springframework.csscapstone.services.CategoryService;
-import com.springframework.csscapstone.payload.basic.CategoryDto;
-import com.springframework.csscapstone.payload.request_dto.admin.CategorySearchDto;
+import com.springframework.csscapstone.payload.basic.CategoryBasicDto;
+import com.springframework.csscapstone.payload.request_dto.admin.CategorySearchReqDto;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.category_exception.CategoryInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.category_exception.CategoryNotFoundException;
@@ -30,24 +30,24 @@ public class AdminCategoryController {
     private final CategoryService services;
 
     @GetMapping(V1_GET_CATEGORY + "/{id}")
-    public ResponseEntity<CategoryReturnDto> getCategory(@PathVariable("id") UUID id) throws CategoryNotFoundException, EntityNotFoundException {
-        CategoryReturnDto category = this.services.findCategoryById(id);
+    public ResponseEntity<CategoryResDto> getCategory(@PathVariable("id") UUID id) throws CategoryNotFoundException, EntityNotFoundException {
+        CategoryResDto category = this.services.findCategoryById(id);
         return ok(category);
     }
 
     @GetMapping(V1_LIST_CATEGORY)
-    public ResponseEntity<List<CategoryDto>> listCategory(
+    public ResponseEntity<List<CategoryBasicDto>> listCategory(
             @RequestParam(value = "categoryName", required = false) String name,
             @RequestParam(value = "categoryStatus", required = false, defaultValue = "ACTIVE") CategoryStatus status
     ) {
         String _name = RequestUtils.getRequestParam(name);
         status = Objects.nonNull(status) ? status : CategoryStatus.ACTIVE;
-        List<CategoryDto> categories = this.services.findCategories(new CategorySearchDto(_name, status));
+        List<CategoryBasicDto> categories = this.services.findCategories(new CategorySearchReqDto(_name, status));
         return ok(categories);
     }
 
     @PostMapping(V1_CREATE_CATEGORY)
-    public ResponseEntity<?> createCategory(@Valid @RequestBody CategoryCreatorDto dto) throws CategoryInvalidException {
+    public ResponseEntity<?> createCategory(@Valid @RequestBody CategoryCreatorReqDto dto) throws CategoryInvalidException {
         UUID category = this.services.createCategory(dto);
         return ok(category);
     }

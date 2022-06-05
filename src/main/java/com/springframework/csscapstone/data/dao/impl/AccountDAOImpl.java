@@ -3,7 +3,7 @@ package com.springframework.csscapstone.data.dao.impl;
 import com.springframework.csscapstone.data.dao.AccountDAO;
 import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.Account_;
-import com.springframework.csscapstone.payload.basic.AccountDto;
+import com.springframework.csscapstone.payload.basic.AccountBasicDto;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import lombok.RequiredArgsConstructor;
 
@@ -20,7 +20,7 @@ public class AccountDAOImpl implements AccountDAO {
     private final EntityManager em;
 
     @Override
-    public List<AccountDto> findDtoCriteria(String name, String phone, String email, String address, String description, boolean status) {
+    public List<AccountBasicDto> findDtoCriteria(String name, String phone, String email, String address, String description, boolean status) {
         CriteriaBuilder builder = em.getCriteriaBuilder();
         CriteriaQuery<Account> query = builder.createQuery(Account.class);
         Root<Account> root = query.from(Account.class);

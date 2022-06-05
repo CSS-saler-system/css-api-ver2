@@ -6,8 +6,8 @@ import com.springframework.csscapstone.data.domain.Campaign_;
 import com.springframework.csscapstone.data.repositories.CampaignRepository;
 import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.services.CampaignService;
-import com.springframework.csscapstone.payload.basic.CampaignDto;
-import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorDto;
+import com.springframework.csscapstone.payload.basic.CampaignBasicDto;
+import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignInvalidException;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
@@ -38,10 +38,10 @@ public class CampaignServiceImpl implements CampaignService {
 
     @Cacheable(cacheNames = "campaigns")
     @Override
-    public List<CampaignDto> findCampaign(String name, LocalDateTime createdDate,
-                                          LocalDateTime lastModifiedDate, LocalDateTime startDate,
-                                          LocalDateTime endDate, String description,
-                                          Long kpi, CampaignStatus status) {
+    public List<CampaignBasicDto> findCampaign(String name, LocalDateTime createdDate,
+                                               LocalDateTime lastModifiedDate, LocalDateTime startDate,
+                                               LocalDateTime endDate, String description,
+                                               Long kpi, CampaignStatus status) {
         CriteriaBuilder builder = em.getCriteriaBuilder();
         CriteriaQuery<Campaign> query = builder.createQuery(Campaign.class);
         Root<Campaign> root = query.from(Campaign.class);
@@ -65,7 +65,7 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
-    public CampaignDto findById(UUID id) throws EntityNotFoundException {
+    public CampaignBasicDto findById(UUID id) throws EntityNotFoundException {
         return campaignRepository
                 .findById(id).map(MapperDTO.INSTANCE::toCampaignDto)
                 .orElseThrow(campaignNotFoundException());
@@ -74,7 +74,7 @@ public class CampaignServiceImpl implements CampaignService {
 
     @Transactional
     @Override
-    public UUID createCampaign(CampaignCreatorDto dto) throws CampaignInvalidException {
+    public UUID createCampaign(CampaignCreatorReqDto dto) throws CampaignInvalidException {
         Campaign campaign = Optional.of(new Campaign())
                 .map(x -> toCampaignEntity(dto, x))
                 .map(this.campaignRepository::save)
@@ -84,7 +84,7 @@ public class CampaignServiceImpl implements CampaignService {
         return campaign.getId();
     }
 
-    private Campaign toCampaignEntity(CampaignCreatorDto dto, Campaign x) {
+    private Campaign toCampaignEntity(CampaignCreatorReqDto dto, Campaign x) {
         x.setName(dto.getName())
                 .setImage(dto.getImage())
                 .setCampaignShortDescription(dto.getCampaignShortDescription())
@@ -96,7 +96,7 @@ public class CampaignServiceImpl implements CampaignService {
     }
     @Transactional
     @Override
-    public UUID updateCampaign(CampaignDto dto) throws EntityNotFoundException {
+    public UUID updateCampaign(CampaignBasicDto dto) throws EntityNotFoundException {
 
         Campaign entity = this.campaignRepository.findById(dto.getId())
                 .orElseThrow(campaignNotFoundException());

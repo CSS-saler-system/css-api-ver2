@@ -1,8 +1,8 @@
 package com.springframework.csscapstone.controller.collaborator;
 
 import com.springframework.csscapstone.services.OrderDetailService;
-import com.springframework.csscapstone.payload.request_dto.admin.OrderDetailCreator;
-import com.springframework.csscapstone.payload.request_dto.admin.OrderDetailUpdater;
+import com.springframework.csscapstone.payload.request_dto.admin.OrderDetailCreatorReqDto;
+import com.springframework.csscapstone.payload.request_dto.admin.OrderDetailUpdaterReqDto;
 import com.springframework.csscapstone.utils.exception_utils.order_detail_exception.OrderDetailException;
 import com.springframework.csscapstone.utils.exception_utils.order_detail_exception.ProductCanCreateException;
 import com.springframework.csscapstone.utils.exception_utils.order_exception.OrderNotFoundException;
@@ -31,13 +31,13 @@ public class CollaboratorOrderController {
     }
 
     @PostMapping(V3_CREATE_ORDER_DETAIL)
-    public ResponseEntity<?> createOrderDetail(@RequestBody OrderDetailCreator dto) throws OrderNotFoundException, ProductCanCreateException, OrderDetailException, ProductNotFoundException {
+    public ResponseEntity<?> createOrderDetail(@RequestBody OrderDetailCreatorReqDto dto) throws OrderNotFoundException, ProductCanCreateException, OrderDetailException, ProductNotFoundException {
         UUID id = this.orderDetailService.createOrderDetail(dto);
         return ok(id);
     }
 
     @PutMapping(V3_UPDATE_ORDER_DETAIL + "/{id}")
-    public ResponseEntity<?> updateOrderDetail(@PathVariable UUID id, @RequestBody OrderDetailUpdater dto) throws OrderDetailException, ProductNotFoundException {
+    public ResponseEntity<?> updateOrderDetail(@PathVariable UUID id, @RequestBody OrderDetailUpdaterReqDto dto) throws OrderDetailException, ProductNotFoundException {
         UUID uuid = this.orderDetailService.updateOrderDetail(id, dto);
         return ok(id);
     }
@@ -47,7 +47,7 @@ public class CollaboratorOrderController {
         return ok(this.orderDetailService.findAll());
     }
 
-    @DeleteMapping(V3_DELETE_ORDER_DETAIL)
+    @DeleteMapping(V3_DELETE_ORDER_DETAIL + "/{id}")
     public ResponseEntity<?> deleteOrderDetail(@PathVariable("id") UUID id) throws OrderDetailException {
         this.orderDetailService.delete(id);
         return ok(REQUEST_SUCCESS);

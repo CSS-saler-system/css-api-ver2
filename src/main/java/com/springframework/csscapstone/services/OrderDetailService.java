@@ -1,8 +1,8 @@
 package com.springframework.csscapstone.services;
 
 import com.springframework.csscapstone.data.domain.OrderDetail;
-import com.springframework.csscapstone.payload.request_dto.admin.OrderDetailCreator;
-import com.springframework.csscapstone.payload.request_dto.admin.OrderDetailUpdater;
+import com.springframework.csscapstone.payload.request_dto.admin.OrderDetailCreatorReqDto;
+import com.springframework.csscapstone.payload.request_dto.admin.OrderDetailUpdaterReqDto;
 import com.springframework.csscapstone.utils.exception_utils.order_detail_exception.OrderDetailException;
 import com.springframework.csscapstone.utils.exception_utils.order_detail_exception.ProductCanCreateException;
 import com.springframework.csscapstone.utils.exception_utils.order_exception.OrderNotFoundException;
@@ -16,9 +16,9 @@ public interface OrderDetailService {
 
     OrderDetail findById(UUID id);
 
-    UUID createOrderDetail(OrderDetailCreator dto) throws ProductNotFoundException, OrderNotFoundException, ProductCanCreateException, OrderDetailException;
+    UUID createOrderDetail(OrderDetailCreatorReqDto dto) throws ProductNotFoundException, OrderNotFoundException, ProductCanCreateException, OrderDetailException;
 
-    UUID updateOrderDetail(UUID id, OrderDetailUpdater dto) throws OrderDetailException, ProductNotFoundException;
+    UUID updateOrderDetail(UUID id, OrderDetailUpdaterReqDto dto) throws OrderDetailException, ProductNotFoundException;
 
     void delete(UUID id) throws OrderDetailException;
 

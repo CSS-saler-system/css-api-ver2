@@ -2,8 +2,7 @@ package com.springframework.csscapstone.data.repositories;
 
 import com.springframework.csscapstone.data.domain.OrderDetail;
 import com.springframework.csscapstone.data.status.OrderStatus;
-import com.springframework.csscapstone.payload.queries.QueriesAccountProductSummingDto;
-import com.springframework.csscapstone.payload.queries.QueriesProductDto;
+import com.springframework.csscapstone.payload.queries.NumberProductOrderedQueryDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,14 +10,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Transactional(readOnly = true)
 public interface OrderDetailRepository extends JpaRepository<OrderDetail, UUID> {
     @Query(
-            value = "SELECT new com.springframework.csscapstone.payload.queries.QueriesProductDto(od.product, sum(od.quantity)) " +
+            value = "SELECT new com.springframework.csscapstone.payload.queries.NumberProductOrderedQueryDto(od.product, sum(od.quantity)) " +
                     "FROM OrderDetail od " +
                     "JOIN od.order o " +
                     "WHERE o.createDate >= :startDate  " +
@@ -34,7 +32,7 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, UUID> 
                     "AND o.status = :status " +
                     "AND od.product.account.id = :enterpriseId "+
                     "group by od.product.id")
-    Page<QueriesProductDto> findAllSumInOrderDetailGroupingByProduct(
+    Page<NumberProductOrderedQueryDto> findAllSumInOrderDetailGroupingByProduct(
             @Param("enterpriseId") UUID enterpriseId,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate,

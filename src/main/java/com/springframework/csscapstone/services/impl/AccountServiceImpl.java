@@ -13,13 +13,13 @@ import com.springframework.csscapstone.data.repositories.RequestSellingProductRe
 import com.springframework.csscapstone.data.repositories.RoleRepository;
 import com.springframework.csscapstone.data.status.AccountImageType;
 import com.springframework.csscapstone.data.status.RequestStatus;
-import com.springframework.csscapstone.payload.basic.AccountImageDto;
-import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorDto;
-import com.springframework.csscapstone.payload.response_dto.PageEnterpriseDto;
-import com.springframework.csscapstone.payload.response_dto.PageImplResponse;
-import com.springframework.csscapstone.payload.response_dto.admin.AccountResponseDto;
-import com.springframework.csscapstone.payload.response_dto.collaborator.EnterpriseResponseDto;
-import com.springframework.csscapstone.payload.sharing.AccountUpdaterDto;
+import com.springframework.csscapstone.payload.basic.AccountImageBasicDto;
+import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorReqDto;
+import com.springframework.csscapstone.payload.response_dto.PageEnterpriseResDto;
+import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
+import com.springframework.csscapstone.payload.response_dto.admin.AccountResDto;
+import com.springframework.csscapstone.payload.response_dto.collaborator.EnterpriseResDto;
+import com.springframework.csscapstone.payload.sharing.AccountUpdaterJsonDto;
 import com.springframework.csscapstone.services.AccountService;
 import com.springframework.csscapstone.utils.blob_utils.BlobUploadImages;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
@@ -85,7 +85,7 @@ public class AccountServiceImpl implements AccountService {
      * @return
      */
     @Override
-    public PageImplResponse<AccountResponseDto> getAccountDto(String name, String phone, String email, String address, Integer pageSize, Integer pageNumber) {
+    public PageImplResDto<AccountResDto> getAccountDto(String name, String phone, String email, String address, Integer pageSize, Integer pageNumber) {
         Specification<Account> specifications = Specification
                 .where(Objects.nonNull(name) ? AccountSpecifications.nameContains(name) : null)
                 .and(StringUtils.isNotBlank(phone) ? AccountSpecifications.phoneEquals(phone) : null)
@@ -93,14 +93,14 @@ public class AccountServiceImpl implements AccountService {
         pageNumber = Objects.nonNull(pageNumber) && (pageNumber >= 1) ? pageNumber : 1;
         pageSize = Objects.nonNull(pageSize) && (pageSize >= 1) ? pageNumber : 10;
 
-        List<AccountImageDto> avatar = new ArrayList<>();
-        List<AccountImageDto> licenses = new ArrayList<>();
-        List<AccountImageDto> idCard = new ArrayList<>();
+        List<AccountImageBasicDto> avatar = new ArrayList<>();
+        List<AccountImageBasicDto> licenses = new ArrayList<>();
+        List<AccountImageBasicDto> idCard = new ArrayList<>();
 
 
         Page<Account> page = this.accountRepository.findAll(specifications, PageRequest.of(pageNumber - 1, pageSize));
 
-        List<AccountResponseDto> data = page.stream()
+        List<AccountResDto> data = page.stream()
                 .peek(avatarConsumer(avatar, AccountImageType.AVATAR))
                 .peek(avatarConsumer(licenses, AccountImageType.LICENSE))
                 .peek(avatarConsumer(idCard, AccountImageType.ID_CARD))
@@ -110,7 +110,7 @@ public class AccountServiceImpl implements AccountService {
                 .peek(dto -> dto.setIdCard(idCard))
                 .collect(toList());
 
-        return new PageImplResponse<>(data, page.getNumber() + 1, data.size(),
+        return new PageImplResDto<>(data, page.getNumber() + 1, data.size(),
                 page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
     }
 
@@ -123,24 +123,24 @@ public class AccountServiceImpl implements AccountService {
      * @throws AccountNotFoundException
      */
     @Override
-    public AccountResponseDto getById(UUID id) throws AccountInvalidException, AccountNotFoundException {
+    public AccountResDto getById(UUID id) throws AccountInvalidException, AccountNotFoundException {
         Account result = accountRepository.findById(id).orElseThrow(handlerAccountNotFound());
 
-        List<AccountImageDto> avatar = result.getImages().stream()
+        List<AccountImageBasicDto> avatar = result.getImages().stream()
                 .filter(x -> x.getType().equals(AccountImageType.AVATAR))
                 .map(MapperDTO.INSTANCE::toAccountImageDto)
                 .collect(toList());
 
-        List<AccountImageDto> licenses = result.getImages().stream()
+        List<AccountImageBasicDto> licenses = result.getImages().stream()
                 .filter(x -> x.getType().equals(AccountImageType.LICENSE))
                 .map(MapperDTO.INSTANCE::toAccountImageDto)
                 .collect(toList());
 
-        List<AccountImageDto> idCard = result.getImages().stream()
+        List<AccountImageBasicDto> idCard = result.getImages().stream()
                 .filter(x -> x.getType().equals(AccountImageType.ID_CARD))
                 .map(MapperDTO.INSTANCE::toAccountImageDto)
                 .collect(toList());
-        AccountResponseDto dto = new AccountResponseDto(
+        AccountResDto dto = new AccountResDto(
                 result.getId(), result.getName(), result.getDob(), result.getPhone(), result.getEmail(), result.getAddress(),
                 result.getDescription(), result.getGender(), result.getPoint(),
                 MapperDTO.INSTANCE.toRoleDto(result.getRole()));
@@ -160,7 +160,7 @@ public class AccountServiceImpl implements AccountService {
      */
     @Transactional
     @Override
-    public UUID createAccount(AccountCreatorDto dto, MultipartFile avatar, MultipartFile licenses, MultipartFile idCards)
+    public UUID createAccount(AccountCreatorReqDto dto, MultipartFile avatar, MultipartFile licenses, MultipartFile idCards)
             throws AccountExistException {
 
         //TODO check ROlE null <BUG>
@@ -237,7 +237,7 @@ public class AccountServiceImpl implements AccountService {
      */
     @Transactional
     @Override
-    public UUID updateAccount(AccountUpdaterDto dto,
+    public UUID updateAccount(AccountUpdaterJsonDto dto,
                               MultipartFile avatars,
                               MultipartFile licenses,
                               MultipartFile idCards) throws AccountInvalidException {
@@ -335,12 +335,12 @@ public class AccountServiceImpl implements AccountService {
 
     //todo for collaborator
     @Override
-    public PageEnterpriseDto getAllHavingEnterpriseRole(Integer pageNumber, Integer pageSize) {
+    public PageEnterpriseResDto getAllHavingEnterpriseRole(Integer pageNumber, Integer pageSize) {
         pageNumber = Objects.isNull(pageNumber) || pageNumber <= 1 ? 1 : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize <= 1 ? 1 : pageSize;
         Page<Account> page = this.accountRepository.findAccountByRole("Enterprise", PageRequest.of(pageNumber - 1, pageSize));
-        List<EnterpriseResponseDto> data = page.getContent().stream().map(MapperDTO.INSTANCE::toEnterpriseResponseDto).collect(toList());
-        return new PageEnterpriseDto(data, page.getNumber() + 1, page.getSize(), page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
+        List<EnterpriseResDto> data = page.getContent().stream().map(MapperDTO.INSTANCE::toEnterpriseResponseDto).collect(toList());
+        return new PageEnterpriseResDto(data, page.getNumber() + 1, page.getSize(), page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
     }
 
     /**
@@ -349,7 +349,7 @@ public class AccountServiceImpl implements AccountService {
      * @return
      */
     @Override
-    public PageImplResponse<AccountResponseDto> getAllCollaboratorsOfEnterprise(
+    public PageImplResDto<AccountResDto> getAllCollaboratorsOfEnterprise(
             UUID idEnterprise, Integer pageNumber, Integer pageSize) {
 
         if (Objects.isNull(idEnterprise)) throw handlerAccountNotFound().get();
@@ -363,7 +363,7 @@ public class AccountServiceImpl implements AccountService {
                         PageRequest.of(pageNumber - 1, pageSize));
 
         //todo convert to Account response Dto
-        List<AccountResponseDto> responseDto = requests
+        List<AccountResDto> responseDto = requests
                 .stream()
                 .flatMap(r -> r.getAccounts().stream())
                 //todo Get All account of request except enterprise
@@ -371,7 +371,7 @@ public class AccountServiceImpl implements AccountService {
                 .map(MapperDTO.INSTANCE::toAccountResponseDto)
                 .collect(toList());
 
-        return new PageImplResponse<>(
+        return new PageImplResDto<>(
                 responseDto, requests.getNumber() + 1,
                 responseDto.size(), requests.getTotalElements(),
                 requests.getTotalPages(), requests.isFirst(), requests.isLast());
@@ -382,27 +382,17 @@ public class AccountServiceImpl implements AccountService {
      * @return
      */
     @Override
-    public PageImplResponse<AccountResponseDto> collaboratorsOfEnterpriseIncludeNumberOfOrder(
+    public PageImplResDto<AccountResDto> collaboratorsOfEnterpriseIncludeNumberOfOrder(
             UUID idEnterprise, Integer pageNumber, Integer pageSize) {
 
         if (Objects.isNull(idEnterprise)) throw handlerAccountNotFound().get();
 
-        pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
-        pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 1 : pageSize;
-        //todo get all request selling
-        Page<RequestSellingProduct> requests = requestSellingProductRepository
-                .findAllRequestSellingProduct(
-                        idEnterprise, RequestStatus.REGISTERED,
-                        PageRequest.of(pageNumber - 1, pageSize));
+        //get all collaborator on request with registered status
+        //collab - product
+//        List<Account> collaborator = this.requestSellingProductRepository
+//                .findAccountInRequestSelling(idEnterprise, RequestStatus.REGISTERED);
 
-        //todo convert to Account response Dto
-        List<Account> collect = requests
-                .stream()
-                .flatMap(r -> r.getAccounts().stream())
-                //todo Get All account of request except enterprise
-                .filter(a -> !a.getId().equals(idEnterprise))
-//                .map(MapperDTO.INSTANCE::toAccountResponseDto)
-                .collect(toList());
+
         return null;
     }
 
@@ -426,7 +416,7 @@ public class AccountServiceImpl implements AccountService {
      * @param type
      * @return
      */
-    private Consumer<Account> avatarConsumer(List<AccountImageDto> collection, AccountImageType type) {
+    private Consumer<Account> avatarConsumer(List<AccountImageBasicDto> collection, AccountImageType type) {
         return x -> collection.addAll(x.getImages().stream()
                 .filter(image -> image.getType().equals(type))
                 .map(MapperDTO.INSTANCE::toAccountImageDto)

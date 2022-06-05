@@ -1,7 +1,7 @@
 package com.springframework.csscapstone.utils.mapper_utils.dto_mapper;
 
-import com.springframework.csscapstone.payload.queries.QueriesProductDto;
-import com.springframework.csscapstone.payload.response_dto.enterprise.ProductCountOrderResponseDto;
+import com.springframework.csscapstone.payload.queries.NumberProductOrderedQueryDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.ProductCountOrderResDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -20,6 +20,6 @@ public interface MapperQueriesDto {
     @Mapping(target = "pointSale", source = "product.pointSale")
     @Mapping(target = "productStatus", source = "product.productStatus")
     @Mapping(target = "image", source = "product.image")
-    ProductCountOrderResponseDto toQueriesProductDto(QueriesProductDto dto);
+    ProductCountOrderResDto toQueriesProductDto(NumberProductOrderedQueryDto dto);
 
 }

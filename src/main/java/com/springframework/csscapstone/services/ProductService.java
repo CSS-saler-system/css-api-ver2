@@ -1,16 +1,13 @@
 package com.springframework.csscapstone.services;
 
 import com.springframework.csscapstone.data.status.ProductStatus;
-import com.springframework.csscapstone.payload.basic.ProductDto;
-import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorDto;
-import com.springframework.csscapstone.payload.request_dto.enterprise.ProductUpdaterDto;
-import com.springframework.csscapstone.payload.response_dto.PageImplResponse;
-import com.springframework.csscapstone.payload.response_dto.enterprise.ProductCountOrderResponseDto;
-import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResponseDto;
-import com.springframework.csscapstone.payload.response_dto.enterprise.ProductWithQuantityDTO;
+import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorReqDto;
+import com.springframework.csscapstone.payload.request_dto.enterprise.ProductUpdaterReqDto;
+import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.ProductCountOrderResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResDto;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
-import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperQueriesDto;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.security.auth.login.AccountNotFoundException;
@@ -21,7 +18,7 @@ import java.util.UUID;
 
 public interface ProductService {
 
-    PageImplResponse<ProductResponseDto> findAllProduct(
+    PageImplResDto<ProductResDto> findAllProduct(
             String name,
             String brand,
             Long inStock,
@@ -31,18 +28,18 @@ public interface ProductService {
             Double maxPoint,
             ProductStatus productStatus, Integer pageNumber, Integer pageSize);
 
-    List<ProductResponseDto> findProductByIdAccount(UUID accountId) throws AccountNotFoundException;
+    List<ProductResDto> findProductByIdAccount(UUID accountId) throws AccountNotFoundException;
 
 
-    ProductResponseDto findById(UUID id) throws ProductNotFoundException;
+    ProductResDto findById(UUID id) throws ProductNotFoundException;
 
     UUID createProduct(
-            ProductCreatorDto dto,
+            ProductCreatorReqDto dto,
             List<MultipartFile> typeImages,
             List<MultipartFile> certificationImages) throws ProductNotFoundException, ProductInvalidException, AccountNotFoundException, IOException;
 
     UUID updateProductDto(
-            ProductUpdaterDto dto,
+            ProductUpdaterReqDto dto,
             List<MultipartFile> normalType,
             List<MultipartFile> certificationType) throws ProductNotFoundException, ProductInvalidException;
 
@@ -50,6 +47,6 @@ public interface ProductService {
 
     void disableProduct(UUID id);
 
-    PageImplResponse<ProductCountOrderResponseDto> getListProductWithCountOrder(
+    PageImplResDto<ProductCountOrderResDto> getListProductWithCountOrder(
             UUID id, LocalDate startDate, LocalDate endDate, Integer pageNumber, Integer pageSize) throws AccountNotFoundException;
 }

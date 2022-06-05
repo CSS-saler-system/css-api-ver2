@@ -1,8 +1,8 @@
 package com.springframework.csscapstone.services;
 
 import com.springframework.csscapstone.data.status.CampaignStatus;
-import com.springframework.csscapstone.payload.basic.CampaignDto;
-import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorDto;
+import com.springframework.csscapstone.payload.basic.CampaignBasicDto;
+import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignInvalidException;
 
@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public interface CampaignService {
 
-    List<CampaignDto> findCampaign(
+    List<CampaignBasicDto> findCampaign(
             String name, LocalDateTime createdDate,
             LocalDateTime lastModifiedDate,
             LocalDateTime startDate,
@@ -21,11 +21,11 @@ public interface CampaignService {
             Long kpi,
             CampaignStatus status);
 
-    CampaignDto findById(UUID id) throws EntityNotFoundException;
+    CampaignBasicDto findById(UUID id) throws EntityNotFoundException;
 
-    UUID createCampaign(CampaignCreatorDto dto) throws CampaignInvalidException;
+    UUID createCampaign(CampaignCreatorReqDto dto) throws CampaignInvalidException;
 
-    UUID updateCampaign(CampaignDto dto) throws EntityNotFoundException;
+    UUID updateCampaign(CampaignBasicDto dto) throws EntityNotFoundException;
 
     void deleteCampaign(UUID id) throws EntityNotFoundException;
 

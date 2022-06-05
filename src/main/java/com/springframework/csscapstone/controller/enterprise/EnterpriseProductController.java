@@ -1,21 +1,15 @@
 package com.springframework.csscapstone.controller.enterprise;
 
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.status.ProductStatus;
-import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorDto;
-import com.springframework.csscapstone.payload.request_dto.enterprise.ProductUpdaterDto;
-import com.springframework.csscapstone.payload.response_dto.PageImplResponse;
-import com.springframework.csscapstone.payload.response_dto.enterprise.ProductCountOrderResponseDto;
-import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResponseDto;
-import com.springframework.csscapstone.payload.response_dto.enterprise.ProductWithQuantityDTO;
+import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorReqDto;
+import com.springframework.csscapstone.payload.request_dto.enterprise.ProductUpdaterReqDto;
+import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.ProductCountOrderResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResDto;
 import com.springframework.csscapstone.services.ProductService;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
@@ -26,13 +20,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.security.auth.login.AccountNotFoundException;
-import javax.swing.text.DateFormatter;
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 import java.io.IOException;
@@ -68,7 +60,7 @@ public class EnterpriseProductController {
             @RequestParam(value = "page_number", required = false) Integer pageNumber,
             @RequestParam(value = "page_size", required = false) Integer pageSize
     ) {
-        PageImplResponse<ProductResponseDto> result = productService.findAllProduct(
+        PageImplResDto<ProductResDto> result = productService.findAllProduct(
                 name, brand, inStock, minPrice, maxPrice,
                 minPointSale, maxPointSale, productStatus,
                 pageNumber, pageSize);
@@ -95,7 +87,7 @@ public class EnterpriseProductController {
         LocalDate end = LocalDate.parse(endDate, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         LOGGER.info("The start date {}", start);
         LOGGER.info("The end date {}", end);
-        PageImplResponse<ProductCountOrderResponseDto> page = this
+        PageImplResDto<ProductCountOrderResDto> page = this
                 .productService
                 .getListProductWithCountOrder(
                         enterpriseId, start, end,
@@ -118,8 +110,8 @@ public class EnterpriseProductController {
     ) throws ProductInvalidException, AccountNotFoundException, IOException {
         List<MultipartFile> collect = Stream.of(typeImages).collect(Collectors.toList());
         List<MultipartFile> _collect = Stream.of(certificationImages).collect(Collectors.toList());
-        ProductCreatorDto productCreatorDto = this.productCreatorConvertor.convert(dto);
-        return ok(this.productService.createProduct(productCreatorDto, collect, _collect));
+        ProductCreatorReqDto productCreatorReqDto = this.productCreatorConvertor.convert(dto);
+        return ok(this.productService.createProduct(productCreatorReqDto, collect, _collect));
     }
 
     @PutMapping(value = V2_UPDATE_PRODUCT, consumes = {MULTIPART_FORM_DATA_VALUE})
@@ -127,7 +119,7 @@ public class EnterpriseProductController {
             @RequestPart String dto,
             @RequestPart List<MultipartFile> normalType,
             @RequestPart List<MultipartFile> certificationType) throws JsonProcessingException {
-        ProductUpdaterDto object = new ObjectMapper().readValue(dto, ProductUpdaterDto.class);
+        ProductUpdaterReqDto object = new ObjectMapper().readValue(dto, ProductUpdaterReqDto.class);
         return ok(this.productService.updateProductDto(object, normalType, certificationType));
     }
 

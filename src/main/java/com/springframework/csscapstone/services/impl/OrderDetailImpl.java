@@ -8,8 +8,8 @@ import com.springframework.csscapstone.data.repositories.OrderDetailRepository;
 import com.springframework.csscapstone.data.repositories.OrderRepository;
 import com.springframework.csscapstone.data.repositories.ProductRepository;
 import com.springframework.csscapstone.services.OrderDetailService;
-import com.springframework.csscapstone.payload.request_dto.admin.OrderDetailCreator;
-import com.springframework.csscapstone.payload.request_dto.admin.OrderDetailUpdater;
+import com.springframework.csscapstone.payload.request_dto.admin.OrderDetailCreatorReqDto;
+import com.springframework.csscapstone.payload.request_dto.admin.OrderDetailUpdaterReqDto;
 import com.springframework.csscapstone.utils.exception_utils.order_detail_exception.OrderDetailException;
 import com.springframework.csscapstone.utils.exception_utils.order_detail_exception.ProductCanCreateException;
 import com.springframework.csscapstone.utils.exception_utils.order_exception.OrderNotFoundException;
@@ -44,7 +44,7 @@ public class OrderDetailImpl implements OrderDetailService {
 
     @Transactional
     @Override
-    public UUID createOrderDetail(OrderDetailCreator dto) throws ProductNotFoundException, OrderNotFoundException, ProductCanCreateException, OrderDetailException {
+    public UUID createOrderDetail(OrderDetailCreatorReqDto dto) throws ProductNotFoundException, OrderNotFoundException, ProductCanCreateException, OrderDetailException {
         Product product = this.productRepository.findById(dto.getIdProduct()).orElseThrow(productException());
 
         Order order = this.orderRepository.findById(dto.getOrder().getId()).orElseThrow(orderDetailNotFoundException());
@@ -59,7 +59,7 @@ public class OrderDetailImpl implements OrderDetailService {
         return savedOrderDetail.getId();
     }
 
-    private OrderDetail creatorUtils(OrderDetailCreator dto, Order order, Product product, OrderDetail detail) {
+    private OrderDetail creatorUtils(OrderDetailCreatorReqDto dto, Order order, Product product, OrderDetail detail) {
         //calculate the total price of product
         double priceLineOfProduct = dto.getQuantity() * product.getPrice();
 
@@ -81,7 +81,7 @@ public class OrderDetailImpl implements OrderDetailService {
 
     @Transactional
     @Override
-    public UUID updateOrderDetail(UUID id, OrderDetailUpdater dto) throws OrderDetailException, ProductNotFoundException {
+    public UUID updateOrderDetail(UUID id, OrderDetailUpdaterReqDto dto) throws OrderDetailException, ProductNotFoundException {
         OrderDetail orderDetail = this.orderDetailRepository.findById(id)
                 .filter(x -> x.getId().equals(id))
                 .orElseThrow(() -> new OrderDetailException(MessagesUtils.getMessage(MessageConstant.OrderDetail.NOT_FOUND)));
