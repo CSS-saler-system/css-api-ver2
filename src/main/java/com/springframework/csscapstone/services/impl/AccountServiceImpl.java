@@ -53,8 +53,8 @@ import static com.springframework.csscapstone.data.status.AccountImageType.*;
 import static java.util.stream.Collectors.toList;
 
 @Service
-@RequiredArgsConstructor
 @PropertySource(value = "classpath:application-storage.properties")
+@RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
     private final PasswordEncoder passwordEncoder;
     private final AccountRepository accountRepository;
@@ -71,7 +71,7 @@ public class AccountServiceImpl implements AccountService {
     private String endpoint;
 
     @Value("${account_image_container}")
-    private static String accountContainer;
+    private String accountContainer;
 
     /**
      * TODO Admin get All Account
@@ -220,10 +220,12 @@ public class AccountServiceImpl implements AccountService {
         //upload to Azure:
         imageMap.forEach(blobUploadImages::azureAccountStorageHandler);
 
+        LOGGER.info("The container name: {}", accountContainer);
+
         //Create save Account-Image
         return imageMap.keySet().stream()
                 .map(imageName -> new AccountImage(type,
-                        endpoint + this.accountContainer + "/" + imageName))
+                        endpoint + accountContainer + "/" + imageName))
                 .peek(this.accountImageRepository::save)
                 .findFirst();
     }

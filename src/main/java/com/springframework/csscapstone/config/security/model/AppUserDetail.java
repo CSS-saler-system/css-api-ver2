@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -18,6 +19,10 @@ import java.util.stream.Stream;
 public class AppUserDetail implements UserDetails, Serializable {
     private final Account entity;
     private final String token;
+
+    @JsonProperty("id")
+    public UUID getAccountId() {return entity.getId();}
+
     @JsonProperty("role")
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -26,6 +31,8 @@ public class AppUserDetail implements UserDetails, Serializable {
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
     }
+
+
     @JsonIgnore
     @Override
     public String getPassword() {
