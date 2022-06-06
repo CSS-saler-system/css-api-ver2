@@ -109,12 +109,15 @@ public class Account {
     @OneToMany(mappedBy = "account")
     private List<Order> orders = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(name = "account_request",
-            joinColumns = @JoinColumn(name = "account_id"),
-            inverseJoinColumns = @JoinColumn(name = "request_id"))
-    @ToString.Exclude
-    private Set<RequestSellingProduct> requests = new HashSet<>();
+//    @ManyToMany
+//    @JoinTable(name = "account_request",
+//            joinColumns = @JoinColumn(name = "account_id"),
+//            inverseJoinColumns = @JoinColumn(name = "request_id"))
+//    @ToString.Exclude
+//    private Set<RequestSellingProduct> requests = new HashSet<>();
+
+    @OneToMany(mappedBy = "account")
+    private List<RequestSellingProduct> requests = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "role_id")
@@ -160,16 +163,6 @@ public class Account {
                 ", nonLock=" + nonLock +
                 ", images=" + images +
                 ", tokens=" + tokens +
-//                ", customerCreatorList=" + customerCreatorList +
-//                ", customerUpdaterList=" + customerUpdaterList +
-//                ", categories=" + categories +
-//                ", products=" + products +
-//                ", campaigns=" + campaigns +
-//                ", campaignsPrizes=" + campaignsPrizes +
-//                ", prizes=" + prizes +/
-//                ", transactions=" + transactions +
-//                ", orders=" + orders +
-//                ", requests=" + requests +
                 ", role=" + role +
                 '}';
     }
@@ -190,5 +183,10 @@ public class Account {
         this.getImages().add(images);
         return this;
     }
+
+    //=================Utils=========================
+    //=================Request=======================
+
+
 
 }

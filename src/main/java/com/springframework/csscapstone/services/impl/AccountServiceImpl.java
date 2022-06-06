@@ -344,6 +344,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     /**
+     * TODO Changing BUG
      * TODO Get Collaborator by join Request and Account
      * @param idEnterprise
      * @return
@@ -365,7 +366,7 @@ public class AccountServiceImpl implements AccountService {
         //todo convert to Account response Dto
         List<AccountResDto> responseDto = requests
                 .stream()
-                .flatMap(r -> r.getAccounts().stream())
+                .map(RequestSellingProduct::getAccount)
                 //todo Get All account of request except enterprise
                 .filter(a -> !a.getId().equals(idEnterprise))
                 .map(MapperDTO.INSTANCE::toAccountResponseDto)

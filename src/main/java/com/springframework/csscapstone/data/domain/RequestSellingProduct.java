@@ -38,8 +38,12 @@ public class RequestSellingProduct {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @ManyToMany(mappedBy = "requests")
-    private Set<Account> accounts = new HashSet<>();
+//    @ManyToMany(mappedBy = "requests")
+//    private Set<Account> accounts = new HashSet<>();
+
+    @ManyToOne
+    @JoinColumn(name = "account_id")
+    private Account account;
 
     @Override
     public boolean equals(Object o) {
@@ -74,8 +78,8 @@ public class RequestSellingProduct {
     }
 
     public RequestSellingProduct addAccount(Account account) {
-        this.getAccounts().add(account);
         account.getRequests().add(this);
+        this.setAccount(account);
         return this;
     }
 

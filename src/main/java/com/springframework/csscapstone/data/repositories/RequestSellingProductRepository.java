@@ -1,8 +1,8 @@
 package com.springframework.csscapstone.data.repositories;
 
-import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.RequestSellingProduct;
 import com.springframework.csscapstone.data.status.RequestStatus;
+import com.springframework.csscapstone.payload.queries.CollaboratorWithNumberSoldQueryDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,8 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Transactional(readOnly = true)
@@ -20,10 +19,10 @@ public interface RequestSellingProductRepository extends JpaRepository<RequestSe
     //todo Get request selling product by enterprise id
     @Query(value =
             "SELECT r FROM RequestSellingProduct r " +
-                    "JOIN r.accounts a " +
+                    "JOIN r.account a " +
                     "WHERE r.requestStatus = :requestStatus AND a.id = :enterpriseId",
             countQuery = "SELECT count(r) FROM RequestSellingProduct r " +
-                    "JOIN r.accounts a " +
+                    "JOIN r.account a " +
                     "WHERE r.requestStatus = :requestStatus AND a.id = :enterpriseId")
     Page<RequestSellingProduct> findAllByRequestStatus(
             @Param("enterpriseId") UUID enterpriseId,
@@ -33,12 +32,12 @@ public interface RequestSellingProductRepository extends JpaRepository<RequestSe
     @Query(
             value =
                     "SELECT r FROM RequestSellingProduct r " +
-                            "JOIN r.accounts a " +
+                            "JOIN r.account a " +
                             "WHERE a.id = :enterpriseId " +
                             "AND r.requestStatus = :status ",
             countQuery =
                     "SELECT COUNT(r) " +
-                            "FROM RequestSellingProduct r JOIN r.accounts a " +
+                            "FROM RequestSellingProduct r JOIN r.account a " +
                             "WHERE a.id = :enterpriseId " +
                             "AND r.requestStatus = :status")
     Page<RequestSellingProduct> findAllRequestSellingProduct(
@@ -59,15 +58,19 @@ public interface RequestSellingProductRepository extends JpaRepository<RequestSe
      * @return
      */
     @Query(value =
-            "SELECT a.id, sum(od.quantity) FROM RequestSellingProduct r " +
-                    "JOIN r.product p " +
-                    "JOIN r.accounts a " +
-                    "JOIN a.orders o " +
-                    "JOIN o.orderDetails od " +
+            "SELECT new com.springframework.csscapstone.payload.queries" +
+                    ".CollaboratorWithNumberSoldQueryDto(a.id, sum(od.quantity), count(od)) " +
+                    "FROM RequestSellingProduct r " +
+                    "LEFT JOIN r.product p " +
+                    "LEFT JOIN r.account a " +
+                    "LEFT JOIN a.orders o " +
+                    "LEFT JOIN o.orderDetails od " +
                     "WHERE p.account.id = :enterpriseId " +
                     "AND r.requestStatus = :status " +
+                    "AND o.status = 'FINISH' " +
+//                    "AND od.product.id = p.id " +
                     "GROUP BY a.id")
-    List<Object[]> findAccountInRequestSelling(
+    Optional<CollaboratorWithNumberSoldQueryDto> findAccountInRequestSelling(
             @Param("enterpriseId") UUID enterpriseId,
             @Param("status") RequestStatus status);
 

@@ -10,7 +10,7 @@ import java.util.UUID;
 import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 
 @Data
-public class ProductQueriesResponseDto implements Serializable {
+public class ProductQueriesResDto implements Serializable {
     private final UUID id;
     private final String name;
     private final String shortDescription;
@@ -20,7 +20,7 @@ public class ProductQueriesResponseDto implements Serializable {
 
     @JsonCreator(mode = PROPERTIES)
 
-    public ProductQueriesResponseDto(
+    public ProductQueriesResDto(
             @JsonProperty("id") UUID id,
             @JsonProperty("name") String name,
             @JsonProperty("short_description") String shortDescription,
