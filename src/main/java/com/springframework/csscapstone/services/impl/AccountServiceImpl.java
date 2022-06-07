@@ -183,7 +183,6 @@ public class AccountServiceImpl implements AccountService {
 
         Account _account = imageHandler(avatar, licenses, idCards, saved);
 
-
         return this.accountRepository.save(_account).getId();
     }
 
@@ -221,8 +220,6 @@ public class AccountServiceImpl implements AccountService {
 
         //upload to Azure:
         imageMap.forEach(blobUploadImages::azureAccountStorageHandler);
-
-        LOGGER.info("The container name: {}", accountContainer);
 
         //Create save Account-Image
         return imageMap.keySet().stream()
@@ -296,8 +293,7 @@ public class AccountServiceImpl implements AccountService {
     private Optional<AccountImage> updateImage(MultipartFile image, Account entity, AccountImageType type) {
         String imageOriginalPath = entity.getId() + "/";
         if (Objects.nonNull(image)) {
-            AccountImage accountImage = this
-                    .accountImageRepository
+            AccountImage accountImage = this.accountImageRepository
                     .findByAccountAndType(entity.getId(), type)
                     .orElse(new AccountImage());
 
@@ -337,8 +333,10 @@ public class AccountServiceImpl implements AccountService {
     public PageEnterpriseResDto getAllHavingEnterpriseRole(Integer pageNumber, Integer pageSize) {
         pageNumber = Objects.isNull(pageNumber) || pageNumber <= 1 ? 1 : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize <= 1 ? 1 : pageSize;
-        Page<Account> page = this.accountRepository.findAccountByRole("Enterprise", PageRequest.of(pageNumber - 1, pageSize));
-        List<EnterpriseResDto> data = page.getContent().stream().map(MapperDTO.INSTANCE::toEnterpriseResponseDto).collect(toList());
+        Page<Account> page = this.accountRepository
+                .findAccountByRole("Enterprise", PageRequest.of(pageNumber - 1, pageSize));
+        List<EnterpriseResDto> data = page.getContent().stream()
+                .map(MapperDTO.INSTANCE::toEnterpriseResponseDto).collect(toList());
         return new PageEnterpriseResDto(data, page.getNumber() + 1, page.getSize(), page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
     }
 
@@ -359,8 +357,7 @@ public class AccountServiceImpl implements AccountService {
         pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 1 : pageSize;
         //todo get all request selling
         Page<RequestSellingProduct> requests = requestSellingProductRepository
-                .findAllRequestSellingProduct(
-                        idEnterprise, RequestStatus.REGISTERED,
+                .findAllRequestSellingProduct(idEnterprise, RequestStatus.REGISTERED,
                         PageRequest.of(pageNumber - 1, pageSize));
 
         //todo convert to Account response Dto

@@ -23,7 +23,8 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
      * @return
      */
     @Query(
-            "SELECT col.id as col_id, sum(od.quantity) as total_quantity " +
+            "SELECT col.id as " + COLL_ID + ", " +
+                    "sum(od.quantity) as " + TOTAL_QUANTITY + " " +
                     "FROM Order o " +
                     "JOIN o.account col " +
                     "JOIN o.orderDetails od " +
