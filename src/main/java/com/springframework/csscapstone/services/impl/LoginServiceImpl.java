@@ -72,11 +72,11 @@ public class LoginServiceImpl implements LoginService {
         UserRecord _user = FirebaseAuth.getInstance().getUser(verifiedToken.getUid());
         String phone = _user.getPhoneNumber();
 
-        Optional<Account> accountByPhoneNumber = accountRepository.findAccountByEmail(phone);
+        Optional<Account> accountByPhoneNumber = accountRepository.findAccountsByPhone(phone);
         if (accountByPhoneNumber.isPresent()) { return accountByPhoneNumber
-                    .map(account -> new AppUserDetail(account, this.jwtTokenProvider.generateJwtTokenForCollaborator(
-                                    account.getRole().getName(),
-                                    account.getPhone()))).get();
+                    .map(account -> new AppUserDetail(account,
+                            this.jwtTokenProvider.generateJwtTokenForCollaborator(
+                                    account.getRole().getName(), account.getPhone()))).get();
         }
         Account account = new Account().setPhone(phone);
         account.addRole(this.roleRepository.getById("ROLE_3"));

@@ -36,14 +36,6 @@ public class CollaboratorLoginController {
     @PostMapping(COLLABORATOR_LOGIN)
     public ResponseEntity<?> openLogin(@RequestParam String firebaseToken) throws FirebaseAuthException {
         UserDetails userDetails = this.loginService.collaboratorLoginByFirebaseService(firebaseToken);
-//        HttpHeaders header = getHeader(userDetails);
-//        return new ResponseEntity<>(userDetails, header, HttpStatus.OK);
         return ok(userDetails);
     }
-//
-//    private HttpHeaders getHeader(UserDetails principal) {
-//        HttpHeaders httpHeaders = new HttpHeaders();
-//        httpHeaders.add(tokenHeader, jwtTokenProvider.generateJwtToken(principal));
-//        return httpHeaders;
-//    }
 }
