@@ -3,10 +3,7 @@ package com.springframework.csscapstone.services.impl;
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.dao.specifications.AccountSpecifications;
 import com.springframework.csscapstone.data.dao.specifications.RoleSpecification;
-import com.springframework.csscapstone.data.domain.Account;
-import com.springframework.csscapstone.data.domain.AccountImage;
-import com.springframework.csscapstone.data.domain.RequestSellingProduct;
-import com.springframework.csscapstone.data.domain.Role;
+import com.springframework.csscapstone.data.domain.*;
 import com.springframework.csscapstone.data.repositories.*;
 import com.springframework.csscapstone.data.status.AccountImageType;
 import com.springframework.csscapstone.data.status.RequestStatus;
@@ -61,6 +58,7 @@ public class AccountServiceImpl implements AccountService {
     private final AccountImageRepository accountImageRepository;
     private final BlobUploadImages blobUploadImages;
     private final OrderRepository orderRepository;
+    private final CampaignRepository campaignRepository;
 
     private final Logger LOGGER = LoggerFactory.getLogger(CategoryServiceImpl.class);
 
@@ -408,6 +406,21 @@ public class AccountServiceImpl implements AccountService {
                 result, page.getNumber(), result.size(),
                 page.getTotalElements(), page.getTotalPages(),
                 page.isFirst(), page.isLast());
+    }
+
+    @Override
+    public List<CollaboratorResDto> collaboratorMappingCampaign(UUID campaign) {
+        Map<UUID, Long> collaboratorProduct = new HashMap<>();
+        List<UUID> productId = this.campaignRepository
+                .findById(campaign)
+                .map(Stream::of)
+                .orElseGet(Stream::empty)
+                .flatMap(_campaign -> _campaign.getProducts().stream())
+                .map(Product::getId).collect(toList());
+        for (UUID id : productId) {
+//            this.orderRepository
+        }
+        return null;
     }
 
     /**

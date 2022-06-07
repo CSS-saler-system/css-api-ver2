@@ -36,4 +36,5 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
                     "ORDER BY sum(od.quantity) ASC")
     Page<Tuple> sortCollaboratorSold(@Param("enterpriseId") UUID enterpriseId, Pageable pageable);
 
+
 }

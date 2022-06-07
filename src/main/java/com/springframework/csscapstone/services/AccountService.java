@@ -12,12 +12,14 @@ import com.springframework.csscapstone.utils.exception_utils.account_exception.A
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.security.auth.login.AccountNotFoundException;
+import java.util.List;
 import java.util.UUID;
 
 public interface AccountService {
     PageImplResDto<AccountResDto> getAccountDto(
             String name, String phone,
-            String email, String address, Integer pageSize, Integer pageNumber);
+            String email, String address,
+            Integer pageSize, Integer pageNumber);
 
     AccountResDto getById(UUID id) throws AccountInvalidException, AccountNotFoundException;
 
@@ -36,10 +38,13 @@ public interface AccountService {
 
     PageEnterpriseResDto getAllHavingEnterpriseRole(Integer pageNumber, Integer pageSize);
 
-    PageImplResDto<AccountResDto> getAllCollaboratorsOfEnterprise(UUID idEnterprise, Integer pageNumber, Integer pageSize);
+    PageImplResDto<AccountResDto> getAllCollaboratorsOfEnterprise(
+            UUID idEnterprise, Integer pageNumber, Integer pageSize);
 
     //    UUID createAccount(AccountDto dto);
-    //todo Test
     PageImplResDto<CollaboratorResDto> collaboratorsOfEnterpriseIncludeNumberOfOrder(
             UUID idEnterprise, Integer pageNumber, Integer pageSize);
+
+    List<CollaboratorResDto> collaboratorMappingCampaign(UUID campaign);
+
 }

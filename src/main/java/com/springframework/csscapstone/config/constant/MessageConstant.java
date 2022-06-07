@@ -4,6 +4,10 @@ public class MessageConstant {
 
     public static final String REQUEST_SUCCESS = "request.success.message";
     public static final String REQUEST_FAILURE = "request.false.message";
+    public static class Point {
+
+        public static final String LACK_POINT = "point.error.lack";
+    }
 
 
     public static class Exception {

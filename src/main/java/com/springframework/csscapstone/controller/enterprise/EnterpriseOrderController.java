@@ -29,9 +29,9 @@ public class EnterpriseOrderController {
         return ok(uuid);
     }
 
-    @PutMapping(V2_ORDER_COMPLETE + "/{id}")
-    public ResponseEntity<?> completeOrder(@PathVariable("id") UUID id) {
-        this.orderService.completedOrder(id);
+    @PutMapping(V2_ORDER_COMPLETE + "/{orderId}")
+    public ResponseEntity<?> completeOrder(@PathVariable("orderId") UUID orderId) {
+        this.orderService.completedOrder(orderId);
         return ok(MessagesUtils.getMessage(MessageConstant.REQUEST_SUCCESS));
     }
 

@@ -8,6 +8,7 @@ import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.data.repositories.OrderRepository;
 import com.springframework.csscapstone.data.status.OrderStatus;
 import com.springframework.csscapstone.services.OrderService;
+import com.springframework.csscapstone.utils.exception_utils.LackPointException;
 import com.springframework.csscapstone.utils.exception_utils.order_exception.OrderNotFoundException;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
@@ -42,16 +43,17 @@ public class OrderServiceImpl implements OrderService {
     /**
      * Order -> Order-Detail: (total point)
      *
-     * @param uuid
+     * @param orderId
      */
     @Override
-    public void completedOrder(UUID uuid) {
-        Order order = this.orderRepository.findById(uuid)
+    public void completedOrder(UUID orderId) {
+        Order order = this.orderRepository.findById(orderId)
                 .filter(_order -> _order.getStatus() != OrderStatus.FINISH)
                 .orElseThrow(() -> handlerOrderNotFound().get());
 
         Account collaborator = order.getAccount();
 
+//        todo good code
 //        Double totalPoint = order.getOrderDetails()
 //                .stream()
 //                .map(OrderDetail::getTotalPointProduct)
@@ -71,11 +73,17 @@ public class OrderServiceImpl implements OrderService {
 
         //todo point of enterprise must be large enough
         enterprise.ifPresent(_enterprise -> {
+            if (_enterprise.getPoint() < totalPoint) throw handlerLackPoint().get();
+
             _enterprise.setPoint(_enterprise.getPoint() - totalPoint);
             collaborator.setPoint(collaborator.getPoint() + totalPoint);
             this.accountRepository.save(collaborator);
             this.accountRepository.save(_enterprise);
         });
+    }
+
+    private Supplier<LackPointException> handlerLackPoint() {
+        return () -> new LackPointException(MessagesUtils.getMessage(MessageConstant.Point.LACK_POINT));
     }
 
     private Supplier<OrderNotFoundException> handlerOrderNotFound() {

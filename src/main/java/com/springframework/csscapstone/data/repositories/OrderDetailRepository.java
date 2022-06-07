@@ -15,6 +15,16 @@ import java.util.UUID;
 
 @Transactional(readOnly = true)
 public interface OrderDetailRepository extends JpaRepository<OrderDetail, UUID> {
+
+    /**
+     *
+     * @param enterpriseId
+     * @param startDate
+     * @param endDate
+     * @param status
+     * @param pageable
+     * @return
+     */
     @Query(
             value = "SELECT new com.springframework.csscapstone.payload.queries.NumberProductOrderedQueryDto(od.product, sum(od.quantity)) " +
                     "FROM OrderDetail od " +
