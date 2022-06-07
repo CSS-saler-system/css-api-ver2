@@ -5,6 +5,7 @@ import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorR
 import com.springframework.csscapstone.payload.response_dto.PageEnterpriseResDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.admin.AccountResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.CollaboratorResDto;
 import com.springframework.csscapstone.payload.sharing.AccountUpdaterJsonDto;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountExistException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountInvalidException;
@@ -39,6 +40,6 @@ public interface AccountService {
 
     //    UUID createAccount(AccountDto dto);
     //todo Test
-    PageImplResDto<AccountResDto> collaboratorsOfEnterpriseIncludeNumberOfOrder(
+    PageImplResDto<CollaboratorResDto> collaboratorsOfEnterpriseIncludeNumberOfOrder(
             UUID idEnterprise, Integer pageNumber, Integer pageSize);
 }

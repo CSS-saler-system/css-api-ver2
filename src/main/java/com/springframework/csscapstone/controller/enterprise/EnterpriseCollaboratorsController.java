@@ -2,14 +2,17 @@ package com.springframework.csscapstone.controller.enterprise;
 
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.admin.AccountResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.CollaboratorResDto;
 import com.springframework.csscapstone.services.AccountService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-import static com.springframework.csscapstone.config.constant.ApiEndPoint.Account.V2_LIST_ACCOUNT;
+import static com.springframework.csscapstone.config.constant.ApiEndPoint.Account.*;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
@@ -17,6 +20,7 @@ import static org.springframework.http.ResponseEntity.ok;
 public class EnterpriseCollaboratorsController {
 
     private final AccountService accountService;
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     @GetMapping(V2_LIST_ACCOUNT + "/{idEnterprise}")
     public ResponseEntity<?> getCollaborator(
@@ -29,4 +33,19 @@ public class EnterpriseCollaboratorsController {
 
         return ok(allCollaboratorsOfEnterprise);
     }
+
+    @GetMapping(V2_LIST_ORDER_COLLABORATOR + "/{enterprise_id}")
+    public ResponseEntity<?> getCollaboratorCounterOrder(
+            @PathVariable("enterprise_id") UUID enterpriseId,
+            @RequestParam("page_number") Integer pageNumber,
+            @RequestParam("page_size") Integer pageSize
+    )  {
+        LOGGER.info("The message {}", enterpriseId);
+        LOGGER.info("The page-number {}", pageNumber);
+        LOGGER.info("The page-size {}", pageSize);
+        PageImplResDto<CollaboratorResDto> result = this.accountService
+                .collaboratorsOfEnterpriseIncludeNumberOfOrder(enterpriseId, pageNumber, pageSize);
+        return ok(result);
+    }
+
 }

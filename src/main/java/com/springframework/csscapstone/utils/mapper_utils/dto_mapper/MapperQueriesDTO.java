@@ -7,8 +7,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface MapperQueriesDto {
-    MapperQueriesDto INSTANCE = Mappers.getMapper(MapperQueriesDto.class);
+public interface MapperQueriesDTO {
+    MapperQueriesDTO INSTANCE = Mappers.getMapper(MapperQueriesDTO.class);
 
     @Mapping(target = "quantity", source = "sumQuantity")
     @Mapping(target = "id", source = "product.id")

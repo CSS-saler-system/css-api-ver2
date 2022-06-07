@@ -40,8 +40,6 @@ public interface MapperDTO {
 
     //========================= End Role ========================
 
-
-
     AccountBasicDto toAccountDto(Account entity);
 
     CampaignBasicDto toCampaignDto(Campaign entity);

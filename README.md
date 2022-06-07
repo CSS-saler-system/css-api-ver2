@@ -9,7 +9,7 @@
 Bug parse LocalDate to Json: 
 @JsonSerialize(using = LocalDateSerializer.class)
 @JsonDeserialize(using = LocalDateDeserializer.class) 
-
+@JsonFormat(pattern = "yyyy/MM/dd")
 <h4>AccountCreator - Json</h4>
 {
 "name" : "",<br>

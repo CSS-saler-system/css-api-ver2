@@ -57,6 +57,7 @@ public class ApiEndPoint {
         public static final String V1_UPDATE_ACCOUNT = v1_handler + "/update";
 
         public static final String V2_LIST_ACCOUNT = v2_handler + "/list";
+        public static final String V2_LIST_ORDER_COLLABORATOR = v2_handler + "/count-order/list";
         public static final String V2_GET_ACCOUNT = v2_handler + "/get";
         public static final String V2_CREATE_ACCOUNT = v2_handler + "/new";
         public static final String V2_DELETE_ACCOUNT = v2_handler + "/delete";

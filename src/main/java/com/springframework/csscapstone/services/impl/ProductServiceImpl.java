@@ -22,7 +22,7 @@ import com.springframework.csscapstone.utils.exception_utils.category_exception.
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
-import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperQueriesDto;
+import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperQueriesDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -291,7 +291,7 @@ public class ProductServiceImpl implements ProductService {
                 OrderStatus.FINISH, PageRequest.of(pageNumber - 1, pageSize));
         //Convert to Product count order DTO
         List<ProductCountOrderResDto> content = page.getContent().stream()
-                .map(MapperQueriesDto.INSTANCE::toQueriesProductDto)
+                .map(MapperQueriesDTO.INSTANCE::toQueriesProductDto)
                 .collect(toList());
 
         return new PageImplResDto<>(content, page.getNumber(), content.size(), page.getTotalElements(),

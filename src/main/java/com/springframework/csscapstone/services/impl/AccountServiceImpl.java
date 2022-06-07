@@ -7,10 +7,7 @@ import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.AccountImage;
 import com.springframework.csscapstone.data.domain.RequestSellingProduct;
 import com.springframework.csscapstone.data.domain.Role;
-import com.springframework.csscapstone.data.repositories.AccountImageRepository;
-import com.springframework.csscapstone.data.repositories.AccountRepository;
-import com.springframework.csscapstone.data.repositories.RequestSellingProductRepository;
-import com.springframework.csscapstone.data.repositories.RoleRepository;
+import com.springframework.csscapstone.data.repositories.*;
 import com.springframework.csscapstone.data.status.AccountImageType;
 import com.springframework.csscapstone.data.status.RequestStatus;
 import com.springframework.csscapstone.payload.basic.AccountImageBasicDto;
@@ -19,12 +16,14 @@ import com.springframework.csscapstone.payload.response_dto.PageEnterpriseResDto
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.admin.AccountResDto;
 import com.springframework.csscapstone.payload.response_dto.collaborator.EnterpriseResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.CollaboratorResDto;
 import com.springframework.csscapstone.payload.sharing.AccountUpdaterJsonDto;
 import com.springframework.csscapstone.services.AccountService;
 import com.springframework.csscapstone.utils.blob_utils.BlobUploadImages;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountExistException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountInvalidException;
+import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.CollaboratorResMapperDTO;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +40,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.security.auth.login.AccountNotFoundException;
+import javax.persistence.Tuple;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -61,6 +60,7 @@ public class AccountServiceImpl implements AccountService {
     private final RoleRepository roleRepository;
     private final AccountImageRepository accountImageRepository;
     private final BlobUploadImages blobUploadImages;
+    private final OrderRepository orderRepository;
 
     private final Logger LOGGER = LoggerFactory.getLogger(CategoryServiceImpl.class);
 
@@ -120,10 +120,9 @@ public class AccountServiceImpl implements AccountService {
      * @param id
      * @return
      * @throws AccountInvalidException
-     * @throws AccountNotFoundException
      */
     @Override
-    public AccountResDto getById(UUID id) throws AccountInvalidException, AccountNotFoundException {
+    public AccountResDto getById(UUID id) throws AccountInvalidException {
         Account result = accountRepository.findById(id).orElseThrow(handlerAccountNotFound());
 
         List<AccountImageBasicDto> avatar = result.getImages().stream()
@@ -165,7 +164,10 @@ public class AccountServiceImpl implements AccountService {
 
         //TODO check ROlE null <BUG>
         Specification
-                .where(RoleSpecification.equalNames(StringUtils.isEmpty(dto.getRole()) || !dto.getRole().matches(REGEX_ROLE) ? "Collaborator" : dto.getRole()));
+                .where(
+                        RoleSpecification.equalNames(StringUtils.isEmpty(dto.getRole()) ||
+                                !dto.getRole().matches(REGEX_ROLE) ? "Collaborator" : dto.getRole()));
+
         Role role = roleRepository
                 .findAllByName(dto.getRole()).get();
 
@@ -272,11 +274,8 @@ public class AccountServiceImpl implements AccountService {
      * @param entity
      * @return
      */
-    private Account imageUpdateHandler(
-            MultipartFile avatars,
-            MultipartFile licenses,
-            MultipartFile idCards,
-            Account entity) {
+    private Account imageUpdateHandler(MultipartFile avatars, MultipartFile licenses,
+                                       MultipartFile idCards, Account entity) {
 
         //load image from database
         updateImage(avatars, entity, AVATAR).ifPresent(image -> {
@@ -291,8 +290,6 @@ public class AccountServiceImpl implements AccountService {
             this.accountImageRepository.save(image);
             entity.addImage(image);
         });
-        ;
-
         return entity;
     }
 
@@ -348,6 +345,7 @@ public class AccountServiceImpl implements AccountService {
     /**
      * TODO Changing BUG
      * TODO Get Collaborator by join Request and Account
+     *
      * @param idEnterprise
      * @return
      */
@@ -379,24 +377,40 @@ public class AccountServiceImpl implements AccountService {
                 responseDto.size(), requests.getTotalElements(),
                 requests.getTotalPages(), requests.isFirst(), requests.isLast());
     }
+
     /**
-     * TODO Modified above method
+     * todo get collaborators have order selling product
+     *
      * @param idEnterprise
      * @return
      */
     @Override
-    public PageImplResDto<AccountResDto> collaboratorsOfEnterpriseIncludeNumberOfOrder(
+    public PageImplResDto<CollaboratorResDto> collaboratorsOfEnterpriseIncludeNumberOfOrder(
             UUID idEnterprise, Integer pageNumber, Integer pageSize) {
 
         if (Objects.isNull(idEnterprise)) throw handlerAccountNotFound().get();
 
-        //get all collaborator on request with registered status
-        //collab - product
-//        List<Account> collaborator = this.requestSellingProductRepository
-//                .findAccountInRequestSelling(idEnterprise, RequestStatus.REGISTERED);
+        pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
+        pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 1 : pageSize;
 
+        Page<Tuple> page = this.orderRepository
+                .sortCollaboratorSold(idEnterprise, PageRequest.of(pageNumber - 1, pageSize));
 
-        return null;
+        List<CollaboratorResDto> result = page.getContent()
+                .stream()
+                .map(tuple -> this.accountRepository
+                        .findById(tuple.get(OrderRepository.COLL_ID, UUID.class))
+                        .map(acc -> CollaboratorResMapperDTO.INSTANCE
+                                .toCollaboratorResDto(acc, tuple.get(OrderRepository.TOTAL_QUANTITY, Long.class))))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .sorted(Comparator.comparing(CollaboratorResDto::getTotalQuantity).reversed())
+                .collect(toList());
+
+        return new PageImplResDto<>(
+                result, page.getNumber(), result.size(),
+                page.getTotalElements(), page.getTotalPages(),
+                page.isFirst(), page.isLast());
     }
 
     /**
