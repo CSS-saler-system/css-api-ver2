@@ -46,32 +46,4 @@ public interface RequestSellingProductRepository extends JpaRepository<RequestSe
             @Param("status") RequestStatus status, Pageable pageable);
 
 
-//    @Query(value =
-//            "SELECT r.accounts FROM RequestSellingProduct r " +
-//            "JOIN r.accounts a " +
-//            "WHERE r.requestStatus = :status AND a.id = :enterpriseId")//Registered
-//    List<Account> findAccountInRequestSelling(@Param("enterpriseId") UUID enterpriseId, @Param("status") RequestStatus status);
-
-    /**
-     * todo get all account from request selling product follow product and enterprise
-     * @param enterpriseId
-     * @param status
-     * @return
-     */
-    @Query(value =
-            "SELECT new com.springframework.csscapstone.payload.queries" +
-                    ".CollaboratorWithNumberSoldQueryDto(r.account.id, r.product.account.id, sum(od.quantity), count(od)) " +
-                    "FROM RequestSellingProduct r " +
-                    "JOIN r.account.orders o " +
-                    "JOIN o.orderDetails od " +
-                    "Join od.product _p " +
-                    "WHERE r.product.account.id = :enterpriseId " +
-                    "AND r.requestStatus = :status " +
-                    "AND o.status = 'FINISH' " +
-                    "AND r.product.id = _p.id " +
-                    "GROUP BY r.account.id, r.product.account.id ")
-    Optional<List<CollaboratorWithNumberSoldQueryDto>> findAccountInRequestSelling(
-            @Param("enterpriseId") UUID enterpriseId,
-            @Param("status") RequestStatus status);
-
 }
