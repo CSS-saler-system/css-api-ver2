@@ -62,12 +62,14 @@ public class ApiEndPoint {
         public static final String V2_CREATE_ACCOUNT = v2_handler + "/new";
         public static final String V2_DELETE_ACCOUNT = v2_handler + "/delete";
         public static final String V2_UPDATE_ACCOUNT = v2_handler + "/update";
+        public static final String V2_LIST_COLLABORATOR_CAMPAIGN = v2_handler + "/campaign-join/list";
 
         public static final String V3_LIST_ACCOUNT = v3_handler + "/list";
         public static final String V3_GET_ACCOUNT = v3_handler + "/get";
         public static final String V3_CREATE_ACCOUNT = v3_handler + "/new";
         public static final String V3_DELETE_ACCOUNT = v3_handler + "/delete";
         public static final String V3_UPDATE_ACCOUNT = v3_handler + "/update";
+
     }
 
 

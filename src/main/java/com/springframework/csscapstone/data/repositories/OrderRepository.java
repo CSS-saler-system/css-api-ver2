@@ -36,5 +36,15 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
                     "ORDER BY sum(od.quantity) ASC")
     Page<Tuple> sortCollaboratorSold(@Param("enterpriseId") UUID enterpriseId, Pageable pageable);
 
+    @Query(
+            "SELECT a.id as " + COLL_ID + " , " +
+                    "sum(od.quantity) as " + TOTAL_QUANTITY + " " +
+                    "FROM Order o " +
+                    "JOIN o.orderDetails od " +
+                    "JOIN o.account a " +
+                    "WHERE od.product.id = :idProduct " +
+                    "GROUP BY a.id")
+    List<Tuple> getCollaboratorAndTotalQuantitySold(@Param("idProduct") UUID idProduct);
+
 
 }

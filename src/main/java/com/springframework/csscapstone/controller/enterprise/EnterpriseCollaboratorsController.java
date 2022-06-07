@@ -48,4 +48,11 @@ public class EnterpriseCollaboratorsController {
         return ok(result);
     }
 
+    @GetMapping(V2_LIST_COLLABORATOR_CAMPAIGN + "/{campaignId}")
+    public ResponseEntity<?> listAllCollaboratorAfterCampaign(
+            @PathVariable("campaignId") UUID campaignId
+    ) {
+        accountService.collaboratorMappingCampaign(campaignId);
+        return ok("");
+    }
 }

@@ -418,7 +418,17 @@ public class AccountServiceImpl implements AccountService {
                 .flatMap(_campaign -> _campaign.getProducts().stream())
                 .map(Product::getId).collect(toList());
         for (UUID id : productId) {
-//            this.orderRepository
+            Map<UUID, Long> _tmp = this.orderRepository.getCollaboratorAndTotalQuantitySold(id)
+                    .stream().collect(Collectors.toMap(
+                            tuple -> tuple.get(OrderRepository.COLL_ID, UUID.class),
+                            tuple -> tuple.get(OrderRepository.TOTAL_QUANTITY, Long.class)));
+            /**
+             * todo check hashmap contains add or inscrease collaboratorProduct
+             * todo need test
+             */
+            _tmp.forEach((key, value) -> collaboratorProduct.compute(key, (k, v) -> v == null ? value : v + value));
+
+
         }
         return null;
     }
