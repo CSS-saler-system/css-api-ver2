@@ -6,7 +6,6 @@ import com.springframework.csscapstone.data.dao.specifications.RoleSpecification
 import com.springframework.csscapstone.data.domain.*;
 import com.springframework.csscapstone.data.repositories.*;
 import com.springframework.csscapstone.data.status.AccountImageType;
-import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.data.status.RequestStatus;
 import com.springframework.csscapstone.payload.basic.AccountImageBasicDto;
 import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorReqDto;
@@ -19,8 +18,11 @@ import com.springframework.csscapstone.payload.sharing.AccountUpdaterJsonDto;
 import com.springframework.csscapstone.services.AccountService;
 import com.springframework.csscapstone.utils.blob_utils.BlobUploadImages;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
+import com.springframework.csscapstone.utils.exception_utils.InvalidCampaignAndProductException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountExistException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountInvalidException;
+import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignNotFoundException;
+import com.springframework.csscapstone.utils.exception_utils.data.DataTempException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.CollaboratorResMapperDTO;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
@@ -49,7 +51,6 @@ import java.util.stream.Stream;
 import static com.springframework.csscapstone.config.constant.RegexConstant.REGEX_ROLE;
 import static com.springframework.csscapstone.data.status.AccountImageType.*;
 import static java.util.stream.Collectors.toList;
-import static org.springframework.data.util.Pair.toMap;
 
 @Service
 @PropertySource(value = "classpath:application-storage.properties")
@@ -62,6 +63,7 @@ public class AccountServiceImpl implements AccountService {
     private final BlobUploadImages blobUploadImages;
     private final OrderRepository orderRepository;
     private final CampaignRepository campaignRepository;
+    private final ProductRepository productRepository;
 
     private final Logger LOGGER = LoggerFactory.getLogger(CategoryServiceImpl.class);
 
@@ -420,17 +422,28 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public List<CollaboratorResDto> collaboratorMappingCampaign(UUID campaign) {
         Map<UUID, Long> collaboratorProduct = new HashMap<>();
-        List<UUID> productId = this.campaignRepository
+        Campaign campaignEntity = this.campaignRepository
                 .findById(campaign)
+                .orElseThrow(handlerCampaignNotFoundException());
+
+
+        List<UUID> productId = Stream.of(campaignEntity)
 //                .filter(_campaign -> _campaign.getCampaignStatus().equals(CampaignStatus.ACCEPTED))
-                .map(Stream::of)
-                .orElseGet(Stream::empty)
+//                .map(Stream::of)
+//                .orElseGet(Stream::empty)
                 .flatMap(_campaign -> _campaign.getProducts().stream())
                 .map(Product::getId)
-                .peek(product -> LOGGER.info("This is product {}", product))
                 .collect(toList());
+
         //todo throw product not found if list<UUID> is empty
         if (productId.isEmpty()) throw handlerProductNotFound().get();
+
+        //todo check enterprise id is own product
+        boolean checkConstraintAccount = productId.stream()
+                .map(uuid -> this.productRepository.findById(uuid).orElseThrow(handlerDataTempException()))
+                .noneMatch(product -> product.getAccount().getId().equals(campaignEntity.getAccount().getId()));
+
+        if (checkConstraintAccount) throw handlerInvalidCampaignAndProduct().get();
 
         //case list uuid not empty
         for (UUID id : productId) {
@@ -450,7 +463,20 @@ public class AccountServiceImpl implements AccountService {
                 .map(entry -> CollaboratorResMapperDTO.INSTANCE.toCollaboratorResDto(
                         this.accountRepository.findById(entry.getKey()).orElse(null),
                         entry.getValue()))
+                .sorted(Comparator.comparing(CollaboratorResDto::getTotalQuantity).reversed())
                 .collect(toList());
+    }
+
+    private Supplier<InvalidCampaignAndProductException> handlerInvalidCampaignAndProduct() {
+        return () -> new InvalidCampaignAndProductException(MessagesUtils.getMessage(MessageConstant.DATA.PRODUCT_NOT_BELONG_ACCOUNT));
+    }
+
+    private Supplier<CampaignNotFoundException> handlerCampaignNotFoundException() {
+        return () -> new CampaignNotFoundException(MessagesUtils.getMessage(MessageConstant.Campaign.NOT_FOUND));
+    }
+
+    private Supplier<DataTempException> handlerDataTempException() {
+        return () -> new DataTempException(MessagesUtils.getMessage(MessageConstant.DATA.INVALID));
     }
 
     private Supplier<ProductNotFoundException> handlerProductNotFound() {
