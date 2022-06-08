@@ -40,9 +40,9 @@ public class Order {
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
-
-    @ManyToMany(mappedBy = "orders")
-    private Set<Campaign> campaigns = new HashSet<>();
+//
+//    @ManyToMany(mappedBy = "orders")
+//    private Set<Campaign> campaigns = new HashSet<>();
 
     @OneToMany(mappedBy = "order")
     private List<OrderDetail> orderDetails = new ArrayList<>();

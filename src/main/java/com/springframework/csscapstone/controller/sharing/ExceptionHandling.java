@@ -7,14 +7,17 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.payload.response_dto.exception.HttpResponse;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
+import com.springframework.csscapstone.utils.exception_utils.InvalidCampaignAndProductException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountExistException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountLoginWithEmailException;
 import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignInvalidException;
+import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.category_exception.CategoryInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.category_exception.CategoryNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.customer_exception.CustomerExistedException;
 import com.springframework.csscapstone.utils.exception_utils.customer_exception.CustomerNotFoundException;
+import com.springframework.csscapstone.utils.exception_utils.data.DataTempException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
@@ -120,6 +123,7 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler {
             CategoryNotFoundException.class,
             EntityNotFoundException.class,
             CustomerNotFoundException.class,
+            CampaignNotFoundException.class
     })
     public ResponseEntity<?> handleNotFound(RuntimeException exception) {
         return createHttpResponse(NOT_FOUND, exception.getMessage());
@@ -155,8 +159,9 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler {
             CampaignInvalidException.class,
             ProductInvalidException.class,
             CategoryInvalidException.class,
-//            FirebaseAuthException.class,
-            CustomerExistedException.class
+            CustomerExistedException.class,
+            DataTempException.class,
+            InvalidCampaignAndProductException.class
     })
     public ResponseEntity<?> handleMethodArgNotValid(RuntimeException exception) {
         return createHttpResponse(BAD_REQUEST, exception.getMessage());

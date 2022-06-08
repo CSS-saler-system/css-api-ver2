@@ -415,7 +415,6 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * todo list collaborator sort by quantity he sold
-     *
      * @param campaign
      * @return
      */
@@ -428,9 +427,6 @@ public class AccountServiceImpl implements AccountService {
 
 
         List<UUID> productId = Stream.of(campaignEntity)
-//                .filter(_campaign -> _campaign.getCampaignStatus().equals(CampaignStatus.ACCEPTED))
-//                .map(Stream::of)
-//                .orElseGet(Stream::empty)
                 .flatMap(_campaign -> _campaign.getProducts().stream())
                 .map(Product::getId)
                 .collect(toList());

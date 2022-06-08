@@ -4,12 +4,14 @@ import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.domain.Campaign;
 import com.springframework.csscapstone.data.domain.Campaign_;
 import com.springframework.csscapstone.data.repositories.CampaignRepository;
+import com.springframework.csscapstone.data.repositories.OrderRepository;
 import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.services.CampaignService;
 import com.springframework.csscapstone.payload.basic.CampaignBasicDto;
 import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignInvalidException;
+import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignNotFoundException;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +25,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -34,8 +33,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CampaignServiceImpl implements CampaignService {
     private final CampaignRepository campaignRepository;
+    private final OrderRepository orderRepository;
     private final EntityManager em;
 
+    //TODO Need Modified
     @Cacheable(cacheNames = "campaigns")
     @Override
     public List<CampaignBasicDto> findCampaign(String name, LocalDateTime createdDate,
@@ -119,6 +120,28 @@ public class CampaignServiceImpl implements CampaignService {
                 .map(this::updateCampaign)
                 .map(MapperDTO.INSTANCE::toCampaignDto)
                 .orElseThrow(campaignNotFoundException());
+    }
+
+    @Override
+    public void completeCampaign(UUID id) {
+        //find campaign and status not finish
+        Campaign campaign = this.campaignRepository.findById(id)
+                .orElseThrow(handlerCampaignNotFoundException());
+
+        //get sort collaborator
+        Map<UUID, Long> collaborator = this.orderRepository.getCollaboratorAndTotalQuantitySold(campaign.getId())
+                .stream()
+                .collect(Collectors.toMap(
+                        tuple -> tuple.get(OrderRepository.COLL_ID, UUID.class),
+                        tuple -> tuple.get(OrderRepository.TOTAL_QUANTITY, Long.class)
+                ));
+//        collaborator.entrySet().stream()
+//                .sorted(Map.Entry.comparingByValue())
+        //mapping prize
+    }
+
+    private Supplier<CampaignNotFoundException> handlerCampaignNotFoundException() {
+        return () -> new CampaignNotFoundException(MessagesUtils.getMessage(MessageConstant.Campaign.NOT_FOUND));
     }
 
     private Campaign updateCampaign(Campaign x) {

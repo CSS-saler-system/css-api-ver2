@@ -55,11 +55,11 @@ public class Campaign {
     @Enumerated(EnumType.STRING)
     private CampaignStatus campaignStatus = CampaignStatus.PENDING;
 
-    @ManyToMany
-    @JoinTable(name = "campaign_order",
-            joinColumns = @JoinColumn(name = "campaign_id"),
-            inverseJoinColumns = @JoinColumn(name = "order_id"))
-    private Set<Order> orders = new HashSet<>();
+//    @ManyToMany
+//    @JoinTable(name = "campaign_order",
+//            joinColumns = @JoinColumn(name = "campaign_id"),
+//            inverseJoinColumns = @JoinColumn(name = "order_id"))
+//    private Set<Order> orders = new HashSet<>();
 
     @OneToMany(mappedBy = "campaign")
     private List<CampaignPrize> campaignPrizes = new ArrayList<>();

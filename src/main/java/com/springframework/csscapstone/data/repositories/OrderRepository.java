@@ -43,7 +43,8 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
                     "JOIN o.orderDetails od " +
                     "JOIN o.account a " +
                     "WHERE od.product.id = :idProduct " +
-                    "GROUP BY a.id")
+                    "GROUP BY a.id " +
+                    "ORDER BY sum(od.quantity)")
     List<Tuple> getCollaboratorAndTotalQuantitySold(@Param("idProduct") UUID idProduct);
 
 

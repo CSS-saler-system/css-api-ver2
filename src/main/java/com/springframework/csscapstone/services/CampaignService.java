@@ -29,4 +29,7 @@ public interface CampaignService {
 
     void deleteCampaign(UUID id) throws EntityNotFoundException;
 
+    //todo close campaign
+    void completeCampaign(UUID id);
+
 }
