@@ -6,6 +6,7 @@ import com.springframework.csscapstone.data.dao.specifications.RoleSpecification
 import com.springframework.csscapstone.data.domain.*;
 import com.springframework.csscapstone.data.repositories.*;
 import com.springframework.csscapstone.data.status.AccountImageType;
+import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.data.status.RequestStatus;
 import com.springframework.csscapstone.payload.basic.AccountImageBasicDto;
 import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorReqDto;
@@ -20,6 +21,7 @@ import com.springframework.csscapstone.utils.blob_utils.BlobUploadImages;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountExistException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountInvalidException;
+import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.CollaboratorResMapperDTO;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
@@ -47,6 +49,7 @@ import java.util.stream.Stream;
 import static com.springframework.csscapstone.config.constant.RegexConstant.REGEX_ROLE;
 import static com.springframework.csscapstone.data.status.AccountImageType.*;
 import static java.util.stream.Collectors.toList;
+import static org.springframework.data.util.Pair.toMap;
 
 @Service
 @PropertySource(value = "classpath:application-storage.properties")
@@ -408,29 +411,50 @@ public class AccountServiceImpl implements AccountService {
                 page.isFirst(), page.isLast());
     }
 
+    /**
+     * todo list collaborator sort by quantity he sold
+     *
+     * @param campaign
+     * @return
+     */
     @Override
     public List<CollaboratorResDto> collaboratorMappingCampaign(UUID campaign) {
         Map<UUID, Long> collaboratorProduct = new HashMap<>();
         List<UUID> productId = this.campaignRepository
                 .findById(campaign)
+//                .filter(_campaign -> _campaign.getCampaignStatus().equals(CampaignStatus.ACCEPTED))
                 .map(Stream::of)
                 .orElseGet(Stream::empty)
                 .flatMap(_campaign -> _campaign.getProducts().stream())
-                .map(Product::getId).collect(toList());
+                .map(Product::getId)
+                .peek(product -> LOGGER.info("This is product {}", product))
+                .collect(toList());
+        //todo throw product not found if list<UUID> is empty
+        if (productId.isEmpty()) throw handlerProductNotFound().get();
+
+        //case list uuid not empty
         for (UUID id : productId) {
             Map<UUID, Long> _tmp = this.orderRepository.getCollaboratorAndTotalQuantitySold(id)
                     .stream().collect(Collectors.toMap(
                             tuple -> tuple.get(OrderRepository.COLL_ID, UUID.class),
                             tuple -> tuple.get(OrderRepository.TOTAL_QUANTITY, Long.class)));
             /**
-             * todo check hashmap contains add or inscrease collaboratorProduct
+             * todo check hashmap contains add or increase collaboratorProduct
              * todo need test
              */
-            _tmp.forEach((key, value) -> collaboratorProduct.compute(key, (k, v) -> v == null ? value : v + value));
-
-
+            _tmp.forEach((key, value) -> collaboratorProduct
+                    .compute(key, (k, v) -> v == null ? value : v + value));
         }
-        return null;
+        return collaboratorProduct
+                .entrySet().stream()
+                .map(entry -> CollaboratorResMapperDTO.INSTANCE.toCollaboratorResDto(
+                        this.accountRepository.findById(entry.getKey()).orElse(null),
+                        entry.getValue()))
+                .collect(toList());
+    }
+
+    private Supplier<ProductNotFoundException> handlerProductNotFound() {
+        return () -> new ProductNotFoundException(MessagesUtils.getMessage(MessageConstant.Product.NOT_FOUND));
     }
 
     /**

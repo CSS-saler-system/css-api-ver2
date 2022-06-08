@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 import static com.springframework.csscapstone.config.constant.ApiEndPoint.Account.*;
@@ -52,7 +53,7 @@ public class EnterpriseCollaboratorsController {
     public ResponseEntity<?> listAllCollaboratorAfterCampaign(
             @PathVariable("campaignId") UUID campaignId
     ) {
-        accountService.collaboratorMappingCampaign(campaignId);
-        return ok("");
+        List<CollaboratorResDto> result = accountService.collaboratorMappingCampaign(campaignId);
+        return ok(result);
     }
 }
