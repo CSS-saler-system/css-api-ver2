@@ -289,6 +289,7 @@ public class ProductServiceImpl implements ProductService {
         Page<NumberProductOrderedQueryDto> page = this.orderDetailRepository.findAllSumInOrderDetailGroupingByProduct(
                 id, startDate.atStartOfDay(), endDate.atStartOfDay(),
                 OrderStatus.FINISH, PageRequest.of(pageNumber - 1, pageSize));
+
         //Convert to Product count order DTO
         List<ProductCountOrderResDto> content = page.getContent().stream()
                 .map(MapperQueriesDTO.INSTANCE::toQueriesProductDto)

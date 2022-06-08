@@ -46,7 +46,7 @@ public class Prize {
 
     @ManyToOne
     @JoinColumn(name = "account_id")
-    private Account account;
+    private Account creator;
 
     @Override
     public boolean equals(Object o) {

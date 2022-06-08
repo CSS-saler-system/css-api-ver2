@@ -47,4 +47,11 @@ public class CampaignPrize {
     public int hashCode() {
         return getId() != null ? getId().hashCode() : 0;
     }
+
+//    ==============================Utils============================
+    public CampaignPrize addAccount(Account account) {
+        this.setAccount(account);
+        account.getCampaignsPrizes().add(this);
+        return this;
+    }
 }

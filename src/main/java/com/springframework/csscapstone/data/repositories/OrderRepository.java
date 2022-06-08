@@ -18,7 +18,7 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
     String TOTAL_QUANTITY = "total_quantity";
 
     /**
-     * todo The method get list collaborator and quantity sold product sort asc
+     * todo The method get list collaborator and quantity sold product sort desc
      * @param enterpriseId
      * @return
      */
@@ -33,9 +33,9 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
                     "AND p.account.id = :enterpriseId " +
                     "AND o.status = 'FINISH'" +
                     "GROUP BY col.id " +
-                    "ORDER BY sum(od.quantity) ASC")
+                    "ORDER BY sum(od.quantity) DESC")
     Page<Tuple> sortCollaboratorSold(@Param("enterpriseId") UUID enterpriseId, Pageable pageable);
-
+    //todo for mapping: get account then quantity and sort asc
     @Query(
             "SELECT a.id as " + COLL_ID + " , " +
                     "sum(od.quantity) as " + TOTAL_QUANTITY + " " +
@@ -44,7 +44,7 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
                     "JOIN o.account a " +
                     "WHERE od.product.id = :idProduct " +
                     "GROUP BY a.id " +
-                    "ORDER BY sum(od.quantity)")
+                    "ORDER BY sum(od.quantity) DESC")
     List<Tuple> getCollaboratorAndTotalQuantitySold(@Param("idProduct") UUID idProduct);
 
 

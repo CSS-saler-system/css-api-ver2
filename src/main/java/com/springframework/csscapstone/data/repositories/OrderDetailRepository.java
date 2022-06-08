@@ -26,7 +26,8 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, UUID> 
      * @return
      */
     @Query(
-            value = "SELECT new com.springframework.csscapstone.payload.queries.NumberProductOrderedQueryDto(od.product, sum(od.quantity)) " +
+            value = "SELECT new com.springframework.csscapstone.payload.queries" +
+                    ".NumberProductOrderedQueryDto(od.product, sum(od.quantity)) " +
                     "FROM OrderDetail od " +
                     "JOIN od.order o " +
                     "WHERE o.createDate >= :startDate  " +

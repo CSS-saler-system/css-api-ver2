@@ -41,7 +41,7 @@ public class Account {
     @Column(name = "email", unique = true)
     private String email;
 
-    @Column(name="password")
+    @Column(name = "password")
     private String password;
 
     @Lob
@@ -95,7 +95,7 @@ public class Account {
     @ToString.Exclude
     private List<CampaignPrize> campaignsPrizes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "account")
+    @OneToMany(mappedBy = "creator")
     @ToString.Exclude
     private List<Prize> prizes = new ArrayList<>();
 
@@ -187,6 +187,14 @@ public class Account {
     //=================Utils=========================
     //=================Request=======================
 
+
+    //=================Utils=========================
+    //=================Campaign Prizes===============
+    public Account addCampaignPrizes(CampaignPrize campaignPrize) {
+        this.getCampaignsPrizes().add(campaignPrize);
+        campaignPrize.setAccount(this);
+        return this;
+    }
 
 
 }

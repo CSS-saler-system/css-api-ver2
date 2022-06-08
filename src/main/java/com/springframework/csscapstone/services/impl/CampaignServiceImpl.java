@@ -1,8 +1,8 @@
 package com.springframework.csscapstone.services.impl;
 
 import com.springframework.csscapstone.config.constant.MessageConstant;
-import com.springframework.csscapstone.data.domain.Campaign;
-import com.springframework.csscapstone.data.domain.Campaign_;
+import com.springframework.csscapstone.data.domain.*;
+import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.data.repositories.CampaignRepository;
 import com.springframework.csscapstone.data.repositories.OrderRepository;
 import com.springframework.csscapstone.data.status.CampaignStatus;
@@ -15,6 +15,8 @@ import com.springframework.csscapstone.utils.exception_utils.campaign_exception.
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,13 +30,18 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
 public class CampaignServiceImpl implements CampaignService {
     private final CampaignRepository campaignRepository;
     private final OrderRepository orderRepository;
+
+    private final AccountRepository accountRepository;
     private final EntityManager em;
+
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     //TODO Need Modified
     @Cacheable(cacheNames = "campaigns")
@@ -95,6 +102,7 @@ public class CampaignServiceImpl implements CampaignService {
                 .setKpiSaleProduct(dto.getKpi());
         return x;
     }
+
     @Transactional
     @Override
     public UUID updateCampaign(CampaignBasicDto dto) throws EntityNotFoundException {
@@ -113,6 +121,7 @@ public class CampaignServiceImpl implements CampaignService {
         this.campaignRepository.save(entity);
         return entity.getId();
     }
+
     @Transactional
     @Override
     public void deleteCampaign(UUID id) throws EntityNotFoundException {
@@ -122,22 +131,63 @@ public class CampaignServiceImpl implements CampaignService {
                 .orElseThrow(campaignNotFoundException());
     }
 
+    /**
+     * todo complete campaign to mapping collaborator into prize
+     *
+     * @param id
+     */
+    @Transactional
     @Override
     public void completeCampaign(UUID id) {
+
         //find campaign and status not finish
         Campaign campaign = this.campaignRepository.findById(id)
+                .filter(_campaign -> !_campaign.getCampaignStatus().equals(CampaignStatus.FINISHED))
                 .orElseThrow(handlerCampaignNotFoundException());
 
-        //get sort collaborator
-        Map<UUID, Long> collaborator = this.orderRepository.getCollaboratorAndTotalQuantitySold(campaign.getId())
-                .stream()
-                .collect(Collectors.toMap(
-                        tuple -> tuple.get(OrderRepository.COLL_ID, UUID.class),
-                        tuple -> tuple.get(OrderRepository.TOTAL_QUANTITY, Long.class)
-                ));
-//        collaborator.entrySet().stream()
-//                .sorted(Map.Entry.comparingByValue())
-        //mapping prize
+        //get sort collaborator by OrderRepository
+        Map<UUID, Long> collaborator = new HashMap<>();
+
+        List<UUID> idProduct = campaign.getProducts().stream().map(Product::getId).collect(Collectors.toList());
+
+        LOGGER.info("The size of products {}", idProduct.size());
+        for (UUID productId : idProduct) {
+
+            Map<UUID, Long> _tmp = this.orderRepository
+                    .getCollaboratorAndTotalQuantitySold(productId).stream()
+                    .collect(Collectors.toMap(
+                            tuple -> tuple.get(OrderRepository.COLL_ID, UUID.class),
+                            tuple -> tuple.get(OrderRepository.TOTAL_QUANTITY, Long.class)));
+            _tmp.forEach((key, value) -> collaborator.compute(key, (k, v) -> Objects.isNull(v) ? value : v + value));
+        }
+
+        LOGGER.info("IM HERE COLLABORATOR {}", collaborator.entrySet().size());
+
+        //get all [prize] -> sort campaign prize:
+        List<CampaignPrize> campaignPrizes = campaign.getCampaignPrizes().stream()
+                .sorted(Comparator.comparing((CampaignPrize cp) -> cp.getPrize().getPrice()).reversed())
+                .collect(Collectors.toList());
+
+        //filter collaborators have enough standard: ASC
+        List<Account> accounts = collaborator.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+//                .filter(_entry -> _entry.getValue() >= campaign.getKpiSaleProduct())
+                //todo get number of element by campaign Prize size
+                .limit(campaignPrizes.size())
+                .flatMap(entry -> this.accountRepository
+                        .findById(entry.getKey())
+                        .map(Stream::of).orElseGet(Stream::empty))
+                .collect(Collectors.toList());
+        LOGGER.info("IM HERE ACCOUNT {}", accounts.size());
+
+
+        //mapping prize by using campaign prize with greater than KPI on campaign KPI
+        int count = 0;
+        for (Account account : accounts) {
+            LOGGER.info("IM HERE");
+            account.addCampaignPrizes(campaignPrizes.get(count++));
+            this.accountRepository.save(account);
+        }
     }
 
     private Supplier<CampaignNotFoundException> handlerCampaignNotFoundException() {
