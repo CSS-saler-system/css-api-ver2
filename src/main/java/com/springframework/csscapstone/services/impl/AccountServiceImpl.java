@@ -166,9 +166,7 @@ public class AccountServiceImpl implements AccountService {
             throws AccountExistException {
 
         //TODO check ROlE null <BUG>
-        Specification
-                .where(
-                        RoleSpecification.equalNames(StringUtils.isEmpty(dto.getRole()) ||
+        Specification.where(RoleSpecification.equalNames(StringUtils.isEmpty(dto.getRole()) ||
                                 !dto.getRole().matches(REGEX_ROLE) ? "Collaborator" : dto.getRole()));
 
         Role role = roleRepository

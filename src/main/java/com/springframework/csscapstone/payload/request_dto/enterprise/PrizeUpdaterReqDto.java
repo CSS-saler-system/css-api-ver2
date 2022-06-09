@@ -21,7 +21,6 @@ public class PrizeUpdaterReqDto {
     private final String description;
 
     private final PrizeStatus status;
-    private final AccountDto creator;
 
     @JsonCreator(mode = PROPERTIES)
     public PrizeUpdaterReqDto(
@@ -30,23 +29,13 @@ public class PrizeUpdaterReqDto {
             @JsonProperty("price") Double price,
             @JsonProperty("quantity") Long quantity,
             @JsonProperty("description") String description,
-            @JsonProperty("status") PrizeStatus status,
-            @JsonProperty("creator") AccountDto creator) {
+            @JsonProperty("status") PrizeStatus status) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.quantity = quantity;
         this.description = description;
         this.status = status;
-        this.creator = creator;
     }
-    @Data
-    public static class AccountDto implements Serializable {
-        private final UUID id;
 
-        @JsonCreator(mode = PROPERTIES)
-        public AccountDto(UUID id) {
-            this.id = id;
-        }
-    }
 }
