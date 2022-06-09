@@ -4,6 +4,7 @@ import com.springframework.csscapstone.data.status.PrizeStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -16,6 +17,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @Entity
+@Accessors(chain = true)
 @Table(name = "prize")
 public class Prize {
     @Id

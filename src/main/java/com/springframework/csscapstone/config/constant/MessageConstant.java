@@ -5,6 +5,11 @@ public class MessageConstant {
     public static final String REQUEST_SUCCESS = "request.success.message";
     public static final String REQUEST_FAILURE = "request.false.message";
     public static final String KPI_NOT_ENOUGH = "kpi.error.not_enough";
+    public static class Prize {
+
+        public static final String BAD_JSON = "prize.error.bad_json";
+        public static final String NOT_FOUND = "prize.error.not_found";
+    }
 
     public static class  DATA {
        public static final String INVALID = "data.error.temp";

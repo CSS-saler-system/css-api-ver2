@@ -1,12 +1,18 @@
 package com.springframework.csscapstone.services.impl;
 
+import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.dao.specifications.PrizeSpecifications;
 import com.springframework.csscapstone.data.domain.Prize;
 import com.springframework.csscapstone.data.repositories.PrizeRepository;
+import com.springframework.csscapstone.payload.request_dto.enterprise.PrizeCreatorReqDto;
+import com.springframework.csscapstone.payload.request_dto.enterprise.PrizeUpdaterReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.PrizeResDto;
 import com.springframework.csscapstone.services.PrizeService;
+import com.springframework.csscapstone.utils.exception_utils.prize_exception.PrizeJsonBadException;
+import com.springframework.csscapstone.utils.exception_utils.prize_exception.PrizeNotFoundException;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
+import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -18,6 +24,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,7 +61,31 @@ public class PrizeServiceImpl implements PrizeService {
     }
 
     @Override
-    public PageImplResDto<PrizeResDto> getAll(Integer pageNumber, Integer pageSize) {
+    public UUID updatePrize(PrizeUpdaterReqDto prizeUpdater) {
+        if (Objects.isNull(prizeUpdater.getId())) throw handlerBadRequestException().get();
+        Prize prize = this.prizeRepository.findById(prizeUpdater.getId()).orElseThrow(handlerPrizeNotFound());
+
+        prize.setName(prizeUpdater.getName())
+                .setDescription(prizeUpdater.getDescription())
+                .setPrizeStatus(prizeUpdater.getStatus())
+                .setPrice(prizeUpdater.getPrice())
+                .setQuantity(prizeUpdater.getQuantity());
+
+        //update image override images
+
+        return this.prizeRepository.save(prize).getId();
+    }
+
+    private Supplier<PrizeNotFoundException> handlerPrizeNotFound() {
+        return () -> new PrizeNotFoundException(MessagesUtils.getMessage(MessageConstant.Prize.NOT_FOUND));
+    }
+
+    private Supplier<PrizeJsonBadException> handlerBadRequestException() {
+        return () -> new PrizeJsonBadException(MessagesUtils.getMessage(MessageConstant.Prize.BAD_JSON));
+    }
+
+    @Override
+    public UUID createPrize(PrizeCreatorReqDto prizeCreatorReqDto) {
         return null;
     }
 }

@@ -10,7 +10,7 @@ import java.util.UUID;
 public interface PrizeService {
 
     PageImplResDto<PrizeResDto> getAll(String name, Integer pageNumber, Integer pageSize);
-    PageImplResDto<PrizeResDto> getAll(Integer pageNumber, Integer pageSize);
+//    PageImplResDto<PrizeResDto> getAll(Integer pageNumber, Integer pageSize);
 
     UUID updatePrize(PrizeUpdaterReqDto prizeUpdater);
 
