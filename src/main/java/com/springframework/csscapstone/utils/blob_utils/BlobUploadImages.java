@@ -15,8 +15,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class BlobUploadImages {
 
-    @Value("${account_image_container}")
-    private String accountContainer;
+
 
     @Value("${connection-string}")
     private String connectionString;
@@ -24,6 +23,11 @@ public class BlobUploadImages {
     @Value("${product_image_container}")
     private String productContainer;
 
+    @Value("${account_image_container}")
+    private String accountContainer;
+
+    @Value("${prize_image_container}")
+    private String prizeContainer;
 
     /**
      * TODO Upload Image
@@ -48,5 +52,15 @@ public class BlobUploadImages {
                 .buildClient();
         BlobClient blobClient = container.getBlobClient(key);
         blobClient.upload(value.getInputStream(), value.getSize(), true);
+    }
+
+    @SneakyThrows
+    public void azurePrizeStorageHandler(String key, MultipartFile image) {
+        BlobContainerClient container = new BlobContainerClientBuilder()
+                .containerName(prizeContainer)
+                .connectionString(connectionString)
+                .buildClient();
+        BlobClient blobClient = container.getBlobClient(key);
+        blobClient.upload(image.getInputStream(), image.getSize(), true);
     }
 }

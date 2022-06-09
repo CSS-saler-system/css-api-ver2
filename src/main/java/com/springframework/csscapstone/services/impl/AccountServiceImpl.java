@@ -224,8 +224,7 @@ public class AccountServiceImpl implements AccountService {
 
         //Create save Account-Image
         return imageMap.keySet().stream()
-                .map(imageName -> new AccountImage(type,
-                        endpoint + accountContainer + "/" + imageName))
+                .map(imageName -> new AccountImage(type, endpoint + accountContainer + "/" + imageName))
                 .peek(this.accountImageRepository::save)
                 .findFirst();
     }

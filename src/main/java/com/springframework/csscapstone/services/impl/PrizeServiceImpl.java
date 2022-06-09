@@ -3,6 +3,8 @@ package com.springframework.csscapstone.services.impl;
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.dao.specifications.PrizeSpecifications;
 import com.springframework.csscapstone.data.domain.Prize;
+import com.springframework.csscapstone.data.domain.PrizeImage;
+import com.springframework.csscapstone.data.repositories.PrizeImageRepository;
 import com.springframework.csscapstone.data.repositories.PrizeRepository;
 import com.springframework.csscapstone.data.status.PrizeStatus;
 import com.springframework.csscapstone.payload.request_dto.enterprise.PrizeCreatorReqDto;
@@ -10,6 +12,7 @@ import com.springframework.csscapstone.payload.request_dto.enterprise.PrizeUpdat
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.PrizeResDto;
 import com.springframework.csscapstone.services.PrizeService;
+import com.springframework.csscapstone.utils.blob_utils.BlobUploadImages;
 import com.springframework.csscapstone.utils.exception_utils.prize_exception.PrizeJsonBadException;
 import com.springframework.csscapstone.utils.exception_utils.prize_exception.PrizeNotFoundException;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
@@ -27,12 +30,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @PropertySource(value = "classpath:application-storage.properties")
@@ -40,13 +41,17 @@ import java.util.stream.Collectors;
 public class PrizeServiceImpl implements PrizeService {
 
     private final PrizeRepository prizeRepository;
-    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
+
+    private final BlobUploadImages blobUploadImages;
+
+    private final PrizeImageRepository prizeImageRepository;
 
     @Value("${endpoint}")
     private String endpoint;
 
     @Value("${prize_image_container}")
     private String prizeContainer;
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     @Override
     public PageImplResDto<PrizeResDto> getAll(String name, Integer pageNumber, Integer pageSize) {
@@ -73,6 +78,7 @@ public class PrizeServiceImpl implements PrizeService {
                 result.isFirst(), result.isLast());
     }
 
+
     @Transactional
     @Override
     public UUID updatePrize(PrizeUpdaterReqDto prizeUpdater, List<MultipartFile> images) {
@@ -86,21 +92,15 @@ public class PrizeServiceImpl implements PrizeService {
                 .setQuantity(prizeUpdater.getQuantity());
 
         //TODO update image override images
-        prize = handlerImage(images, prize);
-        return this.prizeRepository.save(prize).getId();
-    }
+        Prize result = handlerImage(images, prize)
+                .orElseThrow(() -> new RuntimeException("Some thing went wrong in Image prize!!!"));
 
-    private Prize handlerImage(List<MultipartFile> images, Prize prize) {
-        images.stream().map(img -> this.processesImage(img, prize.getId()));
-        return null;
-    }
-
-    private Optional<Prize> processesImage(MultipartFile multipartFile, UUID prizeId) {
+        return this.prizeRepository.save(result).getId();
     }
 
     @Transactional
     @Override
-    public UUID createPrize(PrizeCreatorReqDto prizeCreatorReqDto) {
+    public UUID createPrize(PrizeCreatorReqDto prizeCreatorReqDto, List<MultipartFile> images) {
 
         Prize prize = new Prize()
                 .setName(prizeCreatorReqDto.getName())
@@ -110,8 +110,37 @@ public class PrizeServiceImpl implements PrizeService {
                 .setPrice(prizeCreatorReqDto.getPrice());
 
         //TODO image
+        Prize result = handlerImage(images, prize)
+                .orElseThrow(() -> new RuntimeException("Some thing went wrong in Image prize!!!"));
 
-        return this.prizeRepository.save(prize).getId();
+        return this.prizeRepository.save(result).getId();
+    }
+
+    //todo add image to account
+    private Optional<Prize> handlerImage(List<MultipartFile> images, Prize prize) {
+        return images.stream()
+                .filter(Objects::nonNull)
+                .flatMap(img -> this.processesImage(img, prize.getId())
+                        .map(Stream::of)
+                        .orElseGet(Stream::empty)
+                        .map(prize::addImage))
+                .findFirst();
+    }
+
+    //todo save image on azure
+    private Optional<PrizeImage> processesImage(MultipartFile multipartFile, UUID prizeId) {
+        String nameImageOnAzure = prizeId + "/";
+
+        Map<String, MultipartFile> imageMap = Stream.of(multipartFile)
+                .collect(Collectors.toMap(
+                        image -> nameImageOnAzure + image.getOriginalFilename(),
+                        image -> image));
+        imageMap.forEach(blobUploadImages::azurePrizeStorageHandler);
+        return imageMap.keySet()
+                .stream()
+                .map(imageName -> new PrizeImage(endpoint + prizeContainer + "/" + imageName))
+                .peek(this.prizeImageRepository::save)
+                .findFirst();
     }
 
     private Supplier<PrizeNotFoundException> handlerPrizeNotFound() {

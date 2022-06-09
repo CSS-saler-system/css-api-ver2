@@ -6,6 +6,7 @@ import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.data.repositories.CampaignRepository;
 import com.springframework.csscapstone.data.repositories.OrderRepository;
 import com.springframework.csscapstone.data.status.CampaignStatus;
+import com.springframework.csscapstone.payload.request_dto.enterprise.CampaignUpdaterReqDto;
 import com.springframework.csscapstone.services.CampaignService;
 import com.springframework.csscapstone.payload.basic.CampaignBasicDto;
 import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -83,42 +85,40 @@ public class CampaignServiceImpl implements CampaignService {
 
     @Transactional
     @Override
-    public UUID createCampaign(CampaignCreatorReqDto dto) throws CampaignInvalidException {
+    public UUID createCampaign(CampaignCreatorReqDto dto, List<MultipartFile> images) throws CampaignInvalidException {
+
         Campaign campaign = Optional.of(new Campaign())
-                .map(x -> toCampaignEntity(dto, x))
+                .map(x ->
+                    x.setName(dto.getName())
+                            .setCampaignShortDescription(dto.getCampaignShortDescription())
+                            .setCampaignDescription(dto.getCampaignDescription())
+                            .setStartDate(dto.getStartDate())
+                            .setEndDate(dto.getEndDate())
+                            .setKpiSaleProduct(dto.getKpi()))
                 .map(this.campaignRepository::save)
                 .orElseThrow(() -> new CampaignInvalidException(
                         MessagesUtils.getMessage(MessageConstant.Campaign.INVALID)
                 ));
-        return campaign.getId();
-    }
 
-    private Campaign toCampaignEntity(CampaignCreatorReqDto dto, Campaign x) {
-        x.setName(dto.getName())
-                .setImage(dto.getImage())
-                .setCampaignShortDescription(dto.getCampaignShortDescription())
-                .setCampaignDescription(dto.getCampaignDescription())
-                .setStartDate(dto.getStartDate())
-                .setEndDate(dto.getEndDate())
-                .setKpiSaleProduct(dto.getKpi());
-        return x;
+        //todo save image
+        return campaign.getId();
     }
 
     @Transactional
     @Override
-    public UUID updateCampaign(CampaignBasicDto dto) throws EntityNotFoundException {
+    public UUID updateCampaign(CampaignUpdaterReqDto dto, List<MultipartFile> images) throws EntityNotFoundException {
 
         Campaign entity = this.campaignRepository.findById(dto.getId())
                 .orElseThrow(campaignNotFoundException());
 
         entity.setName(dto.getName())
-                .setImage(dto.getImage())
+//                .setImage(dto.getImage())
                 .setStartDate(dto.getStartDate())
                 .setEndDate(dto.getEndDate())
                 .setCampaignShortDescription(dto.getCampaignShortDescription())
                 .setCampaignDescription(dto.getCampaignDescription())
-                .setKpiSaleProduct(dto.getKpiSaleProduct())
-                .setCampaignStatus(dto.getCampaignStatus());
+                .setKpiSaleProduct(dto.getKpiSaleProduct());
+//                .setCampaignStatus(dto.getCampaignStatus());
         this.campaignRepository.save(entity);
         return entity.getId();
     }

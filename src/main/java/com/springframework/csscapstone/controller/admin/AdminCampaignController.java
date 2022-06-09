@@ -1,8 +1,11 @@
 package com.springframework.csscapstone.controller.admin;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springframework.csscapstone.config.constant.DataConstraint;
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.status.CampaignStatus;
+import com.springframework.csscapstone.payload.request_dto.enterprise.CampaignUpdaterReqDto;
 import com.springframework.csscapstone.services.CampaignService;
 import com.springframework.csscapstone.payload.basic.CampaignBasicDto;
 import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
@@ -12,8 +15,10 @@ import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,6 +35,7 @@ import static org.springframework.http.ResponseEntity.ok;
 public class AdminCampaignController {
 
     private final CampaignService campaignService;
+    private final ObjectMapper objectMapper;
 
     @GetMapping(V1_LIST_CAMPAIGN)
     public ResponseEntity<List<CampaignBasicDto>> getListDto(
@@ -61,15 +67,24 @@ public class AdminCampaignController {
         return ok(campaignService.findById(id));
     }
 
-    @PutMapping(V1_UPDATE_CAMPAIGN)
-    public ResponseEntity<UUID> updateCampaign(@RequestBody CampaignBasicDto dto) throws EntityNotFoundException {
-        UUID campaignUUID = campaignService.updateCampaign(dto);
+    @PutMapping(value = V1_UPDATE_CAMPAIGN, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UUID> updateCampaign(
+            @RequestPart("campaign") String campaign,
+            @RequestPart("images") List<MultipartFile> images)
+            throws EntityNotFoundException, JsonProcessingException {
+        CampaignUpdaterReqDto dto = objectMapper
+                .readValue(campaign, CampaignUpdaterReqDto.class);
+        UUID campaignUUID = campaignService.updateCampaign(dto, images);
         return ok(campaignUUID);
     }
 
-    @PostMapping(V1_CREATE_CAMPAIGN)
-    public ResponseEntity<UUID> addNewCampaign(@RequestBody CampaignCreatorReqDto dto) throws CampaignInvalidException {
-        UUID campaign = campaignService.createCampaign(dto);
+    @PostMapping(value = V1_CREATE_CAMPAIGN, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UUID> addNewCampaign(
+            @RequestPart(name = "campaign") String campaignCreatorReqDto,
+            @RequestPart(name = "images") List<MultipartFile> images)
+            throws CampaignInvalidException, JsonProcessingException {
+        CampaignCreatorReqDto dto = this.objectMapper.readValue(campaignCreatorReqDto, CampaignCreatorReqDto.class);
+        UUID campaign = campaignService.createCampaign(dto, images);
         return ok(campaign);
     }
 

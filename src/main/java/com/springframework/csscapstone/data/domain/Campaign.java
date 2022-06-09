@@ -29,8 +29,10 @@ public class Campaign {
     private UUID id;
 
     private String name;
+
     //todo change to table
-    private String image;
+    @OneToMany(mappedBy = "campaign")
+    private List<CampaignImage> image = new ArrayList<>();
 
     @CreatedDate
     private LocalDateTime createDate;
