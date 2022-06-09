@@ -11,6 +11,7 @@ import com.springframework.csscapstone.utils.exception_utils.InvalidCampaignAndP
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountExistException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountLoginWithEmailException;
+import com.springframework.csscapstone.utils.exception_utils.account_exception.NotEnoughKpiException;
 import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.category_exception.CategoryInvalidException;
@@ -123,7 +124,8 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler {
             CategoryNotFoundException.class,
             EntityNotFoundException.class,
             CustomerNotFoundException.class,
-            CampaignNotFoundException.class
+            CampaignNotFoundException.class,
+            NotEnoughKpiException.class
     })
     public ResponseEntity<?> handleNotFound(RuntimeException exception) {
         return createHttpResponse(NOT_FOUND, exception.getMessage());

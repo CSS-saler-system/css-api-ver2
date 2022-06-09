@@ -10,6 +10,7 @@ import com.springframework.csscapstone.services.CampaignService;
 import com.springframework.csscapstone.payload.basic.CampaignBasicDto;
 import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
+import com.springframework.csscapstone.utils.exception_utils.account_exception.NotEnoughKpiException;
 import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignNotFoundException;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
@@ -150,7 +151,8 @@ public class CampaignServiceImpl implements CampaignService {
 
         List<UUID> idProduct = campaign.getProducts().stream().map(Product::getId).collect(Collectors.toList());
 
-        LOGGER.info("The size of products {}", idProduct.size());
+        idProduct.forEach(System.out::println);
+
         for (UUID productId : idProduct) {
 
             Map<UUID, Long> _tmp = this.orderRepository
@@ -161,25 +163,29 @@ public class CampaignServiceImpl implements CampaignService {
             _tmp.forEach((key, value) -> collaborator.compute(key, (k, v) -> Objects.isNull(v) ? value : v + value));
         }
 
-        LOGGER.info("IM HERE COLLABORATOR {}", collaborator.entrySet().size());
-
         //get all [prize] -> sort campaign prize:
         List<CampaignPrize> campaignPrizes = campaign.getCampaignPrizes().stream()
+                //todo sort by comparing price of prize
                 .sorted(Comparator.comparing((CampaignPrize cp) -> cp.getPrize().getPrice()).reversed())
                 .collect(Collectors.toList());
+
+        campaignPrizes.stream()
+                .map(CampaignPrize::getPrize)
+                .forEach(System.out::println);
 
         //filter collaborators have enough standard: ASC
         List<Account> accounts = collaborator.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-//                .filter(_entry -> _entry.getValue() >= campaign.getKpiSaleProduct())
+                //todo test so in active unlock this code
+                .filter(_entry -> _entry.getValue() >= campaign.getKpiSaleProduct())
                 //todo get number of element by campaign Prize size
                 .limit(campaignPrizes.size())
                 .flatMap(entry -> this.accountRepository
                         .findById(entry.getKey())
                         .map(Stream::of).orElseGet(Stream::empty))
                 .collect(Collectors.toList());
-        LOGGER.info("IM HERE ACCOUNT {}", accounts.size());
 
+        if (accounts.isEmpty()) throw handlerNotEnoughKPIException().get();
 
         //mapping prize by using campaign prize with greater than KPI on campaign KPI
         int count = 0;
@@ -188,6 +194,10 @@ public class CampaignServiceImpl implements CampaignService {
             account.addCampaignPrizes(campaignPrizes.get(count++));
             this.accountRepository.save(account);
         }
+    }
+
+    private Supplier<NotEnoughKpiException> handlerNotEnoughKPIException() {
+        return () -> new NotEnoughKpiException(MessagesUtils.getMessage(MessageConstant.KPI_NOT_ENOUGH));
     }
 
     private Supplier<CampaignNotFoundException> handlerCampaignNotFoundException() {

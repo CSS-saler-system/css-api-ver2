@@ -4,6 +4,8 @@ public class MessageConstant {
 
     public static final String REQUEST_SUCCESS = "request.success.message";
     public static final String REQUEST_FAILURE = "request.false.message";
+    public static final String KPI_NOT_ENOUGH = "kpi.error.not_enough";
+
     public static class  DATA {
        public static final String INVALID = "data.error.temp";
         public static final String PRODUCT_NOT_BELONG_ACCOUNT = "data.error.belonging";
