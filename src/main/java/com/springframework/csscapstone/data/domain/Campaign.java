@@ -118,4 +118,11 @@ public class Campaign {
                 ", campaignStatus=" + campaignStatus +
                 '}';
     }
+
+//    ======================= Utils ====================
+    public Campaign addImage(CampaignImage campaignImage) {
+        this.getImage().add(campaignImage);
+        campaignImage.setCampaign(this);
+        return this;
+    }
 }

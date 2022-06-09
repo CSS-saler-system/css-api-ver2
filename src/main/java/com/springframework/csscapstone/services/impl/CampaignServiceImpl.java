@@ -3,13 +3,15 @@ package com.springframework.csscapstone.services.impl;
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.domain.*;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
+import com.springframework.csscapstone.data.repositories.CampaignImageRepository;
 import com.springframework.csscapstone.data.repositories.CampaignRepository;
 import com.springframework.csscapstone.data.repositories.OrderRepository;
 import com.springframework.csscapstone.data.status.CampaignStatus;
-import com.springframework.csscapstone.payload.request_dto.enterprise.CampaignUpdaterReqDto;
-import com.springframework.csscapstone.services.CampaignService;
 import com.springframework.csscapstone.payload.basic.CampaignBasicDto;
 import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
+import com.springframework.csscapstone.payload.request_dto.enterprise.CampaignUpdaterReqDto;
+import com.springframework.csscapstone.services.CampaignService;
+import com.springframework.csscapstone.utils.blob_utils.BlobUploadImages;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.NotEnoughKpiException;
 import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignInvalidException;
@@ -19,6 +21,7 @@ import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +38,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+
 @Service
 @RequiredArgsConstructor
 public class CampaignServiceImpl implements CampaignService {
@@ -43,6 +47,16 @@ public class CampaignServiceImpl implements CampaignService {
 
     private final AccountRepository accountRepository;
     private final EntityManager em;
+
+    private final BlobUploadImages blobUploadImages;
+
+    private final CampaignImageRepository campaignImageRepository;
+
+    @Value("${endpoint}")
+    private String endpoint;
+
+    @Value("${campaign_image_container}")
+    private String campaignContainer;
 
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
@@ -87,23 +101,18 @@ public class CampaignServiceImpl implements CampaignService {
     @Override
     public UUID createCampaign(CampaignCreatorReqDto dto, List<MultipartFile> images) throws CampaignInvalidException {
 
-        Campaign campaign = Optional.of(new Campaign())
-                .map(x ->
-                    x.setName(dto.getName())
-                            .setCampaignShortDescription(dto.getCampaignShortDescription())
-                            .setCampaignDescription(dto.getCampaignDescription())
-                            .setStartDate(dto.getStartDate())
-                            .setEndDate(dto.getEndDate())
-                            .setKpiSaleProduct(dto.getKpi()))
-                .map(this.campaignRepository::save)
-                .orElseThrow(() -> new CampaignInvalidException(
-                        MessagesUtils.getMessage(MessageConstant.Campaign.INVALID)
-                ));
+        Campaign campaign = new Campaign().setName(dto.getName())
+                .setCampaignShortDescription(dto.getCampaignShortDescription())
+                .setCampaignDescription(dto.getCampaignDescription())
+                .setStartDate(dto.getStartDate())
+                .setEndDate(dto.getEndDate())
+                .setKpiSaleProduct(dto.getKpi());
+
+        Campaign saved = this.campaignRepository.save(campaign);
 
         //todo save image
-        return campaign.getId();
+        return this.campaignRepository.save(handlerImage(images, saved)).getId();
     }
-
     @Transactional
     @Override
     public UUID updateCampaign(CampaignUpdaterReqDto dto, List<MultipartFile> images) throws EntityNotFoundException {
@@ -119,9 +128,41 @@ public class CampaignServiceImpl implements CampaignService {
                 .setCampaignDescription(dto.getCampaignDescription())
                 .setKpiSaleProduct(dto.getKpiSaleProduct());
 //                .setCampaignStatus(dto.getCampaignStatus());
-        this.campaignRepository.save(entity);
+        //todo image handler:
+        Campaign campaign = handlerImage(images, entity);
+        this.campaignRepository.save(campaign);
         return entity.getId();
     }
+
+    private Campaign handlerImage(List<MultipartFile> images, Campaign campaign) {
+        if (Objects.nonNull(images)) {
+            return images
+                    .stream()
+                    .flatMap(image -> this.saveImageOnAzure(image, campaign.getId())
+                            .map(Stream::of)
+                            .orElseGet(Stream::empty))
+                    .filter(Objects::nonNull)
+                    .map(campaign::addImage)
+                    .findFirst().orElseThrow(() -> new RuntimeException("Some thing went wrong in handler image"));
+        }
+        return campaign;
+    }
+
+    private Optional<CampaignImage> saveImageOnAzure(MultipartFile multipartFile, UUID campaignId) {
+        String nameImageOnAzure = campaignId + "/";
+        Map<String, MultipartFile> collect = Stream.of(multipartFile)
+                .collect(Collectors.toMap(
+                        image -> nameImageOnAzure + image.getOriginalFilename(),
+                        image -> image));
+
+        collect.forEach(blobUploadImages::azureCampaignStorageHandler);
+        return collect.keySet()
+                .stream()
+                .map(imageName -> new CampaignImage(endpoint + campaignContainer + "/" + imageName))
+                .peek(this.campaignImageRepository::save)
+                .findFirst();
+    }
+
 
     @Transactional
     @Override
@@ -144,7 +185,8 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     /**
-     * todo complete campaign to mapping collaborator into prize
+     * todo complete campaign t o mapping collaborator into prize
+     *
      * @param id
      */
     @Transactional

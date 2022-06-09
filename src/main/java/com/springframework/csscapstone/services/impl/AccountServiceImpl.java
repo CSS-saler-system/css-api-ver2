@@ -69,7 +69,6 @@ public class AccountServiceImpl implements AccountService {
 
     private final RequestSellingProductRepository requestSellingProductRepository;
 
-
     @Value("${endpoint}")
     private String endpoint;
 

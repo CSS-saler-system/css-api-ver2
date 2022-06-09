@@ -29,6 +29,9 @@ public class BlobUploadImages {
     @Value("${prize_image_container}")
     private String prizeContainer;
 
+    @Value("${campaign_image_container}")
+    private String campaignContainer;
+
     /**
      * TODO Upload Image
      *
@@ -58,6 +61,15 @@ public class BlobUploadImages {
     public void azurePrizeStorageHandler(String key, MultipartFile image) {
         BlobContainerClient container = new BlobContainerClientBuilder()
                 .containerName(prizeContainer)
+                .connectionString(connectionString)
+                .buildClient();
+        BlobClient blobClient = container.getBlobClient(key);
+        blobClient.upload(image.getInputStream(), image.getSize(), true);
+    }
+    @SneakyThrows
+    public void azureCampaignStorageHandler(String key, MultipartFile image) {
+        BlobContainerClient container = new BlobContainerClientBuilder()
+                .containerName(campaignContainer)
                 .connectionString(connectionString)
                 .buildClient();
         BlobClient blobClient = container.getBlobClient(key);

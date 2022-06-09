@@ -26,6 +26,10 @@ public class CampaignImage {
 
     private String path;
 
+    public CampaignImage(String path) {
+        this.path = path;
+    }
+
     @ManyToOne
     @JoinColumn(name = "campaign_id")
     private Campaign campaign;

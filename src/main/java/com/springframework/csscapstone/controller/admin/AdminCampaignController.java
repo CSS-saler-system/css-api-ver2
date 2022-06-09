@@ -84,6 +84,7 @@ public class AdminCampaignController {
             @RequestPart(name = "images") List<MultipartFile> images)
             throws CampaignInvalidException, JsonProcessingException {
         CampaignCreatorReqDto dto = this.objectMapper.readValue(campaignCreatorReqDto, CampaignCreatorReqDto.class);
+       if (dto.getKpi() < 0) throw new RuntimeException("The KPI must be greater than 0");
         UUID campaign = campaignService.createCampaign(dto, images);
         return ok(campaign);
     }
