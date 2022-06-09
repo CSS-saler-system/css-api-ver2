@@ -15,6 +15,7 @@ import com.springframework.csscapstone.data.domain.Role;
 import com.springframework.csscapstone.data.domain.Transactions;
 import com.springframework.csscapstone.payload.basic.*;
 import com.springframework.csscapstone.payload.basic.AccountImageBasicDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.PrizeResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.RequestSellingProductResDto;
 import com.springframework.csscapstone.payload.response_dto.admin.AccountResDto;
 import com.springframework.csscapstone.payload.response_dto.collaborator.EnterpriseResDto;
@@ -49,6 +50,7 @@ public interface MapperDTO {
     OrderBasicDto toOrderDto(Order entity);
 
     PrizeBasicDto toPrizeDto(Prize entity);
+    PrizeResDto toPrizeResDto(Prize entity);
 
     OrderDetailBasicDto toOrderDetailDto(OrderDetail entity);
 

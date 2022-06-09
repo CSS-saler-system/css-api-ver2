@@ -133,19 +133,18 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     public void scheduleCloseCampaign() {
-        List<UUID> result = this.campaignRepository
+        this.campaignRepository
                 .findAll().stream()
-                .filter(campaign -> campaign.getStartDate().isBefore(LocalDateTime.now()))
-                .filter(campaign -> campaign.getEndDate().isAfter(LocalDateTime.now()))
+//                .filter(campaign -> campaign.getStartDate().isBefore(LocalDateTime.now()))
+                .filter(campaign -> campaign.getEndDate().isBefore(LocalDateTime.now()))
                 .filter(campaign -> campaign.getCampaignStatus().equals(CampaignStatus.ACCEPTED))
                 .map(Campaign::getId)
                 .peek(this::completeCampaign)
-                .collect(Collectors.toList());
+                .close();
     }
 
     /**
      * todo complete campaign to mapping collaborator into prize
-     *
      * @param id
      */
     @Transactional
@@ -162,10 +161,9 @@ public class CampaignServiceImpl implements CampaignService {
 
         List<UUID> idProduct = campaign.getProducts().stream().map(Product::getId).collect(Collectors.toList());
 
-        idProduct.forEach(System.out::println);
+//        idProduct.forEach(System.out::println);
 
         for (UUID productId : idProduct) {
-
             Map<UUID, Long> _tmp = this.orderRepository
                     .getCollaboratorAndTotalQuantitySold(productId).stream()
                     .collect(Collectors.toMap(
@@ -201,7 +199,6 @@ public class CampaignServiceImpl implements CampaignService {
         //mapping prize by using campaign prize with greater than KPI on campaign KPI
         int count = 0;
         for (Account account : accounts) {
-            LOGGER.info("IM HERE");
             account.addCampaignPrizes(campaignPrizes.get(count++));
             this.accountRepository.save(account);
         }
