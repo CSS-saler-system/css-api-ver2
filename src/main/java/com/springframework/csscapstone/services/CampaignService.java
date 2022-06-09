@@ -29,6 +29,8 @@ public interface CampaignService {
 
     void deleteCampaign(UUID id) throws EntityNotFoundException;
 
+    void scheduleCloseCampaign();
+
     //todo close campaign
     void completeCampaign(UUID id);
 

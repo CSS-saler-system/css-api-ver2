@@ -132,6 +132,17 @@ public class CampaignServiceImpl implements CampaignService {
                 .orElseThrow(campaignNotFoundException());
     }
 
+    public void scheduleCloseCampaign() {
+        List<UUID> result = this.campaignRepository
+                .findAll().stream()
+                .filter(campaign -> campaign.getStartDate().isBefore(LocalDateTime.now()))
+                .filter(campaign -> campaign.getEndDate().isAfter(LocalDateTime.now()))
+                .filter(campaign -> campaign.getCampaignStatus().equals(CampaignStatus.ACCEPTED))
+                .map(Campaign::getId)
+                .peek(this::completeCampaign)
+                .collect(Collectors.toList());
+    }
+
     /**
      * todo complete campaign to mapping collaborator into prize
      *
