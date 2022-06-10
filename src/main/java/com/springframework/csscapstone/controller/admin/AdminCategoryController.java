@@ -4,7 +4,6 @@ import com.springframework.csscapstone.data.status.CategoryStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.CategoryCreatorReqDto;
 import com.springframework.csscapstone.payload.response_dto.admin.CategoryResDto;
 import com.springframework.csscapstone.services.CategoryService;
-import com.springframework.csscapstone.payload.basic.CategoryBasicDto;
 import com.springframework.csscapstone.payload.request_dto.admin.CategorySearchReqDto;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.category_exception.CategoryInvalidException;
@@ -36,13 +35,13 @@ public class AdminCategoryController {
     }
 
     @GetMapping(V1_LIST_CATEGORY)
-    public ResponseEntity<List<CategoryBasicDto>> listCategory(
+    public ResponseEntity<?> listCategory(
             @RequestParam(value = "categoryName", required = false) String name,
             @RequestParam(value = "categoryStatus", required = false, defaultValue = "ACTIVE") CategoryStatus status
     ) {
         String _name = RequestUtils.getRequestParam(name);
         status = Objects.nonNull(status) ? status : CategoryStatus.ACTIVE;
-        List<CategoryBasicDto> categories = this.services.findCategories(new CategorySearchReqDto(_name, status));
+        List<CategoryResDto> categories = this.services.findCategories(new CategorySearchReqDto(_name, status));
         return ok(categories);
     }
 

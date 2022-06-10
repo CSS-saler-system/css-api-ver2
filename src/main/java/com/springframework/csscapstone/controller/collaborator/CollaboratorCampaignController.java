@@ -2,7 +2,6 @@ package com.springframework.csscapstone.controller.collaborator;
 
 import com.springframework.csscapstone.config.constant.DataConstraint;
 import com.springframework.csscapstone.data.status.CampaignStatus;
-import com.springframework.csscapstone.payload.basic.CampaignBasicDto;
 import com.springframework.csscapstone.services.CampaignService;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 

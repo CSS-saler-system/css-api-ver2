@@ -1,7 +1,6 @@
 package com.springframework.csscapstone.services;
 
 import com.springframework.csscapstone.data.status.CampaignStatus;
-import com.springframework.csscapstone.payload.basic.CampaignBasicDto;
 import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.CampaignUpdaterReqDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.CampaignResDto;

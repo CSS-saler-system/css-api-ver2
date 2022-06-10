@@ -7,7 +7,6 @@ import com.springframework.csscapstone.data.repositories.CampaignImageRepository
 import com.springframework.csscapstone.data.repositories.CampaignRepository;
 import com.springframework.csscapstone.data.repositories.OrderRepository;
 import com.springframework.csscapstone.data.status.CampaignStatus;
-import com.springframework.csscapstone.payload.basic.CampaignBasicDto;
 import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.CampaignUpdaterReqDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.CampaignResDto;

@@ -7,12 +7,14 @@ import com.springframework.csscapstone.payload.response_dto.enterprise.Transacti
 import java.util.Optional;
 import java.util.UUID;
 
-public interface TransactionService {
+public interface TransactionServices {
     PageImplResDto<TransactionsResDto> getAllTransaction();
 
+    //
     Optional<TransactionsResDto> getTransactionById(UUID id);
 
     UUID createTransaction(TransactionsReqDto dto);
+
     UUID updateTransaction(TransactionsReqDto dto);
 
     UUID rejectTransaction(TransactionsReqDto dto);

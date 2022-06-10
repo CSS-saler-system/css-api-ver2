@@ -1,6 +1,5 @@
 package com.springframework.csscapstone.services;
 
-import com.springframework.csscapstone.payload.basic.CategoryBasicDto;
 import com.springframework.csscapstone.payload.request_dto.admin.CategoryCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.admin.CategorySearchReqDto;
 import com.springframework.csscapstone.payload.request_dto.admin.CategoryUpdaterReqDto;
@@ -14,7 +13,7 @@ import java.util.UUID;
 
 public interface CategoryService {
 
-    List<CategoryBasicDto> findCategories(CategorySearchReqDto dto);
+    List<CategoryResDto> findCategories(CategorySearchReqDto dto);
 
     CategoryResDto findCategoryById(UUID id) throws CategoryNotFoundException, EntityNotFoundException;
 

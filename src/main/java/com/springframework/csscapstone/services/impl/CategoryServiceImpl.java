@@ -11,7 +11,6 @@ import com.springframework.csscapstone.data.repositories.ProductImageRepository;
 import com.springframework.csscapstone.data.repositories.ProductRepository;
 import com.springframework.csscapstone.data.status.CategoryStatus;
 import com.springframework.csscapstone.data.status.ProductImageType;
-import com.springframework.csscapstone.payload.basic.CategoryBasicDto;
 import com.springframework.csscapstone.payload.request_dto.admin.CategoryCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.admin.CategorySearchReqDto;
 import com.springframework.csscapstone.payload.request_dto.admin.CategoryUpdaterReqDto;
@@ -54,7 +53,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final EntityManager em;
 
     @Override
-    public List<CategoryBasicDto> findCategories(CategorySearchReqDto dto) {
+    public List<CategoryResDto> findCategories(CategorySearchReqDto dto) {
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
         CriteriaQuery<Category> query = builder.createQuery(Category.class);
