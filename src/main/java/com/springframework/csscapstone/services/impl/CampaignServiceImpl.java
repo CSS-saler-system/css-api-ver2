@@ -160,6 +160,7 @@ public class CampaignServiceImpl implements CampaignService {
                         image -> image));
 
         collect.forEach(blobUploadImages::azureCampaignStorageHandler);
+
         return collect.keySet()
                 .stream()
                 .map(imageName -> new CampaignImage(endpoint + campaignContainer + "/" + imageName))

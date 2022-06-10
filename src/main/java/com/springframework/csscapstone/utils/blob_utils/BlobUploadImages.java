@@ -16,7 +16,6 @@ import java.io.IOException;
 public class BlobUploadImages {
 
 
-
     @Value("${connection-string}")
     private String connectionString;
 
@@ -31,6 +30,9 @@ public class BlobUploadImages {
 
     @Value("${campaign_image_container}")
     private String campaignContainer;
+
+    @Value("${transaction_image_container}")
+    private String transactionContainer;
 
     /**
      * TODO Upload Image
@@ -47,6 +49,7 @@ public class BlobUploadImages {
         BlobClient blobClient = container.getBlobClient(key);
         blobClient.upload(value.getInputStream(), value.getSize(), true);
     }
+
     @SneakyThrows
     public void azureProductStorageHandler(String key, MultipartFile value) {
         BlobContainerClient container = new BlobContainerClientBuilder()
@@ -66,10 +69,21 @@ public class BlobUploadImages {
         BlobClient blobClient = container.getBlobClient(key);
         blobClient.upload(image.getInputStream(), image.getSize(), true);
     }
+
     @SneakyThrows
     public void azureCampaignStorageHandler(String key, MultipartFile image) {
         BlobContainerClient container = new BlobContainerClientBuilder()
                 .containerName(campaignContainer)
+                .connectionString(connectionString)
+                .buildClient();
+        BlobClient blobClient = container.getBlobClient(key);
+        blobClient.upload(image.getInputStream(), image.getSize(), true);
+    }
+
+    @SneakyThrows
+    public void azureTransactionStorageHandler(String key, MultipartFile image) {
+        BlobContainerClient container = new BlobContainerClientBuilder()
+                .containerName(transactionContainer)
                 .connectionString(connectionString)
                 .buildClient();
         BlobClient blobClient = container.getBlobClient(key);
