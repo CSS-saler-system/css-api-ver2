@@ -26,7 +26,9 @@ public interface ProductService {
             Double maxPrice,
             Double minPoint,
             Double maxPoint,
-            ProductStatus productStatus, Integer pageNumber, Integer pageSize);
+            ProductStatus productStatus,
+            Integer pageNumber,
+            Integer pageSize);
 
     List<ProductResDto> findProductByIdAccount(UUID accountId) throws AccountNotFoundException;
 
@@ -36,7 +38,8 @@ public interface ProductService {
     UUID createProduct(
             ProductCreatorReqDto dto,
             List<MultipartFile> typeImages,
-            List<MultipartFile> certificationImages) throws ProductNotFoundException, ProductInvalidException, AccountNotFoundException, IOException;
+            List<MultipartFile> certificationImages)
+            throws ProductNotFoundException, ProductInvalidException, AccountNotFoundException, IOException;
 
     UUID updateProductDto(
             ProductUpdaterReqDto dto,
@@ -48,5 +51,6 @@ public interface ProductService {
     void disableProduct(UUID id);
 
     PageImplResDto<ProductCountOrderResDto> getListProductWithCountOrder(
-            UUID id, LocalDate startDate, LocalDate endDate, Integer pageNumber, Integer pageSize) throws AccountNotFoundException;
+            UUID id, LocalDate startDate, LocalDate endDate, Integer pageNumber, Integer pageSize)
+            throws AccountNotFoundException;
 }

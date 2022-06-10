@@ -12,7 +12,8 @@ public interface RequestSellingProductService {
 
     List<RequestSellingProductResDto> getAllRequest();
 
-    PageImplResDto<RequestSellingProductResDto> getAllRequestByStatus(UUID enterpriseId, RequestStatus status, Integer pageNumber, Integer pageSize);
+    PageImplResDto<RequestSellingProductResDto> getAllRequestByStatus(
+            UUID enterpriseId, RequestStatus status, Integer pageNumber, Integer pageSize);
 
     Optional<UUID> updateProduct(UUID idRequest, RequestStatus status);
 }

@@ -22,7 +22,7 @@ import com.springframework.csscapstone.utils.exception_utils.InvalidCampaignAndP
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountExistException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignNotFoundException;
-import com.springframework.csscapstone.utils.exception_utils.data.DataTempException;
+import com.springframework.csscapstone.utils.exception_utils.data_exception.DataTempException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.CollaboratorResMapperDTO;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;

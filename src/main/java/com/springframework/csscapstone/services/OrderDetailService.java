@@ -16,9 +16,11 @@ public interface OrderDetailService {
 
     OrderDetail findById(UUID id);
 
-    UUID createOrderDetail(OrderDetailCreatorReqDto dto) throws ProductNotFoundException, OrderNotFoundException, ProductCanCreateException, OrderDetailException;
+    UUID createOrderDetail(OrderDetailCreatorReqDto dto)
+            throws ProductNotFoundException, OrderNotFoundException, ProductCanCreateException, OrderDetailException;
 
-    UUID updateOrderDetail(UUID id, OrderDetailUpdaterReqDto dto) throws OrderDetailException, ProductNotFoundException;
+    UUID updateOrderDetail(UUID id, OrderDetailUpdaterReqDto dto)
+            throws OrderDetailException, ProductNotFoundException;
 
     void delete(UUID id) throws OrderDetailException;
 

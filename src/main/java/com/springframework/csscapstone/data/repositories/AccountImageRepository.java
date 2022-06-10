@@ -12,5 +12,6 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public interface AccountImageRepository extends JpaRepository<AccountImage, UUID> {
     @Query("FROM AccountImage a WHERE a.account.id = :accountId AND a.type = :typeImage")
-    Optional<AccountImage> findByAccountAndType(@Param("accountId") UUID accountId, @Param("typeImage") AccountImageType type);
+    Optional<AccountImage> findByAccountAndType(
+            @Param("accountId") UUID accountId, @Param("typeImage") AccountImageType type);
 }

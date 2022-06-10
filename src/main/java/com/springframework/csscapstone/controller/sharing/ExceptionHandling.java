@@ -1,7 +1,6 @@
 package com.springframework.csscapstone.controller.sharing;
 
 import com.auth0.jwt.exceptions.JWTDecodeException;
-import com.azure.core.http.rest.Response;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.springframework.csscapstone.config.constant.MessageConstant;
@@ -18,7 +17,7 @@ import com.springframework.csscapstone.utils.exception_utils.category_exception.
 import com.springframework.csscapstone.utils.exception_utils.category_exception.CategoryNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.customer_exception.CustomerExistedException;
 import com.springframework.csscapstone.utils.exception_utils.customer_exception.CustomerNotFoundException;
-import com.springframework.csscapstone.utils.exception_utils.data.DataTempException;
+import com.springframework.csscapstone.utils.exception_utils.data_exception.DataTempException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
@@ -38,9 +37,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import javax.security.auth.login.AccountNotFoundException;
 import javax.validation.UnexpectedTypeException;
-import javax.validation.constraints.NotNull;
 
 import java.time.format.DateTimeParseException;
 
