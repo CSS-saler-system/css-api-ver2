@@ -116,7 +116,6 @@
             <artifactId>spring-cloud-azure-starter-storage-blob</artifactId>
             <version>4.1.0</version>
         </dependency>
-
         <!--End Azure dependencies-->
         <!-- Jackson -->
         <dependency>
@@ -125,13 +124,19 @@
         </dependency>
         <!-- end Jackson -->
         <!-- Common File Upload-->
-        <dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
-            <version>1.4</version>
-        </dependency>
-
+<!--        <dependency>-->
+<!--            <groupId>commons-fileupload</groupId>-->
+<!--            <artifactId>commons-fileupload</artifactId>-->
+<!--            <version>1.4</version>-->
+<!--        </dependency>-->
         <!-- End Common File Upload-->
+        <!-- Start Web Socket-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+            <version>2.6.7</version>
+        </dependency>
+        <!-- End Web Socket-->
     </dependencies>
 
     <build>
