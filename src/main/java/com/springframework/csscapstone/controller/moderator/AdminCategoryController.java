@@ -1,4 +1,4 @@
-package com.springframework.csscapstone.controller.admin;
+package com.springframework.csscapstone.controller.moderator;
 
 import com.springframework.csscapstone.data.status.CategoryStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.CategoryCreatorReqDto;
@@ -22,19 +22,19 @@ import java.util.UUID;
 import static com.springframework.csscapstone.config.constant.ApiEndPoint.Category.*;
 import static org.springframework.http.ResponseEntity.ok;
 
-@Tag(name = "Category (Admin)")
+@Tag(name = "Category (Moderator)")
 @RestController
 @RequiredArgsConstructor
 public class AdminCategoryController {
     private final CategoryService services;
 
-    @GetMapping(V1_GET_CATEGORY + "/{id}")
+    @GetMapping(V4_GET_CATEGORY + "/{id}")
     public ResponseEntity<CategoryResDto> getCategory(@PathVariable("id") UUID id) throws CategoryNotFoundException, EntityNotFoundException {
         CategoryResDto category = this.services.findCategoryById(id);
         return ok(category);
     }
 
-    @GetMapping(V1_LIST_CATEGORY)
+    @GetMapping(V4_LIST_CATEGORY)
     public ResponseEntity<?> listCategory(
             @RequestParam(value = "categoryName", required = false) String name,
             @RequestParam(value = "categoryStatus", required = false, defaultValue = "ACTIVE") CategoryStatus status
@@ -45,7 +45,7 @@ public class AdminCategoryController {
         return ok(categories);
     }
 
-    @PostMapping(V1_CREATE_CATEGORY)
+    @PostMapping(V4_CREATE_CATEGORY)
     public ResponseEntity<?> createCategory(@Valid @RequestBody CategoryCreatorReqDto dto) throws CategoryInvalidException {
         UUID category = this.services.createCategory(dto);
         return ok(category);

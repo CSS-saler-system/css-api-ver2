@@ -1,4 +1,4 @@
-package com.springframework.csscapstone.controller.admin;
+package com.springframework.csscapstone.controller.moderator;
 
 import com.springframework.csscapstone.data.status.ProductStatus;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
@@ -18,11 +18,11 @@ import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "Product (Admin)")
+@Tag(name = "Product (Moderator)")
 public class AdminProductController {
     private final ProductService productService;
 
-    @GetMapping(V1_LIST_PRODUCT)
+    @GetMapping(V4_LIST_PRODUCT)
     public ResponseEntity<?> getListProductDto(
             @RequestParam(value = "productName", required = false) String name,
             @RequestParam(value = "brand", required = false) String brand,
@@ -42,12 +42,12 @@ public class AdminProductController {
                 pageNumber, pageSize);
         return ok(result);
     }
-    @GetMapping(V1_GET_PRODUCT + "/{id}")
+    @GetMapping(V4_GET_PRODUCT + "/{id}")
     public ResponseEntity<?> getProductById(@PathVariable("id") UUID id) throws ProductNotFoundException {
         return ok(productService.findById(id));
     }
 
-    @PutMapping(V1_ACTIVE_PRODUCT + "/{id}")
+    @PutMapping(V4_ACTIVE_PRODUCT + "/{id}")
     public ResponseEntity<String> updateProduct(
             @PathVariable("id") UUID id, @RequestParam("product_status") ProductStatus status) throws ProductNotFoundException, ProductInvalidException {
         productService.changeStatusProduct(id, status);

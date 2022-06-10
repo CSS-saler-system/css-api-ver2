@@ -51,25 +51,34 @@ public class Swagger3Config {
                 .pathsToMatch(_user)
                 .build();
     }
+
     @Bean
     public GroupedOpenApi adminGroupApi() {
-        String[] api = {ADMIN+ "/**"};
+        String[] api = {ADMIN + "/**"};
         String nameGroup = "css_system_api admin";
         return createGroupApi(api, nameGroup);
     }
 
+    @Bean
+    public GroupedOpenApi moderatorGroupApi() {
+        String[] api = {MODERATOR + "/**"};
+        String nameGroup = "css_system_api moderator";
+        return createGroupApi(api, nameGroup);
+    }
     @Bean
     public GroupedOpenApi enterpriseGroupApi() {
         String[] api = {ENTERPRISE + "/**"};
         String nameGroup = "css_system_api enterprise";
         return createGroupApi(api, nameGroup);
     }
+
     @Bean
     public GroupedOpenApi collaboratorGroupApi() {
         String[] api = {COLLABORATOR + "/**"};
         String nameGroup = "css_system_api collaborator";
         return createGroupApi(api, nameGroup);
     }
+
 
     private GroupedOpenApi createGroupApi(String[] path, String nameGroup) {
         return GroupedOpenApi.builder()

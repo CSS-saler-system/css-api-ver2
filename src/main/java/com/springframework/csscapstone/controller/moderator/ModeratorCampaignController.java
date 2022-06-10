@@ -1,14 +1,14 @@
-package com.springframework.csscapstone.controller.admin;
+package com.springframework.csscapstone.controller.moderator;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springframework.csscapstone.config.constant.DataConstraint;
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.status.CampaignStatus;
+import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.CampaignUpdaterReqDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.CampaignResDto;
 import com.springframework.csscapstone.services.CampaignService;
-import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignInvalidException;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
@@ -30,14 +30,14 @@ import static com.springframework.csscapstone.utils.request_utils.RequestUtils.g
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
-@Tag(name = "Campaign (Admin)")
+@Tag(name = "Campaign (Moderator)")
 @RequiredArgsConstructor
-public class AdminCampaignController {
+public class ModeratorCampaignController {
 
     private final CampaignService campaignService;
     private final ObjectMapper objectMapper;
 
-    @GetMapping(V1_LIST_CAMPAIGN)
+    @GetMapping(V4_LIST_CAMPAIGN)
     public ResponseEntity<?> getListDto(
             @RequestParam(value = "campaignName", required = false) String campaignName,
             @RequestParam(value = "createdDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createdDate,
@@ -62,12 +62,12 @@ public class AdminCampaignController {
         return ResponseEntity.ok(campaign);
     }
 
-    @GetMapping(V1_GET_CAMPAIGN + "/{id}")
+    @GetMapping(V4_GET_CAMPAIGN + "/{id}")
     public ResponseEntity<?> getCampaignById(@PathVariable("id") UUID id) throws EntityNotFoundException {
         return ok(campaignService.findById(id));
     }
 
-    @PutMapping(value = V1_UPDATE_CAMPAIGN, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value = V4_UPDATE_CAMPAIGN, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<UUID> updateCampaign(
             @RequestPart("campaign") String campaign,
             @RequestPart("images") List<MultipartFile> images)
@@ -78,7 +78,7 @@ public class AdminCampaignController {
         return ok(campaignUUID);
     }
 
-    @PostMapping(value = V1_CREATE_CAMPAIGN, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = V4_CREATE_CAMPAIGN, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<UUID> addNewCampaign(
             @RequestPart(name = "campaign") String campaignCreatorReqDto,
             @RequestPart(name = "images") List<MultipartFile> images)
@@ -90,7 +90,7 @@ public class AdminCampaignController {
         return ok(campaign);
     }
 
-    @DeleteMapping(V1_DELETE_CAMPAIGN + "/{id}")
+    @DeleteMapping(V4_DELETE_CAMPAIGN + "/{id}")
     public ResponseEntity<String> disableCampaign(@PathVariable("id") UUID id) throws EntityNotFoundException {
         campaignService.deleteCampaign(id);
         return ResponseEntity.ok(MessagesUtils.getMessage(MessageConstant.REQUEST_SUCCESS));

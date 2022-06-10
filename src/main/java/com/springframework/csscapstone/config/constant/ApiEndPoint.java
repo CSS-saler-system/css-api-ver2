@@ -4,6 +4,7 @@ public class ApiEndPoint {
     public static final String ADMIN = "/api/v1.0/admin";
     public static final String ENTERPRISE = "/api/v2.0/enterprise";
     public static final String COLLABORATOR = "/api/v3.0/collaborator";
+    public static final String MODERATOR = "/api/v4.0/moderator";
 
     public static final String USER = "/user";
 
@@ -13,6 +14,8 @@ public class ApiEndPoint {
     public static final String COLLABORATOR_LOGIN = COLLABORATOR + "/login";
     public static final String ENTERPRISE_LOGIN = ENTERPRISE + "/login";
 
+    public static final String MODERATOR_LOGIN = MODERATOR + "/login";
+
     static class AdminConfiguration {
         private static final String v1_handler = ADMIN + "/config";
     }
@@ -21,14 +24,7 @@ public class ApiEndPoint {
         private static final String v1_handler = ADMIN + "/product";
         private static final String v2_handler = ENTERPRISE + "/product";
         private static final String v3_handler = COLLABORATOR + "/product";
-
-
-        public static final String V1_LIST_PRODUCT = v1_handler + "/list";
-        public static final String V1_GET_PRODUCT = v1_handler + "/get";
-        public static final String V1_CREATE_PRODUCT = v1_handler + "/new";
-        public static final String V1_DELETE_PRODUCT = v1_handler + "/delete";
-
-        public static final String V1_ACTIVE_PRODUCT = v1_handler + "/active";
+        private static final String v4_handler = MODERATOR + "/product";
 
         public static final String V2_LIST_PRODUCT = v2_handler + "/list";
         public static final String V2_COUNT_LIST_PRODUCT = v2_handler + "/count-sold/list";
@@ -42,6 +38,13 @@ public class ApiEndPoint {
         public static final String V3_CREATE_PRODUCT = v3_handler + "/new";
         public static final String V3_DELETE_PRODUCT = v3_handler + "/delete";
         public static final String V3_UPDATE_PRODUCT = v3_handler + "/update";
+
+        public static final String V4_LIST_PRODUCT = v4_handler + "/list";
+        public static final String V4_GET_PRODUCT = v4_handler + "/get";
+        public static final String V4_CREATE_PRODUCT = v4_handler + "/new";
+        public static final String V4_DELETE_PRODUCT = v4_handler + "/delete";
+
+        public static final String V4_ACTIVE_PRODUCT = v4_handler + "/active";
     }
 
     public static class Account {
@@ -77,13 +80,8 @@ public class ApiEndPoint {
         public static final String v1_handler = ADMIN + "/campaign";
         public static final String v2_handler = ENTERPRISE + "/campaign";
         public static final String v3_handler = COLLABORATOR + "/campaign";
+        public static final String v4_handler = MODERATOR + "/campaign";
 
-
-        public static final String V1_LIST_CAMPAIGN = v1_handler + "/list";
-        public static final String V1_GET_CAMPAIGN = v1_handler + "/get";
-        public static final String V1_UPDATE_CAMPAIGN = v1_handler + "/update";
-        public static final String V1_CREATE_CAMPAIGN = v1_handler + "/new";
-        public static final String V1_DELETE_CAMPAIGN = v1_handler + "/delete";
 
         public static final String V2_LIST_CAMPAIGN = v2_handler + "/list";
         public static final String V2_GET_CAMPAIGN = v2_handler + "/get";
@@ -96,19 +94,20 @@ public class ApiEndPoint {
         public static final String V3_UPDATE_CAMPAIGN = v3_handler + "/update";
         public static final String V3_CREATE_CAMPAIGN = v3_handler + "/new";
         public static final String V3_DELETE_CAMPAIGN = v3_handler + "/delete";
+
+        public static final String V4_LIST_CAMPAIGN = v4_handler + "/list";
+        public static final String V4_GET_CAMPAIGN = v4_handler + "/get";
+        public static final String V4_UPDATE_CAMPAIGN = v4_handler + "/update";
+        public static final String V4_CREATE_CAMPAIGN = v4_handler + "/new";
+        public static final String V4_DELETE_CAMPAIGN = v4_handler + "/delete";
     }
 
     public static class Category {
         public static final String v1_handler = ADMIN + "/category";
         public static final String v2_handler = ENTERPRISE + "/category";
         public static final String v3_handler = COLLABORATOR + "/category";
+        public static final String v4_handler = MODERATOR + "/category";
 
-
-        public static final String V1_LIST_CATEGORY = v1_handler + "/list";
-        public static final String V1_GET_CATEGORY = v1_handler + "/get";
-        public static final String V1_UPDATE_CATEGORY = v1_handler + "/update";
-        public static final String V1_CREATE_CATEGORY = v1_handler + "/new";
-        public static final String V1_DELETE_CATEGORY = v1_handler + "/delete";
 
         public static final String V2_LIST_CATEGORY = v2_handler + "/list";
         public static final String V2_GET_CATEGORY = v2_handler + "/get";
@@ -121,6 +120,12 @@ public class ApiEndPoint {
         public static final String V3_UPDATE_CATEGORY = v3_handler + "/update";
         public static final String V3_CREATE_CATEGORY = v3_handler + "/new";
         public static final String V3_DELETE_CATEGORY = v3_handler + "/delete";
+
+        public static final String V4_LIST_CATEGORY = v4_handler + "/list";
+        public static final String V4_GET_CATEGORY = v4_handler + "/get";
+        public static final String V4_UPDATE_CATEGORY = v4_handler + "/update";
+        public static final String V4_CREATE_CATEGORY = v4_handler + "/new";
+        public static final String V4_DELETE_CATEGORY = v4_handler + "/delete";
     }
 
     public static class OrderDetail {
@@ -141,16 +146,15 @@ public class ApiEndPoint {
         public static final String V3_DELETE_ORDER_DETAIL = v3_handler + "/delete";
 
 
-
-
     }
+
     public static class Customer {
         private static final String v1_handler = ADMIN + "/customer";
         private static final String v2_handler = ENTERPRISE + "/customer";
         private static final String v3_handler = COLLABORATOR + "/customer";
 
         public static final String V3_LIST_CUSTOMER = v3_handler + "/list";
-        public static final String V3_GET_CUSTOMER_BY_PHONE = v3_handler +  "/retrieve";
+        public static final String V3_GET_CUSTOMER_BY_PHONE = v3_handler + "/retrieve";
         public static final String V3_GET_CUSTOMER = v3_handler + "/get";
         public static final String V3_UPDATE_CUSTOMER = v3_handler + "/update";
         public static final String V3_CREATE_CUSTOMER = v3_handler + "/new";
@@ -175,7 +179,7 @@ public class ApiEndPoint {
     }
 
     public static class Prize {
-        private static final String v1_handler =ADMIN + "/prize";
+        private static final String v1_handler = ADMIN + "/prize";
         private static final String v2_handler = ENTERPRISE + "/prize";
         private static final String v3_handler = COLLABORATOR + "/prize";
 

@@ -166,7 +166,7 @@ public class AccountServiceImpl implements AccountService {
 
         //TODO check ROlE null <BUG>
         Specification.where(RoleSpecification.equalNames(StringUtils.isEmpty(dto.getRole()) ||
-                                !dto.getRole().matches(REGEX_ROLE) ? "Collaborator" : dto.getRole()));
+                !dto.getRole().matches(REGEX_ROLE) ? "Collaborator" : dto.getRole()));
 
         Role role = roleRepository
                 .findAllByName(dto.getRole()).get();
@@ -400,7 +400,7 @@ public class AccountServiceImpl implements AccountService {
                                 .toCollaboratorResDto(acc, tuple.get(OrderRepository.TOTAL_QUANTITY, Long.class))))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .sorted(Comparator.comparing(CollaboratorResDto::getTotalQuantity).reversed())
+                .sorted(Comparator.comparing(CollaboratorResDto::getTotalSold).reversed())
                 .collect(toList());
 
         return new PageImplResDto<>(
@@ -411,6 +411,7 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * todo list collaborator sort by quantity he sold
+     *
      * @param campaign
      * @return
      */
@@ -455,7 +456,7 @@ public class AccountServiceImpl implements AccountService {
                 .map(entry -> CollaboratorResMapperDTO.INSTANCE.toCollaboratorResDto(
                         this.accountRepository.findById(entry.getKey()).orElse(null),
                         entry.getValue()))
-                .sorted(Comparator.comparing(CollaboratorResDto::getTotalQuantity).reversed())
+                .sorted(Comparator.comparing(CollaboratorResDto::getTotalSold).reversed())
                 .collect(toList());
     }
 

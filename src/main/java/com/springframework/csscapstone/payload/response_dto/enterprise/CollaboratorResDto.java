@@ -32,8 +32,8 @@ public class CollaboratorResDto implements Serializable {
     private final String description;
     private final Boolean gender;
     private final Double point;
-    private final List<AccountImageBasicDto> imageBasicDto;
-    private final Long totalQuantity;
+    private final List<AccountImageBasicDto> avatar;
+    private final Long totalSold;
 
     @JsonCreator(mode = PROPERTIES)
     public CollaboratorResDto(
@@ -46,7 +46,7 @@ public class CollaboratorResDto implements Serializable {
             @JsonProperty("gender") Boolean gender,
             @JsonProperty("point") Double point,
             @JsonProperty("avatar") List<AccountImageBasicDto> imageBasicDto,
-            @JsonProperty("total_sold") Long totalQuantity) {
+            @JsonProperty("total_sold") Long totalSold) {
         this.id = id;
         this.name = name;
         this.dob = dob;
@@ -55,7 +55,7 @@ public class CollaboratorResDto implements Serializable {
         this.description = description;
         this.gender = gender;
         this.point = point;
-        this.imageBasicDto = imageBasicDto;
-        this.totalQuantity = totalQuantity;
+        this.avatar = imageBasicDto;
+        this.totalSold = totalSold;
     }
 }
