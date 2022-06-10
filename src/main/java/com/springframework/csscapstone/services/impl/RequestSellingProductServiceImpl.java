@@ -32,7 +32,7 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
     public List<RequestSellingProductResDto> getAllRequest() {
         return requestSellingProductRepository.findAll()
                 .stream()
-                .map(MapperDTO.INSTANCE::toRequestSellingProductDto)
+                .map(MapperDTO.INSTANCE::toRequestSellingProductResDto)
                 .collect(Collectors.toList());
     }
 
@@ -46,7 +46,7 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
                 .findAllByRequestStatus(enterpriseId, status, PageRequest.of(pageNumber - 1, pageSize));
         List<RequestSellingProductResDto> data = page
                 .getContent().stream()
-                .map(MapperDTO.INSTANCE::toRequestSellingProductDto)
+                .map(MapperDTO.INSTANCE::toRequestSellingProductResDto)
                 .collect(Collectors.toList());
 
         return new PageImplResDto<>(data, page.getNumber() + 1, data.size(), page.getTotalElements(),

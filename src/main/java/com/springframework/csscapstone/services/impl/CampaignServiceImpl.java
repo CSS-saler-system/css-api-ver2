@@ -10,6 +10,7 @@ import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.payload.basic.CampaignBasicDto;
 import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.CampaignUpdaterReqDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.CampaignResDto;
 import com.springframework.csscapstone.services.CampaignService;
 import com.springframework.csscapstone.utils.blob_utils.BlobUploadImages;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
@@ -63,10 +64,11 @@ public class CampaignServiceImpl implements CampaignService {
     //TODO Need Modified
     @Cacheable(cacheNames = "campaigns")
     @Override
-    public List<CampaignBasicDto> findCampaign(String name, LocalDateTime createdDate,
-                                               LocalDateTime lastModifiedDate, LocalDateTime startDate,
-                                               LocalDateTime endDate, String description,
-                                               Long kpi, CampaignStatus status) {
+    public List<CampaignResDto> findCampaign(
+            String name, LocalDateTime createdDate,
+            LocalDateTime lastModifiedDate, LocalDateTime startDate,
+            LocalDateTime endDate, String description,
+            Long kpi, CampaignStatus status) {
         CriteriaBuilder builder = em.getCriteriaBuilder();
         CriteriaQuery<Campaign> query = builder.createQuery(Campaign.class);
         Root<Campaign> root = query.from(Campaign.class);
@@ -85,21 +87,22 @@ public class CampaignServiceImpl implements CampaignService {
         CriteriaQuery<Campaign> processQuery = query.where(builder.and(predicates.toArray(new Predicate[0])));
 
         return em.createQuery(processQuery).getResultList()
-                .stream().map(MapperDTO.INSTANCE::toCampaignDto)
+                .stream().map(MapperDTO.INSTANCE::toCampaignResDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public CampaignBasicDto findById(UUID id) throws EntityNotFoundException {
+    public CampaignResDto findById(UUID id) throws EntityNotFoundException {
         return campaignRepository
-                .findById(id).map(MapperDTO.INSTANCE::toCampaignDto)
+                .findById(id).map(MapperDTO.INSTANCE::toCampaignResDto)
                 .orElseThrow(campaignNotFoundException());
     }
 
 
     @Transactional
     @Override
-    public UUID createCampaign(CampaignCreatorReqDto dto, List<MultipartFile> images) throws CampaignInvalidException {
+    public UUID createCampaign(CampaignCreatorReqDto dto, List<MultipartFile> images)
+            throws CampaignInvalidException {
 
         Campaign campaign = new Campaign().setName(dto.getName())
                 .setCampaignShortDescription(dto.getCampaignShortDescription())
@@ -113,6 +116,7 @@ public class CampaignServiceImpl implements CampaignService {
         //todo save image
         return this.campaignRepository.save(handlerImage(images, saved)).getId();
     }
+
     @Transactional
     @Override
     public UUID updateCampaign(CampaignUpdaterReqDto dto, List<MultipartFile> images) throws EntityNotFoundException {
@@ -159,6 +163,7 @@ public class CampaignServiceImpl implements CampaignService {
         return collect.keySet()
                 .stream()
                 .map(imageName -> new CampaignImage(endpoint + campaignContainer + "/" + imageName))
+                .peek(image -> LOGGER.info("the image path {}", image.getPath()))
                 .peek(this.campaignImageRepository::save)
                 .findFirst();
     }
@@ -169,7 +174,7 @@ public class CampaignServiceImpl implements CampaignService {
     public void deleteCampaign(UUID id) throws EntityNotFoundException {
         this.campaignRepository.findById(id)
                 .map(this::updateCampaign)
-                .map(MapperDTO.INSTANCE::toCampaignDto)
+                .map(MapperDTO.INSTANCE::toCampaignResDto)
                 .orElseThrow(campaignNotFoundException());
     }
 

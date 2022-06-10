@@ -67,7 +67,7 @@ public class CategoryServiceImpl implements CategoryService {
         CriteriaQuery<Category> processQuery = query.where(builder.and(predicates.toArray(new Predicate[0])));
 
         return em.createQuery(processQuery).getResultList()
-                .stream().map(MapperDTO.INSTANCE::toCategoryDto)
+                .stream().map(MapperDTO.INSTANCE::toCategoryResDto)
                 .collect(toList());
     }
 

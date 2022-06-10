@@ -35,7 +35,7 @@ public class AccountDAOImpl implements AccountDAO {
                         builder.equal(root.get(Account_.IS_ACTIVE), status)));
 
         return em.createQuery(processQuery)
-                .getResultList().stream().map(MapperDTO.INSTANCE::toAccountDto)
+                .getResultList().stream().map(MapperDTO.INSTANCE::toAccountResDto)
                 .collect(Collectors.toList());
     }
 }

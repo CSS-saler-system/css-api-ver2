@@ -4,6 +4,7 @@ import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.payload.basic.CampaignBasicDto;
 import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.CampaignUpdaterReqDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.CampaignResDto;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignInvalidException;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,7 +15,7 @@ import java.util.UUID;
 
 public interface CampaignService {
 
-    List<CampaignBasicDto> findCampaign(
+    List<CampaignResDto> findCampaign(
             String name, LocalDateTime createdDate,
             LocalDateTime lastModifiedDate,
             LocalDateTime startDate,
@@ -23,7 +24,7 @@ public interface CampaignService {
             Long kpi,
             CampaignStatus status);
 
-    CampaignBasicDto findById(UUID id) throws EntityNotFoundException;
+    CampaignResDto findById(UUID id) throws EntityNotFoundException;
 
     UUID createCampaign(CampaignCreatorReqDto dto, List<MultipartFile> images) throws CampaignInvalidException;
 

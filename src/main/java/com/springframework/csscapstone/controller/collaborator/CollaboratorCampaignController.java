@@ -32,7 +32,7 @@ public class CollaboratorCampaignController {
     private final CampaignService campaignService;
 
     @GetMapping(V3_LIST_CAMPAIGN)
-    public ResponseEntity<List<CampaignBasicDto>> getListDto(
+    public ResponseEntity<?> getListDto(
             @RequestParam(value = "campaignName", required = false) String campaignName,
             @RequestParam(value = "createdDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createdDate,
             @RequestParam(value = "lastModifiedDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime lastModifiedDate,
@@ -51,13 +51,12 @@ public class CollaboratorCampaignController {
         endDate = Objects.nonNull(endDate) ? endDate : DataConstraint.MAX_DATE;
         status = Objects.nonNull(status) ? status : CampaignStatus.FINISHED;
 
-        List<CampaignBasicDto> CampaignBasicDto = campaignService.findCampaign(campaignName, createdDate,
-                lastModifiedDate, startDate, endDate, description, kpi, status);
-        return ResponseEntity.ok(CampaignBasicDto);
+        return ResponseEntity.ok(campaignService.findCampaign(campaignName, createdDate,
+                lastModifiedDate, startDate, endDate, description, kpi, status));
     }
 
     @GetMapping(V3_GET_CAMPAIGN + "/{id}")
-    public ResponseEntity<CampaignBasicDto> getCampaignById(@PathVariable("id") UUID id) throws EntityNotFoundException {
+    public ResponseEntity<?> getCampaignById(@PathVariable("id") UUID id) throws EntityNotFoundException {
         return ok(campaignService.findById(id));
     }
 }

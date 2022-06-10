@@ -17,7 +17,6 @@ import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.security.auth.login.AccountNotFoundException;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -34,7 +33,7 @@ public class CustomerServiceImpl implements CustomerService {
     public List<CustomerResDto> getAllCustomer() {
         return this.customerRepository.findAll()
                 .stream()
-                .map(MapperDTO.INSTANCE::toCustomerResponseDto)
+                .map(MapperDTO.INSTANCE::toCustomerResDto)
                 .collect(toList());
     }
 
@@ -42,7 +41,7 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerResDto findCustomerByPhone(String phone) throws CustomerNotFoundException {
         return this.customerRepository
                 .getCustomerByPhone(phone)
-                .map(MapperDTO.INSTANCE::toCustomerResponseDto)
+                .map(MapperDTO.INSTANCE::toCustomerResDto)
                 .orElseThrow(getCustomerNotFoundExceptionSupplier());
     }
 
@@ -91,7 +90,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public CustomerResDto getCustomerById(UUID id) throws CustomerNotFoundException {
         return this.customerRepository.findById(id)
-                .map(MapperDTO.INSTANCE::toCustomerResponseDto)
+                .map(MapperDTO.INSTANCE::toCustomerResDto)
                 .orElseThrow(this.getCustomerNotFoundExceptionSupplier());
     }
 

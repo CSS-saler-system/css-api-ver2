@@ -27,7 +27,7 @@ public class CollaboratorOrderController {
 
     @GetMapping(V3_GET_ORDER_DETAIL + "/{id}")
     public ResponseEntity<?> getOrderDetail(@PathVariable UUID id) {
-      return ok(MapperDTO.INSTANCE.toOrderDetailDto(orderDetailService.findById(id)));
+      return ok(MapperDTO.INSTANCE.toOrderDetailResDto(orderDetailService.findById(id)));
     }
 
     @PostMapping(V3_CREATE_ORDER_DETAIL)

@@ -6,6 +6,7 @@ import com.springframework.csscapstone.config.constant.DataConstraint;
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.payload.request_dto.enterprise.CampaignUpdaterReqDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.CampaignResDto;
 import com.springframework.csscapstone.services.CampaignService;
 import com.springframework.csscapstone.payload.basic.CampaignBasicDto;
 import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
@@ -38,7 +39,7 @@ public class AdminCampaignController {
     private final ObjectMapper objectMapper;
 
     @GetMapping(V1_LIST_CAMPAIGN)
-    public ResponseEntity<List<CampaignBasicDto>> getListDto(
+    public ResponseEntity<?> getListDto(
             @RequestParam(value = "campaignName", required = false) String campaignName,
             @RequestParam(value = "createdDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createdDate,
             @RequestParam(value = "lastModifiedDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime lastModifiedDate,
@@ -57,13 +58,13 @@ public class AdminCampaignController {
         endDate = Objects.nonNull(endDate) ? endDate : DataConstraint.MAX_DATE;
         status = Objects.nonNull(status) ? status : CampaignStatus.FINISHED;
 
-        List<CampaignBasicDto> CampaignBasicDto = campaignService.findCampaign(campaignName, createdDate,
+        List<CampaignResDto> campaign = campaignService.findCampaign(campaignName, createdDate,
                 lastModifiedDate, startDate, endDate, description, kpi, status);
-        return ResponseEntity.ok(CampaignBasicDto);
+        return ResponseEntity.ok(campaign);
     }
 
     @GetMapping(V1_GET_CAMPAIGN + "/{id}")
-    public ResponseEntity<CampaignBasicDto> getCampaignById(@PathVariable("id") UUID id) throws EntityNotFoundException {
+    public ResponseEntity<?> getCampaignById(@PathVariable("id") UUID id) throws EntityNotFoundException {
         return ok(campaignService.findById(id));
     }
 
@@ -84,7 +85,8 @@ public class AdminCampaignController {
             @RequestPart(name = "images") List<MultipartFile> images)
             throws CampaignInvalidException, JsonProcessingException {
         CampaignCreatorReqDto dto = this.objectMapper.readValue(campaignCreatorReqDto, CampaignCreatorReqDto.class);
-       if (dto.getKpi() < 0) throw new RuntimeException("The KPI must be greater than 0");
+        if (dto.getKpi() < 0)
+            throw new RuntimeException("The KPI must be greater than 0");
         UUID campaign = campaignService.createCampaign(dto, images);
         return ok(campaign);
     }

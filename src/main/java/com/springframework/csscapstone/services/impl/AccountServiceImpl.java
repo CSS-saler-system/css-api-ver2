@@ -129,22 +129,22 @@ public class AccountServiceImpl implements AccountService {
 
         List<AccountImageBasicDto> avatar = result.getImages().stream()
                 .filter(x -> x.getType().equals(AccountImageType.AVATAR))
-                .map(MapperDTO.INSTANCE::toAccountImageDto)
+                .map(MapperDTO.INSTANCE::toAccountImageResDto)
                 .collect(toList());
 
         List<AccountImageBasicDto> licenses = result.getImages().stream()
                 .filter(x -> x.getType().equals(AccountImageType.LICENSE))
-                .map(MapperDTO.INSTANCE::toAccountImageDto)
+                .map(MapperDTO.INSTANCE::toAccountImageResDto)
                 .collect(toList());
 
         List<AccountImageBasicDto> idCard = result.getImages().stream()
                 .filter(x -> x.getType().equals(AccountImageType.ID_CARD))
-                .map(MapperDTO.INSTANCE::toAccountImageDto)
+                .map(MapperDTO.INSTANCE::toAccountImageResDto)
                 .collect(toList());
         AccountResDto dto = new AccountResDto(
                 result.getId(), result.getName(), result.getDob(), result.getPhone(), result.getEmail(), result.getAddress(),
                 result.getDescription(), result.getGender(), result.getPoint(),
-                MapperDTO.INSTANCE.toRoleDto(result.getRole()));
+                MapperDTO.INSTANCE.toRoleResDto(result.getRole()));
         dto.setAvatar(avatar);
         dto.setLicenses(licenses);
         dto.setIdCard(idCard);
@@ -335,7 +335,7 @@ public class AccountServiceImpl implements AccountService {
         Page<Account> page = this.accountRepository
                 .findAccountByRole("Enterprise", PageRequest.of(pageNumber - 1, pageSize));
         List<EnterpriseResDto> data = page.getContent().stream()
-                .map(MapperDTO.INSTANCE::toEnterpriseResponseDto).collect(toList());
+                .map(MapperDTO.INSTANCE::toEnterpriseResDto).collect(toList());
         return new PageEnterpriseResDto(data, page.getNumber() + 1, page.getSize(), page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
     }
 
@@ -498,7 +498,7 @@ public class AccountServiceImpl implements AccountService {
     private Consumer<Account> avatarConsumer(List<AccountImageBasicDto> collection, AccountImageType type) {
         return x -> collection.addAll(x.getImages().stream()
                 .filter(image -> image.getType().equals(type))
-                .map(MapperDTO.INSTANCE::toAccountImageDto)
+                .map(MapperDTO.INSTANCE::toAccountImageResDto)
                 .collect(toList()));
     }
 

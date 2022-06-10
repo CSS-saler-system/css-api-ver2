@@ -86,7 +86,7 @@ public class ProductServiceImpl implements ProductService {
 
         Page<Product> page = this.productRepository.findAll(search, PageRequest.of(pageNumber - 1, pageSize));
 
-        List<ProductResDto> data = page.stream().map(MapperDTO.INSTANCE::toProductResponseDto).collect(toList());
+        List<ProductResDto> data = page.stream().map(MapperDTO.INSTANCE::toProductResDto).collect(toList());
 
         return new PageImplResDto<>(
                 data, page.getNumber() + 1, page.getSize(),
@@ -100,13 +100,13 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductResDto> findProductByIdAccount(UUID accountId) throws AccountNotFoundException {
         Account account = this.accountRepository.findById(accountId).orElseThrow(handlerAccountNotFound());
-        return account.getProducts().stream().map(MapperDTO.INSTANCE::toProductResponseDto).collect(toList());
+        return account.getProducts().stream().map(MapperDTO.INSTANCE::toProductResDto).collect(toList());
     }
 
     @Override
     public ProductResDto findById(UUID id) throws ProductNotFoundException {
         return productRepository.findById(id)
-                .map(MapperDTO.INSTANCE::toProductResponseDto)
+                .map(MapperDTO.INSTANCE::toProductResDto)
                 .orElseThrow(handlerProductNotFound());
     }
 
