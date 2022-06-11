@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -42,29 +43,51 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
-                .cors()
-                .configurationSource(request -> corsConfiguration()).and()
-//                .cors().and()
-                .sessionManagement().sessionCreationPolicy(STATELESS).and()
-
-                .authorizeRequests().antMatchers(PUBLIC_URLS).permitAll()
-
-                .antMatchers(ADMIN + "/**").hasAuthority("Admin")
-                .antMatchers(ENTERPRISE + "/**").hasAuthority("Enterprise")
-                .antMatchers(COLLABORATOR + "/**").hasAuthority("Collaborator")
-                .anyRequest().authenticated()
-
-                .and()
-                .exceptionHandling()
-                .accessDeniedHandler(jwtAccessDeniedHandler)
-                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-
-                .and().addFilterBefore(authenticationHandlerFilter, UsernamePasswordAuthenticationFilter.class);
-
-        //after logout success, invalidate session
-        http.logout().logoutUrl(USER_LOGOUT).invalidateHttpSession(true);
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> corsConfiguration())
+                .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
+                .addFilterBefore(authenticationHandlerFilter, UsernamePasswordAuthenticationFilter.class)
+                .authorizeRequests(
+                        request -> request
+                                .antMatchers(PUBLIC_URLS).permitAll()
+                                .antMatchers(ADMIN + "/**").hasAuthority("Admin")
+                                .antMatchers(ENTERPRISE + "/**").hasAuthority("Enterprise")
+                                .antMatchers(COLLABORATOR + "/**").hasAuthority("Collaborator")
+                                .antMatchers(MODERATOR + "/**").hasAuthority("Moderator")
+                                .anyRequest().authenticated())
+                .logout(_logout -> _logout.logoutUrl(USER_LOGOUT))
+                .exceptionHandling(exception -> exception
+                        .accessDeniedHandler(jwtAccessDeniedHandler)
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint));
     }
+
+    //    @Override
+//    protected void configure(HttpSecurity http) throws Exception {
+//        http
+//                .csrf().disable()
+//                .cors()
+//                .configurationSource(request -> corsConfiguration()).and()
+////                .cors().and()
+//                .sessionManagement().sessionCreationPolicy(STATELESS).and()
+//
+//                .authorizeRequests().antMatchers(PUBLIC_URLS).permitAll()
+//
+//                .antMatchers(ADMIN + "/**").hasAuthority("Admin")
+//                .antMatchers(ENTERPRISE + "/**").hasAuthority("Enterprise")
+//                .antMatchers(COLLABORATOR + "/**").hasAuthority("Collaborator")
+//                .antMatchers(MODERATOR + "/**").hasAuthority("Moderator")
+//                .anyRequest().authenticated()
+//
+//                .and()
+//                .exceptionHandling()
+//                .accessDeniedHandler(jwtAccessDeniedHandler)
+//                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+//
+//                .and().addFilterBefore(authenticationHandlerFilter, UsernamePasswordAuthenticationFilter.class);
+//
+//        //after logout success, invalidate session
+//        http.logout().logoutUrl(USER_LOGOUT).invalidateHttpSession(true);
+//    }
 
     @Bean
     @Override

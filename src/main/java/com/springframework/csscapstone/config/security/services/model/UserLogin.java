@@ -1,4 +1,4 @@
-package com.springframework.csscapstone.config.security.model;
+package com.springframework.csscapstone.config.security.services.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

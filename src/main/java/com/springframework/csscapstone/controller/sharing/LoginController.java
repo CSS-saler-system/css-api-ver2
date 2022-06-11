@@ -1,6 +1,6 @@
 package com.springframework.csscapstone.controller.sharing;
 
-import com.springframework.csscapstone.config.security.model.UserLogin;
+import com.springframework.csscapstone.config.security.services.model.UserLogin;
 import com.springframework.csscapstone.utils.security_provider_utils.TokenProvider;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

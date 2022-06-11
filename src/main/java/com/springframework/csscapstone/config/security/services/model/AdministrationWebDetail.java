@@ -1,52 +1,42 @@
-package com.springframework.csscapstone.config.security.model;
+package com.springframework.csscapstone.config.security.services.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.springframework.csscapstone.data.domain.Account;
-import com.springframework.csscapstone.data.domain.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor
-public class AppUserDetail implements UserDetails, Serializable {
-    private final Account entity;
-    private final String token;
+public class AdministrationWebDetail implements UserDetails {
+    private final Account account;
 
     @JsonProperty("id")
-    public UUID getAccountId() {return entity.getId();}
+    public UUID getId() {return this.account.getId(); }
 
-    @JsonProperty("role")
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Stream.of(entity.getRole())
-                        .map(Role::getName)
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
+        return Stream.of(account.getRole().getName())
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
     }
-
-
     @JsonIgnore
     @Override
     public String getPassword() {
-        return entity.getPassword();
+        return account.getPassword();
     }
 
-    @JsonProperty("phone")
     @Override
     public String getUsername() {
-        return entity.getPhone();
+        return account.getEmail();
     }
-
-    @JsonProperty("jwt_token")
-    public String getToken() {return this.token; }
 
     @JsonIgnore
     @Override
@@ -57,7 +47,7 @@ public class AppUserDetail implements UserDetails, Serializable {
     @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
-        return entity.getNonLock();
+        return true;
     }
 
     @JsonIgnore
@@ -69,6 +59,6 @@ public class AppUserDetail implements UserDetails, Serializable {
     @JsonIgnore
     @Override
     public boolean isEnabled() {
-        return entity.getIsActive();
+        return true;
     }
 }

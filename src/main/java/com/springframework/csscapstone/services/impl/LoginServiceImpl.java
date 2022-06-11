@@ -5,8 +5,8 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import com.google.firebase.auth.UserRecord;
 import com.springframework.csscapstone.config.constant.MessageConstant;
-import com.springframework.csscapstone.config.security.model.AppUserDetail;
-import com.springframework.csscapstone.config.security.model.WebUserDetail;
+import com.springframework.csscapstone.config.security.services.model.AppUserDetail;
+import com.springframework.csscapstone.config.security.services.model.WebUserDetail;
 import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.data.repositories.RoleRepository;
@@ -52,11 +52,19 @@ public class LoginServiceImpl implements LoginService {
 
         Optional<Account> accountByEmail = accountRepository.findAccountByEmail(email);
         if (accountByEmail.isPresent()) {
-            return accountByEmail.map(WebUserDetail::new).get();
+            return accountByEmail.map(account -> new WebUserDetail(account,
+                    this.jwtTokenProvider
+                            .generateJwtTokenForCollaborator(account.getRole().getName(),
+                            account.getEmail())))
+                    .get();
         }
         Account account = new Account().setEmail(email);
+        account.addRole(this.roleRepository.getById("ROLE_2"));
         Account savedAccount = accountRepository.save(account);
-        return new WebUserDetail(savedAccount);
+
+        return new WebUserDetail(savedAccount, this.jwtTokenProvider.generateJwtTokenForCollaborator(
+                account.getRole().getName(),
+                account.getEmail()));
     }
 
     /**
@@ -73,10 +81,9 @@ public class LoginServiceImpl implements LoginService {
         String phone = _user.getPhoneNumber();
 
         Optional<Account> accountByPhoneNumber = accountRepository.findAccountsByPhone(phone);
-        if (accountByPhoneNumber.isPresent()) { return accountByPhoneNumber
-                    .map(account -> new AppUserDetail(account,
-                            this.jwtTokenProvider.generateJwtTokenForCollaborator(
-                                    account.getRole().getName(), account.getPhone()))).get();
+        if (accountByPhoneNumber.isPresent()) {
+            return accountByPhoneNumber.map(account -> new AppUserDetail(account, this.jwtTokenProvider
+                            .generateJwtTokenForCollaborator(account.getRole().getName(), account.getPhone()))).get();
         }
         Account account = new Account().setPhone(phone);
         account.addRole(this.roleRepository.getById("ROLE_3"));
