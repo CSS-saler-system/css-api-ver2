@@ -4,9 +4,11 @@ import com.springframework.csscapstone.data.status.TransactionStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -14,9 +16,11 @@ import java.util.*;
 
 @Getter
 @Setter
+@Accessors(chain = true)
 @NoArgsConstructor
 @Entity
 @Table(name = "transactions")
+@EntityListeners(AuditingEntityListener.class)
 public class Transactions {
     @Id
     @GeneratedValue(generator = "UUID")
@@ -66,5 +70,19 @@ public class Transactions {
                 ", point=" + point +
                 ", transactionStatus=" + transactionStatus +
                 '}';
+    }
+
+//    ======================= utils =====================
+    public Transactions addAccount(Set<Account> accounts) {
+        this.account.addAll(accounts);
+        accounts.forEach(x -> x.getTransactions().add(this));
+        return this;
+    }
+//    ======================= utils images =====================
+    public Transactions addImages(BillImage image) {
+        this.billImage.add(image);
+        image.setTransactions(this);
+        return this;
+
     }
 }

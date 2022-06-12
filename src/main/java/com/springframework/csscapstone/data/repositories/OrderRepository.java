@@ -1,6 +1,8 @@
 package com.springframework.csscapstone.data.repositories;
 
+import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.Order;
+import com.springframework.csscapstone.data.status.OrderStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +18,16 @@ import java.util.UUID;
 public interface OrderRepository extends JpaRepository<Order, UUID> {
     String COLL_ID = "col_id";
     String TOTAL_QUANTITY = "total_quantity";
+
+    @Query("SELECT o FROM Order o " +
+            "WHERE o.account = :idCollaborator " +
+            "AND o.status = :status")
+    Page<Order> pageOrderCollaboratorCreate(Account idCollaborator, OrderStatus status , Pageable pageable);
+
+    @Query("SELECT o FROM Order o " +
+            "WHERE o.account.id = :idCollaborator " +
+            "AND o.status = :status")
+    Page<Order> pageOrderCollaboratorCreateForTest(UUID idCollaborator, OrderStatus status , Pageable pageable);
 
     /**
      * todo The method get list collaborator and quantity sold product sort desc

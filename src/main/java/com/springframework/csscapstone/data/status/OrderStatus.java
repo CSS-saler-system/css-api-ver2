@@ -4,5 +4,6 @@ public enum OrderStatus {
     CANCEL,
     FINISH,
     DISABLE,
-    PENDING
+    PENDING,
+    WAITING//delete
 }

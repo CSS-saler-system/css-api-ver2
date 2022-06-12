@@ -2,6 +2,7 @@ package com.springframework.csscapstone.data.domain;
 
 import com.springframework.csscapstone.data.status.OrderStatus;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.GenericGenerator;
@@ -14,6 +15,7 @@ import java.util.*;
 @Getter
 @Setter
 @Accessors(chain = true)
+@NoArgsConstructor
 @Entity
 @Table(name = "orders")
 public class Order {
@@ -58,6 +60,14 @@ public class Order {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
+    public Order(Double totalPrice, Double totalPointSale, String customerName, String deliveryPhone, String deliveryAddress) {
+        this.totalPrice = totalPrice;
+        this.totalPointSale = totalPointSale;
+        this.customerName = customerName;
+        this.deliveryPhone = deliveryPhone;
+        this.deliveryAddress = deliveryAddress;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -71,5 +81,24 @@ public class Order {
     @Override
     public int hashCode() {
         return getId() != null ? getId().hashCode() : 0;
+    }
+
+    // ======================== Order =====================
+    public Order addOrderDetails(List<OrderDetail> orderDetails) {
+        this.setOrderDetails(orderDetails);
+        orderDetails.forEach(od -> od.setOrder(this));
+        return this;
+    }
+
+    public Order addAccount(Account collaborator) {
+        collaborator.getOrders().add(this);
+        this.setAccount(collaborator);
+        return this;
+    }
+
+    public Order addCustomer(Customer customer) {
+        this.setCustomer(customer);
+        customer.getOrders().add(this);
+        return this;
     }
 }

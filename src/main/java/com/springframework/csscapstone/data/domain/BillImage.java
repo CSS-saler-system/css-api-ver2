@@ -1,6 +1,7 @@
 package com.springframework.csscapstone.data.domain;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
@@ -12,6 +13,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Setter
 @Accessors(chain = true)
 @Entity
+@NoArgsConstructor
 @Table(name = "bill_image")
 public class BillImage {
 
@@ -19,9 +21,11 @@ public class BillImage {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    private String name;
-
     private String path;
+
+    public BillImage(String path) {
+        this.path = path;
+    }
 
     @ManyToOne
     @JoinColumn(name = "transactions_id")

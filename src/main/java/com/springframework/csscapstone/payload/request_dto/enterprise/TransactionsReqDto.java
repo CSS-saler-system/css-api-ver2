@@ -10,7 +10,6 @@ import java.util.UUID;
 
 @Data
 public class TransactionsReqDto implements Serializable {
-    private final UUID id;
     private final List<BillImageBasicDto> billImage;
     private final double point;
     private final Set<AccountNestedDto> account;

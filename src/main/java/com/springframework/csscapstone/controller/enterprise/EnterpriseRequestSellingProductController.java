@@ -1,6 +1,5 @@
 package com.springframework.csscapstone.controller.enterprise;
 
-import com.azure.core.http.rest.Response;
 import com.springframework.csscapstone.data.status.RequestStatus;
 import com.springframework.csscapstone.services.RequestSellingProductService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,7 +16,7 @@ import static org.springframework.http.ResponseEntity.ok;
 @Tag(name = "Request_Selling (Enterprise)")
 @RestController
 @RequiredArgsConstructor
-public class RequestSellingProductController {
+public class EnterpriseRequestSellingProductController {
 
     private final RequestSellingProductService requestSellingProductService;
 

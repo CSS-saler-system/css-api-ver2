@@ -1,25 +1,30 @@
 package com.springframework.csscapstone.services.impl;
 
 import com.springframework.csscapstone.config.constant.MessageConstant;
-import com.springframework.csscapstone.data.domain.Account;
-import com.springframework.csscapstone.data.domain.Order;
-import com.springframework.csscapstone.data.domain.OrderDetail;
-import com.springframework.csscapstone.data.repositories.AccountRepository;
-import com.springframework.csscapstone.data.repositories.OrderRepository;
+import com.springframework.csscapstone.data.domain.*;
+import com.springframework.csscapstone.data.repositories.*;
 import com.springframework.csscapstone.data.status.OrderStatus;
+import com.springframework.csscapstone.payload.request_dto.collaborator.OrderCreatorDto;
+import com.springframework.csscapstone.payload.request_dto.collaborator.OrderUpdaterDto;
+import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.OrderResDto;
 import com.springframework.csscapstone.services.OrderService;
+import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.LackPointException;
 import com.springframework.csscapstone.utils.exception_utils.order_exception.OrderNotFoundException;
+import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.util.Supplier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.summingDouble;
 import static java.util.stream.Collectors.toMap;
 
 @Service
@@ -27,6 +32,96 @@ import static java.util.stream.Collectors.toMap;
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final AccountRepository accountRepository;
+    private final OrderDetailRepository orderDetailRepository;
+    private final CustomerRepository customerRepository;
+
+    private final ProductRepository productRepository;
+
+    @Override
+    public PageImplResDto<OrderResDto> pageOrderOfCollaborator(
+            UUID idCollaborator, OrderStatus orderStatus, Integer pageNumber, Integer pageSize) {
+
+        Account account = this.accountRepository.findById(idCollaborator)
+                .orElseThrow(() -> new EntityNotFoundException("The collaborator with id: " + idCollaborator + " not found"));
+
+        pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
+        pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 1 : pageSize;
+
+        Page<Order> orders = this.orderRepository
+                .pageOrderCollaboratorCreate(account, orderStatus, PageRequest.of(pageNumber - 1, pageSize));
+        List<OrderResDto> content = orders
+                .getContent()
+                .stream()
+                .map(MapperDTO.INSTANCE::toOrderResDto)
+                .collect(Collectors.toList());
+
+        return new PageImplResDto<>(content, orders.getNumber() + 1, content.size(),
+                orders.getTotalElements(), orders.getTotalPages(), orders.isFirst(), orders.isLast());
+    }
+
+    @Override
+    public UUID createOrder(OrderCreatorDto dto) {
+
+        Account account = this.accountRepository.findById(dto.getAccount().getId())
+                .orElseThrow(() -> new EntityNotFoundException("The collaborator with id: " + dto.getAccount().getId() + " not found"));
+
+        Customer customer = this.customerRepository.findById(dto.getCustomer().getId())
+                .orElseThrow(() -> new EntityNotFoundException("The customer with id: " + dto.getCustomer().getId() + " was not found"));
+
+        //todo check product in same enterprise:
+//        dto.getOrderDetails().stream()
+//                .map(p -> this.productRepository.findById(p.getProduct().getId()))
+
+        //todo map<Product, quantity>
+        Map<Product, Long> details = dto.getOrderDetails().stream()
+                .collect(toMap(
+                        od -> this.productRepository.findById(od.getProduct().getId()).orElseThrow(handlerNotFoundException()),
+                        OrderCreatorDto.OrderDetailDto::getQuantity));
+
+        List<OrderDetail> oderDetails = details.entrySet()
+                .stream()
+                .map(entry -> new OrderDetail(
+                        entry.getKey().getName(),
+                        entry.getKey().getPrice(),
+                        entry.getKey().getPointSale(),
+                        entry.getValue(),
+                        entry.getValue() * entry.getKey().getPointSale(),
+                        entry.getValue() * entry.getKey().getPrice()))
+                .peek(this.orderDetailRepository::save)
+                .collect(Collectors.toList());
+
+        //todo get total price by map double with orderDetails
+        double totalPrize = oderDetails.stream().mapToDouble(OrderDetail::getTotalPointProduct).sum();
+
+        //todo get total point by map double with orderDetails
+        double totalPointSale = oderDetails.stream().map(OrderDetail::getTotalPriceProduct).reduce(0.0, Double::sum);
+
+        Order order = new Order(
+                totalPrize, totalPointSale, customer.getName(),
+                dto.getDeliveryPhone(), dto.getDeliveryAddress())
+                .addOrderDetails(oderDetails)
+                .addAccount(account)
+                .addCustomer(customer);
+
+        return this.orderRepository.save(order).getId();
+    }
+
+    @Override
+    public UUID updateOrder(OrderUpdaterDto dto) {
+        return null;
+    }
+
+    @Transactional
+    @Override
+    public void deleteOrder(UUID id) {
+        Order order = this.orderRepository
+                .findById(id)
+                .filter(_order -> _order.getStatus().equals(OrderStatus.WAITING))
+                .orElseThrow(() -> new RuntimeException("No have order by id: " + id + " or order in pending process"));
+
+        this.orderRepository.save(order.setStatus(OrderStatus.CANCEL));
+
+    }
 
     @Override
     public Optional<UUID> updateOrder(UUID id, OrderStatus status) {
@@ -90,4 +185,8 @@ public class OrderServiceImpl implements OrderService {
         return () -> new OrderNotFoundException(
                 MessagesUtils.getMessage(MessageConstant.Order.NOT_FOUND));
     }
+    private Supplier<EntityNotFoundException> handlerNotFoundException() {
+        return () -> new EntityNotFoundException("The product in order detail was not found");
+    }
+
 }

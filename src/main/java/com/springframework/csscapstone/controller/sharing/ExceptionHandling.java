@@ -20,6 +20,7 @@ import com.springframework.csscapstone.utils.exception_utils.customer_exception.
 import com.springframework.csscapstone.utils.exception_utils.data_exception.DataTempException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
+import com.springframework.csscapstone.utils.exception_utils.transaction_exceptions.TransactionNotFoundException;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
@@ -122,7 +123,8 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler {
             EntityNotFoundException.class,
             CustomerNotFoundException.class,
             CampaignNotFoundException.class,
-            NotEnoughKpiException.class
+            NotEnoughKpiException.class,
+            TransactionNotFoundException.class
     })
     public ResponseEntity<?> handleNotFound(RuntimeException exception) {
         return createHttpResponse(NOT_FOUND, exception.getMessage());

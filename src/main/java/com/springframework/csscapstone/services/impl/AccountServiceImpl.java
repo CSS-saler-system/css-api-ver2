@@ -106,7 +106,7 @@ public class AccountServiceImpl implements AccountService {
                 .peek(avatarConsumer(avatar, AccountImageType.AVATAR))
                 .peek(avatarConsumer(licenses, AccountImageType.LICENSE))
                 .peek(avatarConsumer(idCard, AccountImageType.ID_CARD))
-                .map(MapperDTO.INSTANCE::toAccountResponseDto)
+                .map(MapperDTO.INSTANCE::toAccountResDto)
                 .peek(dto -> dto.setAvatar(avatar))
                 .peek(dto -> dto.setLicenses(licenses))
                 .peek(dto -> dto.setIdCard(idCard))
@@ -216,7 +216,9 @@ public class AccountServiceImpl implements AccountService {
 
         //Map<name, multiple-file>
         Map<String, MultipartFile> imageMap = Stream.of(images)
-                .collect(Collectors.toMap(x -> nameImageOnAzure + x.getOriginalFilename(), x -> x));
+                .collect(Collectors.toMap(
+                        x -> nameImageOnAzure + x.getOriginalFilename(),
+                        x -> x));
 
         //upload to Azure:
         imageMap.forEach(blobUploadImages::azureAccountStorageHandler);
@@ -365,7 +367,7 @@ public class AccountServiceImpl implements AccountService {
                 .map(RequestSellingProduct::getAccount)
                 //todo Get All account of request except enterprise
                 .filter(a -> !a.getId().equals(idEnterprise))
-                .map(MapperDTO.INSTANCE::toAccountResponseDto)
+                .map(MapperDTO.INSTANCE::toAccountResDto)
                 .collect(toList());
 
         return new PageImplResDto<>(

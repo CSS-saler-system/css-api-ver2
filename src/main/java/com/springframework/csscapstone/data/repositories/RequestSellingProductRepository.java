@@ -17,6 +17,10 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public interface RequestSellingProductRepository extends JpaRepository<RequestSellingProduct, UUID> {
 
+    @Query(value = "SELECT r FROM RequestSellingProduct r WHERE r.account.id = :idCollaborator")
+    Page<RequestSellingProduct> findRequestSellingProductByCollaborator(UUID idCollaborator, Pageable pageable);
+
+    // =============================== Enterprise ===========================================
     //todo Get request selling product by enterprise id
     @Query(value =
             "SELECT r FROM RequestSellingProduct r " +
@@ -30,15 +34,20 @@ public interface RequestSellingProductRepository extends JpaRepository<RequestSe
             @Param("requestStatus") RequestStatus requestStatus,
             Pageable pageable);
 
+    //todo select product on request
+    //todo enterprise role
     @Query(
             value =
                     "SELECT r FROM RequestSellingProduct r " +
-                            "JOIN r.account a " +
+                            "JOIN r.product p " +
+                            "JOIN p.account a " +
                             "WHERE a.id = :enterpriseId " +
                             "AND r.requestStatus = :status ",
             countQuery =
                     "SELECT COUNT(r) " +
-                            "FROM RequestSellingProduct r JOIN r.account a " +
+                            "FROM RequestSellingProduct r " +
+                            "JOIN r.product p " +
+                            "JOIN p.account a " +
                             "WHERE a.id = :enterpriseId " +
                             "AND r.requestStatus = :status")
     Page<RequestSellingProduct> findAllRequestSellingProduct(

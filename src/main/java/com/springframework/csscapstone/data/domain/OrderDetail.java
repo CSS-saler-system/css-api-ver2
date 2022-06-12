@@ -1,6 +1,7 @@
 package com.springframework.csscapstone.data.domain;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.GenericGenerator;
@@ -12,6 +13,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Accessors(chain = true)
+@NoArgsConstructor
 @Entity
 @Table(name = "order_detail")
 public class OrderDetail {
@@ -48,6 +50,18 @@ public class OrderDetail {
     @JoinColumn(name = "order_id")
     private Order order;
 
+    public OrderDetail(
+            String nameProduct, Double productPrice,
+            Double productPoint, Long quantity,
+            Double totalPointProduct, Double totalPriceProduct) {
+        this.nameProduct = nameProduct;
+        this.productPrice = productPrice;
+        this.productPoint = productPoint;
+        this.quantity = quantity;
+        this.totalPointProduct = totalPointProduct;
+        this.totalPriceProduct = totalPriceProduct;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -78,7 +92,9 @@ public class OrderDetail {
     //==================Utils Method======================
     //Todo this is never use: Product no need save in orders-detail
     public OrderDetail addProductToOrderDetail(Product product) {
-       return this;
+        this.setProduct(product);
+        product.getOrderDetails().add(this);
+        return this;
     }
 
     public OrderDetail addOrderDetailDToOrder(Order order) {
@@ -86,6 +102,7 @@ public class OrderDetail {
         order.getOrderDetails().add(this);
         return this;
     }
+
     //todo this is detach method util
     public OrderDetail removeOrderDetailsFromOrder() {
         order.getOrderDetails().remove(this);

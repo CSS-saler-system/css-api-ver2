@@ -5,6 +5,7 @@ import com.springframework.csscapstone.payload.request_dto.enterprise.PrizeUpdat
 import com.springframework.csscapstone.services.PrizeService;
 import com.springframework.csscapstone.utils.mapper_utils.converter_mapper.PrizeCreatorConvertor;
 import com.springframework.csscapstone.utils.mapper_utils.converter_mapper.PrizeUpdaterConvertor;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.json.JsonParseException;
 import org.springframework.http.MediaType;
@@ -21,6 +22,7 @@ import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Prize (Enterprise)")
 public class EnterprisePrizeController {
    private final PrizeService prizeService;
    private final PrizeCreatorConvertor prizeCreatorConvertor;

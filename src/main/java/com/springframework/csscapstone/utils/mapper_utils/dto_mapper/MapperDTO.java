@@ -47,7 +47,7 @@ public interface MapperDTO {
 
     RequestSellingProductResDto toRequestSellingProductResDto(RequestSellingProduct entity);
 
-    TransactionsResDto toTransactionsDto(Transactions entity);
+    TransactionsResDto toTransactionsResDto(Transactions entity);
 
     //TODO Response DTO
     //TODO [ROLE] - Collaborator
@@ -61,7 +61,7 @@ public interface MapperDTO {
     ProductResDto toProductResDto(Product entity);
 
     //TODO Admin Role convert to AccountResponseDTO
-    AccountResDto toAccountResponseDto(Account entity);
+//    AccountResDto toAccountResDto(Account entity);
 
 
 

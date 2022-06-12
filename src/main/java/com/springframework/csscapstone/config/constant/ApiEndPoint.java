@@ -167,15 +167,24 @@ public class ApiEndPoint {
 
         public static final String V2_LIST_REQUEST = v2_handler + "/list";
         public static final String V2_UPDATE_REQUEST = v2_handler + "/update";
+        public static final String V3_CREATE_REQUEST = v2_handler + "/update";
+        public static final String V3_GET_OWNER_REQUEST = v2_handler + "/update";
     }
 
     public static class Order {
-        private static final String v1_handler = ADMIN + "/customer";
-        private static final String v2_handler = ENTERPRISE + "/customer";
-        private static final String v3_handler = COLLABORATOR + "/customer";
+        private static final String v1_handler = ADMIN + "/order";
+        private static final String v2_handler = ENTERPRISE + "/order";
+        private static final String v3_handler = COLLABORATOR + "/order";
 
         public static final String V2_ORDER_UPDATE_STATUS = v2_handler + "/order";
         public static final String V2_ORDER_COMPLETE = v2_handler + "/complete";
+
+        public static final String V3_ORDER_CREATE = v3_handler + "/new";
+        public static final String V3_ORDER_LIST = v3_handler + "/list";
+        public static final String V3_ORDER_UPDATE = v3_handler + "/update";
+        public static final String V3_ORDER_DELETE = v3_handler + "/delete";
+
+
     }
 
     public static class Prize {
@@ -188,6 +197,22 @@ public class ApiEndPoint {
         public static final String V2_PRIZE_RETRIEVE = v2_handler + "/retrieve";
         public static final String V2_PRIZE_UPDATE = v2_handler + "/update";
         public static final String V2_PRIZE_CREATE = v2_handler + "/list";
+
+    }
+
+    public static class Transaction {
+        private static final String v1_handler = ADMIN + "/transaction";
+        private static final String v2_handler = ENTERPRISE + "/transaction";
+        private static final String v3_handler = COLLABORATOR + "/transaction";
+        private static final String v4_handler = MODERATOR + "/transaction";
+
+        public static final String V2_TRANSACTION_LIST = v2_handler + "/list";
+        public static final String V2_TRANSACTION_GET = v2_handler + "/get";
+        public static final String V2_TRANSACTION_RETRIEVE = v2_handler + "/retrieve";
+        public static final String V2_TRANSACTION_REJECT = v2_handler + "/reject";
+        public static final String V2_TRANSACTION_UPDATE = v2_handler + "/update";
+        public static final String V2_TRANSACTION_CREATE = v2_handler + "/list";
+        public static final String V2_TRANSACTION_DELETE = v2_handler + "/delete";
 
     }
 
