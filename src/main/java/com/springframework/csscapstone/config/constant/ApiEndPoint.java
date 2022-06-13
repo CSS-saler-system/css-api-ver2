@@ -180,6 +180,7 @@ public class ApiEndPoint {
         public static final String V2_ORDER_COMPLETE = v2_handler + "/complete";
 
         public static final String V3_ORDER_CREATE = v3_handler + "/new";
+        public static final String V3_ORDER_GET = v3_handler + "/get";
         public static final String V3_ORDER_LIST = v3_handler + "/list";
         public static final String V3_ORDER_UPDATE = v3_handler + "/update";
         public static final String V3_ORDER_DELETE = v3_handler + "/delete";

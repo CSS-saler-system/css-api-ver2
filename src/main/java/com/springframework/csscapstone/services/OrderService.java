@@ -11,6 +11,8 @@ import java.util.UUID;
 
 public interface OrderService {
 
+    OrderResDto getOrderResDtoById(UUID id);
+
     //todo Collaborator
 
     /**

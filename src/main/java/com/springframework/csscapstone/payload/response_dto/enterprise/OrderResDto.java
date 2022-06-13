@@ -43,6 +43,12 @@ public class OrderResDto implements Serializable {
         private final Long quantity;
         private final Double totalPointProduct;
         private final Double totalPriceProduct;
+        private final ProductDto product;
+
+        @Data
+        public static class ProductDto implements Serializable {
+            private final UUID id;
+        }
     }
 
     @Data

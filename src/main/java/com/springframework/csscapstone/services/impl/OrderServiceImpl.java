@@ -38,6 +38,13 @@ public class OrderServiceImpl implements OrderService {
     private final ProductRepository productRepository;
 
     @Override
+    public OrderResDto getOrderResDtoById(UUID id) {
+        return this.orderRepository.findById(id)
+                .map(MapperDTO.INSTANCE::toOrderResDto)
+                .orElseThrow(() -> new RuntimeException("No have Order With id: " + id));
+    }
+
+    @Override
     public PageImplResDto<OrderResDto> pageOrderOfCollaborator(
             UUID idCollaborator, OrderStatus orderStatus, Integer pageNumber, Integer pageSize) {
 
@@ -58,24 +65,20 @@ public class OrderServiceImpl implements OrderService {
         return new PageImplResDto<>(content, orders.getNumber() + 1, content.size(),
                 orders.getTotalElements(), orders.getTotalPages(), orders.isFirst(), orders.isLast());
     }
-
+    @Transactional
     @Override
     public UUID createOrder(OrderCreatorDto dto) {
 
-        Account account = this.accountRepository.findById(dto.getAccount().getId())
-                .orElseThrow(() -> new EntityNotFoundException("The collaborator with id: " + dto.getAccount().getId() + " not found"));
+        Account account = this.accountRepository.findById(dto.getAccount().getAccountId())
+                .orElseThrow(() -> new EntityNotFoundException("The collaborator with id: " + dto.getAccount().getAccountId() + " not found"));
 
-        Customer customer = this.customerRepository.findById(dto.getCustomer().getId())
-                .orElseThrow(() -> new EntityNotFoundException("The customer with id: " + dto.getCustomer().getId() + " was not found"));
-
-        //todo check product in same enterprise:
-//        dto.getOrderDetails().stream()
-//                .map(p -> this.productRepository.findById(p.getProduct().getId()))
+        Customer customer = this.customerRepository.findById(dto.getCustomer().getCustomerId())
+                .orElseThrow(() -> new EntityNotFoundException("The customer with id: " + dto.getCustomer().getCustomerId() + " was not found"));
 
         //todo map<Product, quantity>
         Map<Product, Long> details = dto.getOrderDetails().stream()
                 .collect(toMap(
-                        od -> this.productRepository.findById(od.getProduct().getId()).orElseThrow(handlerNotFoundException()),
+                        od -> this.productRepository.findById(od.getProduct().getProductId()).orElseThrow(handlerNotFoundException()),
                         OrderCreatorDto.OrderDetailDto::getQuantity));
 
         List<OrderDetail> oderDetails = details.entrySet()
@@ -86,7 +89,8 @@ public class OrderServiceImpl implements OrderService {
                         entry.getKey().getPointSale(),
                         entry.getValue(),
                         entry.getValue() * entry.getKey().getPointSale(),
-                        entry.getValue() * entry.getKey().getPrice()))
+                        entry.getValue() * entry.getKey().getPrice())
+                        .addProductToOrderDetail(entry.getKey()))
                 .peek(this.orderDetailRepository::save)
                 .collect(Collectors.toList());
 
@@ -96,8 +100,7 @@ public class OrderServiceImpl implements OrderService {
         //todo get total point by map double with orderDetails
         double totalPointSale = oderDetails.stream().map(OrderDetail::getTotalPriceProduct).reduce(0.0, Double::sum);
 
-        Order order = new Order(
-                totalPrize, totalPointSale, customer.getName(),
+        Order order = new Order(totalPrize, totalPointSale, customer.getName(),
                 dto.getDeliveryPhone(), dto.getDeliveryAddress())
                 .addOrderDetails(oderDetails)
                 .addAccount(account)
