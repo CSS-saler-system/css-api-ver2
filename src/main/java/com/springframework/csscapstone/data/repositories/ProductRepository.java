@@ -1,5 +1,6 @@
 package com.springframework.csscapstone.data.repositories;
 
+import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.Category;
 import com.springframework.csscapstone.data.domain.Product;
 import org.hibernate.annotations.Parameter;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Tuple;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

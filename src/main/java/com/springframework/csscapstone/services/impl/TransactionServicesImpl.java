@@ -146,9 +146,11 @@ public class TransactionServicesImpl implements TransactionServices {
     @Override
     public UUID rejectTransaction(UUID id) {
         Transactions transactions = this.transactionsRepository.findById(id)
-                .orElseThrow(() -> new TransactionNotFoundException("The transaction with id: " + id + " not found"));
+                .orElseThrow(() -> new TransactionNotFoundException(
+                        "The transaction with id: " + id + " not found"));
 
-        return this.transactionsRepository.save(transactions.setTransactionStatus(TransactionStatus.REJECT)).getId();
+        return this.transactionsRepository
+                .save(transactions.setTransactionStatus(TransactionStatus.REJECT)).getId();
     }
     @Transactional
     @Override

@@ -41,8 +41,8 @@ public class EnterpriseTransactionController {
     @GetMapping(V2_TRANSACTION_GET + "/{id}")
     public ResponseEntity<?> getTransactionById(@PathVariable UUID id) {
         Optional<TransactionsResDto> transactionById = this.transactionServices.getTransactionById(id);
-        TransactionsResDto transactionsResDto = transactionById.orElseThrow(() -> new TransactionNotFoundException(
-                "The transaction with id: " + id + " not found"));
+        TransactionsResDto transactionsResDto = transactionById.orElseThrow(
+                () -> new TransactionNotFoundException("The transaction with id: " + id + " not found"));
         return ok(transactionsResDto);
     }
 

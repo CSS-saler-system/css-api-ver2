@@ -30,13 +30,13 @@ public class ProductResDto implements Serializable {
             @JsonProperty("id") UUID id,
             @JsonProperty("name") String name,
             @JsonProperty("brand") String brand,
-            @JsonProperty("short_description") String shortDescription,
+            @JsonProperty("shortDescription") String shortDescription,
             @JsonProperty("description") String description,
             @JsonProperty("quantity") Long quantity,
             @JsonProperty("price") Double price,
-            @JsonProperty("point_sale") Double pointSale,
-            @JsonProperty("product_status") ProductStatus productStatus,
-            @JsonProperty("certification_images") List<CertificationImage> image,
+            @JsonProperty("pointSale") Double pointSale,
+            @JsonProperty("productStatus") ProductStatus productStatus,
+            @JsonProperty("certificationImages") List<CertificationImage> image,
             @JsonProperty("category") CategoryDto category,
             @JsonProperty("account") AccountDto account) {
         this.id = id;

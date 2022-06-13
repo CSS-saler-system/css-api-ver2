@@ -47,6 +47,7 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
                     "GROUP BY col.id " +
                     "ORDER BY sum(od.quantity) DESC")
     Page<Tuple> sortCollaboratorSold(@Param("enterpriseId") UUID enterpriseId, Pageable pageable);
+
     //todo for mapping: get account then quantity and sort asc
     @Query(
             "SELECT a.id as " + COLL_ID + " , " +

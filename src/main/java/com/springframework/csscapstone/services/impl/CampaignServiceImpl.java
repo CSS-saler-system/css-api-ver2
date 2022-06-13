@@ -1,6 +1,7 @@
 package com.springframework.csscapstone.services.impl;
 
 import com.springframework.csscapstone.config.constant.MessageConstant;
+import com.springframework.csscapstone.data.dao.specifications.CampaignSpecifications;
 import com.springframework.csscapstone.data.domain.*;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.data.repositories.CampaignImageRepository;
@@ -9,6 +10,7 @@ import com.springframework.csscapstone.data.repositories.OrderRepository;
 import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.CampaignUpdaterReqDto;
+import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.CampaignResDto;
 import com.springframework.csscapstone.services.CampaignService;
 import com.springframework.csscapstone.utils.blob_utils.BlobUploadImages;
@@ -19,19 +21,18 @@ import com.springframework.csscapstone.utils.exception_utils.campaign_exception.
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Supplier;
@@ -61,33 +62,60 @@ public class CampaignServiceImpl implements CampaignService {
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     //TODO Need Modified
-    @Cacheable(cacheNames = "campaigns")
+//    @Cacheable(cacheNames = "campaigns")
+//    @Override
+//    public List<CampaignResDto> findCampaign(
+//            String name, LocalDateTime createdDate,
+//            LocalDateTime lastModifiedDate, LocalDateTime startDate,
+//            LocalDateTime endDate, String description,
+//            Long kpi, CampaignStatus status) {
+//        CriteriaBuilder builder = em.getCriteriaBuilder();
+//        CriteriaQuery<Campaign> query = builder.createQuery(Campaign.class);
+//        Root<Campaign> root = query.from(Campaign.class);
+//
+//        List<Predicate> predicates = Arrays.asList(
+//                builder.like(root.get(Campaign_.NAME), name),
+//                builder.greaterThan(root.get(Campaign_.LAST_MODIFIED_DATE), createdDate),
+//                builder.lessThan(root.get(Campaign_.LAST_MODIFIED_DATE), lastModifiedDate),
+//                builder.greaterThan(root.get(Campaign_.START_DATE), startDate),
+//                builder.lessThan(root.get(Campaign_.END_DATE), endDate),
+//                builder.greaterThan(root.get(Campaign_.KPI_SALE_PRODUCT), kpi),
+//                builder.like(root.get(Campaign_.CAMPAIGN_DESCRIPTION), description),
+//                builder.equal(root.get(Campaign_.CAMPAIGN_STATUS), status)
+//        );
+//
+//        CriteriaQuery<Campaign> processQuery = query.where(builder.and(predicates.toArray(new Predicate[0])));
+//
+//        return em.createQuery(processQuery).getResultList()
+//                .stream().map(MapperDTO.INSTANCE::toCampaignResDto)
+//                .collect(Collectors.toList());
+//    }
+
+
     @Override
-    public List<CampaignResDto> findCampaign(
-            String name, LocalDateTime createdDate,
-            LocalDateTime lastModifiedDate, LocalDateTime startDate,
-            LocalDateTime endDate, String description,
-            Long kpi, CampaignStatus status) {
-        CriteriaBuilder builder = em.getCriteriaBuilder();
-        CriteriaQuery<Campaign> query = builder.createQuery(Campaign.class);
-        Root<Campaign> root = query.from(Campaign.class);
+    public PageImplResDto<CampaignResDto> findCampaign(
+            String name, LocalDateTime startDate,
+            LocalDateTime endDate, Long minKpi, Long maxKpi, CampaignStatus status,
+            Integer pageNumber, Integer pageSize) {
+        Specification<Campaign> condition = Specification
+                .where(StringUtils.isEmpty(name) ? null : CampaignSpecifications.containsName(name))
+                .and(startDate == null ? null : CampaignSpecifications.afterStartDate(startDate))
+                .and(endDate == null ? null : CampaignSpecifications.beforeEndDate(endDate))
+                .and(minKpi == null || minKpi == 0 ? null : CampaignSpecifications.greaterKpi(minKpi))
+                .and(maxKpi == null || maxKpi == 0 ? null : CampaignSpecifications.smallerKpi(maxKpi));
 
-        List<Predicate> predicates = Arrays.asList(
-                builder.like(root.get(Campaign_.NAME), name),
-                builder.greaterThan(root.get(Campaign_.LAST_MODIFIED_DATE), createdDate),
-                builder.lessThan(root.get(Campaign_.LAST_MODIFIED_DATE), lastModifiedDate),
-                builder.greaterThan(root.get(Campaign_.START_DATE), startDate),
-                builder.lessThan(root.get(Campaign_.END_DATE), endDate),
-                builder.greaterThan(root.get(Campaign_.KPI_SALE_PRODUCT), kpi),
-                builder.like(root.get(Campaign_.CAMPAIGN_DESCRIPTION), description),
-                builder.equal(root.get(Campaign_.CAMPAIGN_STATUS), status)
-        );
+        pageNumber = Objects.isNull(pageNumber) || pageNumber == 0 ? 1 : pageNumber;
+        pageSize = Objects.isNull(pageSize) || pageSize == 0 ? 1 : pageSize;
 
-        CriteriaQuery<Campaign> processQuery = query.where(builder.and(predicates.toArray(new Predicate[0])));
-
-        return em.createQuery(processQuery).getResultList()
-                .stream().map(MapperDTO.INSTANCE::toCampaignResDto)
+        Page<Campaign> page = this.campaignRepository.findAll(condition, PageRequest.of(pageNumber - 1, pageSize));
+        List<CampaignResDto> content = page.getContent()
+                .stream()
+                .filter(campaign -> campaign.getCampaignStatus().equals(status))
+                .map(MapperDTO.INSTANCE::toCampaignResDto)
                 .collect(Collectors.toList());
+        return new PageImplResDto<>(
+                content, page.getNumber() + 1, content.size(), page.getTotalElements(),
+                page.getTotalPages(), page.isFirst(), page.isLast());
     }
 
     @Override
@@ -173,7 +201,7 @@ public class CampaignServiceImpl implements CampaignService {
     @Override
     public void deleteCampaign(UUID id) throws EntityNotFoundException {
         this.campaignRepository.findById(id)
-                .map(this::updateCampaign)
+                .map(this::deleteCampaign)
                 .map(MapperDTO.INSTANCE::toCampaignResDto)
                 .orElseThrow(campaignNotFoundException());
     }
@@ -183,7 +211,7 @@ public class CampaignServiceImpl implements CampaignService {
                 .findAll().stream()
 //                .filter(campaign -> campaign.getStartDate().isBefore(LocalDateTime.now()))
                 .filter(campaign -> campaign.getEndDate().isBefore(LocalDateTime.now()))
-                .filter(campaign -> campaign.getCampaignStatus().equals(CampaignStatus.ACCEPTED))
+                .filter(campaign -> campaign.getCampaignStatus().equals(CampaignStatus.PENDING))
                 .map(Campaign::getId)
                 .peek(this::completeCampaign)
                 .close();
@@ -259,8 +287,8 @@ public class CampaignServiceImpl implements CampaignService {
         return () -> new CampaignNotFoundException(MessagesUtils.getMessage(MessageConstant.Campaign.NOT_FOUND));
     }
 
-    private Campaign updateCampaign(Campaign x) {
-        x.setCampaignStatus(CampaignStatus.DISABLE);
+    private Campaign deleteCampaign(Campaign x) {
+        x.setCampaignStatus(CampaignStatus.CANCELLED);
         this.campaignRepository.save(x);
         return x;
     }

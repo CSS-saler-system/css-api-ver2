@@ -7,6 +7,5 @@ package com.springframework.csscapstone.data.status;
  */
 public enum CampaignStatus {
     PENDING, CANCELLED, WAITING,
-    ACCEPTED, REJECTED, DISABLE,
     FINISHED
 }

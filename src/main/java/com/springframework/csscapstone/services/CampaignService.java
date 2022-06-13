@@ -3,6 +3,7 @@ package com.springframework.csscapstone.services;
 import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.CampaignUpdaterReqDto;
+import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.CampaignResDto;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignInvalidException;
@@ -14,14 +15,20 @@ import java.util.UUID;
 
 public interface CampaignService {
 
-    List<CampaignResDto> findCampaign(
-            String name, LocalDateTime createdDate,
-            LocalDateTime lastModifiedDate,
+    //    List<CampaignResDto> findCampaign(
+//            String name, LocalDateTime createdDate,
+//            LocalDateTime lastModifiedDate,
+//            LocalDateTime startDate,
+//            LocalDateTime endDate,
+//            String description,
+//            Long kpi,
+//            CampaignStatus status);
+    PageImplResDto<CampaignResDto> findCampaign(
+            String name,
             LocalDateTime startDate,
             LocalDateTime endDate,
-            String description,
-            Long kpi,
-            CampaignStatus status);
+            Long minKpi, Long maxKpi, CampaignStatus status,
+            Integer pageNumber, Integer pageSize);
 
     CampaignResDto findById(UUID id) throws EntityNotFoundException;
 
