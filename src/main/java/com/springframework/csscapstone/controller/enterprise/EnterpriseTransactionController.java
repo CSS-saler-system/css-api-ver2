@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.payload.request_dto.TransactionsUpdateReqDto;
+import com.springframework.csscapstone.payload.request_dto.enterprise.TransactionsCreatorReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.TransactionsResDto;
 import com.springframework.csscapstone.services.TransactionServices;
@@ -30,6 +31,16 @@ import static org.springframework.http.ResponseEntity.ok;
 public class EnterpriseTransactionController {
     private final TransactionServices transactionServices;
     private final ObjectMapper objectMapper;
+
+    @PostMapping(V2_TRANSACTION_CREATE)
+    public ResponseEntity<?> createTransaction(
+            @RequestPart("transaction") String transactionCreatorDto,
+            @RequestPart("image") List<MultipartFile> images
+    ) throws JsonProcessingException {
+        TransactionsCreatorReqDto dto = objectMapper.readValue(transactionCreatorDto, TransactionsCreatorReqDto.class);
+        UUID transaction = this.transactionServices.createTransaction(dto, images);
+        return ok(transaction);
+    }
 
     @GetMapping(V2_TRANSACTION_LIST)
     public ResponseEntity<?> getAllTransactionExcludeDisableStatus(

@@ -8,7 +8,7 @@ import com.springframework.csscapstone.data.repositories.BillImageRepository;
 import com.springframework.csscapstone.data.repositories.TransactionsRepository;
 import com.springframework.csscapstone.data.status.TransactionStatus;
 import com.springframework.csscapstone.payload.request_dto.TransactionsUpdateReqDto;
-import com.springframework.csscapstone.payload.request_dto.enterprise.TransactionsReqDto;
+import com.springframework.csscapstone.payload.request_dto.enterprise.TransactionsCreatorReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.TransactionsResDto;
 import com.springframework.csscapstone.services.TransactionServices;
@@ -17,18 +17,15 @@ import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundExcep
 import com.springframework.csscapstone.utils.exception_utils.transaction_exceptions.TransactionNotFoundException;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.security.auth.login.AccountNotFoundException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -79,7 +76,7 @@ public class TransactionServicesImpl implements TransactionServices {
     }
     @Transactional
     @Override
-    public UUID createTransaction(TransactionsReqDto dto, List<MultipartFile> images) {
+    public UUID createTransaction(TransactionsCreatorReqDto dto, List<MultipartFile> images) {
         Set<Account> accounts = dto.getAccount()
                 .stream()
                 .map(x -> this.accountRepository.findById(x.getId())
@@ -125,7 +122,7 @@ public class TransactionServicesImpl implements TransactionServices {
 
         Set<Account> accounts = dto.getAccount()
                 .stream()
-                .map(TransactionsReqDto.AccountNestedDto::getId)
+                .map(TransactionsCreatorReqDto.AccountNestedDto::getId)
                 .map(uuid -> this.accountRepository
                         .findById(uuid)
                         .orElseThrow(() -> new EntityNotFoundException("The account inside transaction dto not found")))

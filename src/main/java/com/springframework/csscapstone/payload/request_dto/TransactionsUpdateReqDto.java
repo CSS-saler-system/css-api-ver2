@@ -3,7 +3,7 @@ package com.springframework.csscapstone.payload.request_dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.springframework.csscapstone.data.status.TransactionStatus;
 import com.springframework.csscapstone.payload.basic.BillImageBasicDto;
-import com.springframework.csscapstone.payload.request_dto.enterprise.TransactionsReqDto;
+import com.springframework.csscapstone.payload.request_dto.enterprise.TransactionsCreatorReqDto;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -16,7 +16,7 @@ public class TransactionsUpdateReqDto {
     private final UUID id;
     private final List<BillImageBasicDto> billImage;
     private final double point;
-    private final Set<TransactionsReqDto.AccountNestedDto> account;
+    private final Set<TransactionsCreatorReqDto.AccountNestedDto> account;
 
     private final TransactionStatus status;
 
@@ -24,7 +24,7 @@ public class TransactionsUpdateReqDto {
             @JsonProperty("id") UUID id,
             @JsonProperty("bill_images") List<BillImageBasicDto> billImage,
             @JsonProperty("point") double point,
-            @JsonProperty("accounts") Set<TransactionsReqDto.AccountNestedDto> account,
+            @JsonProperty("accounts") Set<TransactionsCreatorReqDto.AccountNestedDto> account,
             @JsonProperty("status") TransactionStatus status) {
         this.id = id;
         this.billImage = billImage;
@@ -37,7 +37,7 @@ public class TransactionsUpdateReqDto {
     public static class AccountNestedDto implements Serializable {
         private final UUID id;
         private final String name;
-        private final TransactionsReqDto.AccountNestedDto.RoleDto role;
+        private final TransactionsCreatorReqDto.AccountNestedDto.RoleDto role;
 
         @Data
         public static class RoleDto implements Serializable {
