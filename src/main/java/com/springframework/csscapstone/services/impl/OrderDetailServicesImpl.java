@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 
 @Service
 @AllArgsConstructor
-public class OrderDetailImpl implements OrderDetailService {
+public class OrderDetailServicesImpl implements OrderDetailService {
     private final OrderDetailRepository orderDetailRepository;
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;

@@ -70,15 +70,18 @@ public class OrderServiceImpl implements OrderService {
     public UUID createOrder(OrderCreatorDto dto) {
 
         Account account = this.accountRepository.findById(dto.getAccount().getAccountId())
-                .orElseThrow(() -> new EntityNotFoundException("The collaborator with id: " + dto.getAccount().getAccountId() + " not found"));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "The collaborator with id: " + dto.getAccount().getAccountId() + " not found"));
 
         Customer customer = this.customerRepository.findById(dto.getCustomer().getCustomerId())
-                .orElseThrow(() -> new EntityNotFoundException("The customer with id: " + dto.getCustomer().getCustomerId() + " was not found"));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "The customer with id: " + dto.getCustomer().getCustomerId() + " was not found"));
 
         //todo map<Product, quantity>
         Map<Product, Long> details = dto.getOrderDetails().stream()
                 .collect(toMap(
-                        od -> this.productRepository.findById(od.getProduct().getProductId()).orElseThrow(handlerNotFoundException()),
+                        od -> this.productRepository.findById(od.getProduct().getProductId())
+                                .orElseThrow(handlerNotFoundException()),
                         OrderCreatorDto.OrderDetailDto::getQuantity));
 
         List<OrderDetail> oderDetails = details.entrySet()
@@ -95,10 +98,16 @@ public class OrderServiceImpl implements OrderService {
                 .collect(Collectors.toList());
 
         //todo get total price by map double with orderDetails
-        double totalPrize = oderDetails.stream().mapToDouble(OrderDetail::getTotalPointProduct).sum();
+        double totalPrize = oderDetails
+                .stream()
+                .mapToDouble(OrderDetail::getTotalPointProduct)
+                .sum();
 
         //todo get total point by map double with orderDetails
-        double totalPointSale = oderDetails.stream().map(OrderDetail::getTotalPriceProduct).reduce(0.0, Double::sum);
+        double totalPointSale = oderDetails
+                .stream()
+                .map(OrderDetail::getTotalPriceProduct)
+                .reduce(0.0, Double::sum);
 
         Order order = new Order(totalPrize, totalPointSale, customer.getName(),
                 dto.getDeliveryPhone(), dto.getDeliveryAddress())
@@ -157,7 +166,6 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * Order -> Order-Detail: (total point)
-     *
      * @param orderId
      */
     @Override
