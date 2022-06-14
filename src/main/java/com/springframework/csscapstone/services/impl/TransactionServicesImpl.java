@@ -122,7 +122,7 @@ public class TransactionServicesImpl implements TransactionServices {
 
         Set<Account> accounts = dto.getAccount()
                 .stream()
-                .map(TransactionsCreatorReqDto.AccountNestedDto::getId)
+                .map(TransactionsUpdateReqDto.AccountNestedDto::getId)
                 .map(uuid -> this.accountRepository
                         .findById(uuid)
                         .orElseThrow(() -> new EntityNotFoundException("The account inside transaction dto not found")))

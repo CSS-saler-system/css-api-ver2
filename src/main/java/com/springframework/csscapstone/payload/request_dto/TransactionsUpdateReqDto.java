@@ -16,7 +16,7 @@ public class TransactionsUpdateReqDto {
     private final UUID id;
     private final List<BillImageBasicDto> billImage;
     private final double point;
-    private final Set<TransactionsCreatorReqDto.AccountNestedDto> account;
+    private final Set<AccountNestedDto> account;
 
     private final TransactionStatus status;
 
@@ -24,7 +24,7 @@ public class TransactionsUpdateReqDto {
             @JsonProperty("id") UUID id,
             @JsonProperty("bill_images") List<BillImageBasicDto> billImage,
             @JsonProperty("point") double point,
-            @JsonProperty("accounts") Set<TransactionsCreatorReqDto.AccountNestedDto> account,
+            @JsonProperty("accounts") Set<AccountNestedDto> account,
             @JsonProperty("status") TransactionStatus status) {
         this.id = id;
         this.billImage = billImage;
@@ -37,7 +37,7 @@ public class TransactionsUpdateReqDto {
     public static class AccountNestedDto implements Serializable {
         private final UUID id;
         private final String name;
-        private final TransactionsCreatorReqDto.AccountNestedDto.RoleDto role;
+        private final RoleDto role;
 
         @Data
         public static class RoleDto implements Serializable {
