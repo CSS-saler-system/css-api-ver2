@@ -13,14 +13,14 @@ import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 public class RequestSellingProductCreatorDto implements Serializable {
 
     private final ProductDto product;
-    private final AccountDto account;
+    private final AccountDto collaborator;
 
     @JsonCreator(mode = PROPERTIES)
     public RequestSellingProductCreatorDto(
             @JsonProperty("product") ProductDto product,
-            @JsonProperty("account") AccountDto account) {
+            @JsonProperty("collaborator") AccountDto collaborator) {
         this.product = product;
-        this.account = account;
+        this.collaborator = collaborator;
     }
 
     @Data

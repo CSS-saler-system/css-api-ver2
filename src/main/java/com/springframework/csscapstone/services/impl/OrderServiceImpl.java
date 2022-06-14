@@ -108,12 +108,29 @@ public class OrderServiceImpl implements OrderService {
 
         return this.orderRepository.save(order).getId();
     }
-
+    @Transactional
     @Override
     public UUID updateOrder(OrderUpdaterDto dto) {
-        return null;
-    }
+        Order waiting = this.orderRepository
+                .findById(dto.idCollaborator)
+                .filter(order -> order.getStatus().equals(OrderStatus.WAITING))
+                .orElseThrow(() -> new RuntimeException("The Order not found or in processing so not allow to modified"));
 
+        Customer customer = this.customerRepository
+                .findById(dto.getCustomer().getCustomerId())
+                .orElseThrow(() -> new RuntimeException("The customer not found"));
+//        todo switch to order details to update quantity;
+//        this.orderDetailRepository
+//                        .findById(dto.getOrderDetails().get)
+
+        waiting.setDeliveryAddress(dto.getDeliveryAddress())
+                .setDeliveryPhone(dto.getDeliveryPhone())
+                .setCustomer(customer);
+        Order savedOrder = this.orderRepository.save(waiting);
+
+        return savedOrder.getId();
+    }
+    //todo using for collaborator
     @Transactional
     @Override
     public void deleteOrder(UUID id) {
@@ -122,12 +139,12 @@ public class OrderServiceImpl implements OrderService {
                 .filter(_order -> _order.getStatus().equals(OrderStatus.WAITING))
                 .orElseThrow(() -> new RuntimeException("No have order by id: " + id + " or order in pending process"));
 
-        this.orderRepository.save(order.setStatus(OrderStatus.CANCEL));
+        this.orderRepository.save(order.setStatus(OrderStatus.DISABLE));
 
     }
 
     @Override
-    public Optional<UUID> updateOrder(UUID id, OrderStatus status) {
+    public Optional<UUID> updateStatusOrder(UUID id, OrderStatus status) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> handlerOrderNotFound().get());
         order.setStatus(status);

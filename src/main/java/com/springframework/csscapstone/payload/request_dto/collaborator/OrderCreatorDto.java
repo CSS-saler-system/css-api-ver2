@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
-@Getter
+@Data
 public class OrderCreatorDto implements Serializable {
     private final AccountDto account;
     private final CustomerDto customer;

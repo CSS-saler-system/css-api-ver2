@@ -1,9 +1,11 @@
 package com.springframework.csscapstone.data.status;
 
 public enum OrderStatus {
-    CANCEL,
+    //enterprise
     FINISH,
-    DISABLE,
+    DISABLE, //delete
     PENDING,
+    //collaborator
+    CANCEL,
     WAITING//delete
 }

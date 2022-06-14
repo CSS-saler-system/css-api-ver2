@@ -27,7 +27,7 @@ public class EnterpriseOrderController {
             @PathVariable("id") UUID id,
             @RequestParam(value = "status", defaultValue = "PENDING") OrderStatus status
             ) {
-        Optional<UUID> uuid = this.orderService.updateOrder(id, status);
+        Optional<UUID> uuid = this.orderService.updateStatusOrder(id, status);
         return ok(uuid);
     }
 

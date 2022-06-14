@@ -34,7 +34,7 @@ public interface OrderService {
     void deleteOrder(UUID id);
 
     //todo Enterprise
-    Optional<UUID> updateOrder(UUID id, OrderStatus status);
+    Optional<UUID> updateStatusOrder(UUID id, OrderStatus status);
 
     void completedOrder(UUID uuid);
 

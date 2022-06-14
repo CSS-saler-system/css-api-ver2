@@ -46,11 +46,14 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
     }
 
     @Override
-    public PageImplResDto<RequestSellingProductResDto> getAllRequestByIdCreator(UUID id, Integer pageNumber, Integer pageSize) {
+    public PageImplResDto<RequestSellingProductResDto> getAllRequestByIdCreator(
+            UUID id, Integer pageNumber, Integer pageSize) {
         pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 1 : pageSize;
+
         Page<RequestSellingProduct> page = this.requestSellingProductRepository
                 .findRequestSellingProductByCollaborator(id, PageRequest.of(pageNumber - 1, pageSize));
+
         List<RequestSellingProductResDto> content = page.getContent()
                 .stream().map(MapperDTO.INSTANCE::toRequestSellingProductResDto).collect(Collectors.toList());
 
@@ -64,8 +67,8 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
         Product product = this.productRepository.findById(dto.getProduct().getId())
                 .orElseThrow(() -> new RuntimeException("The product with id: " + dto.getProduct().getId() + " not found"));
 
-        Account collaborator = this.accountRepository.findById(dto.getAccount().getId())
-                .orElseThrow(() -> new EntityNotFoundException("The account with id: " + dto.getAccount().getId()
+        Account collaborator = this.accountRepository.findById(dto.getCollaborator().getId())
+                .orElseThrow(() -> new EntityNotFoundException("The account with id: " + dto.getCollaborator().getId()
                         + " not found"));
 
         RequestSellingProduct requestSellingProduct = new RequestSellingProduct()

@@ -12,44 +12,74 @@ import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 
 @Data
 public class OrderUpdaterDto implements Serializable {
-    private final UUID id;
-    private final String deliveryPhone;
+
+    public final UUID idCollaborator;
+    private final AccountDto account;
+    private final CustomerDto customer;
     private final String deliveryAddress;
+    private final String deliveryPhone;
     private final List<OrderDetailDto> orderDetails;
 
-    @JsonCreator(mode = PROPERTIES)
+    //    @JsonCreator(mode = PROPERTIES)
     public OrderUpdaterDto(
-            @JsonProperty("id") UUID id,
-            @JsonProperty("delivery_phone") String deliveryPhone,
-            @JsonProperty("delivery_address") String deliveryAddress,
-            @JsonProperty("oder_details") List<OrderDetailDto> orderDetails) {
-        this.id = id;
-        this.deliveryPhone = deliveryPhone;
+            @JsonProperty("id") UUID idCollaborator,
+            @JsonProperty("account") AccountDto account,
+            @JsonProperty("customer") CustomerDto customer,
+            @JsonProperty("deliveryAddress") String deliveryAddress,
+            @JsonProperty("deliveryPhone") String deliveryPhone,
+            @JsonProperty("orderDetails") List<OrderDetailDto> orderDetails) {
+        this.idCollaborator = idCollaborator;
+        this.account = account;
+        this.customer = customer;
         this.deliveryAddress = deliveryAddress;
+        this.deliveryPhone = deliveryPhone;
         this.orderDetails = orderDetails;
     }
 
     @Data
     public static class OrderDetailDto implements Serializable {
+        private final UUID idOrderDetails;
         private final Long quantity;
         private final ProductDto product;
 
         @JsonCreator(mode = PROPERTIES)
         public OrderDetailDto(
+                @JsonProperty("idOrderDetails") UUID idOrderDetails,
                 @JsonProperty("quantity") Long quantity,
                 @JsonProperty("product") ProductDto product) {
+            this.idOrderDetails = idOrderDetails;
             this.quantity = quantity;
             this.product = product;
         }
 
         @Data
         public static class ProductDto implements Serializable {
-            private final UUID id;
+            private final UUID productId;
 
             @JsonCreator(mode = PROPERTIES)
-            public ProductDto(UUID id) {
-                this.id = id;
+            public ProductDto(@JsonProperty("productId") UUID productId) {
+                this.productId = productId;
             }
+        }
+    }
+
+    @Data
+    public static class AccountDto implements Serializable {
+        private final UUID accountId;
+
+        @JsonCreator(mode = PROPERTIES)
+        public AccountDto(@JsonProperty("accountId") UUID accountId) {
+            this.accountId = accountId;
+        }
+    }
+
+    @Data
+    public static class CustomerDto implements Serializable {
+        private final UUID customerId;
+
+        @JsonCreator(mode = PROPERTIES)
+        public CustomerDto(@JsonProperty("customerId") UUID customerId) {
+            this.customerId = customerId;
         }
     }
 }

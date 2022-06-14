@@ -34,10 +34,11 @@ public class CollaboratorRequestController {
     @GetMapping(V3_GET_OWNER_REQUEST + "/{idCollaborator}")
     public ResponseEntity<?> getOwnerRequestSellingProduct(
             @PathVariable("idCollaborator") UUID idCollaborator,
-            @RequestParam("page_number") Integer pageNnumber,
+            @RequestParam("page_number") Integer pageNumber,
             @RequestParam("page_size") Integer pageSize) {
-        PageImplResDto<RequestSellingProductResDto> allRequestByIdCreator = this.requestSellingProductService
-                .getAllRequestByIdCreator(idCollaborator, pageNnumber, pageSize);
+        PageImplResDto<RequestSellingProductResDto> allRequestByIdCreator =
+                this.requestSellingProductService
+                .getAllRequestByIdCreator(idCollaborator, pageNumber, pageSize);
         return ok(allRequestByIdCreator);
     }
 

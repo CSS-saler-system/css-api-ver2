@@ -46,8 +46,8 @@ public class CollaboratorCampaignController {
         return ResponseEntity.ok(campaign);
     }
 
-    @GetMapping(V3_GET_CAMPAIGN + "/{id}")
-    public ResponseEntity<?> getCampaignById(@PathVariable("id") UUID id) throws EntityNotFoundException {
+    @GetMapping(V3_GET_CAMPAIGN + "/{idCampaign}")
+    public ResponseEntity<?> getCampaignById(@PathVariable("idCampaign") UUID id) throws EntityNotFoundException {
         return ok(campaignService.findById(id));
     }
 }
