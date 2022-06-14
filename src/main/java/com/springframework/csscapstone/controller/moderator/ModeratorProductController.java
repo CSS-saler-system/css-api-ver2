@@ -19,7 +19,7 @@ import static org.springframework.http.ResponseEntity.ok;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "Product (Moderator)")
-public class AdminProductController {
+public class ModeratorProductController {
     private final ProductService productService;
 
     @GetMapping(V4_LIST_PRODUCT)

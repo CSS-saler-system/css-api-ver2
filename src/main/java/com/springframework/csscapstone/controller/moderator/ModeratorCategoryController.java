@@ -25,7 +25,7 @@ import static org.springframework.http.ResponseEntity.ok;
 @Tag(name = "Category (Moderator)")
 @RestController
 @RequiredArgsConstructor
-public class AdminCategoryController {
+public class ModeratorCategoryController {
     private final CategoryService services;
 
     @GetMapping(V4_GET_CATEGORY + "/{id}")
