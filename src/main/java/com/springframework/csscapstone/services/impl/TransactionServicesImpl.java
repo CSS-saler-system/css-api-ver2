@@ -1,5 +1,6 @@
 package com.springframework.csscapstone.services.impl;
 
+import com.springframework.csscapstone.config.constant.ApiEndPoint;
 import com.springframework.csscapstone.data.dao.specifications.TransactionSpecifications;
 import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.BillImage;
@@ -56,17 +57,19 @@ public class TransactionServicesImpl implements TransactionServices {
             LocalDateTime createDate, LocalDateTime modifiedDate,
             Integer pageNumber, Integer pageSize) {
 
-//        Specification
-//                .where(Objects.isNull(createDate) ? null : TransactionSpecifications.)
+        Specification<Transactions> condition = Specification
+                .where(Objects.isNull(createDate) ? null : TransactionSpecifications.afterDate(createDate))
+                .and(Objects.isNull(modifiedDate) ? null : TransactionSpecifications.beforeDate(modifiedDate));
 
         pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
 
         Page<Transactions> page = this.transactionsRepository
-                .findAll(PageRequest.of(pageNumber - 1, pageSize));
+                .findAll(condition, PageRequest.of(pageNumber - 1, pageSize));
 
         List<TransactionsResDto> collect = page.getContent()
                 .stream().map(MapperDTO.INSTANCE::toTransactionsResDto)
+                .sorted(Comparator.comparing(TransactionsResDto::getLastModifiedDate))
                 .collect(Collectors.toList());
 
         return new PageImplResDto<>(
@@ -82,6 +85,7 @@ public class TransactionServicesImpl implements TransactionServices {
                 .orElseThrow(() -> new TransactionNotFoundException("The transaction with id: " + id + " not found"));
         return Optional.of(transactionsResDto);
     }
+
     @Transactional
     @Override
     public UUID createTransaction(TransactionsCreatorReqDto dto, List<MultipartFile> images) {
@@ -147,6 +151,25 @@ public class TransactionServicesImpl implements TransactionServices {
 
         return transactions.getId();
     }
+
+    @Override
+    public UUID acceptedTransaction(UUID idTransaction) {
+        Transactions transactions = this.transactionsRepository.findById(idTransaction)
+                .orElseThrow(() -> new RuntimeException("The transaction with id: " + idTransaction + " not found"));
+
+        Optional<Account> enterprise = transactions.getAccount()
+                .stream().filter(acc -> acc.getRole().getName().equals("Enterprise"))
+                .findFirst();
+
+        enterprise.ifPresent(_enterprise ->  {
+            _enterprise.setPoint(_enterprise.getPoint() + transactions.getPoint());
+            this.accountRepository.save(_enterprise);
+        });
+
+        transactions.setTransactionStatus(TransactionStatus.ACCEPT);
+        return this.transactionsRepository.save(transactions).getId();
+    }
+
     @Transactional
     @Override
     public UUID rejectTransaction(UUID id) {
@@ -157,6 +180,7 @@ public class TransactionServicesImpl implements TransactionServices {
         return this.transactionsRepository
                 .save(transactions.setTransactionStatus(TransactionStatus.REJECT)).getId();
     }
+
     @Transactional
     @Override
     public void deleteTransaction(UUID id) {

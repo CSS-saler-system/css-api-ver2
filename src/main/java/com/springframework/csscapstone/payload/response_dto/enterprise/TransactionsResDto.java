@@ -29,7 +29,7 @@ public class TransactionsResDto implements Serializable {
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
-    private final LocalDateTime LastModifiedDate;
+    private final LocalDateTime lastModifiedDate;
     private final List<BillImageBasicDto> billImage;
     private final double point;
     private final TransactionStatus transactionStatus;
@@ -46,7 +46,7 @@ public class TransactionsResDto implements Serializable {
             @JsonProperty("account") Set<AccountDto> account) {
         this.id = id;
         this.createTransaction = createTransaction;
-        LastModifiedDate = lastModifiedDate;
+        this.lastModifiedDate = lastModifiedDate;
         this.billImage = billImage;
         this.point = point;
         this.transactionStatus = transactionStatus;
