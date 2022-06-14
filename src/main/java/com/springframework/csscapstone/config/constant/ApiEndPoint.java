@@ -161,15 +161,18 @@ public class ApiEndPoint {
     }
 
     public static class RequestSellingProduct {
-        private static final String v1_handler = ADMIN + "/customer";
-        private static final String v2_handler = ENTERPRISE + "/customer";
-        private static final String v3_handler = COLLABORATOR + "/customer";
+        private static final String v1_handler = ADMIN + "/request_selling";
+        private static final String v2_handler = ENTERPRISE + "/request_selling";
+        private static final String v3_handler = COLLABORATOR + "/request_selling";
+        private static final String v4_handler = MODERATOR + "/request_selling";
 
         public static final String V2_LIST_REQUEST = v2_handler + "/list";
         public static final String V2_UPDATE_REQUEST = v2_handler + "/update";
         public static final String V3_CREATE_REQUEST = v3_handler + "/update";
         public static final String V3_LIST_REQUEST = v3_handler + "/list";
         public static final String V3_GET_OWNER_REQUEST = v3_handler + "/update";
+
+//        public static final String V4_LIST_REQUEST = v4_ha
     }
 
     public static class Order {
@@ -215,6 +218,9 @@ public class ApiEndPoint {
         public static final String V2_TRANSACTION_UPDATE = v2_handler + "/update";
         public static final String V2_TRANSACTION_CREATE = v2_handler + "/list";
         public static final String V2_TRANSACTION_DELETE = v2_handler + "/delete";
+
+        public static final String V4_TRANSACTION_LIST = v4_handler + "/list";
+        public static final String V4_TRANSACTION_HANDLER = v4_handler + "/handler";
 
     }
 

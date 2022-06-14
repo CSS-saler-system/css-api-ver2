@@ -1,5 +1,6 @@
 package com.springframework.csscapstone.services.impl;
 
+import com.springframework.csscapstone.data.dao.specifications.TransactionSpecifications;
 import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.BillImage;
 import com.springframework.csscapstone.data.domain.Transactions;
@@ -22,10 +23,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -49,7 +52,12 @@ public class TransactionServicesImpl implements TransactionServices {
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     @Override
-    public PageImplResDto<TransactionsResDto> getAllTransaction(Integer pageNumber, Integer pageSize) {
+    public PageImplResDto<TransactionsResDto> getAllTransaction(
+            LocalDateTime createDate, LocalDateTime modifiedDate,
+            Integer pageNumber, Integer pageSize) {
+
+//        Specification
+//                .where(Objects.isNull(createDate) ? null : TransactionSpecifications.)
 
         pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 10 : pageSize;

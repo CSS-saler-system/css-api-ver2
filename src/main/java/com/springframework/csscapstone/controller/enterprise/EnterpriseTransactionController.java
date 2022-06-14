@@ -1,5 +1,6 @@
 package com.springframework.csscapstone.controller.enterprise;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springframework.csscapstone.config.constant.MessageConstant;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -44,9 +46,22 @@ public class EnterpriseTransactionController {
 
     @GetMapping(V2_TRANSACTION_LIST)
     public ResponseEntity<?> getAllTransactionExcludeDisableStatus(
+            @RequestParam(value = "start_date", required = false, defaultValue = "06/08/1999 00:00:00")
+            @JsonFormat(
+                    shape = JsonFormat.Shape.STRING,
+                    pattern = "MM-dd-yyyy hh:mm:ss",
+                    timezone = "America/New_York")
+            LocalDateTime createDate,
+            @RequestParam(value = "modified_date", required = false, defaultValue = "06/08/1999 00:00:00")
+            @JsonFormat(
+                    shape = JsonFormat.Shape.STRING,
+                    pattern = "MM-dd-yyyy hh:mm:ss",
+                    timezone = "America/New_York")
+            LocalDateTime modifiedDate,
             @RequestParam(value = "page_number", required = false) Integer pageNumber,
             @RequestParam(value = "page_size", required = false) Integer pageSize) {
-        return ok(transactionServices.getAllTransaction(pageNumber, pageSize));
+        return ok(transactionServices.getAllTransaction(createDate,
+                modifiedDate, pageNumber, pageSize));
     }
 
     @GetMapping(V2_TRANSACTION_GET + "/{id}")
