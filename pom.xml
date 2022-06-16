@@ -95,7 +95,7 @@
         <dependency>
             <groupId>com.google.firebase</groupId>
             <artifactId>firebase-admin</artifactId>
-            <version>8.1.0</version>
+            <version>8.2.0</version>
         </dependency>
         <!--End Firebase authentication-->
         <!--Other dependencies-->
@@ -123,28 +123,21 @@
             <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
         <!-- end Jackson -->
-        <!-- Common File Upload-->
-<!--        <dependency>-->
-<!--            <groupId>commons-fileupload</groupId>-->
-<!--            <artifactId>commons-fileupload</artifactId>-->
-<!--            <version>1.4</version>-->
-<!--        </dependency>-->
-        <!-- End Common File Upload-->
         <!-- Start Web Socket-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
-            <version>2.6.7</version>
+            <version>2.7.0</version>
         </dependency>
         <!-- End Web Socket-->
     </dependencies>
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.springframework.boot</groupId>-->
+<!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
+<!--            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

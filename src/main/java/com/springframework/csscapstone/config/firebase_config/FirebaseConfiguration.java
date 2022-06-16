@@ -22,7 +22,7 @@ import java.nio.file.Paths;
 public class FirebaseConfiguration {
     private final Logger LOGGER = LoggerFactory.getLogger(FirebaseConfiguration.class);
 
-    @Value("${firebase.file.configuration}")
+    @Value("${firebase.file.configuration}") //C:\Users\ductlm\Downloads\firebase_config.json
     private String configurationFile;
 
     @PostConstruct

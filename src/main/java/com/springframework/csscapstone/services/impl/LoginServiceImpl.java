@@ -53,9 +53,9 @@ public class LoginServiceImpl implements LoginService {
         Optional<Account> accountByEmail = accountRepository.findAccountByEmail(email);
         if (accountByEmail.isPresent()) {
             return accountByEmail.map(account -> new WebUserDetail(account,
-                    this.jwtTokenProvider
-                            .generateJwtTokenForCollaborator(account.getRole().getName(),
-                            account.getEmail())))
+                            this.jwtTokenProvider
+                                    .generateJwtTokenForCollaborator(account.getRole().getName(),
+                                            account.getEmail())))
                     .get();
         }
         Account account = new Account().setEmail(email);
@@ -83,15 +83,15 @@ public class LoginServiceImpl implements LoginService {
         Optional<Account> accountByPhoneNumber = accountRepository.findAccountsByPhone(phone);
         if (accountByPhoneNumber.isPresent()) {
             return accountByPhoneNumber.map(account -> new AppUserDetail(account, this.jwtTokenProvider
-                            .generateJwtTokenForCollaborator(account.getRole().getName(), account.getPhone()))).get();
+                    .generateJwtTokenForCollaborator(account.getRole().getName(), account.getPhone()))).get();
         }
         Account account = new Account().setPhone(phone);
         account.addRole(this.roleRepository.getById("ROLE_3"));
         Account savedAccount = accountRepository.save(account);
 
         return new AppUserDetail(savedAccount, jwtTokenProvider.generateJwtTokenForCollaborator(
-                        savedAccount.getRole().getName(),
-                        savedAccount.getPhone()));
+                savedAccount.getRole().getName(),
+                savedAccount.getPhone()));
     }
 
     private AccountLoginWithEmailException getAccountLoginWithEmailException() {
