@@ -2,6 +2,7 @@ package com.springframework.csscapstone.controller.admin;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.firebase.auth.FirebaseAuthException;
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
@@ -80,7 +81,7 @@ public class AdminAccountController {
             @RequestPart(value = "avatar", required = false)  MultipartFile avatars,
             @RequestPart(value = "license", required = false) MultipartFile licenses,
             @RequestPart(value = "id_card", required = false) MultipartFile idCards)
-            throws AccountExistException, AccountNotFoundException, JsonProcessingException {
+            throws AccountExistException, AccountNotFoundException, JsonProcessingException, FirebaseAuthException {
         AccountCreatorReqDto accountCreatorReqDto = new ObjectMapper().readValue(dto, AccountCreatorReqDto.class);
         UUID account = service.createAccount(accountCreatorReqDto, avatars, licenses, idCards);
         return ok(account);

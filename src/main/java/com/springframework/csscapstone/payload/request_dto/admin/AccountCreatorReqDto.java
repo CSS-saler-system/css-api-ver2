@@ -16,7 +16,6 @@ import java.time.LocalDate;
 
 @Data
 public class AccountCreatorReqDto {
-
     @NotEmpty(message = "The name must be not empty")
     private final String name;
 

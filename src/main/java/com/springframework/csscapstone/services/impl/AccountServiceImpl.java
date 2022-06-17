@@ -1,5 +1,8 @@
 package com.springframework.csscapstone.services.impl;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.UserRecord;
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.dao.specifications.AccountSpecifications;
 import com.springframework.csscapstone.data.dao.specifications.RoleSpecification;
@@ -36,6 +39,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,6 +68,8 @@ public class AccountServiceImpl implements AccountService {
     private final OrderRepository orderRepository;
     private final CampaignRepository campaignRepository;
     private final ProductRepository productRepository;
+
+    private final FirebaseAuth firebaseAuth;
 
     private final Logger LOGGER = LoggerFactory.getLogger(CategoryServiceImpl.class);
 
@@ -152,6 +158,27 @@ public class AccountServiceImpl implements AccountService {
 
     }
 
+    //    @Async
+    private void saveAccountOnFirebase(String email, String phone) throws FirebaseAuthException {
+        //check email or phone is null:
+        if (StringUtils.isNotEmpty(email) && StringUtils.isNotEmpty(phone)) {
+            LOGGER.info("This is email and phone: {} - {}", email, phone);
+            this.accountRepository.findAccountByPhone(phone)
+                    .ifPresent(acc -> {
+                        throw new RuntimeException("Phone was duplicate");
+                    });
+            UserRecord.CreateRequest createRequest = new UserRecord.CreateRequest()
+                    .setEmail(email)
+                    .setPhoneNumber(phone)
+                    .setEmailVerified(true);
+
+
+            FirebaseAuth.getInstance().createUser(createRequest);
+            return;
+        }
+        throw new RuntimeException("Phone or Email must not be null");
+    }
+
     /**
      * TODO Using By Admin creates Account
      *
@@ -161,8 +188,16 @@ public class AccountServiceImpl implements AccountService {
      */
     @Transactional
     @Override
-    public UUID createAccount(AccountCreatorReqDto dto, MultipartFile avatar, MultipartFile licenses, MultipartFile idCards)
-            throws AccountExistException {
+    public UUID createAccount(
+            AccountCreatorReqDto dto, MultipartFile avatar,
+            MultipartFile licenses, MultipartFile idCards)
+            throws AccountExistException, FirebaseAuthException {
+        String phone = "";
+        //check email existed
+        this.accountRepository.findAccountByEmail(dto.getEmail())
+                .ifPresent(acc -> {
+                    throw new RuntimeException("Duplication Email!!!");
+                });
 
         //TODO check ROlE null <BUG>
         Specification.where(RoleSpecification.equalNames(StringUtils.isEmpty(dto.getRole()) ||
@@ -171,18 +206,30 @@ public class AccountServiceImpl implements AccountService {
         Role role = roleRepository
                 .findAllByName(dto.getRole()).get();
 
+        //set phone number follow pattern +23453
+        if (StringUtils.isNotEmpty(dto.getPhone())) {
+            phone = "+84" + StringUtils.substring(dto.getPhone(), 1);
+        }
+
         Account account = new Account()
                 .setName(dto.getName()).setAddress(dto.getAddress())
                 .setDob(dto.getDayOfBirth())
-                .setPhone(dto.getPhone())
+                .setPhone(phone)
                 .setEmail(dto.getEmail())
                 .setPassword(passwordEncoder.encode(dto.getPassword()))
                 .setDescription(dto.getDescription())
                 .setGender(dto.getGender()).setRole(role);
+
+        //save on firebase
+        //create Thread handling this
+        saveAccountOnFirebase(account.getEmail(), phone);
+
+        //save to get
         Account saved = accountRepository.save(account);
+        LOGGER.info("This is phone {}", phone);
 
+        //create Thread handling
         Account _account = imageHandler(avatar, licenses, idCards, saved);
-
         return this.accountRepository.save(_account).getId();
     }
 

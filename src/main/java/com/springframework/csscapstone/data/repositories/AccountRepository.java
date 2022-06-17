@@ -18,10 +18,12 @@ import java.util.UUID;
 public interface AccountRepository extends JpaRepository<Account, UUID>, JpaSpecificationExecutor<Account> {
 //    Optional<Account> findAccountByUsername(String username);
 
+    Optional<Account> findAccountByEmail(String email);
+    Optional<Account> findAccountByPhone(String phone);
     @Query(value = "SELECT a FROM Account a WHERE a.role.name = :role")
     List<Account> findSingleAccountByRole(@Param("role") String role);
 
-    Optional<Account> findAccountByEmail(String email);
+//    Optional<Account> findAccountByEmail(String email);
 
     Optional<Account> findAccountsByPhone(String phone);
 

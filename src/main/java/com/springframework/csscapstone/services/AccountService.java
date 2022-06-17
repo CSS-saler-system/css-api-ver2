@@ -1,6 +1,7 @@
 package com.springframework.csscapstone.services;
 
 
+import com.google.firebase.auth.FirebaseAuthException;
 import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageEnterpriseResDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
@@ -27,7 +28,7 @@ public interface AccountService {
             AccountCreatorReqDto dto,
             MultipartFile avatar,
             MultipartFile license,
-            MultipartFile idCards) throws AccountExistException, AccountNotFoundException;
+            MultipartFile idCards) throws AccountExistException, AccountNotFoundException, FirebaseAuthException;
 
     UUID updateAccount(AccountUpdaterJsonDto accountUpdaterJsonDto,
                        MultipartFile avatars,
