@@ -47,7 +47,7 @@ public class EnterpriseCollaboratorsController {
         LOGGER.info("The page-number {}", pageNumber);
         LOGGER.info("The page-size {}", pageSize);
         PageImplResDto<CollaboratorResDto> result = this.accountService
-                .collaboratorsOfEnterpriseIncludeNumberOfOrder(enterpriseId, pageNumber, pageSize);
+                .collaboratorsByEnterpriseIncludeNumberOfOrder(enterpriseId, pageNumber, pageSize);
         return ok(result);
     }
 

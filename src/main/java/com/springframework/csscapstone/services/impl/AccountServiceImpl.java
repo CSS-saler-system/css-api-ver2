@@ -39,7 +39,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -279,6 +278,7 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * TODO Update Account for Collaborator
+     *
      * @param dto
      * @return
      * @throws AccountInvalidException
@@ -398,31 +398,29 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public PageImplResDto<AccountResDto> getAllCollaboratorsOfEnterprise(
             UUID idEnterprise, Integer pageNumber, Integer pageSize) {
-//
-//        if (Objects.isNull(idEnterprise)) throw handlerAccountNotFound().get();
-//
-//        pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
-//        pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 1 : pageSize;
-//        //todo get all request selling
-//        Page<RequestSellingProduct> requests = requestSellingProductRepository
-//                .findAllRequestSellingProduct(idEnterprise, RequestStatus.REGISTERED,
-//                        PageRequest.of(pageNumber - 1, pageSize));
-//
-//        //todo convert to Account response Dto
-//        List<AccountResDto> responseDto = requests
-//                .stream()
-//                .map(RequestSellingProduct::getAccount)
-//                .distinct()
-//                //todo Get All account of request except enterprise
-//                .filter(a -> !a.getId().equals(idEnterprise))
-//                .map(MapperDTO.INSTANCE::toAccountResDto)
-//                .collect(toList());
-//
-//        return new PageImplResDto<>(
-//                responseDto, requests.getNumber() + 1,
-//                responseDto.size(), requests.getTotalElements(),
-//                requests.getTotalPages(), requests.isFirst(), requests.isLast());
-        return null;
+
+        if (Objects.isNull(idEnterprise)) throw handlerAccountNotFound().get();
+
+        pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
+        pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 1 : pageSize;
+        //todo get all request selling
+
+        //todo convert to Account response Dto
+        Page<Account> page = requestSellingProductRepository
+                .findAllCollaboratorByRequestSellingProduct(
+                        idEnterprise, RequestStatus.REGISTERED,
+                        PageRequest.of(pageNumber - 1, pageSize));
+
+        List<AccountResDto> responseDto = page.getContent()
+                .stream()
+                .map(MapperDTO.INSTANCE::toAccountResDto)
+                .collect(toList());
+
+        return new PageImplResDto<>(
+                responseDto, page.getNumber() + 1,
+                responseDto.size(), page.getTotalElements(),
+                page.getTotalPages(), page.isFirst(), page.isLast());
+//        return null;
     }
 
     /**
@@ -432,7 +430,7 @@ public class AccountServiceImpl implements AccountService {
      * @return
      */
     @Override
-    public PageImplResDto<CollaboratorResDto> collaboratorsOfEnterpriseIncludeNumberOfOrder(
+    public PageImplResDto<CollaboratorResDto> collaboratorsByEnterpriseIncludeNumberOfOrder(
             UUID idEnterprise, Integer pageNumber, Integer pageSize) {
 
         if (Objects.isNull(idEnterprise)) throw handlerAccountNotFound().get();
@@ -441,7 +439,7 @@ public class AccountServiceImpl implements AccountService {
         pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 1 : pageSize;
 
         Page<Tuple> page = this.orderRepository
-                .sortCollaboratorSold(idEnterprise, PageRequest.of(pageNumber - 1, pageSize));
+                .sortedPageCollaboratorByQuantitySelling(idEnterprise, PageRequest.of(pageNumber - 1, pageSize));
 
         List<CollaboratorResDto> result = page.getContent()
                 .stream()
@@ -469,10 +467,10 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public List<CollaboratorResDto> collaboratorMappingCampaign(UUID campaign) {
         Map<UUID, Long> collaboratorProduct = new HashMap<>();
+
         Campaign campaignEntity = this.campaignRepository
                 .findById(campaign)
                 .orElseThrow(handlerCampaignNotFoundException());
-
 
         List<UUID> productId = Stream.of(campaignEntity)
                 .flatMap(_campaign -> _campaign.getProducts().stream())
@@ -489,7 +487,7 @@ public class AccountServiceImpl implements AccountService {
 
         if (checkConstraintAccount) throw handlerInvalidCampaignAndProduct().get();
 
-        //case list uuid not empty
+        //todo main handle: case list uuid not empty
         for (UUID id : productId) {
             Map<UUID, Long> _tmp = this.orderRepository.getCollaboratorAndTotalQuantitySold(id)
                     .stream().collect(Collectors.toMap(
@@ -504,9 +502,10 @@ public class AccountServiceImpl implements AccountService {
         }
         return collaboratorProduct
                 .entrySet().stream()
-                .map(entry -> CollaboratorResMapperDTO.INSTANCE.toCollaboratorResDto(
-                        this.accountRepository.findById(entry.getKey()).orElse(null),
-                        entry.getValue()))
+                .map(entry -> CollaboratorResMapperDTO.INSTANCE
+                        .toCollaboratorResDto(
+                                this.accountRepository.findById(entry.getKey()).orElse(null),
+                                entry.getValue()))
                 .sorted(Comparator.comparing(CollaboratorResDto::getTotalSold).reversed())
                 .collect(toList());
     }

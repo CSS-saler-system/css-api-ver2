@@ -4,7 +4,6 @@ import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.Order;
 import com.springframework.csscapstone.data.status.OrderStatus;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -46,7 +45,7 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
                     "AND o.status = 'FINISH'" +
                     "GROUP BY col.id " +
                     "ORDER BY sum(od.quantity) DESC")
-    Page<Tuple> sortCollaboratorSold(@Param("enterpriseId") UUID enterpriseId, Pageable pageable);
+    Page<Tuple> sortedPageCollaboratorByQuantitySelling(@Param("enterpriseId") UUID enterpriseId, Pageable pageable);
 
     //todo for mapping: get account then quantity and sort asc
     @Query(

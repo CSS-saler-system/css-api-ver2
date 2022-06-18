@@ -44,7 +44,7 @@ public interface AccountService {
             UUID idEnterprise, Integer pageNumber, Integer pageSize);
 
     //    UUID createAccount(AccountDto dto);
-    PageImplResDto<CollaboratorResDto> collaboratorsOfEnterpriseIncludeNumberOfOrder(
+    PageImplResDto<CollaboratorResDto> collaboratorsByEnterpriseIncludeNumberOfOrder(
             UUID idEnterprise, Integer pageNumber, Integer pageSize);
 
     List<CollaboratorResDto> collaboratorMappingCampaign(UUID campaign);
