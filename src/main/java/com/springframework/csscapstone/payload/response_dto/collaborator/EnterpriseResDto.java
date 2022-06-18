@@ -3,6 +3,10 @@ package com.springframework.csscapstone.payload.response_dto.collaborator;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.springframework.csscapstone.data.status.AccountImageType;
 import lombok.Data;
 
@@ -20,7 +24,9 @@ public class EnterpriseResDto implements Serializable {
     private final String address;
     private final String description;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonFormat(pattern = "yyyy/MM/dd")
     private final LocalDate dob;
 
     private final List<AccountImageDto> avatar;
