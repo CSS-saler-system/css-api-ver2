@@ -278,8 +278,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     /**
-     * TODO Update Account No Images
-     *
+     * TODO Update Account for Collaborator
      * @param dto
      * @return
      * @throws AccountInvalidException
@@ -289,7 +288,8 @@ public class AccountServiceImpl implements AccountService {
     public UUID updateAccount(AccountUpdaterJsonDto dto,
                               MultipartFile avatars,
                               MultipartFile licenses,
-                              MultipartFile idCards) throws AccountInvalidException {
+                              MultipartFile idCards)
+            throws AccountInvalidException {
         //check exist entity
         Account entity = accountRepository.findById(dto.getId())
                 .orElseThrow(handlerAccountInvalid());
@@ -297,7 +297,6 @@ public class AccountServiceImpl implements AccountService {
         //update entity
         entity.setName(dto.getName())
                 .setEmail(dto.getEmail())
-                .setPhone(dto.getPhone())
                 .setDob(dto.getDob())
                 .setAddress(dto.getAddress())
                 .setDescription(dto.getDescription())
@@ -335,6 +334,7 @@ public class AccountServiceImpl implements AccountService {
             this.accountImageRepository.save(image);
             entity.addImage(image);
         });
+
         return entity;
     }
 

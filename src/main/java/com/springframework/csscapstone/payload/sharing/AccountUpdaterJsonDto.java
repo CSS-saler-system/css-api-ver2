@@ -28,9 +28,6 @@ public class AccountUpdaterJsonDto {
     @JsonFormat(pattern = "yyyy/MM/dd")
     private final LocalDate dob;
 
-    @NotEmpty(message = "The phone must not be empty")
-    private final String phone;
-
     @NotEmpty(message = "The email must be not empty")
     private final String email;
 
@@ -41,11 +38,6 @@ public class AccountUpdaterJsonDto {
     private final String description;
     @NotNull(message = "The gender must be not null")
     private final Boolean gender;
-
-    //todo maybe separate following role
-    private AccountImageBasicDto identityImage;
-    private AccountImageBasicDto avatar;
-    private AccountImageBasicDto license;
 
     public AccountUpdaterJsonDto(
             @JsonProperty("id") UUID id,
@@ -59,7 +51,6 @@ public class AccountUpdaterJsonDto {
         this.id = id;
         this.name = name;
         this.dob = dob;
-        this.phone = phone;
         this.email = email;
         this.address = address;
         this.description = description;
@@ -72,7 +63,6 @@ public class AccountUpdaterJsonDto {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", dob=" + dob +
-                ", phone='" + phone + '\'' +
                 ", email='" + email + '\'' +
                 ", address='" + address + '\'' +
                 ", description='" + description + '\'' +

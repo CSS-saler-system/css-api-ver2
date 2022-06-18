@@ -85,7 +85,7 @@ public class LoginServiceImpl implements LoginService {
             return accountByPhoneNumber.map(account -> new AppUserDetail(account, this.jwtTokenProvider
                     .generateJwtTokenForCollaborator(account.getRole().getName(), account.getPhone()))).get();
         }
-        Account account = new Account().setPhone(phone);
+        Account account = new Account().setPhone(phone).setPoint(0.0);
         account.addRole(this.roleRepository.getById("ROLE_3"));
         Account savedAccount = accountRepository.save(account);
 
