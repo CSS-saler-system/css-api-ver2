@@ -63,4 +63,8 @@ public class AccountImage {
                 ", path='" + path + '\'' +
                 '}';
     }
+
+    public static AccountImage emptyInstance(AccountImageType type) {
+        return new AccountImage(type, "");
+    }
 }

@@ -18,6 +18,7 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.springframework.csscapstone.data.status.AccountImageType.*;
 import static javax.persistence.FetchType.LAZY;
 
 @Getter
@@ -121,6 +122,9 @@ public class Account {
     @JoinColumn(name = "role_id")
     private Role role;
 
+    @Transient
+    private Long totalQuantity;
+
     public Account(String name, LocalDate dob, String phone, String email, String address) {
         this.name = name;
         this.dob = dob;
@@ -131,20 +135,28 @@ public class Account {
     @Named("avatar")
     public AccountImage getAvatar() {
         return this.images.stream()
-                .filter(image -> image.getType().equals(AccountImageType.AVATAR))
-                .findFirst().orElse(new AccountImage());
+                .filter(image -> image.getType().equals(AVATAR))
+                .findFirst().orElse(AccountImage.emptyInstance(AVATAR));
     }
     @Named("license")
     public AccountImage getLicense() {
         return this.images.stream()
                 .filter(image -> image.getType().equals(AccountImageType.LICENSE))
-                .findFirst().orElse(new AccountImage());
+                .findFirst().orElse(AccountImage.emptyInstance(LICENSE));
     }
-    @Named("id_card")
+    @Named("idCard")
     public AccountImage getIdCard() {
         return this.images.stream()
                 .filter(image -> image.getType().equals(AccountImageType.ID_CARD))
-                .findFirst().orElse(new AccountImage());
+                .findFirst().orElse(AccountImage.emptyInstance(ID_CARD));
+    }
+
+    public void setTotalQuantity(Long quantity) {
+        this.totalQuantity = quantity;
+    }
+
+    public Long getTotalQuantity() {
+        return totalQuantity;
     }
 
     @Override

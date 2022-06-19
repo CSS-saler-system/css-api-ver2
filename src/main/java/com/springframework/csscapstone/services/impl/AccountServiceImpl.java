@@ -48,6 +48,7 @@ import javax.persistence.Tuple;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -102,7 +103,8 @@ public class AccountServiceImpl implements AccountService {
         pageNumber = Objects.nonNull(pageNumber) && (pageNumber >= 1) ? pageNumber : 1;
         pageSize = Objects.nonNull(pageSize) && (pageSize >= 1) ? pageNumber : 10;
 
-        Page<Account> page = this.accountRepository.findAll(specifications, PageRequest.of(pageNumber - 1, pageSize));
+        Page<Account> page = this.accountRepository.findAll(specifications,
+                PageRequest.of(pageNumber - 1, pageSize));
 
         List<AccountResDto> data = page.stream()
                 .map(MapperDTO.INSTANCE::toAccountResDto)
@@ -432,8 +434,8 @@ public class AccountServiceImpl implements AccountService {
                 .stream()
                 .map(tuple -> this.accountRepository
                         .findById(tuple.get(OrderRepository.COLL_ID, UUID.class))
-                        .map(acc -> CollaboratorResMapperDTO.INSTANCE
-                                .toCollaboratorResDto(acc, tuple.get(OrderRepository.TOTAL_QUANTITY, Long.class))))
+                        .map(peek(acc -> acc.setTotalQuantity(tuple.get(OrderRepository.TOTAL_QUANTITY, Long.class))))
+                        .map(CollaboratorResMapperDTO.INSTANCE::toCollaboratorResDto))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .sorted(Comparator.comparing(CollaboratorResDto::getTotalSold).reversed())
@@ -444,6 +446,7 @@ public class AccountServiceImpl implements AccountService {
                 page.getTotalElements(), page.getTotalPages(),
                 page.isFirst(), page.isLast());
     }
+
 
     /**
      * todo list collaborator sort by quantity he sold
@@ -490,9 +493,9 @@ public class AccountServiceImpl implements AccountService {
         return collaboratorProduct
                 .entrySet().stream()
                 .map(entry -> CollaboratorResMapperDTO.INSTANCE
-                        .toCollaboratorResDto(
-                                this.accountRepository.findById(entry.getKey()).orElse(null),
-                                entry.getValue()))
+                        .toCollaboratorResDto(this.accountRepository.findById(entry.getKey())
+                                .map(peek(acc -> acc.setTotalQuantity(entry.getValue())))
+                                .orElse(null)))
                 .sorted(Comparator.comparing(CollaboratorResDto::getTotalSold).reversed())
                 .collect(toList());
     }
@@ -540,4 +543,10 @@ public class AccountServiceImpl implements AccountService {
                 .collect(toList()));
     }
 
+    private <T> UnaryOperator<T> peek(Consumer<T> consumer) {
+        return x -> {
+            consumer.accept(x);
+            return x;
+        };
+    }
 }
