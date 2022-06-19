@@ -26,8 +26,8 @@ import static org.springframework.http.HttpStatus.OK;
 @RestController
 @RequiredArgsConstructor
 @PropertySource(value = "classpath:application-securities.properties")
-@Tag(name = "Login (User)")
-public class LoginController {
+@Tag(name = "Login (Admin)")
+public class AdminLoginController {
     private final UserDetailsService userDetailsService;
     private final AuthenticationManager authenticationManager;
     private final TokenProvider jwtTokenProvider;
@@ -45,15 +45,6 @@ public class LoginController {
         LOGGER.info("The authentication {}", _principal);
         return new ResponseEntity<>(_principal, jwtHeader, OK);
     }
-
-//    @PostMapping(USER_OPEN_LOGIN)
-//    public ResponseEntity<?> openLogin(@RequestParam String firebaseToken)
-//            throws FirebaseAuthException, AccountLoginWithEmailException {
-//        UserDetails _principal = this.loginService.enterpriseLoginByFirebaseService(firebaseToken);
-//
-//        HttpHeaders jwtHeader = getHeader(_principal);
-//        return new ResponseEntity<>(_principal, jwtHeader, OK);
-//    }
 
     private void authentication(String email, String password) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));

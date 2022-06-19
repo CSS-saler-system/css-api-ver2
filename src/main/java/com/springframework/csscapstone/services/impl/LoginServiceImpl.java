@@ -52,11 +52,9 @@ public class LoginServiceImpl implements LoginService {
 
         Optional<Account> accountByEmail = accountRepository.findAccountByEmail(email);
         if (accountByEmail.isPresent()) {
-            return accountByEmail.map(account -> new WebUserDetail(account,
-                            this.jwtTokenProvider
-                                    .generateJwtTokenForCollaborator(account.getRole().getName(),
-                                            account.getEmail())))
-                    .get();
+            return accountByEmail
+                    .map(account -> new WebUserDetail(account, this.jwtTokenProvider
+                            .generateJwtTokenForCollaborator(account.getRole().getName(), account.getEmail()))).get();
         }
         Account account = new Account().setEmail(email);
         account.addRole(this.roleRepository.getById("ROLE_2"));

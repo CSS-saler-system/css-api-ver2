@@ -3,6 +3,8 @@ package com.springframework.csscapstone.config.security.services.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.springframework.csscapstone.data.domain.Account;
+import com.springframework.csscapstone.data.domain.AccountImage;
+import com.springframework.csscapstone.data.status.AccountImageType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,8 +20,12 @@ import java.util.stream.Stream;
 public class AdministrationWebDetail implements UserDetails {
     private final Account account;
 
+
+
     @JsonProperty("id")
-    public UUID getId() {return this.account.getId(); }
+    public UUID getId() {
+        return this.account.getId();
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -27,6 +33,7 @@ public class AdministrationWebDetail implements UserDetails {
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }
+
     @JsonIgnore
     @Override
     public String getPassword() {
@@ -37,7 +44,14 @@ public class AdministrationWebDetail implements UserDetails {
     public String getUsername() {
         return account.getEmail();
     }
-
+    @JsonProperty("avatar")
+    public String getImage() {
+        return account.getImages().
+                stream()
+                .filter(image -> image.getType().equals(AccountImageType.AVATAR))
+                .map(AccountImage::getPath)
+                .findFirst().orElse("");
+    }
     @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {

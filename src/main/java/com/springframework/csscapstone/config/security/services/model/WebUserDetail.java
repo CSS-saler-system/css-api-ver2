@@ -3,7 +3,9 @@ package com.springframework.csscapstone.config.security.services.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.springframework.csscapstone.data.domain.Account;
+import com.springframework.csscapstone.data.domain.AccountImage;
 import com.springframework.csscapstone.data.domain.Role;
+import com.springframework.csscapstone.data.status.AccountImageType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -42,7 +44,14 @@ public class WebUserDetail implements UserDetails {
 
     @JsonProperty("jwt_token")
     public String getJwtToken() {return this.jwt; }
-
+    @JsonProperty("avatar")
+    public String getImage() {
+        return entity.getImages().
+                stream()
+                .filter(image -> image.getType().equals(AccountImageType.AVATAR))
+                .map(AccountImage::getPath)
+                .findFirst().orElse("");
+    }
     @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
