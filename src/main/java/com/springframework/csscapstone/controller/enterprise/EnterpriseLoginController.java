@@ -34,15 +34,11 @@ public class EnterpriseLoginController {
     private String tokenHeader;
 
     @PostMapping(ENTERPRISE_LOGIN)
-    public ResponseEntity<?> openLogin(@RequestParam String firebaseToken) throws FirebaseAuthException {
-        UserDetails userDetails = this.loginService.enterpriseLoginByFirebaseService(firebaseToken);
-        HttpHeaders header = getHeader(userDetails);
-        return new ResponseEntity<>(userDetails, header, HttpStatus.OK);
+    public ResponseEntity<?> openLogin(
+            @RequestParam(name = "loginToken") String firebaseToken,
+            @RequestParam(name = "registrationToken", required = false, defaultValue = "") String registrationToken) throws FirebaseAuthException {
+        UserDetails userDetails = this.loginService.enterpriseLoginByFirebaseService(firebaseToken, registrationToken);
+        return new ResponseEntity<>(userDetails, HttpStatus.OK);
     }
 
-    private HttpHeaders getHeader(UserDetails principal) {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(tokenHeader, jwtTokenProvider.generateJwtToken(principal));
-        return httpHeaders;
-    }
 }

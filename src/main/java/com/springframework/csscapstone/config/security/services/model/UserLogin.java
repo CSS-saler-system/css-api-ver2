@@ -14,10 +14,16 @@ public class UserLogin {
     private final String email;
     @NotEmpty(message = "The password must be not empty")
     private final String password;
-    @JsonCreator
 
-    public UserLogin(@JsonProperty("email") String email, @JsonProperty("password") String password) {
+    private final String registrationToken;
+
+    @JsonCreator
+    public UserLogin(
+            @JsonProperty("email") String email,
+            @JsonProperty("password") String password,
+            @JsonProperty("registrationToken") String registrationToken) {
         this.email = email;
         this.password = password;
+        this.registrationToken = registrationToken;
     }
 }

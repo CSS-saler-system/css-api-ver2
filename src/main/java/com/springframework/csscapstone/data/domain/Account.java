@@ -8,15 +8,11 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Where;
 import org.mapstruct.Named;
 
 import javax.persistence.*;
-import java.awt.*;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.springframework.csscapstone.data.status.AccountImageType.*;
 import static javax.persistence.FetchType.LAZY;
@@ -74,9 +70,8 @@ public class Account {
     @ToString.Exclude
     private List<AccountImage> images = new ArrayList<>();
 
-    @ElementCollection
-    @Column(name = "tokens")
-    private List<String> tokens = new ArrayList<>();
+    @OneToMany(mappedBy = "account")
+    private List<AccountToken> tokens = new ArrayList<>();
 
     @OneToMany(mappedBy = "accountCreator")
     private List<Customer> customerCreatorList = new ArrayList<>();

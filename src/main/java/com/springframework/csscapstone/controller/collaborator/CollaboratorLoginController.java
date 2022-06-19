@@ -44,8 +44,13 @@ public class CollaboratorLoginController {
     private String tokenHeader;
 
     @PostMapping(COLLABORATOR_LOGIN)
-    public ResponseEntity<?> openLogin(@RequestParam String firebaseToken) throws FirebaseAuthException {
-        UserDetails userDetails = this.loginService.collaboratorLoginByFirebaseService(firebaseToken);
+    public ResponseEntity<?> openLogin(
+            @RequestParam(name = "loginToken") String firebaseToken,
+            @RequestParam(name = "registrationToken", required = false, defaultValue = "") String registrationToken)
+            throws FirebaseAuthException {
+
+        UserDetails userDetails = this.loginService.collaboratorLoginByFirebaseService(firebaseToken, registrationToken);
+
         return ok(userDetails);
     }
 

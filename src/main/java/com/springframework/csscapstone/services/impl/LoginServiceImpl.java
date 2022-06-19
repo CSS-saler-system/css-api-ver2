@@ -43,7 +43,7 @@ public class LoginServiceImpl implements LoginService {
      * @throws AccountLoginWithEmailException
      */
     @Override
-    public UserDetails enterpriseLoginByFirebaseService(String firebaseToken)
+    public UserDetails enterpriseLoginByFirebaseService(String firebaseToken, String registrationToken)
             throws FirebaseAuthException, AccountLoginWithEmailException {
 
         FirebaseToken verifiedToken = firebaseAuth.verifyIdToken(firebaseToken);
@@ -53,8 +53,10 @@ public class LoginServiceImpl implements LoginService {
         Optional<Account> accountByEmail = accountRepository.findAccountByEmail(email);
         if (accountByEmail.isPresent()) {
             return accountByEmail
-                    .map(account -> new WebUserDetail(account, this.jwtTokenProvider
-                            .generateJwtTokenForCollaborator(account.getRole().getName(), account.getEmail()))).get();
+                    .map(account -> new WebUserDetail(account,
+                    this.jwtTokenProvider.generateJwtTokenForCollaborator(
+                         account.getRole().getName(),
+                         account.getEmail()))).get();
         }
         Account account = new Account().setEmail(email);
         account.addRole(this.roleRepository.getById("ROLE_2"));
@@ -73,7 +75,7 @@ public class LoginServiceImpl implements LoginService {
      */
     @Transactional
     @Override
-    public UserDetails collaboratorLoginByFirebaseService(String firebaseToken) throws FirebaseAuthException {
+    public UserDetails collaboratorLoginByFirebaseService(String firebaseToken, String registrationToken) throws FirebaseAuthException {
         FirebaseToken verifiedToken = firebaseAuth.verifyIdToken(firebaseToken);
         UserRecord _user = FirebaseAuth.getInstance().getUser(verifiedToken.getUid());
         String phone = _user.getPhoneNumber();
@@ -83,8 +85,9 @@ public class LoginServiceImpl implements LoginService {
             return accountByPhoneNumber.map(account -> new AppUserDetail(account, this.jwtTokenProvider
                     .generateJwtTokenForCollaborator(account.getRole().getName(), account.getPhone()))).get();
         }
+
         Account account = new Account().setPhone(phone).setPoint(0.0);
-        account.addRole(this.roleRepository.getById("ROLE_3"));
+//        account.addRole(this.roleRepository.getById("ROLE_3")).setTokens();
         Account savedAccount = accountRepository.save(account);
 
         return new AppUserDetail(savedAccount, jwtTokenProvider.generateJwtTokenForCollaborator(
@@ -92,7 +95,6 @@ public class LoginServiceImpl implements LoginService {
                 savedAccount.getPhone()));
     }
 
-    private AccountLoginWithEmailException getAccountLoginWithEmailException() {
-        return new AccountLoginWithEmailException(MessagesUtils.getMessage(MessageConstant.Account.FAIL_LOGIN_EMAIL));
-    }
+
+
 }

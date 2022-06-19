@@ -41,19 +41,12 @@ public class AdminLoginController {
     public ResponseEntity<UserDetails> login(@RequestBody @Valid UserLogin userLogin) {
         authentication(userLogin.getEmail(), userLogin.getPassword());
         UserDetails _principal = userDetailsService.loadUserByUsername(userLogin.getEmail());
-        HttpHeaders jwtHeader = getHeader(_principal);
         LOGGER.info("The authentication {}", _principal);
-        return new ResponseEntity<>(_principal, jwtHeader, OK);
+        return new ResponseEntity<>(_principal, OK);
     }
 
     private void authentication(String email, String password) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
-    }
-
-    private HttpHeaders getHeader(UserDetails principal) {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(tokenHeader, jwtTokenProvider.generateJwtToken(principal));
-        return httpHeaders;
     }
 
 }

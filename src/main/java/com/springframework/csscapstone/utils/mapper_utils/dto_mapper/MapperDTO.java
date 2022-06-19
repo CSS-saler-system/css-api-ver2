@@ -4,6 +4,7 @@ import com.springframework.csscapstone.data.domain.*;
 import com.springframework.csscapstone.payload.basic.AccountImageBasicDto;
 import com.springframework.csscapstone.payload.basic.ProductImageBasicDto;
 import com.springframework.csscapstone.payload.basic.RoleBasicDto;
+import com.springframework.csscapstone.payload.response_dto.AccountTokenDto;
 import com.springframework.csscapstone.payload.response_dto.admin.AccountResDto;
 import com.springframework.csscapstone.payload.response_dto.admin.CategoryResDto;
 import com.springframework.csscapstone.payload.response_dto.collaborator.CustomerResDto;
@@ -71,8 +72,8 @@ public interface MapperDTO {
     //todo mapper entity to <ProductResponseDTO>
     ProductResDto toProductResDto(Product entity);
 
-    //TODO Admin Role convert to AccountResponseDTO
-//    AccountResDto toAccountResDto(Account entity);
+    AccountTokenDto toAccountTokenDto(AccountToken accountToken);
+
 
 
 

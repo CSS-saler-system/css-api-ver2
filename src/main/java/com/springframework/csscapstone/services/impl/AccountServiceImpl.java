@@ -124,26 +124,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountResDto getById(UUID id) throws AccountInvalidException {
         Account result = accountRepository.findById(id).orElseThrow(handlerAccountNotFound());
-
-//        List<AccountImageBasicDto> avatar = result.getImages().stream()
-//                .filter(x -> x.getType().equals(AccountImageType.AVATAR))
-//                .map(MapperDTO.INSTANCE::toAccountImageResDto)
-//                .collect(toList());
-//
-//        List<AccountImageBasicDto> licenses = result.getImages().stream()
-//                .filter(x -> x.getType().equals(AccountImageType.LICENSE))
-//                .map(MapperDTO.INSTANCE::toAccountImageResDto)
-//                .collect(toList());
-//
-//        List<AccountImageBasicDto> idCard = result.getImages().stream()
-//                .filter(x -> x.getType().equals(AccountImageType.ID_CARD))
-//                .map(MapperDTO.INSTANCE::toAccountImageResDto)
-//                .collect(toList());
-        //        dto.setAvatar(avatar);
-//        dto.setLicenses(licenses);
-//        dto.setIdCard(idCard);
         return MapperDTO.INSTANCE.toAccountResDto(result);
-
     }
 
     //    @Async
@@ -159,8 +140,6 @@ public class AccountServiceImpl implements AccountService {
                     .setEmail(email)
                     .setPhoneNumber(phone)
                     .setEmailVerified(true);
-
-
             FirebaseAuth.getInstance().createUser(createRequest);
             return;
         }
@@ -168,8 +147,10 @@ public class AccountServiceImpl implements AccountService {
     }
 
     /**
-     * TODO Using By Admin creates Account
-     *
+     * TODO <BR>
+     *     Using By Admin creates Account
+     *     Upload information into firebase
+     *     Upload Image into Azure Storage
      * @param dto
      * @return
      * @throws AccountExistException

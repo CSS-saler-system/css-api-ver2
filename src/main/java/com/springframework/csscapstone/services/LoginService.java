@@ -5,10 +5,10 @@ import com.springframework.csscapstone.utils.exception_utils.account_exception.A
 import org.springframework.security.core.userdetails.UserDetails;
 
 public interface LoginService {
-    UserDetails enterpriseLoginByFirebaseService(String firebaseToken)
+    UserDetails enterpriseLoginByFirebaseService(String firebaseToken, String registrationToken)
             throws FirebaseAuthException, AccountLoginWithEmailException;
 
-    UserDetails collaboratorLoginByFirebaseService(String firebaseToken) throws FirebaseAuthException;
+    UserDetails collaboratorLoginByFirebaseService(String firebaseToken, String registrationToken) throws FirebaseAuthException;
 
 //    AppCollaboratorResponse collaboratorLogin(String firebaseToken);
 
