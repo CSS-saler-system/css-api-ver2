@@ -8,13 +8,16 @@ import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.config.security.services.model.AppUserDetail;
 import com.springframework.csscapstone.config.security.services.model.WebUserDetail;
 import com.springframework.csscapstone.data.domain.Account;
+import com.springframework.csscapstone.data.domain.AccountToken;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
+import com.springframework.csscapstone.data.repositories.AccountTokenRepository;
 import com.springframework.csscapstone.data.repositories.RoleRepository;
 import com.springframework.csscapstone.services.LoginService;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountLoginWithEmailException;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import com.springframework.csscapstone.utils.security_provider_utils.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,6 +34,8 @@ public class LoginServiceImpl implements LoginService {
     private final AccountRepository accountRepository;
     private final RoleRepository roleRepository;
     private final JwtTokenProvider jwtTokenProvider;
+
+    private final AccountTokenRepository accountTokenRepository;
 
     /**
      * case 1: user not in DB,
@@ -54,13 +59,21 @@ public class LoginServiceImpl implements LoginService {
         if (accountByEmail.isPresent()) {
             return accountByEmail
                     .map(account -> new WebUserDetail(account,
-                    this.jwtTokenProvider.generateJwtTokenForCollaborator(
-                         account.getRole().getName(),
-                         account.getEmail()))).get();
+                            this.jwtTokenProvider.generateJwtTokenForCollaborator(
+                                    account.getRole().getName(),
+                                    account.getEmail()))).get();
         }
-        Account account = new Account().setEmail(email);
-        account.addRole(this.roleRepository.getById("ROLE_2"));
-        Account savedAccount = accountRepository.save(account);
+        Account account = new Account().setEmail(email).setPoint(0.0);
+
+
+        if (StringUtils.isNotEmpty(registrationToken) || !registrationToken.equals("string")) {
+            AccountToken token = new AccountToken(registrationToken);
+            AccountToken savedToken = this.accountTokenRepository.save(token);
+            account.addRegistration(savedToken);
+        }
+
+        Account savedAccount = accountRepository.save(account
+                .addRole(this.roleRepository.getById("ROLE_2")));
 
         return new WebUserDetail(savedAccount, this.jwtTokenProvider.generateJwtTokenForCollaborator(
                 account.getRole().getName(),
@@ -87,14 +100,21 @@ public class LoginServiceImpl implements LoginService {
         }
 
         Account account = new Account().setPhone(phone).setPoint(0.0);
-//        account.addRole(this.roleRepository.getById("ROLE_3")).setTokens();
+
+        if (StringUtils.isNotEmpty(registrationToken) || !registrationToken.equals("string")) {
+            AccountToken token = new AccountToken(registrationToken);
+            AccountToken savedToken = this.accountTokenRepository.save(token);
+            account.addRegistration(savedToken);
+        }
+
+        account.addRole(this.roleRepository.getById("ROLE_3"));
+
         Account savedAccount = accountRepository.save(account);
 
         return new AppUserDetail(savedAccount, jwtTokenProvider.generateJwtTokenForCollaborator(
                 savedAccount.getRole().getName(),
                 savedAccount.getPhone()));
     }
-
 
 
 }

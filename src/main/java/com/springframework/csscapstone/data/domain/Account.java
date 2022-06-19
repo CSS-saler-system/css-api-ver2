@@ -208,8 +208,12 @@ public class Account {
     }
 
     //=================Utils=========================
-    //=================Request=======================
-
+    //=================Token=======================
+    public Account addRegistration(AccountToken registrationToken) {
+        this.getTokens().add(registrationToken);
+        registrationToken.setAccount(this);
+        return this;
+    }
 
     //=================Utils=========================
     //=================Campaign Prizes===============

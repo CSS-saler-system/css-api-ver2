@@ -37,6 +37,7 @@ public class AccountToken {
     @ToString.Exclude
     private Account account;
 
-
-
+    public AccountToken(String registrationToken) {
+        this.registrationToken = registrationToken;
+    }
 }
