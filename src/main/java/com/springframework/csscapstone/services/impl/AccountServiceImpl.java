@@ -101,7 +101,7 @@ public class AccountServiceImpl implements AccountService {
                 .and(StringUtils.isNotBlank(email) ? AccountSpecifications.emailEquals(email) : null);
 
         pageNumber = Objects.nonNull(pageNumber) && (pageNumber >= 1) ? pageNumber : 1;
-        pageSize = Objects.nonNull(pageSize) && (pageSize >= 1) ? pageNumber : 10;
+        pageSize = Objects.nonNull(pageSize) && (pageSize >= 1) ? pageSize : 10;
 
         Page<Account> page = this.accountRepository.findAll(specifications,
                 PageRequest.of(pageNumber - 1, pageSize));
