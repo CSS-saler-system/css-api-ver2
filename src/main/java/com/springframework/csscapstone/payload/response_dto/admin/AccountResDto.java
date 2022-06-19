@@ -21,7 +21,7 @@ public class AccountResDto implements Serializable {
     private final String name;
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy/MM/dd")
     private final LocalDate dob;
     private final String phone;
     private final String email;
@@ -30,9 +30,9 @@ public class AccountResDto implements Serializable {
     private final Boolean gender;
     private final Double point;
 
-    private List<AccountImageBasicDto> avatar;
-    private List<AccountImageBasicDto> licenses;
-    private List<AccountImageBasicDto> idCard;
+    private final AccountImageBasicDto avatar;
+    private final AccountImageBasicDto licenses;
+    private final AccountImageBasicDto idCard;
     private final RoleBasicDto role;
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public AccountResDto(
@@ -45,7 +45,10 @@ public class AccountResDto implements Serializable {
             @JsonProperty("description") String description,
             @JsonProperty("gender") Boolean gender,
             @JsonProperty("point") Double point,
-            @JsonProperty("role") RoleBasicDto role) {
+            @JsonProperty("role") RoleBasicDto role,
+            @JsonProperty("avatar") AccountImageBasicDto avatar,
+            @JsonProperty("avatar") AccountImageBasicDto licenses,
+            @JsonProperty("avatar") AccountImageBasicDto idCard) {
         this.id = id;
         this.name = name;
         this.dob = dob;
@@ -56,6 +59,9 @@ public class AccountResDto implements Serializable {
         this.gender = gender;
         this.point = point;
         this.role = role;
+        this.avatar = avatar;
+        this.licenses = licenses;
+        this.idCard = idCard;
     }
 
 

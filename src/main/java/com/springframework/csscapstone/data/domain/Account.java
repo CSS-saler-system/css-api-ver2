@@ -1,6 +1,7 @@
 package com.springframework.csscapstone.data.domain;
 
 
+import com.springframework.csscapstone.data.status.AccountImageType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,10 +9,14 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Where;
+import org.mapstruct.Named;
 
 import javax.persistence.*;
+import java.awt.*;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static javax.persistence.FetchType.LAZY;
 
@@ -109,13 +114,6 @@ public class Account {
     @OneToMany(mappedBy = "account")
     private List<Order> orders = new ArrayList<>();
 
-//    @ManyToMany
-//    @JoinTable(name = "account_request",
-//            joinColumns = @JoinColumn(name = "account_id"),
-//            inverseJoinColumns = @JoinColumn(name = "request_id"))
-//    @ToString.Exclude
-//    private Set<RequestSellingProduct> requests = new HashSet<>();
-
     @OneToMany(mappedBy = "account")
     private List<RequestSellingProduct> requests = new ArrayList<>();
 
@@ -129,6 +127,24 @@ public class Account {
         this.phone = phone;
         this.email = email;
         this.address = address;
+    }
+    @Named("avatar")
+    public AccountImage getAvatar() {
+        return this.images.stream()
+                .filter(image -> image.getType().equals(AccountImageType.AVATAR))
+                .findFirst().orElse(new AccountImage());
+    }
+    @Named("license")
+    public AccountImage getLicense() {
+        return this.images.stream()
+                .filter(image -> image.getType().equals(AccountImageType.LICENSE))
+                .findFirst().orElse(new AccountImage());
+    }
+    @Named("id_card")
+    public AccountImage getIdCard() {
+        return this.images.stream()
+                .filter(image -> image.getType().equals(AccountImageType.ID_CARD))
+                .findFirst().orElse(new AccountImage());
     }
 
     @Override

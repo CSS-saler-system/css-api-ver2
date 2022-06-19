@@ -19,6 +19,9 @@ public interface CollaboratorResMapperDTO {
     @Mapping(target = "gender", source = "account.gender")
     @Mapping(target = "point", source = "account.point")
     @Mapping(target = "imageBasicDto", source = "account.images")
+    @Mapping(target = "avatar", source = "avatar")
+    @Mapping(target = "license", source = "license")
+    @Mapping(target = "idCard", source = "idCard")
     @Mapping(target = "totalSold", source = "totalQuantity")
     CollaboratorResDto toCollaboratorResDto(Account account, Long totalQuantity);
 

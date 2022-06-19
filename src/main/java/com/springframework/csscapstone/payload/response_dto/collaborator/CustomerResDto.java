@@ -25,7 +25,7 @@ public class CustomerResDto implements Serializable {
 
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy/MM/dd")
     private final LocalDate dob;
 
     private final AccountCreatorDto accountCreator;

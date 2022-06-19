@@ -12,7 +12,6 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -29,7 +28,9 @@ public class EnterpriseResDto implements Serializable {
     @JsonFormat(pattern = "yyyy/MM/dd")
     private final LocalDate dob;
 
-    private final List<AccountImageDto> avatar;
+    private final AccountImageDto avatar;
+    private final AccountImageDto license;
+    private final AccountImageDto idCard;
 
     public EnterpriseResDto(
             @JsonProperty("id") UUID id,
@@ -39,7 +40,9 @@ public class EnterpriseResDto implements Serializable {
             @JsonProperty("address") String address,
             @JsonProperty("description") String description,
             @JsonProperty("dob") LocalDate dob,
-            @JsonProperty("avatars") List<AccountImageDto> avatar) {
+            @JsonProperty("avatars") AccountImageDto avatar,
+            @JsonProperty("licenses") AccountImageDto license,
+            @JsonProperty("idCard") AccountImageDto idCard) {
         this.id = id;
         this.name = name;
         this.phone = phone;
@@ -48,6 +51,8 @@ public class EnterpriseResDto implements Serializable {
         this.description = description;
         this.dob = dob;
         this.avatar = avatar;
+        this.license = license;
+        this.idCard = idCard;
     }
 
     @Data

@@ -11,6 +11,7 @@ import com.springframework.csscapstone.payload.response_dto.collaborator.Enterpr
 import com.springframework.csscapstone.payload.response_dto.collaborator.OrderDetailResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.*;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
@@ -30,6 +31,9 @@ public interface MapperDTO {
 
     //========================= End Role ========================
 
+    @Mapping(target = "avatar", source = "avatar")
+    @Mapping(target = "licenses", source = "license")
+    @Mapping(target = "idCard", source = "idCard")
     AccountResDto toAccountResDto(Account entity);
 
     CampaignResDto toCampaignResDto(Campaign entity);
@@ -53,10 +57,17 @@ public interface MapperDTO {
     //TODO [ROLE] - Collaborator
     CustomerResDto toCustomerResDto(Customer entity);
 
+    @Mapping(target = "avatar", source = "avatar")
+    @Mapping(target = "license", source = "license")
+    @Mapping(target = "idCard", source = "idCard")
     EnterpriseResDto toEnterpriseResDto(Account entity);
 
     //todo mapper entity to <ENTERPRISE_DTO>
+    @Mapping(target = "avatar", source = "avatar")
+    @Mapping(target = "license", source = "license")
+    @Mapping(target = "idCard", source = "idCard")
     EnterpriseResDto toEnterpriseDto(Account entity);
+
     //todo mapper entity to <ProductResponseDTO>
     ProductResDto toProductResDto(Product entity);
 

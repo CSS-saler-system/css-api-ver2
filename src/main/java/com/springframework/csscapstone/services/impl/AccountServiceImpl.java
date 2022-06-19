@@ -93,28 +93,19 @@ public class AccountServiceImpl implements AccountService {
      */
     @Override
     public PageImplResDto<AccountResDto> getAccountDto(String name, String phone, String email, String address, Integer pageSize, Integer pageNumber) {
+
         Specification<Account> specifications = Specification
                 .where(Objects.nonNull(name) ? AccountSpecifications.nameContains(name) : null)
                 .and(StringUtils.isNotBlank(phone) ? AccountSpecifications.phoneEquals(phone) : null)
                 .and(StringUtils.isNotBlank(email) ? AccountSpecifications.emailEquals(email) : null);
+
         pageNumber = Objects.nonNull(pageNumber) && (pageNumber >= 1) ? pageNumber : 1;
         pageSize = Objects.nonNull(pageSize) && (pageSize >= 1) ? pageNumber : 10;
-
-        List<AccountImageBasicDto> avatar = new ArrayList<>();
-        List<AccountImageBasicDto> licenses = new ArrayList<>();
-        List<AccountImageBasicDto> idCard = new ArrayList<>();
-
 
         Page<Account> page = this.accountRepository.findAll(specifications, PageRequest.of(pageNumber - 1, pageSize));
 
         List<AccountResDto> data = page.stream()
-                .peek(avatarConsumer(avatar, AccountImageType.AVATAR))
-                .peek(avatarConsumer(licenses, AccountImageType.LICENSE))
-                .peek(avatarConsumer(idCard, AccountImageType.ID_CARD))
                 .map(MapperDTO.INSTANCE::toAccountResDto)
-                .peek(dto -> dto.setAvatar(avatar))
-                .peek(dto -> dto.setLicenses(licenses))
-                .peek(dto -> dto.setIdCard(idCard))
                 .collect(toList());
 
         return new PageImplResDto<>(data, page.getNumber() + 1, data.size(),
@@ -132,28 +123,24 @@ public class AccountServiceImpl implements AccountService {
     public AccountResDto getById(UUID id) throws AccountInvalidException {
         Account result = accountRepository.findById(id).orElseThrow(handlerAccountNotFound());
 
-        List<AccountImageBasicDto> avatar = result.getImages().stream()
-                .filter(x -> x.getType().equals(AccountImageType.AVATAR))
-                .map(MapperDTO.INSTANCE::toAccountImageResDto)
-                .collect(toList());
-
-        List<AccountImageBasicDto> licenses = result.getImages().stream()
-                .filter(x -> x.getType().equals(AccountImageType.LICENSE))
-                .map(MapperDTO.INSTANCE::toAccountImageResDto)
-                .collect(toList());
-
-        List<AccountImageBasicDto> idCard = result.getImages().stream()
-                .filter(x -> x.getType().equals(AccountImageType.ID_CARD))
-                .map(MapperDTO.INSTANCE::toAccountImageResDto)
-                .collect(toList());
-        AccountResDto dto = new AccountResDto(
-                result.getId(), result.getName(), result.getDob(), result.getPhone(), result.getEmail(), result.getAddress(),
-                result.getDescription(), result.getGender(), result.getPoint(),
-                MapperDTO.INSTANCE.toRoleResDto(result.getRole()));
-        dto.setAvatar(avatar);
-        dto.setLicenses(licenses);
-        dto.setIdCard(idCard);
-        return dto;
+//        List<AccountImageBasicDto> avatar = result.getImages().stream()
+//                .filter(x -> x.getType().equals(AccountImageType.AVATAR))
+//                .map(MapperDTO.INSTANCE::toAccountImageResDto)
+//                .collect(toList());
+//
+//        List<AccountImageBasicDto> licenses = result.getImages().stream()
+//                .filter(x -> x.getType().equals(AccountImageType.LICENSE))
+//                .map(MapperDTO.INSTANCE::toAccountImageResDto)
+//                .collect(toList());
+//
+//        List<AccountImageBasicDto> idCard = result.getImages().stream()
+//                .filter(x -> x.getType().equals(AccountImageType.ID_CARD))
+//                .map(MapperDTO.INSTANCE::toAccountImageResDto)
+//                .collect(toList());
+        //        dto.setAvatar(avatar);
+//        dto.setLicenses(licenses);
+//        dto.setIdCard(idCard);
+        return MapperDTO.INSTANCE.toAccountResDto(result);
 
     }
 

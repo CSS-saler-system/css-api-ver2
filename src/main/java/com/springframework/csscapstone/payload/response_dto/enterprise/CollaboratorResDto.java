@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import com.springframework.csscapstone.data.status.AccountImageType;
 import com.springframework.csscapstone.payload.basic.AccountImageBasicDto;
 import lombok.Data;
 
@@ -32,7 +31,9 @@ public class CollaboratorResDto implements Serializable {
     private final String description;
     private final Boolean gender;
     private final Double point;
-    private final List<AccountImageBasicDto> avatar;
+    private final AccountImageBasicDto avatar;
+    private final AccountImageBasicDto licenses;
+    private final AccountImageBasicDto idCard;
     private final Long totalSold;
 
     @JsonCreator(mode = PROPERTIES)
@@ -45,8 +46,9 @@ public class CollaboratorResDto implements Serializable {
             @JsonProperty("description") String description,
             @JsonProperty("gender") Boolean gender,
             @JsonProperty("point") Double point,
-            @JsonProperty("avatar") List<AccountImageBasicDto> imageBasicDto,
-            @JsonProperty("total_sold") Long totalSold) {
+            @JsonProperty("avatar") AccountImageBasicDto avatar,
+            @JsonProperty("license") AccountImageBasicDto license,
+            @JsonProperty("idCard") AccountImageBasicDto idCard, @JsonProperty("total_sold") Long totalSold) {
         this.id = id;
         this.name = name;
         this.dob = dob;
@@ -55,7 +57,9 @@ public class CollaboratorResDto implements Serializable {
         this.description = description;
         this.gender = gender;
         this.point = point;
-        this.avatar = imageBasicDto;
+        this.avatar = avatar;
+        this.licenses = license;
+        this.idCard = idCard;
         this.totalSold = totalSold;
     }
 }
