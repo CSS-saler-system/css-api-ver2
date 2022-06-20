@@ -9,17 +9,17 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
-@Configuration
-@EnableScheduling
-@EnableAsync
+//@Configuration
+//@EnableScheduling
+//@EnableAsync
 @RequiredArgsConstructor
 public class WebScheduler {
     private final CampaignService campaignService;
 
-    @Async
-    @Scheduled(cron = "${cron_time}") // 0 0 0 * * *
-    public void finishCampaignConfiguration() {
-        this.campaignService.scheduleCloseCampaign();
-    }
+//    @Async
+//    @Scheduled(cron = "${cron_time}") // 0 0 0 * * *
+//    public void finishCampaignConfiguration() {
+//        this.campaignService.scheduleCloseCampaign();
+//    }
 
 }
