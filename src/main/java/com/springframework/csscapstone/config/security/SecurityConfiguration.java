@@ -22,7 +22,6 @@ import static com.springframework.csscapstone.config.constant.ApiEndPoint.*;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
-@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final AuthenticationHandlerFilter authenticationHandlerFilter;
