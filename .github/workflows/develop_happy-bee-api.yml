@@ -49,5 +49,5 @@ jobs:
         with:
           app-name: 'happy-bee-api'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_45ECFA0A68F8467B9B60BBD4773A30A4 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_194975FD496B4B428597D8DF16750215 }}
           package: '*.jar'
