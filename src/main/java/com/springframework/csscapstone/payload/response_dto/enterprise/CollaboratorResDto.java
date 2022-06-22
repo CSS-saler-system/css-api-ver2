@@ -48,7 +48,8 @@ public class CollaboratorResDto implements Serializable {
             @JsonProperty("point") Double point,
             @JsonProperty("avatar") AccountImageBasicDto avatar,
             @JsonProperty("license") AccountImageBasicDto license,
-            @JsonProperty("idCard") AccountImageBasicDto idCard, @JsonProperty("total_sold") Long totalSold) {
+            @JsonProperty("idCard") AccountImageBasicDto idCard,
+            @JsonProperty("totalSold") Long totalSold) {
         this.id = id;
         this.name = name;
         this.dob = dob;

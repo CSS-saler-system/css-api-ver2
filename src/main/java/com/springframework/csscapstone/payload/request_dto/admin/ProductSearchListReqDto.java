@@ -30,10 +30,10 @@ public class ProductSearchListReqDto implements Serializable {
             @JsonProperty("name") String name,
             @JsonProperty("brand") String brand,
             @JsonProperty("weight") Double weight,
-            @JsonProperty("quantity") Long quantityInStock,
+            @JsonProperty("quantityInStock") Long quantityInStock,
             @JsonProperty("price") Double price,
-            @JsonProperty("point_sale") Double pointSale,
-            @JsonProperty("product_status") ProductStatus productStatus) {
+            @JsonProperty("pointSale") Double pointSale,
+            @JsonProperty("productStatus") ProductStatus productStatus) {
         this.name = name;
         this.brand = brand;
         this.weight = weight;

@@ -1,5 +1,6 @@
-package com.springframework.csscapstone.payload.request_dto;
+package com.springframework.csscapstone.payload.request_dto.enterprise;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.springframework.csscapstone.data.status.TransactionStatus;
 import com.springframework.csscapstone.payload.basic.BillImageBasicDto;
@@ -11,6 +12,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
+
 @Data
 public class TransactionsUpdateReqDto {
     private final UUID id;
@@ -20,11 +23,12 @@ public class TransactionsUpdateReqDto {
 
     private final TransactionStatus status;
 
+    @JsonCreator(mode = PROPERTIES)
     public TransactionsUpdateReqDto(
             @JsonProperty("id") UUID id,
-            @JsonProperty("bill_images") List<BillImageBasicDto> billImage,
+            @JsonProperty("billImage") List<BillImageBasicDto> billImage,
             @JsonProperty("point") double point,
-            @JsonProperty("accounts") Set<AccountNestedDto> account,
+            @JsonProperty("account") Set<AccountNestedDto> account,
             @JsonProperty("status") TransactionStatus status) {
         this.id = id;
         this.billImage = billImage;
@@ -39,10 +43,25 @@ public class TransactionsUpdateReqDto {
         private final String name;
         private final RoleDto role;
 
+        @JsonCreator(mode = PROPERTIES)
+        public AccountNestedDto(@JsonProperty("id") UUID id, @JsonProperty("name") String name, @JsonProperty("role") RoleDto role) {
+            this.id = id;
+            this.name = name;
+            this.role = role;
+        }
+
         @Data
         public static class RoleDto implements Serializable {
             private final String id;
             private final String name;
+
+            @JsonCreator(mode = PROPERTIES)
+            public RoleDto(
+                    @JsonProperty("id") String id,
+                    @JsonProperty("name") String name) {
+                this.id = id;
+                this.name = name;
+            }
         }
     }
 }

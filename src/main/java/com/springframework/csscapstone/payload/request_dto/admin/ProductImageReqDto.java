@@ -17,8 +17,8 @@ public class ProductImageReqDto implements Serializable {
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public ProductImageReqDto(
-            @JsonProperty Long id,
-            @JsonProperty String path) {
+            @JsonProperty("id") Long id,
+            @JsonProperty("path") String path) {
         this.id = id;
         this.path = path;
     }

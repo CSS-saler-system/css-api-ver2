@@ -22,7 +22,7 @@ public class OrderUpdaterDto implements Serializable {
 
     //    @JsonCreator(mode = PROPERTIES)
     public OrderUpdaterDto(
-            @JsonProperty("id") UUID idCollaborator,
+            @JsonProperty("idCollaborator") UUID idCollaborator,
             @JsonProperty("account") AccountDto account,
             @JsonProperty("customer") CustomerDto customer,
             @JsonProperty("deliveryAddress") String deliveryAddress,

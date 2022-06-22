@@ -17,7 +17,7 @@
     <description>css-capstone</description>
     <properties>
         <java.version>1.8</java.version>
-        <mapstruct.version>1.4.2.Final</mapstruct.version>
+        <mapstruct.version>1.5.1.Final</mapstruct.version>
         <version.mapstruct-lombok>0.2.0</version.mapstruct-lombok>
     </properties>
 
@@ -68,7 +68,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.6.6</version>
+            <version>1.6.9</version>
         </dependency>
         <!--End Open api ui dependencies-->
         <!--Assertj dependencies-->
@@ -114,7 +114,7 @@
         <dependency>
             <groupId>com.azure.spring</groupId>
             <artifactId>spring-cloud-azure-starter-storage-blob</artifactId>
-            <version>4.1.0</version>
+            <version>4.2.0</version>
         </dependency>
         <!--End Azure dependencies-->
         <!-- Jackson -->
@@ -142,8 +142,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
+                    <source>8</source>
+                    <target>8</target>
                     <annotationProcessorPaths>
                         <path>
                             <!-- https://mvnrepository.com/artifact/org.mapstruct/mapstruct-processor -->

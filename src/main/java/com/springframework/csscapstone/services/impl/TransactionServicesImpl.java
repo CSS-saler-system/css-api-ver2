@@ -1,6 +1,5 @@
 package com.springframework.csscapstone.services.impl;
 
-import com.springframework.csscapstone.config.constant.ApiEndPoint;
 import com.springframework.csscapstone.data.dao.specifications.TransactionSpecifications;
 import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.BillImage;
@@ -9,7 +8,7 @@ import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.data.repositories.BillImageRepository;
 import com.springframework.csscapstone.data.repositories.TransactionsRepository;
 import com.springframework.csscapstone.data.status.TransactionStatus;
-import com.springframework.csscapstone.payload.request_dto.TransactionsUpdateReqDto;
+import com.springframework.csscapstone.payload.request_dto.enterprise.TransactionsUpdateReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.TransactionsCreatorReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.TransactionsResDto;

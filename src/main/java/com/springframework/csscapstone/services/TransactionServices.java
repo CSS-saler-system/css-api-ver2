@@ -1,6 +1,6 @@
 package com.springframework.csscapstone.services;
 
-import com.springframework.csscapstone.payload.request_dto.TransactionsUpdateReqDto;
+import com.springframework.csscapstone.payload.request_dto.enterprise.TransactionsUpdateReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.TransactionsCreatorReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.TransactionsResDto;

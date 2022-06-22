@@ -5,9 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.data.status.ProductStatus;
@@ -47,24 +45,24 @@ public class CampaignResDto implements Serializable {
     private final String campaignDescription;
     private final Long kpiSaleProduct;
     private final CampaignStatus campaignStatus;
-    private final List<CampaignPrizeDto> campaignPrizes;
-    private final Set<ProductDto> products;
+    private final List<CampaignPrizeInnerCampaignResDto> campaignPrizes;
+    private final Set<ProductInnerCampaignResDto> products;
 
     @JsonCreator(mode = PROPERTIES)
     public CampaignResDto(
             @JsonProperty("id") UUID id,
             @JsonProperty("name") String name,
             @JsonProperty("image") List<CampaignImageBasicDto> image,
-            @JsonProperty("create_date") LocalDateTime createDate,
-            @JsonProperty("last_modified") LocalDateTime lastModifiedDate,
-            @JsonProperty("start_date") LocalDateTime startDate,
-            @JsonProperty("end_date") LocalDateTime endDate,
-            @JsonProperty("short_description") String campaignShortDescription,
-            @JsonProperty("description") String campaignDescription,
-            @JsonProperty("kpi") Long kpiSaleProduct,
-            @JsonProperty("status") CampaignStatus campaignStatus,
-            @JsonProperty("prizes") List<CampaignPrizeDto> campaignPrizes,
-            @JsonProperty("products") Set<ProductDto> products) {
+            @JsonProperty("createDate") LocalDateTime createDate,
+            @JsonProperty("lastModifiedDate") LocalDateTime lastModifiedDate,
+            @JsonProperty("startDate") LocalDateTime startDate,
+            @JsonProperty("endDate") LocalDateTime endDate,
+            @JsonProperty("campaignShortDescription") String campaignShortDescription,
+            @JsonProperty("campaignDescription") String campaignDescription,
+            @JsonProperty("kpiSaleProduct") Long kpiSaleProduct,
+            @JsonProperty("campaignStatus") CampaignStatus campaignStatus,
+            @JsonProperty("campaignPrizes") List<CampaignPrizeInnerCampaignResDto> campaignPrizes,
+            @JsonProperty("products") Set<ProductInnerCampaignResDto> products) {
         this.id = id;
         this.name = name;
         this.image = image;
@@ -81,12 +79,12 @@ public class CampaignResDto implements Serializable {
     }
 
     @Data
-    public static class CampaignPrizeDto implements Serializable {
+    public static class CampaignPrizeInnerCampaignResDto implements Serializable {
         private final UUID id;
     }
 
     @Data
-    public static class ProductDto implements Serializable {
+    public static class ProductInnerCampaignResDto implements Serializable {
         private final UUID id;
         private final String name;
         private final String brand;
@@ -97,16 +95,16 @@ public class CampaignResDto implements Serializable {
         private final Double pointSale;
         private final ProductStatus productStatus;
 
-        public ProductDto(
+        public ProductInnerCampaignResDto(
                 @JsonProperty("id") UUID id,
                 @JsonProperty("name") String name,
                 @JsonProperty("brand") String brand,
-                @JsonProperty("short_description") String shortDescription,
+                @JsonProperty("shortDescription") String shortDescription,
                 @JsonProperty("description") String description,
-                @JsonProperty("quantity") Long quantityInStock,
+                @JsonProperty("quantityInStock") Long quantityInStock,
                 @JsonProperty("price") Double price,
-                @JsonProperty("point_sale") Double pointSale,
-                @JsonProperty("status") ProductStatus productStatus) {
+                @JsonProperty("pointSale") Double pointSale,
+                @JsonProperty("productStatus") ProductStatus productStatus) {
             this.id = id;
             this.name = name;
             this.brand = brand;

@@ -9,14 +9,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class AccountUpdateConvertor implements Converter<String, CustomerResDto.AccountUpdaterDto> {
+public class AccountUpdateConvertor implements Converter<String, CustomerResDto.AccountUpdaterInnerCustomerResDto> {
 
     private final ObjectMapper objectMapper;
 
     @Override
     @SneakyThrows
-    public CustomerResDto.AccountUpdaterDto convert(String value) {
-        return objectMapper.readValue(value, CustomerResDto.AccountUpdaterDto.class);
+    public CustomerResDto.AccountUpdaterInnerCustomerResDto convert(String value) {
+        return objectMapper.readValue(value, CustomerResDto.AccountUpdaterInnerCustomerResDto.class);
     }
 
 }

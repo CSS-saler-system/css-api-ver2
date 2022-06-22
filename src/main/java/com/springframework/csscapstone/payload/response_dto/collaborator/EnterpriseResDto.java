@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.springframework.csscapstone.data.status.AccountImageType;
+import com.springframework.csscapstone.payload.basic.AccountImageBasicDto;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -28,9 +29,9 @@ public class EnterpriseResDto implements Serializable {
     @JsonFormat(pattern = "yyyy/MM/dd")
     private final LocalDate dob;
 
-    private final AccountImageDto avatar;
-    private final AccountImageDto license;
-    private final AccountImageDto idCard;
+    private final AccountImageBasicDto avatar;
+    private final AccountImageBasicDto license;
+    private final AccountImageBasicDto idCard;
 
     public EnterpriseResDto(
             @JsonProperty("id") UUID id,
@@ -40,9 +41,9 @@ public class EnterpriseResDto implements Serializable {
             @JsonProperty("address") String address,
             @JsonProperty("description") String description,
             @JsonProperty("dob") LocalDate dob,
-            @JsonProperty("avatars") AccountImageDto avatar,
-            @JsonProperty("licenses") AccountImageDto license,
-            @JsonProperty("idCard") AccountImageDto idCard) {
+            @JsonProperty("avatars") AccountImageBasicDto avatar,
+            @JsonProperty("licenses") AccountImageBasicDto license,
+            @JsonProperty("idCard") AccountImageBasicDto idCard) {
         this.id = id;
         this.name = name;
         this.phone = phone;
@@ -55,22 +56,22 @@ public class EnterpriseResDto implements Serializable {
         this.idCard = idCard;
     }
 
-    @Data
-    public static class AccountImageDto implements Serializable {
-        private final UUID id;
-        private final AccountImageType type;
-        private final String path;
-
-        @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-        public AccountImageDto(
-                @JsonProperty("id") UUID id,
-                @JsonProperty("account_type") AccountImageType type,
-                @JsonProperty("path") String path) {
-            this.id = id;
-            this.type = type;
-            this.path = path;
-        }
-    }
+//    @Data
+//    public static class AccountImageDto implements Serializable {
+//        private final UUID id;
+//        private final AccountImageType type;
+//        private final String path;
+//
+//        @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+//        public AccountImageDto(
+//                @JsonProperty("id") UUID id,
+//                @JsonProperty("account_type") AccountImageType type,
+//                @JsonProperty("path") String path) {
+//            this.id = id;
+//            this.type = type;
+//            this.path = path;
+//        }
+//    }
 
     @Override
     public String toString() {

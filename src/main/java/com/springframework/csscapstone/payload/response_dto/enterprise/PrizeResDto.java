@@ -17,10 +17,10 @@ public class PrizeResDto {
     private final String description;
     private final PrizeStatus prizeStatus;
     private final List<PrizeImageDto> prizeImages;
-    private final AccountDto creator;
+    private final AccountInnerPrizeResDto creator;
 
     @Data
-    public static class AccountDto implements Serializable {
+    public static class AccountInnerPrizeResDto implements Serializable {
         private final UUID id;
         private final String name;
     }

@@ -20,10 +20,10 @@ public class OrderDetailResDto implements Serializable {
     @JsonCreator(mode = PROPERTIES)
     public OrderDetailResDto(
             @JsonProperty("id") UUID id,
-            @JsonProperty("name_prodct") String nameProduct,
+            @JsonProperty("nameProduct") String nameProduct,
             @JsonProperty("quantity") Long quantity,
-            @JsonProperty("total_point") Double totalPointProduct,
-            @JsonProperty("total_price") Double totalPriceProduct) {
+            @JsonProperty("totalPointProduct") Double totalPointProduct,
+            @JsonProperty("totalPriceProduct") Double totalPriceProduct) {
         this.id = id;
         this.nameProduct = nameProduct;
         this.quantity = quantity;

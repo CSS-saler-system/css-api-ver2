@@ -15,12 +15,12 @@ public class CategoryResDto implements Serializable {
     private final UUID id;
     private final String categoryName;
     private final CategoryStatus status;
-    private final List<_ProductDto> products;
+    private final List<ProductInnerCategoryResDto> products;
 
     public CategoryResDto(@JsonProperty("id") UUID id,
-                          @JsonProperty("category_name") String categoryName,
+                          @JsonProperty("categoryName") String categoryName,
                           @JsonProperty("status") CategoryStatus status,
-                          @JsonProperty("products") List<_ProductDto> products) {
+                          @JsonProperty("products") List<ProductInnerCategoryResDto> products) {
         this.id = id;
         this.categoryName = categoryName;
         this.status = status;
@@ -28,7 +28,7 @@ public class CategoryResDto implements Serializable {
     }
 
     @Data
-    public static class _ProductDto implements Serializable {
+    public static class ProductInnerCategoryResDto implements Serializable {
         private final UUID id;
         private final String name;
         private final String brand;
@@ -40,16 +40,16 @@ public class CategoryResDto implements Serializable {
         private final ProductStatus productStatus;
         private final List<ProductImageReqDto> image;
 
-        public _ProductDto(@JsonProperty("id") UUID id,
+        public ProductInnerCategoryResDto(@JsonProperty("id") UUID id,
                            @JsonProperty("name") String name,
                            @JsonProperty("brand") String brand,
-                           @JsonProperty("short_description") String shortDescription,
+                           @JsonProperty("shortDescription") String shortDescription,
                            @JsonProperty("description") String description,
                            @JsonProperty("quantity") Long quantityInStock,
                            @JsonProperty("price") Double price,
-                           @JsonProperty("point_sale") Double pointSale,
-                           @JsonProperty("product_status") ProductStatus productStatus,
-                           @JsonProperty("images") List<ProductImageReqDto> image) {
+                           @JsonProperty("pointSale") Double pointSale,
+                           @JsonProperty("productStatus") ProductStatus productStatus,
+                           @JsonProperty("image") List<ProductImageReqDto> image) {
             this.id = id;
             this.name = name;
             this.brand = brand;

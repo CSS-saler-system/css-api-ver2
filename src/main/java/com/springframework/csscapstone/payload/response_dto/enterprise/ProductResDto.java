@@ -2,8 +2,8 @@ package com.springframework.csscapstone.payload.response_dto.enterprise;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.springframework.csscapstone.data.status.ProductImageType;
 import com.springframework.csscapstone.data.status.ProductStatus;
+import com.springframework.csscapstone.payload.basic.ProductImageBasicDto;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -21,9 +21,9 @@ public class ProductResDto implements Serializable {
     private final Double price;
     private final Double pointSale;
     private final ProductStatus productStatus;
-    private final List<CertificationImage> image;
-    private final CategoryDto category;
-    private final AccountDto account;
+    private final List<ProductImageBasicDto> image;
+    private final CategoryInnerProductResDto category;
+    private final AccountInnerProductResDto account;
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public ProductResDto(
@@ -36,9 +36,9 @@ public class ProductResDto implements Serializable {
             @JsonProperty("price") Double price,
             @JsonProperty("pointSale") Double pointSale,
             @JsonProperty("productStatus") ProductStatus productStatus,
-            @JsonProperty("certificationImages") List<CertificationImage> image,
-            @JsonProperty("category") CategoryDto category,
-            @JsonProperty("account") AccountDto account) {
+            @JsonProperty("certificationImages") List<ProductImageBasicDto> image,
+            @JsonProperty("category") CategoryInnerProductResDto category,
+            @JsonProperty("account") AccountInnerProductResDto account) {
         this.id = id;
         this.name = name;
         this.brand = brand;
@@ -55,57 +55,23 @@ public class ProductResDto implements Serializable {
 
 
     @Data
-    public static class ProductImageDto implements Serializable {
-        private final Long id;
-        private final ProductImageType type;
-        private final String path;
-
-        @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-        public ProductImageDto(
-                @JsonProperty("id") Long id,
-                @JsonProperty("type") ProductImageType type,
-                @JsonProperty("path") String path) {
-            this.id = id;
-            this.type = type;
-            this.path = path;
-        }
-    }
-
-    @Data
-    public static class CertificationImage implements Serializable {
-        private final Long id;
-        private final ProductImageType type;
-        private final String path;
-
-        @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-        public CertificationImage(
-                @JsonProperty("id") Long id,
-                @JsonProperty("type") ProductImageType type,
-                @JsonProperty("path") String path) {
-            this.id = id;
-            this.type = type;
-            this.path = path;
-        }
-    }
-
-    @Data
-    public static class CategoryDto implements Serializable {
+    public static class CategoryInnerProductResDto implements Serializable {
         private final UUID id;
         private final String categoryName;
 
         @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-        public CategoryDto(@JsonProperty("id") UUID id, @JsonProperty("category_name") String categoryName) {
+        public CategoryInnerProductResDto(@JsonProperty("id") UUID id, @JsonProperty("category_name") String categoryName) {
             this.id = id;
             this.categoryName = categoryName;
         }
     }
 
     @Data
-    public static class AccountDto implements Serializable {
+    public static class AccountInnerProductResDto implements Serializable {
         private final UUID id;
 
         @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-        public AccountDto(@JsonProperty("id") UUID id) {
+        public AccountInnerProductResDto(@JsonProperty("id") UUID id) {
             this.id = id;
         }
     }

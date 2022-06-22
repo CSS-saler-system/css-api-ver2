@@ -24,11 +24,11 @@ public class ProductWithQuantityResDTO implements Serializable {
             @JsonProperty("id") UUID id,
             @JsonProperty("name") String name,
             @JsonProperty("brand") String brand,
-            @JsonProperty("short_description") String shortDescription,
+            @JsonProperty("shortDescription") String shortDescription,
             @JsonProperty("description") String description,
-            @JsonProperty("quantity_in_stock") Long quantityInStock,
+            @JsonProperty("quantityInStock") Long quantityInStock,
             @JsonProperty("price") Double price,
-            @JsonProperty("point_sale") Double pointSale,
+            @JsonProperty("pointSale") Double pointSale,
             @JsonProperty("count") Integer count) {
         this.id = id;
         this.name = name;

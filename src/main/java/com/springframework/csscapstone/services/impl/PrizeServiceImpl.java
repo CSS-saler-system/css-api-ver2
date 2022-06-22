@@ -78,6 +78,12 @@ public class PrizeServiceImpl implements PrizeService {
                 result.isFirst(), result.isLast());
     }
 
+    //todo get prize by id
+    @Override
+    public Optional<PrizeResDto> getPrizeByPrize(UUID uuid) {
+        return this.prizeRepository.findById(uuid)
+                .map(MapperDTO.INSTANCE::toPrizeResDto);
+    }
 
     @Transactional
     @Override

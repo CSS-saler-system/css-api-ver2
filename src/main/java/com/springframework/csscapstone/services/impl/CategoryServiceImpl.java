@@ -77,8 +77,8 @@ public class CategoryServiceImpl implements CategoryService {
         Category _category = categoryRepository.findById(id).orElseThrow(categoryErrorNotFound());
 
         //get list product
-        List<CategoryResDto._ProductDto> products = _category.getProducts()
-                .stream().map(product -> new CategoryResDto._ProductDto(
+        List<CategoryResDto.ProductInnerCategoryResDto> products = _category.getProducts()
+                .stream().map(product -> new CategoryResDto.ProductInnerCategoryResDto(
                         product.getId(),
                         product.getName(),
                         product.getBrand(),

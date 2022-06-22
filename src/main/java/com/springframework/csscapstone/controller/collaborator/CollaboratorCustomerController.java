@@ -2,7 +2,7 @@ package com.springframework.csscapstone.controller.collaborator;
 
 import com.springframework.csscapstone.config.constant.RegexConstant;
 import com.springframework.csscapstone.payload.request_dto.collaborator.CustomerCreatorReqDto;
-import com.springframework.csscapstone.payload.request_dto.collaborator.CustomerUpdatorReqDto;
+import com.springframework.csscapstone.payload.request_dto.collaborator.CustomerUpdaterReqDto;
 import com.springframework.csscapstone.services.CustomerService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +47,7 @@ public class CollaboratorCustomerController {
     }
 
     @PutMapping(V3_UPDATE_CUSTOMER)
-    public ResponseEntity<?> updateCustomer(@Valid @RequestBody CustomerUpdatorReqDto dto) throws AccountNotFoundException {
+    public ResponseEntity<?> updateCustomer(@Valid @RequestBody CustomerUpdaterReqDto dto) throws AccountNotFoundException {
         return ok(this.customerService.updateCustomer(dto));
     }
 }

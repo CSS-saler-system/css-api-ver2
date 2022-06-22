@@ -7,6 +7,7 @@ import com.springframework.csscapstone.payload.response_dto.enterprise.PrizeResD
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface PrizeService {
@@ -17,5 +18,7 @@ public interface PrizeService {
     UUID updatePrize(PrizeUpdaterReqDto prizeUpdater, List<MultipartFile> images);
 
     UUID createPrize(PrizeCreatorReqDto prizeCreatorReqDto, List<MultipartFile> images);
+
+    Optional<PrizeResDto> getPrizeByPrize(UUID uuid);
 
 }

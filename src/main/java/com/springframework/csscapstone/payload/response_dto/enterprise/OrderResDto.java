@@ -30,12 +30,12 @@ public class OrderResDto implements Serializable {
     private final String deliveryPhone;
     private final String deliveryAddress;
 
-    private final List<OrderDetailDto> orderDetails;
-    private final AccountDto account;
-    private final CustomerDto customer;
+    private final List<OrderDetailInnerOrderResDto> orderDetails;
+    private final AccountInnerOrderResDto account;
+    private final CustomerInnerOrderResDto customer;
 
     @Data
-    public static class OrderDetailDto implements Serializable {
+    public static class OrderDetailInnerOrderResDto implements Serializable {
         private final UUID id;
         private final String nameProduct;
         private final Double productPrice;
@@ -43,23 +43,23 @@ public class OrderResDto implements Serializable {
         private final Long quantity;
         private final Double totalPointProduct;
         private final Double totalPriceProduct;
-        private final ProductDto product;
+        private final ProductInnerOrderResDto product;
 
         @Data
-        public static class ProductDto implements Serializable {
+        public static class ProductInnerOrderResDto implements Serializable {
             private final UUID id;
         }
     }
 
     @Data
-    public static class AccountDto implements Serializable {
+    public static class AccountInnerOrderResDto implements Serializable {
         private final UUID id;
         private final String name;
         private final String phone;
     }
 
     @Data
-    public static class CustomerDto implements Serializable {
+    public static class CustomerInnerOrderResDto implements Serializable {
         private final UUID id;
         private final String name;
         private final String phone;

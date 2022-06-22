@@ -50,7 +50,7 @@ public class AccountCreatorReqDto {
 
     public AccountCreatorReqDto(
             @JsonProperty("name") String name,
-            @JsonProperty("dob") LocalDate dayOfBirth,
+            @JsonProperty("dayOfBirth") LocalDate dayOfBirth,
             @JsonProperty("phone") String phone,
             @JsonProperty("email") String email,
             @JsonProperty("password") String password,

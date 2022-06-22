@@ -6,7 +6,7 @@ import com.springframework.csscapstone.data.domain.Customer;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.data.repositories.CustomerRepository;
 import com.springframework.csscapstone.payload.request_dto.collaborator.CustomerCreatorReqDto;
-import com.springframework.csscapstone.payload.request_dto.collaborator.CustomerUpdatorReqDto;
+import com.springframework.csscapstone.payload.request_dto.collaborator.CustomerUpdaterReqDto;
 import com.springframework.csscapstone.payload.response_dto.collaborator.CustomerResDto;
 import com.springframework.csscapstone.services.CustomerService;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
@@ -69,7 +69,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     //TODO update Customer
     @Override
-    public UUID updateCustomer(CustomerUpdatorReqDto dto) {
+    public UUID updateCustomer(CustomerUpdaterReqDto dto) {
         Account accountUpdator = this.accountRepository.findById(dto.getAccountUpdater().getId())
                 .orElseThrow(getAccountNotFoundExceptionSupplier());
 

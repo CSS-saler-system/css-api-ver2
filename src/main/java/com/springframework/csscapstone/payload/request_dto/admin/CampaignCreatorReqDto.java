@@ -38,10 +38,10 @@ public class CampaignCreatorReqDto {
     @JsonCreator(mode = PROPERTIES)
     public CampaignCreatorReqDto(
             @JsonProperty("name") String name,
-            @JsonProperty("start_date") LocalDateTime startDate,
-            @JsonProperty("end_date") LocalDateTime endDate,
-            @JsonProperty("short_description") String campaignShortDescription,
-            @JsonProperty("description") String campaignDescription,
+            @JsonProperty("startDate") LocalDateTime startDate,
+            @JsonProperty("endDate") LocalDateTime endDate,
+            @JsonProperty("campaignShortDescription") String campaignShortDescription,
+            @JsonProperty("campaignDescription") String campaignDescription,
             @JsonProperty("kpi") Long kpi) {
         this.name = name;
         this.startDate = startDate;

@@ -31,9 +31,9 @@ public class RequestSellingProductResDto implements Serializable {
     @JsonCreator(mode = PROPERTIES)
     public RequestSellingProductResDto(
             @JsonProperty("id") UUID id,
-            @JsonProperty("date_time_request") LocalDateTime dateTimeRequest,
-            @JsonProperty("request_status") RequestStatus requestStatus,
-            @JsonProperty("quantity_product") Long quantityProduct,
+            @JsonProperty("dateTimeRequest") LocalDateTime dateTimeRequest,
+            @JsonProperty("requestStatus") RequestStatus requestStatus,
+            @JsonProperty("quantityProduct") Long quantityProduct,
             @JsonProperty("product") ProductDto product) {
         this.id = id;
         this.dateTimeRequest = dateTimeRequest;
@@ -55,9 +55,9 @@ public class RequestSellingProductResDto implements Serializable {
         public ProductDto(@JsonProperty("id") UUID id,
                           @JsonProperty("name") String name,
                           @JsonProperty("description") String description,
-                          @JsonProperty("quantity_in_stock") Long quantityInStock,
+                          @JsonProperty("quantityInStock") Long quantityInStock,
                           @JsonProperty("price") Double price,
-                          @JsonProperty("point_sale") Double pointSale) {
+                          @JsonProperty("pointSale") Double pointSale) {
             this.id = id;
             this.name = name;
             this.description = description;

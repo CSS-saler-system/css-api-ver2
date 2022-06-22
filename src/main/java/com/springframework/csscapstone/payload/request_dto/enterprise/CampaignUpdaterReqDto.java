@@ -36,13 +36,13 @@ public class CampaignUpdaterReqDto {
     public CampaignUpdaterReqDto(
             @JsonProperty("id") UUID id,
             @JsonProperty("name") String name,
-            @JsonProperty("start_date") LocalDateTime startDate,
-            @JsonProperty("end_date") LocalDateTime endDate,
-            @JsonProperty("short_description") String campaignShortDescription,
-            @JsonProperty("description") String campaignDescription,
-            @JsonProperty("kpi") Long kpiSaleProduct,
+            @JsonProperty("startDate") LocalDateTime startDate,
+            @JsonProperty("endDate") LocalDateTime endDate,
+            @JsonProperty("campaignShortDescription") String campaignShortDescription,
+            @JsonProperty("campaignDescription") String campaignDescription,
+            @JsonProperty("kpiSaleProduct") Long kpiSaleProduct,
             @JsonProperty("account") CampaignCreatorReqDto.AccountDto account,
-            @JsonProperty("list_product") Set<CampaignCreatorReqDto.ProductDto> products,
+            @JsonProperty("products") Set<CampaignCreatorReqDto.ProductDto> products,
             @JsonProperty("status") CampaignStatus status) {
         this.id = id;
         this.name = name;

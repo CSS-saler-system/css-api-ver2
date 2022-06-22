@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Data
-public class CustomerUpdatorReqDto implements Serializable {
+public class CustomerUpdaterReqDto implements Serializable {
     @NotNull(message = "The id must not be null")
     private final UUID id;
 
@@ -32,7 +32,7 @@ public class CustomerUpdatorReqDto implements Serializable {
     private final String description;
 
     @JsonCreator
-    public CustomerUpdatorReqDto(
+    public CustomerUpdaterReqDto(
             @JsonProperty("id") UUID id,
             @JsonProperty("name") String name,
             @JsonProperty("phone") String phone,
@@ -55,7 +55,7 @@ public class CustomerUpdatorReqDto implements Serializable {
         private final UUID id;
 
         @JsonCreator
-        public AccountDto(@JsonProperty UUID id) {
+        public AccountDto(@JsonProperty("id") UUID id) {
             this.id = id;
         }
     }

@@ -28,13 +28,13 @@ public class CustomerResDto implements Serializable {
     @JsonFormat(pattern = "yyyy/MM/dd")
     private final LocalDate dob;
 
-    private final AccountCreatorDto accountCreator;
+    private final AccountCreatorInnerCustomerDto accountCreator;
 
-    private final AccountUpdaterDto accountUpdater;
+    private final AccountUpdaterInnerCustomerResDto accountUpdater;
 
     private final String description;
 
-    private final List<OrderDto> orders;
+    private final List<OrderInnerCustomerResDto> orders;
 
     public CustomerResDto(
             @JsonProperty("id") UUID id,
@@ -42,10 +42,10 @@ public class CustomerResDto implements Serializable {
             @JsonProperty("phone") String phone,
             @JsonProperty("address") String address,
             @JsonProperty("dob") LocalDate dob,
-            @JsonProperty("account_creator") AccountCreatorDto accountCreator,
-            @JsonProperty("account_updater") AccountUpdaterDto accountUpdater,
+            @JsonProperty("accountCreator") AccountCreatorInnerCustomerDto accountCreator,
+            @JsonProperty("accountUpdater") AccountUpdaterInnerCustomerResDto accountUpdater,
             @JsonProperty("description") String description,
-            @JsonProperty("orders") List<OrderDto> orders) {
+            @JsonProperty("orders") List<OrderInnerCustomerResDto> orders) {
         this.id = id;
         this.name = name;
         this.phone = phone;
@@ -58,17 +58,17 @@ public class CustomerResDto implements Serializable {
     }
 
     @Data
-    public static class AccountCreatorDto implements Serializable {
+    public static class AccountCreatorInnerCustomerDto implements Serializable {
         private final UUID id;
     }
 
     @Data
-    public static class AccountUpdaterDto implements Serializable {
+    public static class AccountUpdaterInnerCustomerResDto implements Serializable {
         private final UUID id;
     }
 
     @Data
-    public static class OrderDto implements Serializable {
+    public static class OrderInnerCustomerResDto implements Serializable {
         private final UUID id;
     }
 }

@@ -33,17 +33,17 @@ public class TransactionsResDto implements Serializable {
     private final List<BillImageBasicDto> billImage;
     private final double point;
     private final TransactionStatus transactionStatus;
-    private final Set<AccountDto> account;
+    private final Set<AccountInnerTransactionsResDto> account;
 
     @JsonCreator(mode = PROPERTIES)
     public TransactionsResDto(
             @JsonProperty("id") UUID id,
-            @JsonProperty("create_date") LocalDateTime createTransaction,
-            @JsonProperty("modified_date") LocalDateTime lastModifiedDate,
-            @JsonProperty("images") List<BillImageBasicDto> billImage,
+            @JsonProperty("createTransaction") LocalDateTime createTransaction,
+            @JsonProperty("lastModifiedDate") LocalDateTime lastModifiedDate,
+            @JsonProperty("billImage") List<BillImageBasicDto> billImage,
             @JsonProperty("point") double point,
-            @JsonProperty("transaction") TransactionStatus transactionStatus,
-            @JsonProperty("account") Set<AccountDto> account) {
+            @JsonProperty("transactionStatus") TransactionStatus transactionStatus,
+            @JsonProperty("account") Set<AccountInnerTransactionsResDto> account) {
         this.id = id;
         this.createTransaction = createTransaction;
         this.lastModifiedDate = lastModifiedDate;
@@ -54,27 +54,27 @@ public class TransactionsResDto implements Serializable {
     }
 
     @Data
-    public static class AccountDto implements Serializable {
+    public static class AccountInnerTransactionsResDto implements Serializable {
         private final UUID id;
         private final String name;
-        private final RoleDto role;
+        private final RoleInnerTransactionResDto role;
 
         @JsonCreator(mode = PROPERTIES)
-        public AccountDto(
+        public AccountInnerTransactionsResDto(
                 @JsonProperty("id") UUID id,
                 @JsonProperty("name") String name,
-                @JsonProperty("role") RoleDto role) {
+                @JsonProperty("role") RoleInnerTransactionResDto role) {
             this.id = id;
             this.name = name;
             this.role = role;
         }
 
         @Data
-        public static class RoleDto implements Serializable {
+        public static class RoleInnerTransactionResDto implements Serializable {
             private final String id;
             private final String name;
             @JsonCreator(mode = PROPERTIES)
-            public RoleDto(
+            public RoleInnerTransactionResDto(
                     @JsonProperty("id") String id,
                     @JsonProperty("name") String name) {
                 this.id = id;

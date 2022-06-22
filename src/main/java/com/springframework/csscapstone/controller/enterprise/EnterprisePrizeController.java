@@ -3,6 +3,7 @@ package com.springframework.csscapstone.controller.enterprise;
 import com.springframework.csscapstone.payload.request_dto.enterprise.PrizeCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.PrizeUpdaterReqDto;
 import com.springframework.csscapstone.services.PrizeService;
+import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.mapper_utils.converter_mapper.PrizeCreatorConvertor;
 import com.springframework.csscapstone.utils.mapper_utils.converter_mapper.PrizeUpdaterConvertor;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -68,5 +69,10 @@ public class EnterprisePrizeController {
          throw new RuntimeException("The quantity of prize is not null and greater than 0");
       UUID prize = this.prizeService.updatePrize(dto, images);
       return ok(prize);
+   }
+
+   @GetMapping(V2_PRIZE_RETRIEVE + "/{id}")
+   public ResponseEntity<?> retrievePrizeById(@PathVariable("id") UUID id) {
+      return ok(this.prizeService.getPrizeByPrize(id).orElseThrow(() -> new EntityNotFoundException("The prize with id: " + id + " not found")));
    }
 }

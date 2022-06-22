@@ -37,12 +37,6 @@ public class ProductCreatorReqDto implements Serializable {
     @NotNull(message = "The point must be not null")
     private final Double pointSale;
 
-//    @NotNull(message = "The type image not null")
-//    private final MultipartFile[] typeImage;
-//
-//    @NotNull(message = "The type image not null")
-//    private final MultipartFile[] certificationImage;
-
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public ProductCreatorReqDto(
             @JsonProperty("creatorAccountId") UUID creatorAccountId,

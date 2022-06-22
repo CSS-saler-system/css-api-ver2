@@ -29,14 +29,14 @@ public class ProductCountOrderResDto implements Serializable {
     public ProductCountOrderResDto(
             @JsonProperty("id") UUID id,
             @JsonProperty("name") String name,
-            @JsonProperty("short_description") String shortDescription,
+            @JsonProperty("shortDescription") String shortDescription,
             @JsonProperty("description") String description,
-            @JsonProperty("quantity_in_stock") Long quantityInStock,
+            @JsonProperty("quantityInStock") Long quantityInStock,
             @JsonProperty("price") Double price,
-            @JsonProperty("point_sale") Double pointSale,
-            @JsonProperty("product_status") ProductStatus productStatus,
-            @JsonProperty("images") List<ProductImageBasicDto> image,
-            @JsonProperty("number_order") Long quantity) {
+            @JsonProperty("pointSale") Double pointSale,
+            @JsonProperty("productStatus") ProductStatus productStatus,
+            @JsonProperty("image") List<ProductImageBasicDto> image,
+            @JsonProperty("quantity") Long quantity) {
         this.id = id;
         this.name = name;
         this.shortDescription = shortDescription;

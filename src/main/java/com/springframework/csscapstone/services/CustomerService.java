@@ -1,7 +1,7 @@
 package com.springframework.csscapstone.services;
 
 import com.springframework.csscapstone.payload.request_dto.collaborator.CustomerCreatorReqDto;
-import com.springframework.csscapstone.payload.request_dto.collaborator.CustomerUpdatorReqDto;
+import com.springframework.csscapstone.payload.request_dto.collaborator.CustomerUpdaterReqDto;
 import com.springframework.csscapstone.payload.response_dto.collaborator.CustomerResDto;
 
 import javax.security.auth.login.AccountNotFoundException;
@@ -17,7 +17,7 @@ public interface CustomerService {
     UUID createCustomer(CustomerCreatorReqDto dto) throws AccountNotFoundException;
 
     //TODO update Customer <Completed></>
-    UUID updateCustomer(CustomerUpdatorReqDto dto) throws AccountNotFoundException;
+    UUID updateCustomer(CustomerUpdaterReqDto dto) throws AccountNotFoundException;
 
     CustomerResDto getCustomerById(UUID id);
 
