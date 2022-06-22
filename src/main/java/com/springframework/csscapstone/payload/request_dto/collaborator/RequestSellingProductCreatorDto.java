@@ -12,33 +12,33 @@ import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 @Data
 public class RequestSellingProductCreatorDto implements Serializable {
 
-    private final ProductDto product;
-    private final AccountDto collaborator;
+    private final ProductInnerRequestCreatorDto product;
+    private final AccountInnerRequestCreatorDto collaborator;
 
     @JsonCreator(mode = PROPERTIES)
     public RequestSellingProductCreatorDto(
-            @JsonProperty("product") ProductDto product,
-            @JsonProperty("collaborator") AccountDto collaborator) {
+            @JsonProperty("product") ProductInnerRequestCreatorDto product,
+            @JsonProperty("collaborator") AccountInnerRequestCreatorDto collaborator) {
         this.product = product;
         this.collaborator = collaborator;
     }
 
     @Data
-    public static class ProductDto implements Serializable {
-        private final UUID id;
+    public static class ProductInnerRequestCreatorDto implements Serializable {
+        private final UUID productId;
 
         @JsonCreator(mode = PROPERTIES)
-        public ProductDto(@JsonProperty("id") UUID id) {
-            this.id = id;
+        public ProductInnerRequestCreatorDto(@JsonProperty("productId") UUID productId) {
+            this.productId = productId;
         }
     }
 
     @Data
-    public static class AccountDto implements Serializable {
-        private final UUID id;
+    public static class AccountInnerRequestCreatorDto implements Serializable {
+        private final UUID accountId;
 
-        public AccountDto(UUID id) {
-            this.id = id;
+        public AccountInnerRequestCreatorDto(@JsonProperty("accountId") UUID accountId) {
+            this.accountId = accountId;
         }
     }
 }

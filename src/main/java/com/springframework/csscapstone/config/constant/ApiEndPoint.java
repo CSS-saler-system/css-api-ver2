@@ -170,9 +170,10 @@ public class ApiEndPoint {
 
         public static final String V2_LIST_REQUEST = v2_handler + "/list";
         public static final String V2_UPDATE_REQUEST = v2_handler + "/update";
-        public static final String V3_CREATE_REQUEST = v3_handler + "/update";
+        public static final String V3_REQUEST_CREATE = v3_handler + "/create";
         public static final String V3_LIST_REQUEST = v3_handler + "/list";
-        public static final String V3_GET_OWNER_REQUEST = v3_handler + "/update";
+        public static final String V3_REQUEST_GET_OWNER = v3_handler + "/update";
+        public static final String V3_REQUEST_RETRIEVE = v3_handler + "/retrieve";
 
 //        public static final String V4_LIST_REQUEST = v4_ha
     }

@@ -1,10 +1,15 @@
 package com.springframework.csscapstone.services.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.springframework.csscapstone.config.constant.MessageConstant;
+import com.springframework.csscapstone.config.firebase_config.FirebaseMessageService;
+import com.springframework.csscapstone.config.firebase_config.model.PushNotificationRequest;
 import com.springframework.csscapstone.data.domain.Account;
+import com.springframework.csscapstone.data.domain.AccountToken;
 import com.springframework.csscapstone.data.domain.Product;
 import com.springframework.csscapstone.data.domain.RequestSellingProduct;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
+import com.springframework.csscapstone.data.repositories.AccountTokenRepository;
 import com.springframework.csscapstone.data.repositories.ProductRepository;
 import com.springframework.csscapstone.data.repositories.RequestSellingProductRepository;
 import com.springframework.csscapstone.data.status.RequestStatus;
@@ -23,10 +28,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.security.auth.login.AccountNotFoundException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -36,6 +39,10 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
     private final RequestSellingProductRepository requestSellingProductRepository;
     private final ProductRepository productRepository;
     private final AccountRepository accountRepository;
+
+    private final FirebaseMessageService firebaseMessageService;
+
+    private final AccountTokenRepository accountTokenRepository;
 
     @Override
     public List<RequestSellingProductResDto> getAllRequest() {
@@ -63,17 +70,36 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
 
     @Transactional
     @Override
-    public UUID createRequestSellingProduct(RequestSellingProductCreatorDto dto) {
-        Product product = this.productRepository.findById(dto.getProduct().getId())
-                .orElseThrow(() -> new RuntimeException("The product with id: " + dto.getProduct().getId() + " not found"));
+    public UUID createRequestSellingProduct(RequestSellingProductCreatorDto dto) throws ExecutionException, JsonProcessingException, InterruptedException {
+        Product product = this.productRepository.findById(dto.getProduct().getProductId())
+                .orElseThrow(() -> new RuntimeException("The product with id: " + dto.getProduct().getProductId() + " not found"));
 
-        Account collaborator = this.accountRepository.findById(dto.getCollaborator().getId())
-                .orElseThrow(() -> new EntityNotFoundException("The account with id: " + dto.getCollaborator().getId()
+        Account collaborator = this.accountRepository.findById(dto.getCollaborator().getAccountId())
+                .orElseThrow(() -> new EntityNotFoundException("The account with id: " + dto.getCollaborator().getAccountId()
                         + " not found"));
-
+//
         RequestSellingProduct requestSellingProduct = new RequestSellingProduct()
                 .setProduct(product)
                 .setAccount(collaborator).setRequestStatus(RequestStatus.PENDING);
+//      todo send notification
+//        Map<String, String> msg = new HashMap<>();
+//
+//        UUID enterpriseId = product.getAccount().getId();
+//        AccountToken accountToken = this.accountTokenRepository
+//                .getAccountTokenByAccountSortByDate(enterpriseId)
+//                .stream()
+//                .max(Comparator.comparing(AccountToken::getUpdateTokenDate))
+//                .orElseThrow(() -> new RuntimeException("No have token in database"));
+//
+//        msg.put("Collaborator Name", collaborator.getName());
+//        msg.put("Collaborator Phone", collaborator.getPhone());
+//        msg.put("Product Id", product.getId().toString());
+//        msg.put("Product Name", product.getName());
+//
+//        firebaseMessageService.sendMessage(msg, new PushNotificationRequest("Selling Request",
+//                "Collaborator registers sell product", "Request Selling",
+//                accountToken.getRegistrationToken()));
+
         return this.requestSellingProductRepository.save(requestSellingProduct).getId();
     }
 
@@ -104,6 +130,12 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
         request.setRequestStatus(status);
         RequestSellingProduct save = this.requestSellingProductRepository.save(request);
         return Optional.of(save.getId());
+    }
+
+    @Override
+    public Optional<RequestSellingProductResDto> getRequestById(UUID uuid) {
+        return this.requestSellingProductRepository.findById(uuid)
+                .map(MapperDTO.INSTANCE::toRequestSellingProductResDto);
     }
 
     private Supplier<RequestNotFoundException> handlerRequestNotFound() {
