@@ -77,8 +77,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category _category = categoryRepository.findById(id).orElseThrow(categoryErrorNotFound());
 
         //get list product
-        List<CategoryResDto._ProductDto> products = this.productRepository
-                .findProductByCategory(_category)
+        List<CategoryResDto._ProductDto> products = _category.getProducts()
                 .stream().map(product -> new CategoryResDto._ProductDto(
                         product.getId(),
                         product.getName(),
@@ -109,7 +108,6 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Transactional
-
     @Override
     public UUID createCategory(CategoryCreatorReqDto dto) throws CategoryInvalidException {
 

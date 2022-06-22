@@ -1,5 +1,6 @@
 package com.springframework.csscapstone.controller.collaborator;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.springframework.csscapstone.payload.request_dto.collaborator.RequestSellingProductCreatorDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.RequestSellingProductResDto;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.security.auth.login.AccountNotFoundException;
 
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 import static com.springframework.csscapstone.config.constant.ApiEndPoint.RequestSellingProduct.V3_CREATE_REQUEST;
 import static com.springframework.csscapstone.config.constant.ApiEndPoint.RequestSellingProduct.V3_GET_OWNER_REQUEST;
@@ -26,7 +28,7 @@ public class CollaboratorRequestController {
     @PostMapping(V3_CREATE_REQUEST)
     public ResponseEntity<?> createRequestSellingProduct(
             @RequestBody RequestSellingProductCreatorDto dto
-    ) throws AccountNotFoundException {
+    ) throws AccountNotFoundException, ExecutionException, JsonProcessingException, InterruptedException {
         UUID id = requestSellingProductService.createRequestSellingProduct(dto);
         return ok(id);
     }

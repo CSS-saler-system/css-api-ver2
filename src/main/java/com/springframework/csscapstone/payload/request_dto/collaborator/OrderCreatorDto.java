@@ -2,8 +2,7 @@ package com.springframework.csscapstone.payload.request_dto.collaborator;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import lombok.*;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.List;
@@ -18,7 +17,7 @@ public class OrderCreatorDto implements Serializable {
     private final String deliveryPhone;
     private final List<OrderDetailDto> orderDetails;
 
-//    @JsonCreator(mode = PROPERTIES)
+    @JsonCreator(mode = PROPERTIES)
     public OrderCreatorDto(
             @JsonProperty("account") AccountDto account,
             @JsonProperty("customer") CustomerDto customer,

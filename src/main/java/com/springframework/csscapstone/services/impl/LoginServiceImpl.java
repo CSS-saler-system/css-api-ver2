@@ -65,7 +65,7 @@ public class LoginServiceImpl implements LoginService {
         }
         Account account = new Account().setEmail(email).setPoint(0.0);
 
-
+        //todo save registration token
         if (StringUtils.isNotEmpty(registrationToken) || !registrationToken.equals("string")) {
             AccountToken token = new AccountToken(registrationToken);
             AccountToken savedToken = this.accountTokenRepository.save(token);
@@ -101,6 +101,7 @@ public class LoginServiceImpl implements LoginService {
 
         Account account = new Account().setPhone(phone).setPoint(0.0);
 
+        //todo save registration token
         if (StringUtils.isNotEmpty(registrationToken) || !registrationToken.equals("string")) {
             AccountToken token = new AccountToken(registrationToken);
             AccountToken savedToken = this.accountTokenRepository.save(token);

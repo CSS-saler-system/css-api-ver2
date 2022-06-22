@@ -8,6 +8,6 @@ public class PushNotificationRequest {
     private final String message;
     private final String topic;
 
-    //token use for what ???
+    //token use for what registration token
     private final String token;
 }

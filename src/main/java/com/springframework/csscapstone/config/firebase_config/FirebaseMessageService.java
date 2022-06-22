@@ -1,5 +1,7 @@
 package com.springframework.csscapstone.config.firebase_config;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.messaging.AndroidConfig;
@@ -40,7 +42,7 @@ public class FirebaseMessageService {
             throws JsonProcessingException, ExecutionException, InterruptedException {
         //get message from preconfigured with data
         Message message = getPreconfiguredMessageWithData(data, request);
-
+        objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         String jsonOutput = objectMapper
                 .writerWithDefaultPrettyPrinter()
                 .writeValueAsString(message);
@@ -76,6 +78,12 @@ public class FirebaseMessageService {
                 .build();
     }
 
+    /**
+     * todo assign map data into message
+     * @param data
+     * @param request
+     * @return
+     */
     private Message getPreconfiguredMessageWithData(Map<String, String> data, PushNotificationRequest request) {
         return getPreconfiguredMessageBuilder(request)
                 .putAllData(data)
@@ -83,6 +91,7 @@ public class FirebaseMessageService {
                 .build();
     }
 
+    //Utils
     private Message.Builder getPreconfiguredMessageBuilder(PushNotificationRequest request) {
 
         //android-specific service
@@ -115,6 +124,7 @@ public class FirebaseMessageService {
                         .setColor(NotificationParameter.COLOR.getValue()).setTag(topic).build()).build();
     }
 
+    //rarely using
     private Message getPreconfiguredMessageWithoutData(PushNotificationRequest request) {
         return null;
     }

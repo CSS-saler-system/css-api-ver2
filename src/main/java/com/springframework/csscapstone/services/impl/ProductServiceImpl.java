@@ -120,13 +120,12 @@ public class ProductServiceImpl implements ProductService {
      */
     @Transactional
     @Override
-    public UUID createProduct(
-            ProductCreatorReqDto dto,
-            List<MultipartFile> typeImages,
-            List<MultipartFile> certificationImages)
+    public UUID createProduct(ProductCreatorReqDto dto,
+                              List<MultipartFile> typeImages, List<MultipartFile> certificationImages)
             throws ProductInvalidException, AccountNotFoundException, IOException {
         //check null category
         if (Objects.isNull(dto.getCategoryId())) throw handlerCategoryNotFound().get();
+
         //check null account
         if (Objects.isNull(dto.getCreatorAccountId())) throw handlerAccountCreatorNotFound().get();
 
@@ -247,8 +246,7 @@ public class ProductServiceImpl implements ProductService {
         return Optional.of(collect.keySet()
                 .stream()
 //                 .map(x -> endpoint + productContainer + "/" + x)
-                .map(name -> new ProductImage(type,
-                        endpoint + this.productContainer + "/" + name))
+                .map(name -> new ProductImage(type, endpoint + this.productContainer + "/" + name))
                 .peek(this.imageRepository::save)
                 .toArray(ProductImage[]::new)
         );
@@ -282,7 +280,7 @@ public class ProductServiceImpl implements ProductService {
         //throws exception if id not found
         if (Objects.isNull(id)) throw handlerAccountNotFound().get();
 
-        pageNumber =  Objects.isNull(pageNumber) || pageNumber <= 1 ? 1 : pageNumber;
+        pageNumber = Objects.isNull(pageNumber) || pageNumber <= 1 ? 1 : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize <= 1 ? 1 : pageSize;
 
         //get sum number in order-detail of order in during start date and end date

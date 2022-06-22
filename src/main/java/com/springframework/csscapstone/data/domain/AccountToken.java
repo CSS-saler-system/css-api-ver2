@@ -40,4 +40,6 @@ public class AccountToken {
     public AccountToken(String registrationToken) {
         this.registrationToken = registrationToken;
     }
+
+
 }
