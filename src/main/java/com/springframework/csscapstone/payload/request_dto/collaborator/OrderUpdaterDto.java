@@ -18,7 +18,7 @@ public class OrderUpdaterDto implements Serializable {
     private final CustomerDto customer;
     private final String deliveryAddress;
     private final String deliveryPhone;
-    private final List<OrderDetailDto> orderDetails;
+    private final List<OrderDetailInnerUpdaterDto> orderDetails;
 
     //    @JsonCreator(mode = PROPERTIES)
     public OrderUpdaterDto(
@@ -27,7 +27,7 @@ public class OrderUpdaterDto implements Serializable {
             @JsonProperty("customer") CustomerDto customer,
             @JsonProperty("deliveryAddress") String deliveryAddress,
             @JsonProperty("deliveryPhone") String deliveryPhone,
-            @JsonProperty("orderDetails") List<OrderDetailDto> orderDetails) {
+            @JsonProperty("orderDetails") List<OrderDetailInnerUpdaterDto> orderDetails) {
         this.idCollaborator = idCollaborator;
         this.account = account;
         this.customer = customer;
@@ -37,13 +37,13 @@ public class OrderUpdaterDto implements Serializable {
     }
 
     @Data
-    public static class OrderDetailDto implements Serializable {
+    public static class OrderDetailInnerUpdaterDto implements Serializable {
         private final UUID idOrderDetails;
         private final Long quantity;
         private final ProductDto product;
 
         @JsonCreator(mode = PROPERTIES)
-        public OrderDetailDto(
+        public OrderDetailInnerUpdaterDto(
                 @JsonProperty("idOrderDetails") UUID idOrderDetails,
                 @JsonProperty("quantity") Long quantity,
                 @JsonProperty("product") ProductDto product) {

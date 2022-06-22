@@ -10,20 +10,20 @@ import java.util.UUID;
 
 import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 @Data
-public class OrderCreatorDto implements Serializable {
+public class OrderCreatorReqDto implements Serializable {
     private final AccountDto account;
     private final CustomerDto customer;
     private final String deliveryAddress;
     private final String deliveryPhone;
-    private final List<OrderDetailDto> orderDetails;
+    private final List<OrderDetailInnerCreatorDto> orderDetails;
 
     @JsonCreator(mode = PROPERTIES)
-    public OrderCreatorDto(
+    public OrderCreatorReqDto(
             @JsonProperty("account") AccountDto account,
             @JsonProperty("customer") CustomerDto customer,
             @JsonProperty("deliveryAddress") String deliveryAddress,
             @JsonProperty("deliveryPhone") String deliveryPhone,
-            @JsonProperty("orderDetails") List<OrderDetailDto> orderDetails) {
+            @JsonProperty("orderDetails") List<OrderDetailInnerCreatorDto> orderDetails) {
         this.account = account;
         this.customer = customer;
         this.deliveryAddress = deliveryAddress;
@@ -32,12 +32,12 @@ public class OrderCreatorDto implements Serializable {
     }
 
     @Data
-    public static class OrderDetailDto implements Serializable {
+    public static class OrderDetailInnerCreatorDto implements Serializable {
         private final Long quantity;
         private final ProductDto product;
 
         @JsonCreator(mode = PROPERTIES)
-        public OrderDetailDto(
+        public OrderDetailInnerCreatorDto(
                 @JsonProperty("quantity") Long quantity,
                 @JsonProperty("product") ProductDto product) {
             this.quantity = quantity;

@@ -2,7 +2,7 @@ package com.springframework.csscapstone.controller.collaborator;
 
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.status.OrderStatus;
-import com.springframework.csscapstone.payload.request_dto.collaborator.OrderCreatorDto;
+import com.springframework.csscapstone.payload.request_dto.collaborator.OrderCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.collaborator.OrderUpdaterDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.OrderResDto;
@@ -37,7 +37,7 @@ public class CollaboratorOrderController {
     }
 
     @PostMapping(V3_ORDER_CREATE)
-    public ResponseEntity<?> createOrder(@RequestBody OrderCreatorDto dto) {
+    public ResponseEntity<?> createOrder(@RequestBody OrderCreatorReqDto dto) {
         UUID order = this.orderService.createOrder(dto);
         return ok(order);
     }

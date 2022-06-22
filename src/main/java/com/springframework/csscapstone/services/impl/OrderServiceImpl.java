@@ -4,7 +4,7 @@ import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.domain.*;
 import com.springframework.csscapstone.data.repositories.*;
 import com.springframework.csscapstone.data.status.OrderStatus;
-import com.springframework.csscapstone.payload.request_dto.collaborator.OrderCreatorDto;
+import com.springframework.csscapstone.payload.request_dto.collaborator.OrderCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.collaborator.OrderUpdaterDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.OrderResDto;
@@ -24,7 +24,6 @@ import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.summingDouble;
 import static java.util.stream.Collectors.toMap;
 
 @Service
@@ -67,7 +66,7 @@ public class OrderServiceImpl implements OrderService {
     }
     @Transactional
     @Override
-    public UUID createOrder(OrderCreatorDto dto) {
+    public UUID createOrder(OrderCreatorReqDto dto) {
 
         Account account = this.accountRepository.findById(dto.getAccount().getAccountId())
                 .orElseThrow(() -> new EntityNotFoundException(
@@ -82,7 +81,7 @@ public class OrderServiceImpl implements OrderService {
                 .collect(toMap(
                         od -> this.productRepository.findById(od.getProduct().getProductId())
                                 .orElseThrow(handlerNotFoundException()),
-                        OrderCreatorDto.OrderDetailDto::getQuantity));
+                        OrderCreatorReqDto.OrderDetailInnerCreatorDto::getQuantity));
 
         List<OrderDetail> oderDetails = details.entrySet()
                 .stream()

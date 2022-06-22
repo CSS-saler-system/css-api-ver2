@@ -1,7 +1,7 @@
 package com.springframework.csscapstone.services;
 
 import com.springframework.csscapstone.data.status.OrderStatus;
-import com.springframework.csscapstone.payload.request_dto.collaborator.OrderCreatorDto;
+import com.springframework.csscapstone.payload.request_dto.collaborator.OrderCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.collaborator.OrderUpdaterDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.OrderResDto;
@@ -25,7 +25,7 @@ public interface OrderService {
             UUID idCollaborator, OrderStatus orderStatus, Integer pageNumber, Integer pageSize);
 
     //Create Order Checking same enterprise
-    UUID createOrder(OrderCreatorDto dto);
+    UUID createOrder(OrderCreatorReqDto dto);
 
     //Update Order
     UUID updateOrder(OrderUpdaterDto dto);

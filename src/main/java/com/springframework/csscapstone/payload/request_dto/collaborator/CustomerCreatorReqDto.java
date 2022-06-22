@@ -10,7 +10,6 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -31,7 +30,7 @@ public class CustomerCreatorReqDto implements Serializable {
     @JsonFormat(pattern = "yyyy/MM/dd")
     private final LocalDate dob;
 
-    private final AccountDto accountCreator;
+    private final AccountInnerCustomerCreatorDto accountCreator;
 
     @NotEmpty(message = "The description must not be empty")
     private final String description;
@@ -41,8 +40,8 @@ public class CustomerCreatorReqDto implements Serializable {
             @JsonProperty("name") String name,
             @JsonProperty("phone") String phone,
             @JsonProperty("address") String address,
-            @JsonProperty("day_of_birth") LocalDate dob,
-            @JsonProperty("account_creator") AccountDto accountCreator,
+            @JsonProperty("dob") LocalDate dob,
+            @JsonProperty("accountCreator") AccountInnerCustomerCreatorDto accountCreator,
             @JsonProperty("description") String description) {
         super();
         this.phone = phone;
@@ -54,12 +53,12 @@ public class CustomerCreatorReqDto implements Serializable {
     }
 
     @Data
-    public static class AccountDto implements Serializable {
+    public static class AccountInnerCustomerCreatorDto implements Serializable {
         @NotEmpty(message = "The dto id must not be empty")
         private final UUID id;
 
         @JsonCreator
-        public AccountDto(@JsonProperty("id") UUID id) {
+        public AccountInnerCustomerCreatorDto(@JsonProperty("id") UUID id) {
             this.id = id;
         }
     }

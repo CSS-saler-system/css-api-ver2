@@ -33,13 +33,13 @@ public class CustomerUpdatorReqDto implements Serializable {
 
     @JsonCreator
     public CustomerUpdatorReqDto(
-            @JsonProperty UUID id,
-            @JsonProperty String name,
-            @JsonProperty String phone,
-            @JsonProperty String address,
-            @JsonProperty LocalDate dob,
-            @JsonProperty AccountDto accountUpdater,
-            @JsonProperty String description) {
+            @JsonProperty("id") UUID id,
+            @JsonProperty("name") String name,
+            @JsonProperty("phone") String phone,
+            @JsonProperty("address") String address,
+            @JsonProperty("dob") LocalDate dob,
+            @JsonProperty("accountUpdater") AccountDto accountUpdater,
+            @JsonProperty("description") String description) {
         this.id = id;
         this.name = name;
         this.phone = phone;
