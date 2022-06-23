@@ -18,6 +18,19 @@ import java.util.UUID;
 
 public interface ProductService {
 
+    PageImplResDto<ProductResDto> findAllProductByIdEnterprise(
+            UUID idEnterprise,
+            String name,
+            String brand,
+            Long inStock,
+            Double minPrice,
+            Double maxPrice,
+            Double minPoint,
+            Double maxPoint,
+            ProductStatus productStatus,
+            Integer pageNumber,
+            Integer pageSize);
+
     PageImplResDto<ProductResDto> findAllProduct(
             String name,
             String brand,

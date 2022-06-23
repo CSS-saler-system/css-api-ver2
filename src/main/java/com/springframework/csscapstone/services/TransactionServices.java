@@ -14,8 +14,8 @@ import java.util.UUID;
 public interface TransactionServices {
 
     PageImplResDto<TransactionsResDto> getAllTransaction(
-            LocalDateTime createDate, LocalDateTime modifiedDate,
-            Integer pageNumber, Integer pageSize);
+            UUID idEnterprise, LocalDateTime createDate,
+            LocalDateTime modifiedDate, Integer pageNumber, Integer pageSize);
 
     Optional<TransactionsResDto> getTransactionById(UUID id);
 

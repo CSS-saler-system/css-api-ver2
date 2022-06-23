@@ -23,8 +23,9 @@ import static org.springframework.http.ResponseEntity.ok;
 public class ModeratorTransactionController {
     private final TransactionServices transactionServices;
 
-    @GetMapping(V4_TRANSACTION_LIST)
+    @GetMapping(V4_TRANSACTION_LIST + "/{idEnterprise}")
     public ResponseEntity<?> listTransaction(
+            @PathVariable("idEnterprise") UUID idEnterprise,
             @RequestParam(value = "start_date", required = false, defaultValue = "06/08/1999 00:00:00")
             @JsonFormat(
                     shape = JsonFormat.Shape.STRING,
@@ -41,7 +42,7 @@ public class ModeratorTransactionController {
             @RequestParam(value = "page_size", required = false, defaultValue = "1") Integer pageSize
     ) {
         PageImplResDto<TransactionsResDto> page = transactionServices
-                .getAllTransaction(createDate, modifiedDate, pageNumber, pageSize);
+                .getAllTransaction(idEnterprise, createDate, modifiedDate, pageNumber, pageSize);
         return ok(page);
     }
 

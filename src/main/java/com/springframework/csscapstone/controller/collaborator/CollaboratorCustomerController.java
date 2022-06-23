@@ -47,7 +47,8 @@ public class CollaboratorCustomerController {
     }
 
     @PutMapping(V3_UPDATE_CUSTOMER)
-    public ResponseEntity<?> updateCustomer(@Valid @RequestBody CustomerUpdaterReqDto dto) throws AccountNotFoundException {
+    public ResponseEntity<?> updateCustomer(
+            @Valid @RequestBody CustomerUpdaterReqDto dto) throws AccountNotFoundException {
         return ok(this.customerService.updateCustomer(dto));
     }
 }

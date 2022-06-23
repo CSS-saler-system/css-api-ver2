@@ -26,12 +26,12 @@ public class ApiEndPoint {
         private static final String v3_handler = COLLABORATOR + "/product";
         private static final String v4_handler = MODERATOR + "/product";
 
-        public static final String V2_LIST_PRODUCT = v2_handler + "/list";
-        public static final String V2_COUNT_LIST_PRODUCT = v2_handler + "/count-sold/list";
-        public static final String V2_GET_PRODUCT = v2_handler + "/get";
-        public static final String V2_CREATE_PRODUCT = v2_handler + "/new";
-        public static final String V2_DELETE_PRODUCT = v2_handler + "/delete";
-        public static final String V2_UPDATE_PRODUCT = v2_handler + "/update";
+        public static final String V2_PRODUCT_LIST = v2_handler + "/list";
+        public static final String V2_PRODUCT_COUNT_LIST = v2_handler + "/count-sold/list";
+        public static final String V2_PRODUCT_GET = v2_handler + "/get";
+        public static final String V2_PRODUCT_CREATE = v2_handler + "/new";
+        public static final String V2_PRODUCT_DELETE = v2_handler + "/delete";
+        public static final String V2_PRODUCT_UPDATE = v2_handler + "/update";
 
         public static final String V3_LIST_PRODUCT = v3_handler + "/list";
         public static final String V3_GET_PRODUCT = v3_handler + "/get";
@@ -219,7 +219,7 @@ public class ApiEndPoint {
         public static final String V2_TRANSACTION_RETRIEVE = v2_handler + "/retrieve";
         public static final String V2_TRANSACTION_REJECT = v2_handler + "/reject";
         public static final String V2_TRANSACTION_UPDATE = v2_handler + "/update";
-        public static final String V2_TRANSACTION_CREATE = v2_handler + "/list";
+        public static final String V2_TRANSACTION_CREATE = v2_handler;
         public static final String V2_TRANSACTION_DELETE = v2_handler + "/delete";
 
         public static final String V4_TRANSACTION_LIST = v4_handler + "/list";

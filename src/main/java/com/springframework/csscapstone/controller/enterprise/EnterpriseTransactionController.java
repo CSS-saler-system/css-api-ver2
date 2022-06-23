@@ -33,18 +33,18 @@ public class EnterpriseTransactionController {
     private final TransactionServices transactionServices;
     private final ObjectMapper objectMapper;
 
-    @PostMapping(V2_TRANSACTION_CREATE)
+    @PostMapping(value = V2_TRANSACTION_CREATE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createTransaction(
             @RequestPart("transaction") String transactionCreatorDto,
-            @RequestPart("image") List<MultipartFile> images
-    ) throws JsonProcessingException {
+            @RequestPart("image") List<MultipartFile> images) throws JsonProcessingException {
         TransactionsCreatorReqDto dto = objectMapper.readValue(transactionCreatorDto, TransactionsCreatorReqDto.class);
         UUID transaction = this.transactionServices.createTransaction(dto, images);
         return ok(transaction);
     }
 
-    @GetMapping(V2_TRANSACTION_LIST)
+    @GetMapping(V2_TRANSACTION_LIST + "/{idEnterprise}")
     public ResponseEntity<?> getAllTransactionExcludeDisableStatus(
+            @PathVariable("idEnterprise") UUID idEnterprise,
             @RequestParam(value = "start_date", required = false, defaultValue = "06/08/1999 00:00:00")
             @JsonFormat(
                     shape = JsonFormat.Shape.STRING,
@@ -59,8 +59,8 @@ public class EnterpriseTransactionController {
             LocalDateTime modifiedDate,
             @RequestParam(value = "page_number", required = false) Integer pageNumber,
             @RequestParam(value = "page_size", required = false) Integer pageSize) {
-        return ok(transactionServices.getAllTransaction(createDate,
-                modifiedDate, pageNumber, pageSize));
+        return ok(transactionServices
+                .getAllTransaction(idEnterprise, createDate, modifiedDate, pageNumber, pageSize));
     }
 
     @GetMapping(V2_TRANSACTION_GET + "/{id}")
@@ -75,7 +75,7 @@ public class EnterpriseTransactionController {
     public ResponseEntity<?> updateTransaction(
             @RequestPart("bill_images") List<MultipartFile> images,
             @RequestPart("update_transaction") String dto
-            ) throws JsonProcessingException {
+    ) throws JsonProcessingException {
         TransactionsUpdateReqDto transactionsUpdateReqDto = objectMapper
                 .readValue(dto, TransactionsUpdateReqDto.class);
         if (Objects.isNull(transactionsUpdateReqDto.getId()))

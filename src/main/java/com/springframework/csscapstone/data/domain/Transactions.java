@@ -29,7 +29,7 @@ public class Transactions {
     private UUID id;
 
     @CreatedDate
-    private LocalDateTime createTransaction;
+    private LocalDateTime createTransactionDate;
 
     @LastModifiedDate
     private LocalDateTime LastModifiedDate;
@@ -42,8 +42,14 @@ public class Transactions {
     @Enumerated(EnumType.STRING)
     private TransactionStatus transactionStatus;
 
-    @ManyToMany(mappedBy = "transactions")
-    private Set<Account> account = new HashSet<>();
+
+    @ManyToOne
+    @JoinColumn(name = "account_creator_id")
+    private Account transactionCreator;
+
+    @ManyToOne
+    @JoinColumn(name = "account_approver_id")
+    private Account transactionApprover;
 
     @Override
     public boolean equals(Object o) {
@@ -64,7 +70,7 @@ public class Transactions {
     public String toString() {
         return "Transactions{" +
                 "id=" + id +
-                ", createTransaction=" + createTransaction +
+                ", createTransaction=" + createTransactionDate +
                 ", LastModifiedDate=" + LastModifiedDate +
                 ", billImage=" + billImage +
                 ", point=" + point +
@@ -73,11 +79,19 @@ public class Transactions {
     }
 
 //    ======================= utils =====================
-    public Transactions addAccount(Set<Account> accounts) {
-        this.account.addAll(accounts);
-        accounts.forEach(x -> x.getTransactions().add(this));
+
+    public Transactions addCreators(Account transactionCreator) {
+        this.setTransactionCreator(transactionCreator);
+        transactionCreator.getTransactionCreator().add(this);
         return this;
     }
+
+    public Transactions addApprover(Account transactionApprover) {
+        this.setTransactionApprover(transactionApprover);
+        transactionApprover.getTransactionApprover().add(this);
+        return this;
+    }
+
 //    ======================= utils images =====================
     public Transactions addImages(BillImage image) {
         this.billImage.add(image);

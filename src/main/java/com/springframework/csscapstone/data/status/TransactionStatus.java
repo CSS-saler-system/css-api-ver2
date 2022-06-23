@@ -1,7 +1,7 @@
 package com.springframework.csscapstone.data.status;
 
 public enum TransactionStatus {
-    PENDING, //collaborator, enterprise
-    REJECT, ACCEPT,
-    DISABLED
+    PENDING, DISABLED,// enterprise create
+    REJECT, ACCEPT// moderator hanlder
+
 }

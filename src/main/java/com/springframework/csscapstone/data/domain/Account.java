@@ -100,18 +100,17 @@ public class Account {
     @ToString.Exclude
     private List<Prize> prizes = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(name = "account_transaction",
-            joinColumns = @JoinColumn(name = "account_id"),
-            inverseJoinColumns = @JoinColumn(name = "transaction_id"))
-    @ToString.Exclude
-    private Set<Transactions> transactions = new HashSet<>();
-
     @OneToMany(mappedBy = "account")
     private List<Order> orders = new ArrayList<>();
 
     @OneToMany(mappedBy = "account")
     private List<RequestSellingProduct> requests = new ArrayList<>();
+
+    @OneToMany(mappedBy = "transactionCreator")
+    private List<Transactions> transactionCreator = new ArrayList<>();
+
+    @OneToMany(mappedBy = "transactionApprover")
+    private List<Transactions> transactionApprover = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "role_id")

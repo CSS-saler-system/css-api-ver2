@@ -70,7 +70,7 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
 
     @Transactional
     @Override
-    public UUID createRequestSellingProduct(RequestSellingProductCreatorDto dto) throws ExecutionException, JsonProcessingException, InterruptedException {
+    public UUID createRequestSellingProduct(RequestSellingProductCreatorDto dto) {
         Product product = this.productRepository.findById(dto.getProduct().getProductId())
                 .orElseThrow(() -> new RuntimeException("The product with id: " + dto.getProduct().getProductId() + " not found"));
 
@@ -106,6 +106,7 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
     @Override
     public PageImplResDto<RequestSellingProductResDto> getAllRequestByStatus(
             UUID enterpriseId, RequestStatus status, Integer pageNumber, Integer pageSize) {
+
         pageSize = Objects.nonNull(pageSize) && pageSize > 1 ? pageSize : 10;
         pageNumber = Objects.nonNull(pageNumber) && pageNumber > 1 ? pageNumber : 1;
 

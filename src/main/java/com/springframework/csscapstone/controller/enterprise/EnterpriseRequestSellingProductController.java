@@ -30,9 +30,9 @@ public class EnterpriseRequestSellingProductController {
         return ok(requestSellingProductService.getAllRequestByStatus(enterpriseId, status, pageSize, pageNumber));
     }
 
-    @PutMapping(V2_UPDATE_REQUEST + "/{id}")
+    @PutMapping(V2_UPDATE_REQUEST + "/{idRequest}")
     public ResponseEntity<?> updateStatusRequest(
-            @PathVariable("id") UUID idRequest,
+            @PathVariable("idRequest") UUID idRequest,
             @RequestParam(value = "status") RequestStatus status) {
         return ok(this.requestSellingProductService.updateProduct(idRequest, status));
     }

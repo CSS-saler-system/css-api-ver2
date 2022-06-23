@@ -14,12 +14,13 @@ import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 public class TransactionsCreatorReqDto implements Serializable {
 //    private final List<BillImageBasicDto> billImage;
     private final double point;
-    private final Set<AccountNestedTransactionDto> account;
+    private final AccountNestedTransactionDto creator;
 
     @JsonCreator(mode = PROPERTIES)
-    public TransactionsCreatorReqDto(double point, Set<AccountNestedTransactionDto> account) {
+    public TransactionsCreatorReqDto(
+            double point, AccountNestedTransactionDto creator) {
         this.point = point;
-        this.account = account;
+        this.creator = creator;
     }
 
     @Data

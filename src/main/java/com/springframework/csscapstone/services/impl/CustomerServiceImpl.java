@@ -70,11 +70,11 @@ public class CustomerServiceImpl implements CustomerService {
     //TODO update Customer
     @Override
     public UUID updateCustomer(CustomerUpdaterReqDto dto) {
-        Account accountUpdator = this.accountRepository.findById(dto.getAccountUpdater().getId())
+        Account accountUpdator = this.accountRepository.findById(dto.getAccountUpdater().getAccountId())
                 .orElseThrow(getAccountNotFoundExceptionSupplier());
 
         Customer customer = this.customerRepository
-                .findById(dto.getId())
+                .findById(dto.getCustomerId())
                 .orElseThrow(getCustomerNotFoundExceptionSupplier());
 
         customer

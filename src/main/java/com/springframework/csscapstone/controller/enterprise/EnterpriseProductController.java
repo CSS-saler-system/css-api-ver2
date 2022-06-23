@@ -47,8 +47,9 @@ public class EnterpriseProductController {
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
     private final ProductCreatorConvertor productCreatorConvertor;
 
-    @GetMapping(V2_LIST_PRODUCT)
+    @GetMapping(V2_PRODUCT_LIST + "/{idEnterprise}")
     public ResponseEntity<?> getListProductDto(
+            @PathVariable("idEnterprise") UUID idEnterprise,
             @RequestParam(value = "productName", required = false) String name,
             @RequestParam(value = "brand", required = false) String brand,
             @RequestParam(value = "inStock", required = false) Long inStock,
@@ -60,15 +61,15 @@ public class EnterpriseProductController {
             @RequestParam(value = "page_number", required = false) Integer pageNumber,
             @RequestParam(value = "page_size", required = false) Integer pageSize
     ) {
-        PageImplResDto<ProductResDto> result = productService.findAllProduct(
-                name, brand, inStock, minPrice, maxPrice,
-                minPointSale, maxPointSale, productStatus,
-                pageNumber, pageSize);
+        PageImplResDto<ProductResDto> result = productService
+                .findAllProductByIdEnterprise(
+                        idEnterprise, name, brand, inStock, minPrice, maxPrice,
+                        minPointSale, maxPointSale, productStatus, pageNumber, pageSize);
         return ok(result);
     }
 
     @SneakyThrows
-    @GetMapping(V2_COUNT_LIST_PRODUCT + "/{enterprise_id}")
+    @GetMapping(V2_PRODUCT_COUNT_LIST + "/{idEnterprise}")
     public ResponseEntity<?> getListTotalNumberOfProduct(
             @PathVariable("enterprise_id") UUID enterpriseId,
 
@@ -87,44 +88,39 @@ public class EnterpriseProductController {
         LocalDate end = LocalDate.parse(endDate, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         LOGGER.info("The start date {}", start);
         LOGGER.info("The end date {}", end);
-        PageImplResDto<ProductCountOrderResDto> page = this
-                .productService
-                .getListProductWithCountOrder(
-                        enterpriseId, start, end,
-                        pageNumber, pageSize);
+        PageImplResDto<ProductCountOrderResDto> page =
+                this.productService.getListProductWithCountOrder(enterpriseId, start, end, pageNumber, pageSize);
         return ok(page);
 
     }
 
-    @GetMapping(V2_GET_PRODUCT + "/{id}")
-    public ResponseEntity<?> getProductById(@PathVariable("id") UUID id) throws ProductNotFoundException {
-        return ok(productService.findById(id));
+    @GetMapping(V2_PRODUCT_GET + "/{idProduct}")
+    public ResponseEntity<?> getProductById(@PathVariable("idProduct") UUID idProduct) throws ProductNotFoundException {
+        return ok(productService.findById(idProduct));
     }
 
-    @PostMapping(value = V2_CREATE_PRODUCT,
-            consumes = {"multipart/form-data"})
+    @PostMapping(value = V2_PRODUCT_CREATE, consumes = {"multipart/form-data"})
     public ResponseEntity<?> addNewProduct(
             @RequestPart(value = "type_image") @Valid MultipartFile[] typeImages,
             @RequestPart(value = "certification_image") @Valid MultipartFile[] certificationImages,
             @RequestPart(value = "product") String dto
     ) throws ProductInvalidException, AccountNotFoundException, IOException {
-        List<MultipartFile> collect = Stream.of(typeImages).collect(Collectors.toList());
-        List<MultipartFile> _collect = Stream.of(certificationImages).collect(Collectors.toList());
+        List<MultipartFile> types = Stream.of(typeImages).collect(Collectors.toList());
+        List<MultipartFile> certifications = Stream.of(certificationImages).collect(Collectors.toList());
         ProductCreatorReqDto productCreatorReqDto = this.productCreatorConvertor.convert(dto);
-        return ok(this.productService.createProduct(productCreatorReqDto, collect, _collect));
+        return ok(this.productService.createProduct(productCreatorReqDto, types, certifications));
     }
 
-    @PutMapping(value = V2_UPDATE_PRODUCT, consumes = {MULTIPART_FORM_DATA_VALUE})
+    @PutMapping(value = V2_PRODUCT_UPDATE, consumes = {MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> updateProduct(
-            @RequestPart String dto,
-            @RequestPart List<MultipartFile> normalType,
+            @RequestPart String dto, @RequestPart List<MultipartFile> normalType,
             @RequestPart List<MultipartFile> certificationType) throws JsonProcessingException {
         ProductUpdaterReqDto object = new ObjectMapper().readValue(dto, ProductUpdaterReqDto.class);
         return ok(this.productService.updateProductDto(object, normalType, certificationType));
     }
 
-    @DeleteMapping(V2_DELETE_PRODUCT + "/{id}")
-    public ResponseEntity<String> disableProduct(@PathVariable("id") UUID id) {
+    @DeleteMapping(V2_PRODUCT_DELETE + "/{idProduct}")
+    public ResponseEntity<String> disableProduct(@PathVariable("idProduct") UUID id) {
         this.productService.disableProduct(id);
         return ResponseEntity.ok(MessagesUtils.getMessage(MessageConstant.REQUEST_SUCCESS));
     }

@@ -4,6 +4,7 @@ import com.springframework.csscapstone.data.dao.specifications.TransactionSpecif
 import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.BillImage;
 import com.springframework.csscapstone.data.domain.Transactions;
+import com.springframework.csscapstone.data.domain.Transactions_;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.data.repositories.BillImageRepository;
 import com.springframework.csscapstone.data.repositories.TransactionsRepository;
@@ -28,6 +29,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -53,12 +58,16 @@ public class TransactionServicesImpl implements TransactionServices {
 
     @Override
     public PageImplResDto<TransactionsResDto> getAllTransaction(
-            LocalDateTime createDate, LocalDateTime modifiedDate,
+            UUID idEnterprise, LocalDateTime createDate, LocalDateTime modifiedDate,
             Integer pageNumber, Integer pageSize) {
 
         Specification<Transactions> condition = Specification
-                .where(Objects.isNull(createDate) ? null : TransactionSpecifications.afterDate(createDate))
-                .and(Objects.isNull(modifiedDate) ? null : TransactionSpecifications.beforeDate(modifiedDate));
+                .where(TransactionSpecifications.equalId(idEnterprise))
+                .and(Objects.isNull(createDate) ? null : TransactionSpecifications.afterDate(createDate))
+                .and(Objects.isNull(modifiedDate) ? null : TransactionSpecifications.beforeDate(modifiedDate))
+                //todo transactions not having disable status
+                .and((root, query, criteriaBuilder) -> criteriaBuilder
+                        .notEqual(root.get(Transactions_.TRANSACTION_STATUS), TransactionStatus.DISABLED));
 
         pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
@@ -76,37 +85,41 @@ public class TransactionServicesImpl implements TransactionServices {
                 page.getTotalElements(), page.getTotalPages(),
                 page.isFirst(), page.isLast());
     }
+//                .filter(transactions -> !transactions.getTransactionStatus().equals(TransactionStatus.DISABLED))
 
     @Override
     public Optional<TransactionsResDto> getTransactionById(UUID id) {
         TransactionsResDto transactionsResDto = this.transactionsRepository.findById(id)
+                .filter(transactions -> !transactions.getTransactionStatus().equals(TransactionStatus.DISABLED))
                 .map(MapperDTO.INSTANCE::toTransactionsResDto)
                 .orElseThrow(() -> new TransactionNotFoundException("The transaction with id: " + id + " not found"));
         return Optional.of(transactionsResDto);
     }
 
+    //todo Enterprise create transaction
     @Transactional
     @Override
     public UUID createTransaction(TransactionsCreatorReqDto dto, List<MultipartFile> images) {
-        Set<Account> accounts = dto.getAccount()
-                .stream()
-                .map(x -> this.accountRepository.findById(x.getId())
-                        .orElseThrow(() -> new EntityNotFoundException("The json not have id of account!!!")))
-                .collect(Collectors.toSet());
+        Account accounts = this.accountRepository
+                .findById(dto.getCreator().getId())
+                .orElseThrow(() -> new EntityNotFoundException("The json not have id of account!!!"));
+
         Transactions entity = new Transactions()
                 .setPoint(dto.getPoint())
-                .addAccount(accounts)
+                .setTransactionCreator(accounts)
                 .setTransactionStatus(TransactionStatus.PENDING);
+
         Transactions savedTransaction = this.transactionsRepository.save(entity);
+
         //save images:
         Optional<BillImage> billImage = handlerImages(images, savedTransaction.getId());
 
         billImage.ifPresent(image -> {
-            entity.addImages(image);
-            this.transactionsRepository.save(entity);
+            savedTransaction.addImages(image);
+            this.transactionsRepository.save(savedTransaction);
         });
 
-        return entity.getId();
+        return savedTransaction.getId();
     }
 
     public Optional<BillImage> handlerImages(List<MultipartFile> images, UUID id) {
@@ -125,6 +138,7 @@ public class TransactionServicesImpl implements TransactionServices {
                 .findFirst();
     }
 
+    //todo enterprise update transasction
     @Transactional
     @Override
     public UUID updateTransaction(TransactionsUpdateReqDto dto, List<MultipartFile> images) {
@@ -139,8 +153,10 @@ public class TransactionServicesImpl implements TransactionServices {
                         .orElseThrow(() -> new EntityNotFoundException("The account inside transaction dto not found")))
                 .collect(Collectors.toSet());
 
-        transactions.setPoint(dto.getPoint())
-                .setAccount(accounts)
+        transactions
+                .setPoint(dto.getPoint())
+//                todo creator
+//                .setTransactionApprover(accounts)
                 .setTransactionStatus(dto.getStatus());
         Optional<BillImage> billImage = handlerImages(images, transactions.getId());
         billImage.ifPresent(image -> {
@@ -150,20 +166,16 @@ public class TransactionServicesImpl implements TransactionServices {
 
         return transactions.getId();
     }
-
+    //todo moderator create point for enterprise
+    @Transactional
     @Override
     public UUID acceptedTransaction(UUID idTransaction) {
         Transactions transactions = this.transactionsRepository.findById(idTransaction)
                 .orElseThrow(() -> new RuntimeException("The transaction with id: " + idTransaction + " not found"));
 
-        Optional<Account> enterprise = transactions.getAccount()
-                .stream().filter(acc -> acc.getRole().getName().equals("Enterprise"))
-                .findFirst();
-
-        enterprise.ifPresent(_enterprise ->  {
-            _enterprise.setPoint(_enterprise.getPoint() + transactions.getPoint());
-            this.accountRepository.save(_enterprise);
-        });
+        Account enterprise = transactions.getTransactionCreator();
+        enterprise.setPoint(enterprise.getPoint() + transactions.getPoint());
+        this.accountRepository.save(enterprise);
 
         transactions.setTransactionStatus(TransactionStatus.ACCEPT);
         return this.transactionsRepository.save(transactions).getId();

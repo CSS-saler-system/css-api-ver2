@@ -30,11 +30,11 @@ public class CustomerCreatorReqDto implements Serializable {
     @JsonFormat(pattern = "yyyy/MM/dd")
     private final LocalDate dob;
 
-    private final AccountInnerCustomerCreatorDto accountCreator;
 
     @NotEmpty(message = "The description must not be empty")
     private final String description;
 
+    private final AccountInnerCustomerCreatorDto accountCreator;
     @JsonCreator
     public CustomerCreatorReqDto(
             @JsonProperty("name") String name,

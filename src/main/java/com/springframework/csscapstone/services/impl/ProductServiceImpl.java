@@ -67,6 +67,35 @@ public class ProductServiceImpl implements ProductService {
     private final OrderDetailRepository orderDetailRepository;
 
     @Override
+    public PageImplResDto<ProductResDto> findAllProductByIdEnterprise(
+            UUID idEnterprise, String name, String brand, Long inStock, Double minPrice, Double maxPrice,
+            Double minPoint, Double maxPoint, ProductStatus productStatus,
+            Integer pageNumber, Integer pageSize) {
+
+        Specification<Product> search = Specification
+                .where(ProductSpecifications.idEnterprise(idEnterprise))
+                .and(StringUtils.isBlank(name) ? null : ProductSpecifications.nameContains(name))
+                .and(StringUtils.isBlank(brand) ? null : ProductSpecifications.brandContains(brand))
+                .and(Objects.isNull(minPrice) ? null : ProductSpecifications.priceGreaterThan(minPrice))
+                .and(Objects.isNull(maxPrice) ? null : ProductSpecifications.priceLessThan(maxPrice))
+                .and(Objects.isNull(minPoint) ? null : ProductSpecifications.pointGreaterThan(minPoint))
+                .and(Objects.isNull(maxPoint) ? null : ProductSpecifications.pointLessThan(maxPoint))
+                .and(Objects.isNull(productStatus) ? null : ProductSpecifications.statusEquals(productStatus));
+
+        pageSize = Objects.isNull(pageSize) || (pageSize <= 1) ? 50 : pageSize;
+        pageNumber = Objects.isNull(pageNumber) || (pageNumber <= 1) ? 1 : pageNumber;
+
+        Page<Product> page = this.productRepository.findAll(search, PageRequest.of(pageNumber - 1, pageSize));
+
+        List<ProductResDto> data = page.stream().map(MapperDTO.INSTANCE::toProductResDto).collect(toList());
+
+        return new PageImplResDto<>(
+                data, page.getNumber() + 1, page.getSize(),
+                page.getTotalElements(), page.getTotalPages(),
+                page.isFirst(), page.isLast());
+    }
+
+    @Override
     public PageImplResDto<ProductResDto> findAllProduct(
             String name, String brand, Long inStock, Double minPrice, Double maxPrice,
             Double minPoint, Double maxPoint, ProductStatus productStatus,
@@ -244,11 +273,11 @@ public class ProductServiceImpl implements ProductService {
         collect.forEach(blobUploadImages::azureProductStorageHandler);
 
         return Optional.of(collect.keySet()
-                .stream()
+                        .stream()
 //                 .map(x -> endpoint + productContainer + "/" + x)
-                .map(name -> new ProductImage(type, endpoint + this.productContainer + "/" + name))
-                .peek(this.imageRepository::save)
-                .toArray(ProductImage[]::new)
+                        .map(name -> new ProductImage(type, endpoint + this.productContainer + "/" + name))
+                        .peek(this.imageRepository::save)
+                        .toArray(ProductImage[]::new)
         );
 
     }
