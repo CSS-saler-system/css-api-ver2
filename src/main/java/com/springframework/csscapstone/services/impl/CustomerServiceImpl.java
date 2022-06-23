@@ -73,9 +73,17 @@ public class CustomerServiceImpl implements CustomerService {
         Account accountUpdator = this.accountRepository.findById(dto.getAccountUpdater().getAccountId())
                 .orElseThrow(getAccountNotFoundExceptionSupplier());
 
+
+
         Customer customer = this.customerRepository
                 .findById(dto.getCustomerId())
                 .orElseThrow(getCustomerNotFoundExceptionSupplier());
+
+        this.customerRepository.getCustomerByPhone(dto.getPhone())
+                .ifPresent(x -> {
+                    if (!customer.getId().equals(x.getId()))
+                        throw new CustomerExistedException("The Phone number was existed");
+                });
 
         customer
                 .setAddress(dto.getAddress())
