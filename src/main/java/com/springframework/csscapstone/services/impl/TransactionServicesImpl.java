@@ -101,7 +101,7 @@ public class TransactionServicesImpl implements TransactionServices {
     @Override
     public UUID createTransaction(TransactionsCreatorReqDto dto, List<MultipartFile> images) {
         Account accounts = this.accountRepository
-                .findById(dto.getCreator().getId())
+                .findById(dto.getCreator().getAccountId())
                 .orElseThrow(() -> new EntityNotFoundException("The json not have id of account!!!"));
 
         Transactions entity = new Transactions()
@@ -196,6 +196,7 @@ public class TransactionServicesImpl implements TransactionServices {
     @Override
     public void deleteTransaction(UUID id) {
         Transactions transactions = this.transactionsRepository.findById(id)
+                .filter(transaction -> !transaction.getTransactionStatus().equals(TransactionStatus.DISABLED))
                 .orElseThrow(() -> new TransactionNotFoundException("The transaction with id: " + id + " not found"));
 
         this.transactionsRepository.save(transactions.setTransactionStatus(TransactionStatus.DISABLED));

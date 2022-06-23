@@ -17,39 +17,29 @@ public class TransactionsCreatorReqDto implements Serializable {
     private final AccountNestedTransactionDto creator;
 
     @JsonCreator(mode = PROPERTIES)
-    public TransactionsCreatorReqDto(
-            double point, AccountNestedTransactionDto creator) {
+    public TransactionsCreatorReqDto(@JsonProperty("point") double point,
+                                     @JsonProperty("creator") AccountNestedTransactionDto creator) {
         this.point = point;
         this.creator = creator;
     }
 
     @Data
     public static class AccountNestedTransactionDto implements Serializable {
-        private final UUID id;
-        private final String name;
-        private final RoleInnerTransactionCreatorDto role;
+        private final UUID accountId;
 
         @JsonCreator(mode = PROPERTIES)
         public AccountNestedTransactionDto(
-                @JsonProperty("id") UUID id,
-                @JsonProperty("name") String name,
-                @JsonProperty("role") RoleInnerTransactionCreatorDto role) {
-            this.id = id;
-            this.name = name;
-            this.role = role;
+                @JsonProperty("accountId") UUID accountId) {
+            this.accountId = accountId;
         }
 
-        @Data
-        public static class RoleInnerTransactionCreatorDto implements Serializable {
-            private final String id;
-            private final String name;
+    }
 
-            public RoleInnerTransactionCreatorDto(
-                    @JsonProperty("id") String id,
-                    @JsonProperty("name") String name) {
-                this.id = id;
-                this.name = name;
-            }
-        }
+    @Override
+    public String toString() {
+        return "TransactionsCreatorReqDto{" +
+                "point=" + point +
+                ", creator=" + creator +
+                '}';
     }
 }

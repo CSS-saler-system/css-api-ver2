@@ -59,15 +59,14 @@ public class EnterpriseTransactionController {
             LocalDateTime modifiedDate,
             @RequestParam(value = "page_number", required = false) Integer pageNumber,
             @RequestParam(value = "page_size", required = false) Integer pageSize) {
-        return ok(transactionServices
-                .getAllTransaction(idEnterprise, createDate, modifiedDate, pageNumber, pageSize));
+        return ok(transactionServices.getAllTransaction(idEnterprise, createDate, modifiedDate, pageNumber, pageSize));
     }
 
-    @GetMapping(V2_TRANSACTION_GET + "/{id}")
-    public ResponseEntity<?> getTransactionById(@PathVariable UUID id) {
-        Optional<TransactionsResDto> transactionById = this.transactionServices.getTransactionById(id);
+    @GetMapping(V2_TRANSACTION_GET + "/{transactionId}")
+    public ResponseEntity<?> getTransactionById(@PathVariable UUID transactionId) {
+        Optional<TransactionsResDto> transactionById = this.transactionServices.getTransactionById(transactionId);
         TransactionsResDto transactionsResDto = transactionById.orElseThrow(
-                () -> new TransactionNotFoundException("The transaction with id: " + id + " not found"));
+                () -> new TransactionNotFoundException("The transaction with transactionId: " + transactionId + " not found"));
         return ok(transactionsResDto);
     }
 
@@ -84,15 +83,9 @@ public class EnterpriseTransactionController {
         return ok(uuid);
     }
 
-    @PutMapping(V2_TRANSACTION_REJECT + "/{id}")
-    public ResponseEntity<?> rejectTransaction(@PathVariable("id") UUID id) {
-        UUID uuid = this.transactionServices.rejectTransaction(id);
-        return ok(uuid);
-    }
-
-    @DeleteMapping(V2_TRANSACTION_DELETE + "/{id}")
-    public ResponseEntity<?> deleteTransaction(@PathVariable("id") UUID id) {
-        this.transactionServices.deleteTransaction(id);
+    @DeleteMapping(V2_TRANSACTION_DELETE + "/{transactionId}")
+    public ResponseEntity<?> deleteTransaction(@PathVariable("transactionId") UUID transactionId) {
+        this.transactionServices.deleteTransaction(transactionId);
         return ok(MessagesUtils.getMessage(MessageConstant.REQUEST_SUCCESS));
     }
 
