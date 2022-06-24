@@ -22,7 +22,6 @@ public interface TransactionsRepository
 
 
     @Query("SELECT t FROM Transactions t where t.transactionStatus = 'PENDING'")
-    Page<Transactions> findAllByPendingStatus(Pageable pageable
-    );
+    Page<Transactions> findAllByPendingStatus(Pageable pageable);
 
 }

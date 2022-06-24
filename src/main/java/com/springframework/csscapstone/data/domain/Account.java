@@ -107,10 +107,10 @@ public class Account {
     private List<RequestSellingProduct> requests = new ArrayList<>();
 
     @OneToMany(mappedBy = "transactionCreator")
-    private List<Transactions> transactionCreator = new ArrayList<>();
+    private List<Transactions> transactionsCreatedList = new ArrayList<>();
 
     @OneToMany(mappedBy = "transactionApprover")
-    private List<Transactions> transactionApprover = new ArrayList<>();
+    private List<Transactions> transactionApprovedList = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "role_id")

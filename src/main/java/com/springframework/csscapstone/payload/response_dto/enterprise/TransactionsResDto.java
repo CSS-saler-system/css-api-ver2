@@ -1,6 +1,7 @@
 package com.springframework.csscapstone.payload.response_dto.enterprise;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
@@ -18,7 +19,7 @@ import java.util.UUID;
 
 @Data
 public class TransactionsResDto implements Serializable {
-    private final UUID id;
+    private final UUID transactionId;
 
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
@@ -33,13 +34,41 @@ public class TransactionsResDto implements Serializable {
     private final List<BillImageBasicDto> billImage;
     private final double point;
     private final TransactionStatus transactionStatus;
-    private final AccountDto transactionCreator;
-    private final AccountDto transactionApprover;
+    private final AccountInnerTransactionResDto transactionCreator;
+    private final AccountInnerTransactionResDto transactionApprover;
+
+    public TransactionsResDto(
+            @JsonProperty("transactionId") UUID transactionId,
+            @JsonProperty("createTransactionDate") LocalDateTime createTransactionDate,
+            @JsonProperty("lastModifiedDate") LocalDateTime lastModifiedDate,
+            @JsonProperty("billImage") List<BillImageBasicDto> billImage,
+            @JsonProperty("point") double point,
+            @JsonProperty("transactionStatus") TransactionStatus transactionStatus,
+            @JsonProperty("transactionCreator") AccountInnerTransactionResDto transactionCreator,
+            @JsonProperty("transactionApprover") AccountInnerTransactionResDto transactionApprover) {
+        this.transactionId = transactionId;
+        this.createTransactionDate = createTransactionDate;
+        LastModifiedDate = lastModifiedDate;
+        this.billImage = billImage;
+        this.point = point;
+        this.transactionStatus = transactionStatus;
+        this.transactionCreator = transactionCreator;
+        this.transactionApprover = transactionApprover;
+    }
 
     @Data
-    public static class AccountDto implements Serializable {
-        private final UUID id;
+    public static class AccountInnerTransactionResDto implements Serializable {
+        private final UUID accountId;
         private final String name;
         private final String email;
+
+        public AccountInnerTransactionResDto(
+                @JsonProperty("accountId") UUID accountId,
+                @JsonProperty("name") String name,
+                @JsonProperty("email") String email) {
+            this.accountId = accountId;
+            this.name = name;
+            this.email = email;
+        }
     }
 }

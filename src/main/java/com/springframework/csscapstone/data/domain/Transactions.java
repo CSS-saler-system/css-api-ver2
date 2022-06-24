@@ -1,12 +1,5 @@
 package com.springframework.csscapstone.data.domain;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.springframework.csscapstone.data.status.TransactionStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -87,13 +80,13 @@ public class Transactions {
 
     public Transactions addCreators(Account transactionCreator) {
         this.setTransactionCreator(transactionCreator);
-        transactionCreator.getTransactionCreator().add(this);
+        transactionCreator.getTransactionsCreatedList().add(this);
         return this;
     }
 
     public Transactions addApprover(Account transactionApprover) {
         this.setTransactionApprover(transactionApprover);
-        transactionApprover.getTransactionApprover().add(this);
+        transactionApprover.getTransactionApprovedList().add(this);
         return this;
     }
 

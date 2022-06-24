@@ -46,18 +46,6 @@ public class EnterpriseTransactionController {
     @GetMapping(V2_TRANSACTION_LIST + "/{idEnterprise}")
     public ResponseEntity<?> getAllTransactionExcludeDisableStatus(
             @PathVariable("idEnterprise") UUID idEnterprise,
-//            @RequestParam(value = "start_date", required = false, defaultValue = "1999/06/08 00:00:00")
-//            @JsonFormat(
-//                    shape = JsonFormat.Shape.STRING,
-//                    pattern = "yyyy/MM/dd HH:mm:ss",
-//                    timezone = "America/New_York")
-//            LocalDateTime createDate,
-//            @RequestParam(value = "modified_date", required = false, defaultValue = "1999/06/08 00:00:00")
-//            @JsonFormat(
-//                    shape = JsonFormat.Shape.STRING,
-//                    pattern = "yyyy/MM/dd HH:mm:ss",
-//                    timezone = "America/New_York")
-//            LocalDateTime modifiedDate,
             @RequestParam(value = "createDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createDate,
             @RequestParam(value = "modifiedDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime modifiedDate,
             @RequestParam(value = "page_number", required = false) Integer pageNumber,
