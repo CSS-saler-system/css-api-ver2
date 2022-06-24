@@ -187,6 +187,7 @@ public class AccountServiceImpl implements AccountService {
                 .setEmail(dto.getEmail())
                 .setPassword(passwordEncoder.encode(dto.getPassword()))
                 .setDescription(dto.getDescription())
+                .setPoint(0.0)
                 .setGender(dto.getGender()).setRole(role);
 
         //save on firebase

@@ -29,10 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -200,5 +196,17 @@ public class TransactionServicesImpl implements TransactionServices {
                 .orElseThrow(() -> new TransactionNotFoundException("The transaction with id: " + id + " not found"));
 
         this.transactionsRepository.save(transactions.setTransactionStatus(TransactionStatus.DISABLED));
+    }
+
+    @Override
+    public PageImplResDto<TransactionsResDto> getAllPendingStatusList(Integer pageNumber, Integer pageSize) {
+        pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
+        pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
+        Page<Transactions> page = this.transactionsRepository.findAllByPendingStatus(PageRequest.of(pageNumber - 1, pageSize));
+        List<TransactionsResDto> pageRes = page.getContent()
+                .stream().map(MapperDTO.INSTANCE::toTransactionsResDto)
+                .collect(Collectors.toList());
+        return new PageImplResDto<>(pageRes, page.getNumber(), pageRes.size(), page.getTotalElements(), page.getTotalPages(),
+                page.isFirst(), page.isLast());
     }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.TransactionsResDto;
 import com.springframework.csscapstone.services.TransactionServices;
+import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -11,10 +12,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
-import static com.springframework.csscapstone.config.constant.ApiEndPoint.Transaction.V4_TRANSACTION_HANDLER;
-import static com.springframework.csscapstone.config.constant.ApiEndPoint.Transaction.V4_TRANSACTION_LIST;
+import static com.springframework.csscapstone.config.constant.ApiEndPoint.Transaction.*;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
@@ -22,6 +23,22 @@ import static org.springframework.http.ResponseEntity.ok;
 @Tag(name = "Transaction (Moderator)")
 public class ModeratorTransactionController {
     private final TransactionServices transactionServices;
+
+    @GetMapping(V4_TRANSACTION_PENDING)
+    public ResponseEntity<?> listTransactionPendingList(
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize
+    ) {
+        PageImplResDto<TransactionsResDto> result = this.transactionServices.getAllPendingStatusList(pageNumber, pageSize);
+        return ok(result);
+    }
+
+    @GetMapping(V4_TRANSACTION_GET + "/{transactionId}")
+    public ResponseEntity<TransactionsResDto> getTransactionById(@PathVariable("transactionId") UUID transactionId){
+        Optional<TransactionsResDto> transactionById = this.transactionServices.getTransactionById(transactionId);
+        TransactionsResDto result = transactionById.orElseThrow(() -> new EntityNotFoundException("The transaction with id: " + transactionById + " was not found"));
+        return ok(result);
+    }
 
     @GetMapping(V4_TRANSACTION_LIST + "/{idEnterprise}")
     public ResponseEntity<?> listTransaction(

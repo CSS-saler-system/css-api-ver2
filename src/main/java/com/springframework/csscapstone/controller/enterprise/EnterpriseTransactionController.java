@@ -12,6 +12,7 @@ import com.springframework.csscapstone.utils.exception_utils.transaction_excepti
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -45,18 +46,20 @@ public class EnterpriseTransactionController {
     @GetMapping(V2_TRANSACTION_LIST + "/{idEnterprise}")
     public ResponseEntity<?> getAllTransactionExcludeDisableStatus(
             @PathVariable("idEnterprise") UUID idEnterprise,
-            @RequestParam(value = "start_date", required = false, defaultValue = "06/08/1999 00:00:00")
-            @JsonFormat(
-                    shape = JsonFormat.Shape.STRING,
-                    pattern = "MM-dd-yyyy hh:mm:ss",
-                    timezone = "America/New_York")
-            LocalDateTime createDate,
-            @RequestParam(value = "modified_date", required = false, defaultValue = "06/08/1999 00:00:00")
-            @JsonFormat(
-                    shape = JsonFormat.Shape.STRING,
-                    pattern = "MM-dd-yyyy hh:mm:ss",
-                    timezone = "America/New_York")
-            LocalDateTime modifiedDate,
+//            @RequestParam(value = "start_date", required = false, defaultValue = "1999/06/08 00:00:00")
+//            @JsonFormat(
+//                    shape = JsonFormat.Shape.STRING,
+//                    pattern = "yyyy/MM/dd HH:mm:ss",
+//                    timezone = "America/New_York")
+//            LocalDateTime createDate,
+//            @RequestParam(value = "modified_date", required = false, defaultValue = "1999/06/08 00:00:00")
+//            @JsonFormat(
+//                    shape = JsonFormat.Shape.STRING,
+//                    pattern = "yyyy/MM/dd HH:mm:ss",
+//                    timezone = "America/New_York")
+//            LocalDateTime modifiedDate,
+            @RequestParam(value = "createDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createDate,
+            @RequestParam(value = "modifiedDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime modifiedDate,
             @RequestParam(value = "page_number", required = false) Integer pageNumber,
             @RequestParam(value = "page_size", required = false) Integer pageSize) {
         return ok(transactionServices.getAllTransaction(idEnterprise, createDate, modifiedDate, pageNumber, pageSize));

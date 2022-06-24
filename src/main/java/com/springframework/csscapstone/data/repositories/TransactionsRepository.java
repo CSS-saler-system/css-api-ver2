@@ -20,4 +20,9 @@ public interface TransactionsRepository
 //            "WHERE NOT EXISTS (SELECT T1 FROM Transactions T1 WHERE T1.transactionStatus = 'DISABLED')")
 //    Page<Transactions> findAll(Pageable pageable);
 
+
+    @Query("SELECT t FROM Transactions t where t.transactionStatus = 'PENDING'")
+    Page<Transactions> findAllByPendingStatus(Pageable pageable
+    );
+
 }
