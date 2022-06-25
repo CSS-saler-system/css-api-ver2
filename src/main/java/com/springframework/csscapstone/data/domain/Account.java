@@ -223,4 +223,12 @@ public class Account {
     }
 
 
+    //=================Utils=========================
+    //=================Transaction===============
+    public Account addApproverTransaction(Transactions transactions) {
+        transactions.setTransactionApprover(this);
+        this.getTransactionApprovedList().add(transactions);
+        return this;
+    }
+
 }

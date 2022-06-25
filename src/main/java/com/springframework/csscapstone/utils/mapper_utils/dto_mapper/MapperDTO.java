@@ -52,7 +52,7 @@ public interface MapperDTO {
 
     RequestSellingProductResDto toRequestSellingProductResDto(RequestSellingProduct entity);
 
-    TransactionsResDto toTransactionsResDto(Transactions entity);
+    TransactionsDto toTransactionsResDto(Transactions entity);
 
     //TODO Response DTO
     //TODO [ROLE] - Collaborator

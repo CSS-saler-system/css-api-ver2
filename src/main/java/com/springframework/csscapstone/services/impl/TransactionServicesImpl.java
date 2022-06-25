@@ -9,10 +9,11 @@ import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.data.repositories.BillImageRepository;
 import com.springframework.csscapstone.data.repositories.TransactionsRepository;
 import com.springframework.csscapstone.data.status.TransactionStatus;
-import com.springframework.csscapstone.payload.request_dto.enterprise.TransactionsUpdateReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.TransactionsCreatorReqDto;
+import com.springframework.csscapstone.payload.request_dto.enterprise.TransactionsUpdateReqDto;
+import com.springframework.csscapstone.payload.request_dto.moderator.TransactionHandler;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
-import com.springframework.csscapstone.payload.response_dto.enterprise.TransactionsResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.TransactionsDto;
 import com.springframework.csscapstone.services.TransactionServices;
 import com.springframework.csscapstone.utils.blob_utils.BlobUploadImages;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
@@ -52,28 +53,32 @@ public class TransactionServicesImpl implements TransactionServices {
 
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
+    LocalDateTime defaultMinDate = LocalDateTime.of(1999, 6, 8, 12, 0, 0, 0);
+    LocalDateTime defaultMaxDate = LocalDateTime.of(2099, 6, 8, 12, 0, 0, 0);
+
+    @Transactional
     @Override
-    public PageImplResDto<TransactionsResDto> getAllTransaction(
-            UUID idEnterprise, LocalDateTime createDate, LocalDateTime modifiedDate,
+    public PageImplResDto<TransactionsDto> getAllTransaction(
+            UUID enterpriseId, LocalDateTime createDate, LocalDateTime modifiedDate,
             Integer pageNumber, Integer pageSize) {
 
-        Specification<Transactions> condition = Specification
-                .where(TransactionSpecifications.equalId(idEnterprise))
-                .and(Objects.isNull(createDate) ? null : TransactionSpecifications.afterDate(createDate))
-                .and(Objects.isNull(modifiedDate) ? null : TransactionSpecifications.beforeDate(modifiedDate))
-                //todo transactions not having disable status
-                .and((root, query, criteriaBuilder) -> criteriaBuilder
-                        .notEqual(root.get(Transactions_.TRANSACTION_STATUS), TransactionStatus.DISABLED));
+        this.accountRepository.findById(enterpriseId)
+                .filter(acc -> acc.getRole().getName().equals("Enterprise"))
+                .orElseThrow(() -> new EntityNotFoundException("The enterprise with id: " + enterpriseId + "was not found"));
+        createDate = Objects.isNull(createDate) ? defaultMinDate : createDate;
+        modifiedDate = Objects.isNull(modifiedDate) ? defaultMaxDate : modifiedDate;
 
         pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
 
         Page<Transactions> page = this.transactionsRepository
-                .findAll(condition, PageRequest.of(pageNumber - 1, pageSize));
-
-        List<TransactionsResDto> collect = page.getContent()
-                .stream().map(MapperDTO.INSTANCE::toTransactionsResDto)
-                .sorted(Comparator.comparing(TransactionsResDto::getLastModifiedDate))
+                .findAllByDate(enterpriseId, createDate, modifiedDate, PageRequest.of(pageNumber - 1, pageSize));
+        LOGGER.info("this is test :");
+        page.getContent().forEach(System.out::println);
+        List<TransactionsDto> collect = page.getContent()
+                .stream()
+                .sorted(Comparator.comparing(Transactions::getLastModifiedDate))
+                .map(MapperDTO.INSTANCE::toTransactionsResDto)
                 .collect(Collectors.toList());
 
         return new PageImplResDto<>(
@@ -81,11 +86,10 @@ public class TransactionServicesImpl implements TransactionServices {
                 page.getTotalElements(), page.getTotalPages(),
                 page.isFirst(), page.isLast());
     }
-//                .filter(transactions -> !transactions.getTransactionStatus().equals(TransactionStatus.DISABLED))
 
     @Override
-    public Optional<TransactionsResDto> getTransactionById(UUID id) {
-        TransactionsResDto transactionsResDto = this.transactionsRepository.findById(id)
+    public Optional<TransactionsDto> getTransactionById(UUID id) {
+        TransactionsDto transactionsResDto = this.transactionsRepository.findById(id)
                 .filter(transactions -> !transactions.getTransactionStatus().equals(TransactionStatus.DISABLED))
                 .map(MapperDTO.INSTANCE::toTransactionsResDto)
                 .orElseThrow(() -> new TransactionNotFoundException("The transaction with id: " + id + " not found"));
@@ -162,18 +166,29 @@ public class TransactionServicesImpl implements TransactionServices {
 
         return transactions.getId();
     }
+
     //todo moderator create point for enterprise
     @Transactional
     @Override
-    public UUID acceptedTransaction(UUID idTransaction) {
-        Transactions transactions = this.transactionsRepository.findById(idTransaction)
-                .orElseThrow(() -> new RuntimeException("The transaction with id: " + idTransaction + " not found"));
+    public UUID acceptedTransaction(TransactionHandler handler) {
+        Transactions transactions = this.transactionsRepository
+                .findById(handler.getTransactionId())
+                .orElseThrow(() -> new EntityNotFoundException("The transaction with id: " +
+                        handler.getTransactionId() + " not found"));
+
+        Account approver = accountRepository.findById(handler.getAccountApproverId())
+                .filter(appr -> appr.getRole().getName().equals("Moderator"))
+                .orElseThrow(() -> new EntityNotFoundException("The approver with id: " +
+                        handler.getAccountApproverId() + " not found"));
 
         Account enterprise = transactions.getTransactionCreator();
+
         enterprise.setPoint(enterprise.getPoint() + transactions.getPoint());
-        this.accountRepository.save(enterprise);
 
         transactions.setTransactionStatus(TransactionStatus.ACCEPT);
+
+        this.accountRepository.save(enterprise);
+        accountRepository.save(approver.addApproverTransaction(transactions));
         return this.transactionsRepository.save(transactions).getId();
     }
 
@@ -199,11 +214,11 @@ public class TransactionServicesImpl implements TransactionServices {
     }
 
     @Override
-    public PageImplResDto<TransactionsResDto> getAllPendingStatusList(Integer pageNumber, Integer pageSize) {
+    public PageImplResDto<TransactionsDto> getAllPendingStatusList(Integer pageNumber, Integer pageSize) {
         pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
         Page<Transactions> page = this.transactionsRepository.findAllByPendingStatus(PageRequest.of(pageNumber - 1, pageSize));
-        List<TransactionsResDto> pageRes = page.getContent()
+        List<TransactionsDto> pageRes = page.getContent()
                 .stream().map(MapperDTO.INSTANCE::toTransactionsResDto)
                 .collect(Collectors.toList());
         return new PageImplResDto<>(pageRes, page.getNumber(), pageRes.size(), page.getTotalElements(), page.getTotalPages(),

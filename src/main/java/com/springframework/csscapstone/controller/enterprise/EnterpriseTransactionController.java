@@ -1,12 +1,11 @@
 package com.springframework.csscapstone.controller.enterprise;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springframework.csscapstone.config.constant.MessageConstant;
-import com.springframework.csscapstone.payload.request_dto.enterprise.TransactionsUpdateReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.TransactionsCreatorReqDto;
-import com.springframework.csscapstone.payload.response_dto.enterprise.TransactionsResDto;
+import com.springframework.csscapstone.payload.request_dto.enterprise.TransactionsUpdateReqDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.TransactionsDto;
 import com.springframework.csscapstone.services.TransactionServices;
 import com.springframework.csscapstone.utils.exception_utils.transaction_exceptions.TransactionNotFoundException;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
@@ -55,8 +54,8 @@ public class EnterpriseTransactionController {
 
     @GetMapping(V2_TRANSACTION_GET + "/{transactionId}")
     public ResponseEntity<?> getTransactionById(@PathVariable UUID transactionId) {
-        Optional<TransactionsResDto> transactionById = this.transactionServices.getTransactionById(transactionId);
-        TransactionsResDto transactionsResDto = transactionById.orElseThrow(
+        Optional<TransactionsDto> transactionById = this.transactionServices.getTransactionById(transactionId);
+        TransactionsDto transactionsResDto = transactionById.orElseThrow(
                 () -> new TransactionNotFoundException("The transaction with transactionId: " + transactionId + " not found"));
         return ok(transactionsResDto);
     }
