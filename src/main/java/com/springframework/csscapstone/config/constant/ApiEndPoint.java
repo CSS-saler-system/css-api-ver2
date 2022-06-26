@@ -168,11 +168,12 @@ public class ApiEndPoint {
         private static final String v3_handler = COLLABORATOR + "/request_selling";
         private static final String v4_handler = MODERATOR + "/request_selling";
 
-        public static final String V2_LIST_REQUEST = v2_handler + "/list";
-        public static final String V2_UPDATE_REQUEST = v2_handler + "/update";
+        public static final String V2_REQUEST_LIST = v2_handler + "/enterprise/list";
+        public static final String V2_REQUEST_GET = v2_handler + "/get";
+        public static final String V2_REQUEST_UPDATE = v2_handler + "/accept";
         public static final String V3_REQUEST_CREATE = v3_handler + "/create";
         public static final String V3_LIST_REQUEST = v3_handler + "/list";
-        public static final String V3_REQUEST_GET_OWNER = v3_handler + "/update";
+        public static final String V3_REQUEST_GET_OWNER = v3_handler + "/get";
         public static final String V3_REQUEST_RETRIEVE = v3_handler + "/retrieve";
 
 //        public static final String V4_LIST_REQUEST = v4_ha

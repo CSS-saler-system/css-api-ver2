@@ -24,6 +24,11 @@ public class RequestSellingProductResDto implements Serializable {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
     private final LocalDateTime dateTimeRequest;
+
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
+    private final LocalDateTime modifiedDate;
     private final RequestStatus requestStatus;
     private final Long quantityProduct;
     private final ProductDto product;
@@ -32,11 +37,12 @@ public class RequestSellingProductResDto implements Serializable {
     public RequestSellingProductResDto(
             @JsonProperty("id") UUID id,
             @JsonProperty("dateTimeRequest") LocalDateTime dateTimeRequest,
-            @JsonProperty("requestStatus") RequestStatus requestStatus,
+            LocalDateTime modifiedDate, @JsonProperty("requestStatus") RequestStatus requestStatus,
             @JsonProperty("quantityProduct") Long quantityProduct,
             @JsonProperty("product") ProductDto product) {
         this.id = id;
         this.dateTimeRequest = dateTimeRequest;
+        this.modifiedDate = modifiedDate;
         this.requestStatus = requestStatus;
         this.quantityProduct = quantityProduct;
         this.product = product;

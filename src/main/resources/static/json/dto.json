@@ -1,0 +1,34 @@
+{
+  "id" : "c51e9cc8-d93f-432b-8af7-250487965407",
+  "createDate" : "2022/06/13 10:06:17",
+  "totalPrice" : 156.0,
+  "totalPointSale" : 156.0,
+  "customerName" : "HaoCG",
+  "deliveryPhone" : "+841234342134",
+  "deliveryAddress" : "Bien Hoa city, Ngo Quyen road",
+  "orderDetails" : [ {
+    "id" : "274f6188-7f40-4170-9936-8cb9b0900b27",
+    "nameProduct" : "LG Screen",
+    "productPrice" : 12.0,
+    "productPoint" : 12.0,
+    "quantity" : 13,
+    "totalPointProduct" : 156.0,
+    "totalPriceProduct" : 156.0,
+    "product" : {
+      "id" : "b7fbfa1f-2aa3-481e-a484-fb996a9a482a"
+    }
+  } ],
+  "account" : {
+    "id" : "f3fc7d6d-19c8-49ee-a2c3-a72d4a2b01a6",
+    "name" : null,
+    "phone" : "+84848620369"
+  },
+  "customer" : {
+    "id" : "ba15564b-8909-48dc-a957-f58836e1d39c",
+    "name" : "HaoCG",
+    "phone" : "123345123",
+    "address" : "string",
+    "dob" : "2022/05/18",
+    "description" : "This is test customer"
+  }
+}

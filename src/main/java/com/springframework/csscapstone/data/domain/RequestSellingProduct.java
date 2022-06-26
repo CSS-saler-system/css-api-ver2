@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -31,16 +32,16 @@ public class RequestSellingProduct {
     @Column(name = "date_time_request")
     private LocalDateTime dateTimeRequest;
 
+    @LastModifiedDate
+    private LocalDateTime modifiedDate;
+
     @Enumerated(EnumType.STRING)
     private RequestStatus requestStatus;
+
 
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
-
-//    @ManyToMany(mappedBy = "requests")
-//    private Set<Account> accounts = new HashSet<>();
-
     @ManyToOne
     @JoinColumn(name = "account_id")
     private Account account;

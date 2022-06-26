@@ -18,12 +18,12 @@ public interface RequestSellingProductService {
 
     //todo Enterprise role:
     //todo Collaborators role:
-    PageImplResDto<RequestSellingProductResDto> getAllRequestByIdCreator(UUID id, Integer pageNumber, Integer pageSize);
+    PageImplResDto<RequestSellingProductResDto> getAllRequestByIdCreatorByCollaborator(UUID id, RequestStatus status, Integer pageNumber, Integer pageSize);
 
     UUID createRequestSellingProduct(RequestSellingProductCreatorDto dto) throws AccountNotFoundException, ExecutionException, JsonProcessingException, InterruptedException;
 
     //todo Enterprise role:
-    PageImplResDto<RequestSellingProductResDto> getAllRequestByStatus(
+    PageImplResDto<RequestSellingProductResDto> getAllRequestByStatusAndEnterprise(
             UUID enterpriseId, RequestStatus status, Integer pageNumber, Integer pageSize);
 
     Optional<UUID> updateProduct(UUID idRequest, RequestStatus status);

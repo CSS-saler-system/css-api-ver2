@@ -1,11 +1,8 @@
 package com.springframework.csscapstone.services.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.config.firebase_config.FirebaseMessageService;
-import com.springframework.csscapstone.config.firebase_config.model.PushNotificationRequest;
 import com.springframework.csscapstone.data.domain.Account;
-import com.springframework.csscapstone.data.domain.AccountToken;
 import com.springframework.csscapstone.data.domain.Product;
 import com.springframework.csscapstone.data.domain.RequestSellingProduct;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
@@ -27,9 +24,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.security.auth.login.AccountNotFoundException;
-import java.util.*;
-import java.util.concurrent.ExecutionException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -53,13 +51,13 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
     }
 
     @Override
-    public PageImplResDto<RequestSellingProductResDto> getAllRequestByIdCreator(
-            UUID id, Integer pageNumber, Integer pageSize) {
+    public PageImplResDto<RequestSellingProductResDto> getAllRequestByIdCreatorByCollaborator(
+            UUID idCollaborator, RequestStatus status, Integer pageNumber, Integer pageSize) {
         pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 1 : pageSize;
 
         Page<RequestSellingProduct> page = this.requestSellingProductRepository
-                .findRequestSellingProductByCollaborator(id, PageRequest.of(pageNumber - 1, pageSize));
+                .findRequestSellingProductByCollaborator(idCollaborator, status, PageRequest.of(pageNumber - 1, pageSize));
 
         List<RequestSellingProductResDto> content = page.getContent()
                 .stream().map(MapperDTO.INSTANCE::toRequestSellingProductResDto).collect(Collectors.toList());
@@ -104,14 +102,14 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
     }
 
     @Override
-    public PageImplResDto<RequestSellingProductResDto> getAllRequestByStatus(
+    public PageImplResDto<RequestSellingProductResDto> getAllRequestByStatusAndEnterprise(
             UUID enterpriseId, RequestStatus status, Integer pageNumber, Integer pageSize) {
 
         pageSize = Objects.nonNull(pageSize) && pageSize > 1 ? pageSize : 10;
         pageNumber = Objects.nonNull(pageNumber) && pageNumber > 1 ? pageNumber : 1;
 
         Page<RequestSellingProduct> page = this.requestSellingProductRepository
-                .findAllByRequestStatus(enterpriseId, status, PageRequest.of(pageNumber - 1, pageSize));
+                .findAllByRequestStatusByEnterprise(enterpriseId, status, PageRequest.of(pageNumber - 1, pageSize));
         List<RequestSellingProductResDto> data = page
                 .getContent().stream()
                 .map(MapperDTO.INSTANCE::toRequestSellingProductResDto)
@@ -135,7 +133,8 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
 
     @Override
     public Optional<RequestSellingProductResDto> getRequestById(UUID uuid) {
-        return this.requestSellingProductRepository.findById(uuid)
+        return this.requestSellingProductRepository
+                .findById(uuid)
                 .map(MapperDTO.INSTANCE::toRequestSellingProductResDto);
     }
 

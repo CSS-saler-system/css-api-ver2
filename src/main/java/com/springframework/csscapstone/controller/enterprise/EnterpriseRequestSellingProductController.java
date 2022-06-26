@@ -1,7 +1,9 @@
 package com.springframework.csscapstone.controller.enterprise;
 
 import com.springframework.csscapstone.data.status.RequestStatus;
+import com.springframework.csscapstone.payload.response_dto.enterprise.RequestSellingProductResDto;
 import com.springframework.csscapstone.services.RequestSellingProductService;
+import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -9,8 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-import static com.springframework.csscapstone.config.constant.ApiEndPoint.RequestSellingProduct.V2_LIST_REQUEST;
-import static com.springframework.csscapstone.config.constant.ApiEndPoint.RequestSellingProduct.V2_UPDATE_REQUEST;
+import static com.springframework.csscapstone.config.constant.ApiEndPoint.RequestSellingProduct.*;
 import static org.springframework.http.ResponseEntity.ok;
 
 @Tag(name = "Request_Selling (Enterprise)")
@@ -20,21 +21,33 @@ public class EnterpriseRequestSellingProductController {
 
     private final RequestSellingProductService requestSellingProductService;
 
-    @GetMapping(V2_LIST_REQUEST + "/{enterpriseId}")
+    @GetMapping(V2_REQUEST_LIST + "/{enterpriseId}")
     public ResponseEntity<?> getListRequestSellingProduct(
             @PathVariable("enterpriseId") UUID enterpriseId,
             @RequestParam(value = "status", required = false) RequestStatus status,
-            @RequestParam(value = "page_size", required = false) Integer pageSize,
-            @RequestParam(value = "page_number", required = false) Integer pageNumber
+            @RequestParam(value = "pageSize", required = false) Integer pageSize,
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber
     ) {
-        return ok(requestSellingProductService.getAllRequestByStatus(enterpriseId, status, pageSize, pageNumber));
+        return ok(requestSellingProductService.getAllRequestByStatusAndEnterprise(enterpriseId, status, pageSize, pageNumber));
     }
 
-    @PutMapping(V2_UPDATE_REQUEST + "/{idRequest}")
+    @GetMapping(V2_REQUEST_GET + "/{requestId}")
+    public ResponseEntity<?> getRequestSellingProduct(@PathVariable("requestId") UUID requestId) {
+        RequestSellingProductResDto request = this.requestSellingProductService
+                .getRequestById(requestId)
+                .orElseThrow(() -> new EntityNotFoundException("The request with id: " + requestId + " was not found"));
+        return ok(request);
+    }
+
+    @PutMapping(V2_REQUEST_UPDATE + "/{idRequest}")
     public ResponseEntity<?> updateStatusRequest(
             @PathVariable("idRequest") UUID idRequest,
             @RequestParam(value = "status") RequestStatus status) {
-        return ok(this.requestSellingProductService.updateProduct(idRequest, status));
+        UUID id = this.requestSellingProductService
+                .updateProduct(idRequest, status)
+                .orElseThrow(() -> new EntityNotFoundException("The request selling with id: " + idRequest + "not found "));
+        return ok(id);
     }
 
 }
+

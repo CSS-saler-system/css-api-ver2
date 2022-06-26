@@ -15,19 +15,25 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public interface RequestSellingProductRepository extends JpaRepository<RequestSellingProduct, UUID> {
 
-    @Query(value = "SELECT r FROM RequestSellingProduct r WHERE r.account.id = :idCollaborator")
-    Page<RequestSellingProduct> findRequestSellingProductByCollaborator(UUID idCollaborator, Pageable pageable);
+    @Query(value = "" +
+            "SELECT r FROM RequestSellingProduct r " +
+            "WHERE r.account.id = :idCollaborator " +
+            "AND r.requestStatus = :status")
+    Page<RequestSellingProduct> findRequestSellingProductByCollaborator(
+            @Param("idCollaborator") UUID idCollaborator,
+            @Param("status") RequestStatus status,
+            Pageable pageable);
 
     // =============================== Enterprise ===========================================
     //todo Get request selling product by enterprise id
     @Query(value =
             "SELECT r FROM RequestSellingProduct r " +
-                    "JOIN r.account a " +
-                    "WHERE r.requestStatus = :requestStatus AND a.id = :enterpriseId",
+                    "LEFT JOIN r.product p " +
+                    "WHERE r.requestStatus = :requestStatus AND p.account.id = :enterpriseId",
             countQuery = "SELECT count(r) FROM RequestSellingProduct r " +
-                    "JOIN r.account a " +
-                    "WHERE r.requestStatus = :requestStatus AND a.id = :enterpriseId")
-    Page<RequestSellingProduct> findAllByRequestStatus(
+                    "JOIN r.product p " +
+                    "WHERE r.requestStatus = :requestStatus AND p.account.id = :enterpriseId")
+    Page<RequestSellingProduct> findAllByRequestStatusByEnterprise(
             @Param("enterpriseId") UUID enterpriseId,
             @Param("requestStatus") RequestStatus requestStatus,
             Pageable pageable);

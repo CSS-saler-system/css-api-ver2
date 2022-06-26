@@ -1,6 +1,7 @@
 package com.springframework.csscapstone.controller.collaborator;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.springframework.csscapstone.data.status.RequestStatus;
 import com.springframework.csscapstone.payload.request_dto.collaborator.RequestSellingProductCreatorDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.RequestSellingProductResDto;
@@ -28,7 +29,8 @@ public class CollaboratorRequestController {
     @PostMapping(V3_REQUEST_CREATE)
     public ResponseEntity<?> createRequestSellingProduct(
             @RequestBody RequestSellingProductCreatorDto dto
-    ) throws AccountNotFoundException, ExecutionException, JsonProcessingException, InterruptedException {
+    ) throws AccountNotFoundException, ExecutionException,
+            JsonProcessingException, InterruptedException {
         UUID id = requestSellingProductService.createRequestSellingProduct(dto);
         return ok(id);
     }
@@ -36,11 +38,12 @@ public class CollaboratorRequestController {
     @GetMapping(V3_REQUEST_GET_OWNER + "/{idCollaborator}")
     public ResponseEntity<?> getOwnerRequestSellingProduct(
             @PathVariable("idCollaborator") UUID idCollaborator,
-            @RequestParam("page_number") Integer pageNumber,
-            @RequestParam("page_size") Integer pageSize) {
+            @RequestParam(value = "requestStatus", defaultValue = "PENDING") RequestStatus status,
+            @RequestParam(value = "page_number", required = false) Integer pageNumber,
+            @RequestParam(value = "page_size", required = false) Integer pageSize) {
         PageImplResDto<RequestSellingProductResDto> allRequestByIdCreator =
                 this.requestSellingProductService
-                        .getAllRequestByIdCreator(idCollaborator, pageNumber, pageSize);
+                        .getAllRequestByIdCreatorByCollaborator(idCollaborator, status, pageNumber, pageSize);
         return ok(allRequestByIdCreator);
     }
 
