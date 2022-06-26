@@ -33,8 +33,8 @@ public class CollaboratorProductController {
             @RequestParam(value = "price", required = false) Double maxPrice,
             @RequestParam(value = "pointSale", required = false) Double minPointSale,
             @RequestParam(value = "pointSale", required = false) Double maxPointSale,
-            @RequestParam(value = "page_number", required = false) Integer pageNumber,
-            @RequestParam(value = "page_size", required = false) Integer pageSize
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize
     ) {
 
         PageImplResDto<ProductResDto> result = service.findAllProductByCollaborator(
@@ -43,8 +43,8 @@ public class CollaboratorProductController {
                 pageNumber, pageSize);
         return ok(result);
     }
-    @GetMapping(V3_GET_PRODUCT + "/{id}")
-    public ResponseEntity<?> getProductById(@PathVariable("id") UUID id) throws ProductNotFoundException {
+    @GetMapping(V3_GET_PRODUCT + "/{productId}")
+    public ResponseEntity<?> getProductById(@PathVariable("productId") UUID id) throws ProductNotFoundException {
         return ok(service.findById(id));
     }
 }

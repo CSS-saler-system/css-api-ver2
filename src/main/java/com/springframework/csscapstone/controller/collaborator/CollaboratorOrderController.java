@@ -24,9 +24,9 @@ import static org.springframework.http.ResponseEntity.ok;
 public class CollaboratorOrderController {
     private final OrderService orderService;
 
-    @GetMapping(V3_ORDER_LIST + "/{idCollaborator}")
+    @GetMapping(V3_ORDER_LIST + "/{collaboratorId}")
     public ResponseEntity<?> getPageOrderOfCollaborator(
-            @PathVariable("idCollaborator") UUID idCollaborator,
+            @PathVariable("collaboratorId") UUID idCollaborator,
             @RequestParam(value = "status", required = false, defaultValue = "WAITING") OrderStatus status,
             @RequestParam(value = "pageNumber", required = false, defaultValue = "1") Integer pageNumber,
             @RequestParam(value = "pageSize", required = false, defaultValue = "1") Integer pageSize
@@ -42,8 +42,8 @@ public class CollaboratorOrderController {
         return ok(order);
     }
 
-    @GetMapping(V3_ORDER_GET + "/{idOrder}")
-    public ResponseEntity<?> getOrderById(@PathVariable("idOrder") UUID id) {
+    @GetMapping(V3_ORDER_GET + "/{orderId}")
+    public ResponseEntity<?> getOrderById(@PathVariable("orderId") UUID id) {
         return ok(this.orderService.getOrderResDtoById(id));
     }
 
@@ -54,9 +54,9 @@ public class CollaboratorOrderController {
         return ok(uuid);
     }
 
-    @DeleteMapping(V3_ORDER_DELETE + "{idOrder}")
+    @DeleteMapping(V3_ORDER_DELETE + "{orderId}")
     public ResponseEntity<?> deleteOrderById(
-            @PathVariable("idOrder") UUID id
+            @PathVariable("orderId") UUID id
     ) {
         this.orderService.deleteOrder(id);
         return ok(MessagesUtils.getMessage(MessageConstant.REQUEST_SUCCESS));

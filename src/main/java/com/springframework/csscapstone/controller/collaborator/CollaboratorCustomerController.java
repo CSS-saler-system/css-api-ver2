@@ -34,8 +34,8 @@ public class CollaboratorCustomerController {
         return ok(this.customerService.findCustomerByPhone(phone));
     }
 
-    @GetMapping(V3_GET_CUSTOMER + "/{id}")
-    public ResponseEntity<?> getCustomerById(@PathVariable("id") UUID id) {
+    @GetMapping(V3_GET_CUSTOMER + "/{customerId}")
+    public ResponseEntity<?> getCustomerById(@PathVariable("customerId") UUID id) {
         return ok(this.customerService.getCustomerById(id));
     }
 

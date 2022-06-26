@@ -35,20 +35,20 @@ public class CollaboratorRequestController {
         return ok(id);
     }
 
-    @GetMapping(V3_REQUEST_GET_OWNER + "/{idCollaborator}")
+    @GetMapping(V3_REQUEST_GET_OWNER + "/{collaboratorId}")
     public ResponseEntity<?> getOwnerRequestSellingProduct(
-            @PathVariable("idCollaborator") UUID idCollaborator,
+            @PathVariable("collaboratorId") UUID idCollaborator,
             @RequestParam(value = "requestStatus", defaultValue = "PENDING") RequestStatus status,
-            @RequestParam(value = "page_number", required = false) Integer pageNumber,
-            @RequestParam(value = "page_size", required = false) Integer pageSize) {
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         PageImplResDto<RequestSellingProductResDto> allRequestByIdCreator =
                 this.requestSellingProductService
                         .getAllRequestByIdCreatorByCollaborator(idCollaborator, status, pageNumber, pageSize);
         return ok(allRequestByIdCreator);
     }
 
-    @GetMapping(V3_REQUEST_RETRIEVE + "/{idRequest}")
-    public ResponseEntity<?> getRequestById(@PathVariable("idRequest") UUID idRequest) {
+    @GetMapping(V3_REQUEST_RETRIEVE + "/{requestId}")
+    public ResponseEntity<?> getRequestById(@PathVariable("requestId") UUID idRequest) {
         RequestSellingProductResDto request = this.requestSellingProductService.getRequestById(idRequest)
                 .orElseThrow(() -> new EntityNotFoundException("The Request with: " + idRequest + "not found"));
         return ok(request);

@@ -36,18 +36,18 @@ public class CollaboratorCampaignController {
             @RequestParam(value = "campaignName", required = false) String campaignName,
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
-            @RequestParam(value = "min_kpi", required = false, defaultValue = "0") Long minKpi,
-            @RequestParam(value = "max_kpi", required = false, defaultValue = "0") Long maxKpi,
-            @RequestParam(value = "page_number", required = false, defaultValue = "0") Integer pageNumber,
-            @RequestParam(value = "max_size", required = false, defaultValue = "0") Integer pageSize
+            @RequestParam(value = "minKpi", required = false, defaultValue = "0") Long minKpi,
+            @RequestParam(value = "maxKpi", required = false, defaultValue = "0") Long maxKpi,
+            @RequestParam(value = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
+            @RequestParam(value = "maxSize", required = false, defaultValue = "0") Integer pageSize
     ) {
         PageImplResDto<CampaignResDto> campaign = campaignService.findCampaign(
                 campaignName, startDate, endDate, minKpi, maxKpi, CampaignStatus.PENDING,pageNumber, pageSize);
         return ResponseEntity.ok(campaign);
     }
 
-    @GetMapping(V3_GET_CAMPAIGN + "/{idCampaign}")
-    public ResponseEntity<?> getCampaignById(@PathVariable("idCampaign") UUID id) throws EntityNotFoundException {
+    @GetMapping(V3_GET_CAMPAIGN + "/{campaignId}")
+    public ResponseEntity<?> getCampaignById(@PathVariable("campaignId") UUID id) throws EntityNotFoundException {
         return ok(campaignService.findById(id));
     }
 }
