@@ -159,8 +159,7 @@ public class CategoryServiceImpl implements CategoryService {
     //    ==================Utils======================
     private Category createCategory(CategoryCreatorReqDto dto, Category x, Account account) {
         x.setCategoryName(dto.getCategoryName())
-                .setStatus(dto.getStatus())
-                .addAccount(account);
+                .setStatus(dto.getStatus());
         this.categoryRepository.save(x);
         this.accountRepository.save(account);
         return x;

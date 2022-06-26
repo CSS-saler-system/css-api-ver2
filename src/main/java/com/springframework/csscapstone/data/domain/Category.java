@@ -31,10 +31,10 @@ public class Category {
 
     @OneToMany(mappedBy = "category")
     private List<Product> products = new ArrayList<>();
-
-    @ManyToOne
-    @JoinColumn(name = "account_id")
-    private Account account;
+//
+//    @ManyToOne
+//    @JoinColumn(name = "account_id")
+//    private Account account;
 
     @Override
     public boolean equals(Object o) {
@@ -58,13 +58,5 @@ public class Category {
                 ", categoryName='" + categoryName + '\'' +
                 ", status=" + status +
                 '}';
-    }
-
-    //===========================================
-    //===================Utils Method============
-    public Category addAccount(Account account) {
-        account.getCategories().add(this);
-        this.setAccount(account);
-        return this;
     }
 }

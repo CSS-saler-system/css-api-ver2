@@ -28,8 +28,8 @@ import static org.springframework.http.ResponseEntity.ok;
 public class ModeratorCategoryController {
     private final CategoryService services;
 
-    @GetMapping(V4_GET_CATEGORY + "/{id}")
-    public ResponseEntity<CategoryResDto> getCategory(@PathVariable("id") UUID id) throws CategoryNotFoundException, EntityNotFoundException {
+    @GetMapping(V4_GET_CATEGORY + "/{categoryId}")
+    public ResponseEntity<CategoryResDto> getCategory(@PathVariable("categoryId") UUID id) throws CategoryNotFoundException, EntityNotFoundException {
         CategoryResDto category = this.services.findCategoryById(id);
         return ok(category);
     }

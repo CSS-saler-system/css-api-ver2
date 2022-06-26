@@ -37,16 +37,16 @@ public class AdminAccountController {
             @RequestParam(value = "phone", required = false) String phone,
             @RequestParam(value = "email", required = false) String email,
             @RequestParam(value = "address", required = false) String address,
-            @RequestParam(value = "page_number", required = false) Integer pageNumber,
-            @RequestParam(value = "page_size", required = false) Integer pageSize
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize
     ) {
 //        PageAccountDto page = service.getAccountDto(accountName, phone, email, address, pageSize, pageNumber);
         PageImplResDto<AccountResDto> page = service.getAccountDto(accountName, phone, email, address, pageSize, pageNumber);
         return ResponseEntity.ok(page);
     }
 
-    @GetMapping(V1_GET_ACCOUNT + "/{id}")
-    public ResponseEntity<?> getAccountById(@PathVariable("id") UUID id)
+    @GetMapping(V1_GET_ACCOUNT + "/{accountId}")
+    public ResponseEntity<?> getAccountById(@PathVariable("accountId") UUID id)
             throws AccountInvalidException, AccountNotFoundException {
         return ok(service.getById(id));
     }
@@ -61,7 +61,7 @@ public class AdminAccountController {
             @RequestPart("account") String dto,
             @RequestPart(value = "avatar", required = false)  MultipartFile avatars,
             @RequestPart(value = "license", required = false) MultipartFile licenses,
-            @RequestPart(value = "id_card", required = false) MultipartFile idCards
+            @RequestPart(value = "idCard", required = false) MultipartFile idCards
 
     ) throws AccountInvalidException, JsonProcessingException {
         AccountUpdaterJsonDto accountUpdaterJsonDto = new ObjectMapper().readValue(dto, AccountUpdaterJsonDto.class);
@@ -80,7 +80,7 @@ public class AdminAccountController {
             @RequestPart("account") String dto,
             @RequestPart(value = "avatar", required = false)  MultipartFile avatars,
             @RequestPart(value = "license", required = false) MultipartFile licenses,
-            @RequestPart(value = "id_card", required = false) MultipartFile idCards)
+            @RequestPart(value = "idCard", required = false) MultipartFile idCards)
             throws AccountExistException, AccountNotFoundException, JsonProcessingException, FirebaseAuthException {
         AccountCreatorReqDto accountCreatorReqDto = new ObjectMapper().readValue(dto, AccountCreatorReqDto.class);
         UUID account = service.createAccount(accountCreatorReqDto, avatars, licenses, idCards);
@@ -92,8 +92,8 @@ public class AdminAccountController {
      * @param id
      * @return
      */
-    @DeleteMapping(V1_DELETE_ACCOUNT + "/{id}")
-    public ResponseEntity<String> disableAccount(@PathVariable("id") UUID id) {
+    @DeleteMapping(V1_DELETE_ACCOUNT + "/{accountId}")
+    public ResponseEntity<String> disableAccount(@PathVariable("accountId") UUID id) {
         service.disableAccount(id);
         return ResponseEntity.ok(MessagesUtils.getMessage(MessageConstant.REQUEST_SUCCESS));
     }

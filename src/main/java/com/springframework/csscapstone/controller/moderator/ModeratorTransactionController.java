@@ -43,24 +43,23 @@ public class ModeratorTransactionController {
         return ok(result);
     }
 
-    @GetMapping(V4_TRANSACTION_LIST + "/{idEnterprise}")
+    @GetMapping(V4_TRANSACTION_LIST + "/{enterpriseId}")
     public ResponseEntity<?> listTransaction(
-            @PathVariable("idEnterprise") UUID idEnterprise,
+            @PathVariable("enterpriseId") UUID idEnterprise,
             @RequestParam(value = "createDate", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createDate,
             @RequestParam(value = "modifiedDate", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime modifiedDate,
-            @RequestParam(value = "page_number", required = false) Integer pageNumber,
-            @RequestParam(value = "page_size", required = false) Integer pageSize
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize
     ) {
         PageImplResDto<TransactionsDto> page = transactionServices
                 .getAllTransaction(idEnterprise, createDate, modifiedDate, pageNumber, pageSize);
         return ok(page);
     }
 
-    @PutMapping(V4_TRANSACTION_HANDLER + "/{idTransaction}")
+    @PutMapping(V4_TRANSACTION_HANDLER)
     public ResponseEntity<?> handledTransaction(
-//            @PathVariable("idTransaction") UUID idTransaction
             @RequestBody @Valid TransactionHandler transactionHanlder
             ) {
         UUID uuid = this.transactionServices.acceptedTransaction(transactionHanlder);

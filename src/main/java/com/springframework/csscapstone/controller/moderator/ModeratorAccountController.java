@@ -39,7 +39,7 @@ public class ModeratorAccountController {
             @RequestPart("account") String dto,
             @RequestPart(value = "avatar", required = false) MultipartFile avatars,
             @RequestPart(value = "license", required = false) MultipartFile licenses,
-            @RequestPart(value = "id_card", required = false) MultipartFile idCards
+            @RequestPart(value = "idCard", required = false) MultipartFile idCards
 
     ) throws AccountInvalidException, JsonProcessingException {
         AccountUpdaterJsonDto accountUpdaterJsonDto = new ObjectMapper().readValue(dto, AccountUpdaterJsonDto.class);
@@ -58,7 +58,7 @@ public class ModeratorAccountController {
             @RequestPart("account") String dto,
             @RequestPart(value = "avatar", required = false)  MultipartFile avatars,
             @RequestPart(value = "license", required = false) MultipartFile licenses,
-            @RequestPart(value = "id_card", required = false) MultipartFile idCards)
+            @RequestPart(value = "idCard", required = false) MultipartFile idCards)
             throws AccountExistException, AccountNotFoundException, JsonProcessingException, FirebaseAuthException {
         AccountCreatorReqDto accountCreatorReqDto = new ObjectMapper().readValue(dto, AccountCreatorReqDto.class);
         UUID account = accountService.createAccount(accountCreatorReqDto, avatars, licenses, idCards);

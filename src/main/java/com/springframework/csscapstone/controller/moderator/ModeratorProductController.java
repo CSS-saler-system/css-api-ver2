@@ -31,8 +31,8 @@ public class ModeratorProductController {
             @RequestParam(value = "price", required = false) Double maxPrice,
             @RequestParam(value = "pointSale", required = false) Double minPointSale,
             @RequestParam(value = "pointSale", required = false) Double maxPointSale,
-            @RequestParam(value = "page_number", required = false) Integer pageNumber,
-            @RequestParam(value = "page_size", required = false) Integer pageSize
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize
     ) {
 
         PageImplResDto<ProductResDto> result = productService.findAllProductByCollaborator(
@@ -41,14 +41,14 @@ public class ModeratorProductController {
                 pageNumber, pageSize);
         return ok(result);
     }
-    @GetMapping(V4_GET_PRODUCT + "/{id}")
-    public ResponseEntity<?> getProductById(@PathVariable("id") UUID id) throws ProductNotFoundException {
+    @GetMapping(V4_GET_PRODUCT + "/{productId}")
+    public ResponseEntity<?> getProductById(@PathVariable("productId") UUID id) throws ProductNotFoundException {
         return ok(productService.findById(id));
     }
 
-    @PutMapping(V4_ACTIVE_PRODUCT + "/{id}")
+    @PutMapping(V4_ACTIVE_PRODUCT + "/{productId}")
     public ResponseEntity<String> updateProduct(
-            @PathVariable("id") UUID id, @RequestParam("product_status") ProductStatus status) throws ProductNotFoundException, ProductInvalidException {
+            @PathVariable("productId") UUID id, @RequestParam("product_status") ProductStatus status) throws ProductNotFoundException, ProductInvalidException {
         productService.changeStatusProduct(id, status);
         return ok("If product id exists in our database,status of product will changed");
     }

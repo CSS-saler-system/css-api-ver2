@@ -43,19 +43,19 @@ public class ModeratorCampaignController {
             @RequestParam(value = "campaignName", required = false) String campaignName,
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
-            @RequestParam(value = "min_kpi", required = false, defaultValue = "0") Long minKpi,
-            @RequestParam(value = "max_kpi", required = false, defaultValue = "0") Long maxKpi,
+            @RequestParam(value = "minKpi", required = false, defaultValue = "0") Long minKpi,
+            @RequestParam(value = "maxKpi", required = false, defaultValue = "0") Long maxKpi,
             @RequestParam(value = "status", required = false, defaultValue = "PENDING") CampaignStatus status,
-            @RequestParam(value = "max_kpi", required = false, defaultValue = "0") Integer pageNumber,
-            @RequestParam(value = "max_size", required = false, defaultValue = "0") Integer pageSize
+            @RequestParam(value = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false, defaultValue = "0") Integer pageSize
     ) {
         PageImplResDto<CampaignResDto> campaign = campaignService.findCampaign(
                 campaignName, startDate, endDate, minKpi, maxKpi,status, pageNumber, pageSize);
         return ResponseEntity.ok(campaign);
     }
 
-    @GetMapping(V4_GET_CAMPAIGN + "/{id}")
-    public ResponseEntity<?> getCampaignById(@PathVariable("id") UUID id) throws EntityNotFoundException {
+    @GetMapping(V4_GET_CAMPAIGN + "/{campaignId}")
+    public ResponseEntity<?> getCampaignById(@PathVariable("campaignId") UUID id) throws EntityNotFoundException {
         return ok(campaignService.findById(id));
     }
 
@@ -71,8 +71,8 @@ public class ModeratorCampaignController {
     }
 
 
-    @DeleteMapping(V4_DELETE_CAMPAIGN + "/{id}")
-    public ResponseEntity<String> disableCampaign(@PathVariable("id") UUID id) throws EntityNotFoundException {
+    @DeleteMapping(V4_DELETE_CAMPAIGN + "/{campaignId}")
+    public ResponseEntity<String> disableCampaign(@PathVariable("campaignId") UUID id) throws EntityNotFoundException {
         campaignService.deleteCampaign(id);
         return ResponseEntity.ok(MessagesUtils.getMessage(MessageConstant.REQUEST_SUCCESS));
     }
