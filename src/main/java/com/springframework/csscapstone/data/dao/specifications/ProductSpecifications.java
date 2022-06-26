@@ -11,7 +11,7 @@ import static com.springframework.csscapstone.data.dao.specifications.ContainsSt
 
 public final class ProductSpecifications {
 
-    public static Specification<Product> idEnterprise(UUID uuid) {
+    public static Specification<Product> enterpriseId(UUID uuid) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Product_.ID), uuid);
     }
 

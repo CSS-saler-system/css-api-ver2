@@ -31,7 +31,7 @@ public interface ProductService {
             Integer pageNumber,
             Integer pageSize);
 
-    PageImplResDto<ProductResDto> findAllProduct(
+    PageImplResDto<ProductResDto> findAllProductByCollaborator(
             String name,
             String brand,
             Long inStock,

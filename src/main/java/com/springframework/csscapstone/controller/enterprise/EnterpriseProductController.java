@@ -47,9 +47,9 @@ public class EnterpriseProductController {
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
     private final ProductCreatorConvertor productCreatorConvertor;
 
-    @GetMapping(V2_PRODUCT_LIST + "/{idEnterprise}")
+    @GetMapping(V2_PRODUCT_LIST + "/{enterpriseId}")
     public ResponseEntity<?> getListProductDto(
-            @PathVariable("idEnterprise") UUID idEnterprise,
+            @PathVariable("enterpriseId") UUID enterpriseId,
             @RequestParam(value = "productName", required = false) String name,
             @RequestParam(value = "brand", required = false) String brand,
             @RequestParam(value = "inStock", required = false) Long inStock,
@@ -63,15 +63,15 @@ public class EnterpriseProductController {
     ) {
         PageImplResDto<ProductResDto> result = productService
                 .findAllProductByIdEnterprise(
-                        idEnterprise, name, brand, inStock, minPrice, maxPrice,
+                        enterpriseId, name, brand, inStock, minPrice, maxPrice,
                         minPointSale, maxPointSale, productStatus, pageNumber, pageSize);
         return ok(result);
     }
 
     @SneakyThrows
-    @GetMapping(V2_PRODUCT_COUNT_LIST + "/{idEnterprise}")
+    @GetMapping(V2_PRODUCT_COUNT_LIST + "/{enterpriseId}")
     public ResponseEntity<?> getListTotalNumberOfProduct(
-            @PathVariable("enterprise_id") UUID enterpriseId,
+            @PathVariable("enterpriseId") UUID enterpriseId,
 
             @RequestParam(value = "startDate", required = false, defaultValue = "08-06-1999")
             @Valid @Pattern(regexp = "^\\d{2}-\\d{2}-\\d{4}$")

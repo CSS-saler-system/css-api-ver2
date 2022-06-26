@@ -38,7 +38,7 @@ public class CollaboratorProductController {
             @RequestParam(value = "page_size", required = false) Integer pageSize
     ) {
 
-        PageImplResDto<ProductResDto> result = service.findAllProduct(
+        PageImplResDto<ProductResDto> result = service.findAllProductByCollaborator(
                 name, brand, inStock, minPrice, maxPrice,
                 minPointSale, maxPointSale, productStatus,
                 pageNumber, pageSize);

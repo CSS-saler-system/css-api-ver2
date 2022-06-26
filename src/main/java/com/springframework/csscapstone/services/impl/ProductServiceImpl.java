@@ -73,8 +73,8 @@ public class ProductServiceImpl implements ProductService {
             Integer pageNumber, Integer pageSize) {
 
         Specification<Product> search = Specification
-                .where(ProductSpecifications.idEnterprise(idEnterprise))
-                .and(StringUtils.isBlank(name) ? null : ProductSpecifications.nameContains(name))
+//                .where(ProductSpecifications.enterpriseId(idEnterprise))
+                .where(StringUtils.isBlank(name) ? null : ProductSpecifications.nameContains(name))
                 .and(StringUtils.isBlank(brand) ? null : ProductSpecifications.brandContains(brand))
                 .and(Objects.isNull(minPrice) ? null : ProductSpecifications.priceGreaterThan(minPrice))
                 .and(Objects.isNull(maxPrice) ? null : ProductSpecifications.priceLessThan(maxPrice))
@@ -85,9 +85,11 @@ public class ProductServiceImpl implements ProductService {
         pageSize = Objects.isNull(pageSize) || (pageSize <= 1) ? 50 : pageSize;
         pageNumber = Objects.isNull(pageNumber) || (pageNumber <= 1) ? 1 : pageNumber;
 
-        Page<Product> page = this.productRepository.findAll(search, PageRequest.of(pageNumber - 1, pageSize));
+        Page<Product> page = this.productRepository
+                .findAll(search, PageRequest.of(pageNumber - 1, pageSize));
 
-        List<ProductResDto> data = page.stream().map(MapperDTO.INSTANCE::toProductResDto).collect(toList());
+        List<ProductResDto> data = page.stream()
+                .map(MapperDTO.INSTANCE::toProductResDto).collect(toList());
 
         return new PageImplResDto<>(
                 data, page.getNumber() + 1, page.getSize(),
@@ -95,8 +97,9 @@ public class ProductServiceImpl implements ProductService {
                 page.isFirst(), page.isLast());
     }
 
+
     @Override
-    public PageImplResDto<ProductResDto> findAllProduct(
+    public PageImplResDto<ProductResDto> findAllProductByCollaborator(
             String name, String brand, Long inStock, Double minPrice, Double maxPrice,
             Double minPoint, Double maxPoint, ProductStatus productStatus,
             Integer pageNumber, Integer pageSize) {
@@ -113,9 +116,11 @@ public class ProductServiceImpl implements ProductService {
         pageSize = Objects.isNull(pageSize) || (pageSize <= 1) ? 50 : pageSize;
         pageNumber = Objects.isNull(pageNumber) || (pageNumber <= 1) ? 1 : pageNumber;
 
-        Page<Product> page = this.productRepository.findAll(search, PageRequest.of(pageNumber - 1, pageSize));
+        Page<Product> page = this.productRepository
+                .findAll(search, PageRequest.of(pageNumber - 1, pageSize));
 
-        List<ProductResDto> data = page.stream().map(MapperDTO.INSTANCE::toProductResDto).collect(toList());
+        List<ProductResDto> data = page.stream()
+                .map(MapperDTO.INSTANCE::toProductResDto).collect(toList());
 
         return new PageImplResDto<>(
                 data, page.getNumber() + 1, page.getSize(),
@@ -151,7 +156,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public UUID createProduct(ProductCreatorReqDto dto,
                               List<MultipartFile> typeImages, List<MultipartFile> certificationImages)
-            throws ProductInvalidException, AccountNotFoundException, IOException {
+            throws ProductInvalidException, AccountNotFoundException {
         //check null category
         if (Objects.isNull(dto.getCategoryId())) throw handlerCategoryNotFound().get();
 

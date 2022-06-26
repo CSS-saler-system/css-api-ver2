@@ -36,7 +36,7 @@ public class ModeratorProductController {
             @RequestParam(value = "page_size", required = false) Integer pageSize
     ) {
 
-        PageImplResDto<ProductResDto> result = productService.findAllProduct(
+        PageImplResDto<ProductResDto> result = productService.findAllProductByCollaborator(
                 name, brand, inStock, minPrice, maxPrice,
                 minPointSale, maxPointSale, productStatus,
                 pageNumber, pageSize);

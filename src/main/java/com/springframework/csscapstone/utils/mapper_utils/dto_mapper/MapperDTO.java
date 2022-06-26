@@ -70,6 +70,7 @@ public interface MapperDTO {
     EnterpriseResDto toEnterpriseDto(Account entity);
 
     //todo mapper entity to <ProductResponseDTO>
+    @Mapping(target = "quantity", source = "quantityInStock")
     ProductResDto toProductResDto(Product entity);
 
     AccountTokenDto toAccountTokenDto(AccountToken accountToken);
