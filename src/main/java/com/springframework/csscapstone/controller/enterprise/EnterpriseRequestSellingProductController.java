@@ -39,9 +39,9 @@ public class EnterpriseRequestSellingProductController {
         return ok(request);
     }
 
-    @PutMapping(V2_REQUEST_UPDATE + "/{idRequest}")
+    @PutMapping(V2_REQUEST_UPDATE + "/{requestId}")
     public ResponseEntity<?> updateStatusRequest(
-            @PathVariable("idRequest") UUID idRequest,
+            @PathVariable("requestId") UUID idRequest,
             @RequestParam(value = "status") RequestStatus status) {
         UUID id = this.requestSellingProductService
                 .updateProduct(idRequest, status)

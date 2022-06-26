@@ -114,8 +114,8 @@ public class EnterpriseProductController {
 
     @PostMapping(value = V2_PRODUCT_CREATE, consumes = {"multipart/form-data"})
     public ResponseEntity<?> addNewProduct(
-            @RequestPart(value = "type_image") @Valid MultipartFile[] typeImages,
-            @RequestPart(value = "certification_image") @Valid MultipartFile[] certificationImages,
+            @RequestPart(value = "typeImage") @Valid MultipartFile[] typeImages,
+            @RequestPart(value = "certificationImage") @Valid MultipartFile[] certificationImages,
             @RequestPart(value = "product") String dto
     ) throws ProductInvalidException, AccountNotFoundException, IOException {
         List<MultipartFile> types = Stream.of(typeImages).collect(Collectors.toList());
@@ -132,8 +132,8 @@ public class EnterpriseProductController {
         return ok(this.productService.updateProductDto(object, normalType, certificationType));
     }
 
-    @DeleteMapping(V2_PRODUCT_DELETE + "/{idProduct}")
-    public ResponseEntity<String> disableProduct(@PathVariable("idProduct") UUID id) {
+    @DeleteMapping(V2_PRODUCT_DELETE + "/{productId}")
+    public ResponseEntity<String> disableProduct(@PathVariable("productId") UUID id) {
         this.productService.disableProduct(id);
         return ResponseEntity.ok(MessagesUtils.getMessage(MessageConstant.REQUEST_SUCCESS));
     }

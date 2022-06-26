@@ -22,9 +22,9 @@ import static org.springframework.http.ResponseEntity.ok;
 public class EnterpriseOrderController {
     private final OrderService orderService;
 
-    @PutMapping(V2_ORDER_UPDATE_STATUS + "/{id}")
+    @PutMapping(V2_ORDER_UPDATE_STATUS + "/{orderId}")
     public ResponseEntity<?> updateStatusOrder(
-            @PathVariable("id") UUID id,
+            @PathVariable("orderId") UUID id,
             @RequestParam(value = "status", defaultValue = "PENDING") OrderStatus status
             ) {
         Optional<UUID> uuid = this.orderService.updateStatusOrder(id, status);

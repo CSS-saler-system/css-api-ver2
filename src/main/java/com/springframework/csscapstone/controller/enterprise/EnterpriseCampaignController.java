@@ -53,11 +53,11 @@ public class EnterpriseCampaignController {
             @RequestParam(value = "campaignName", required = false) String campaignName,
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
-            @RequestParam(value = "min_kpi", required = false, defaultValue = "0") Long minKpi,
-            @RequestParam(value = "max_kpi", required = false, defaultValue = "0") Long maxKpi,
+            @RequestParam(value = "minKpi", required = false, defaultValue = "0") Long minKpi,
+            @RequestParam(value = "maxKpi", required = false, defaultValue = "0") Long maxKpi,
             @RequestParam(value = "status", required = false, defaultValue = "PENDING") CampaignStatus status,
-            @RequestParam(value = "max_kpi", required = false, defaultValue = "0") Integer pageNumber,
-            @RequestParam(value = "max_size", required = false, defaultValue = "0") Integer pageSize
+            @RequestParam(value = "maxKpi", required = false, defaultValue = "0") Integer pageNumber,
+            @RequestParam(value = "maxSize", required = false, defaultValue = "0") Integer pageSize
     ) {
         PageImplResDto<CampaignResDto> campaign = campaignService.findCampaign(
                 campaignName, startDate, endDate, minKpi, maxKpi,status, pageNumber, pageSize);
@@ -75,11 +75,5 @@ public class EnterpriseCampaignController {
         UUID campaignUUID = campaignService.updateCampaign(dto, images);
         return ok(campaignUUID);
     }
-
-
-    /**
-     * List All && find By account_id
-     * Update Campaign
-     */
 
 }

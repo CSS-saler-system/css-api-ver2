@@ -25,11 +25,11 @@ public class EnterpriseCollaboratorsController {
     private final AccountService accountService;
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
-    @GetMapping(V2_LIST_ACCOUNT + "/{idEnterprise}")
+    @GetMapping(V2_LIST_ACCOUNT + "/{enterpriseId}")
     public ResponseEntity<?> getCollaborator(
-            @PathVariable("idEnterprise") UUID id,
-            @RequestParam("page_number") Integer pageNumber,
-            @RequestParam("page_size") Integer pageSize) {
+            @PathVariable("enterpriseId") UUID id,
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize) {
 
         PageImplResDto<AccountResDto> allCollaboratorsOfEnterprise =
                 this.accountService.getAllCollaboratorsOfEnterprise(id, pageNumber, pageSize);
@@ -37,11 +37,11 @@ public class EnterpriseCollaboratorsController {
         return ok(allCollaboratorsOfEnterprise);
     }
 
-    @GetMapping(V2_LIST_ORDER_COLLABORATOR + "/{enterprise_id}")
+    @GetMapping(V2_LIST_ORDER_COLLABORATOR + "/{enterpriseId}")
     public ResponseEntity<?> getCollaboratorCounterOrder(
-            @PathVariable("enterprise_id") UUID enterpriseId,
-            @RequestParam("page_number") Integer pageNumber,
-            @RequestParam("page_size") Integer pageSize
+            @PathVariable("enterpriseId") UUID enterpriseId,
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize
     )  {
         LOGGER.info("The message {}", enterpriseId);
         LOGGER.info("The page-number {}", pageNumber);

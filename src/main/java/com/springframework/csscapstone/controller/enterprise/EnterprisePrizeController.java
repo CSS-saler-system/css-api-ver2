@@ -31,7 +31,7 @@ public class EnterprisePrizeController {
 //
    @GetMapping(V2_PRIZE_LIST)
    public ResponseEntity<?> getAllPrize(
-           @RequestParam(value = "name_prize", required = false) String namePrize,
+           @RequestParam(value = "namePrize", required = false) String namePrize,
            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
            @RequestParam(value = "pageSize", required = false) Integer pageSize
 
@@ -71,8 +71,8 @@ public class EnterprisePrizeController {
       return ok(prize);
    }
 
-   @GetMapping(V2_PRIZE_RETRIEVE + "/{id}")
-   public ResponseEntity<?> retrievePrizeById(@PathVariable("id") UUID id) {
+   @GetMapping(V2_PRIZE_RETRIEVE + "/{prizeId}")
+   public ResponseEntity<?> retrievePrizeById(@PathVariable("prizeId") UUID id) {
       return ok(this.prizeService.getPrizeByPrize(id).orElseThrow(() -> new EntityNotFoundException("The prize with id: " + id + " not found")));
    }
 }

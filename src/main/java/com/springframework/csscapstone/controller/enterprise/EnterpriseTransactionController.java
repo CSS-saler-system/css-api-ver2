@@ -42,13 +42,13 @@ public class EnterpriseTransactionController {
         return ok(transaction);
     }
 
-    @GetMapping(V2_TRANSACTION_LIST + "/{idEnterprise}")
+    @GetMapping(V2_TRANSACTION_LIST + "/{enterpriseId}")
     public ResponseEntity<?> getAllTransactionExcludeDisableStatus(
-            @PathVariable("idEnterprise") UUID idEnterprise,
+            @PathVariable("enterpriseId") UUID idEnterprise,
             @RequestParam(value = "createDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createDate,
             @RequestParam(value = "modifiedDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime modifiedDate,
-            @RequestParam(value = "page_number", required = false) Integer pageNumber,
-            @RequestParam(value = "page_size", required = false) Integer pageSize) {
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         return ok(transactionServices.getAllTransaction(idEnterprise, createDate, modifiedDate, pageNumber, pageSize));
     }
 
@@ -62,8 +62,8 @@ public class EnterpriseTransactionController {
 
     @PutMapping(value = V2_TRANSACTION_UPDATE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateTransaction(
-            @RequestPart("bill_images") List<MultipartFile> images,
-            @RequestPart("update_transaction") String dto
+            @RequestPart("billImages") List<MultipartFile> images,
+            @RequestPart("updateTransaction") String dto
     ) throws JsonProcessingException {
         TransactionsUpdateReqDto transactionsUpdateReqDto = objectMapper
                 .readValue(dto, TransactionsUpdateReqDto.class);
