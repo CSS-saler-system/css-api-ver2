@@ -107,8 +107,8 @@ public class EnterpriseProductController {
 
     }
 
-    @GetMapping(V2_PRODUCT_GET + "/{idProduct}")
-    public ResponseEntity<?> getProductById(@PathVariable("idProduct") UUID idProduct) throws ProductNotFoundException {
+    @GetMapping(V2_PRODUCT_GET + "/{productId}")
+    public ResponseEntity<?> getProductById(@PathVariable("productId") UUID idProduct) throws ProductNotFoundException {
         return ok(productService.findById(idProduct));
     }
 

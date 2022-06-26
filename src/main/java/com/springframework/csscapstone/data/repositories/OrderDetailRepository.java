@@ -10,14 +10,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Tuple;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Transactional(readOnly = true)
 public interface OrderDetailRepository extends JpaRepository<OrderDetail, UUID> {
 
+    String PRODUCT = "tuple_product";
+    String COUNT = "tuple_count";
+
     /**
-     *
      * @param enterpriseId
      * @param startDate
      * @param endDate
@@ -26,11 +29,13 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, UUID> 
      * @return
      */
     @Query(
-            value = "SELECT new com.springframework.csscapstone.payload.queries" +
-                    ".NumberProductOrderedQueryDto(od.product, sum(od.quantity)) " +
+            value = "SELECT " +
+                    "od.product AS " + PRODUCT + ", " +
+                    "sum(od.quantity) AS " + COUNT + " " +
                     "FROM OrderDetail od " +
                     "JOIN od.order o " +
-                    "WHERE o.createDate >= :startDate  " +
+                    "WHERE od NOT IN(SELECT _od FROM OrderDetail _od WHERE _od.product.productStatus = 'DISABLE') " +
+                    "AND o.createDate >= :startDate  " +
                     "AND o.createDate <= :endDate " +
                     "AND o.status = :status " +
                     "AND od.product.account.id = :enterpriseId " +
@@ -38,12 +43,13 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, UUID> 
             countQuery = "SELECT count(distinct od.product.id) " +
                     "FROM OrderDetail od " +
                     "JOIN od.order o " +
-                    "WHERE o.createDate >= :startDate  " +
+                    "WHERE od NOT IN(SELECT _od FROM OrderDetail _od WHERE _od.product.productStatus = 'DISABLE') " +
+                    "AND o.createDate >= :startDate  " +
                     "AND o.createDate <= :endDate " +
                     "AND o.status = :status " +
-                    "AND od.product.account.id = :enterpriseId "+
+                    "AND od.product.account.id = :enterpriseId " +
                     "group by od.product.id")
-    Page<NumberProductOrderedQueryDto> findAllSumInOrderDetailGroupingByProduct(
+    Page<Tuple> findAllSumInOrderDetailGroupingByProduct(
             @Param("enterpriseId") UUID enterpriseId,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate,

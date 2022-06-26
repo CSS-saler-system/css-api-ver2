@@ -38,6 +38,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.Tuple;
 import javax.security.auth.login.AccountNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -130,12 +131,15 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductResDto> findProductByIdAccount(UUID accountId) throws AccountNotFoundException {
         Account account = this.accountRepository.findById(accountId).orElseThrow(handlerAccountNotFound());
-        return account.getProducts().stream().map(MapperDTO.INSTANCE::toProductResDto).collect(toList());
+        return account.getProducts().stream()
+                .filter(product -> !product.getProductStatus().equals(ProductStatus.DISABLE))
+                .map(MapperDTO.INSTANCE::toProductResDto).collect(toList());
     }
 
     @Override
     public ProductResDto findById(UUID id) throws ProductNotFoundException {
         return productRepository.findById(id)
+                .filter(product -> !product.getProductStatus().equals(ProductStatus.DISABLE))
                 .map(MapperDTO.INSTANCE::toProductResDto)
                 .orElseThrow(handlerProductNotFound());
     }
@@ -150,9 +154,11 @@ public class ProductServiceImpl implements ProductService {
      */
     @Transactional
     @Override
-    public UUID createProduct(ProductCreatorReqDto dto,
-                              List<MultipartFile> typeImages, List<MultipartFile> certificationImages)
+    public UUID createProduct(
+            ProductCreatorReqDto dto, List<MultipartFile> typeImages,
+            List<MultipartFile> certificationImages)
             throws ProductInvalidException, AccountNotFoundException {
+
         //check null category
         if (Objects.isNull(dto.getCategoryId())) throw handlerCategoryNotFound().get();
 
@@ -168,6 +174,7 @@ public class ProductServiceImpl implements ProductService {
         Category category = categoryRepository
                 .findById(dto.getCategoryId())
                 .orElseThrow(handlerCategoryNotFound());
+
         //create product
         Product newProduct = new Product()
                 .setName(dto.getName())
@@ -180,8 +187,10 @@ public class ProductServiceImpl implements ProductService {
                 .setPointSale(dto.getPointSale())
                 .addAccount(account)
                 .addCategory(category);
+
         //saved product
         Product creatorProduct = productRepository.save(newProduct);
+
         //add image to product
         Product savedProduct = handleImage(typeImages, certificationImages, creatorProduct);
 
@@ -233,6 +242,7 @@ public class ProductServiceImpl implements ProductService {
 
         Product entity = this.productRepository
                 .findById(dto.getId())
+                .filter(product -> !product.getProductStatus().equals(ProductStatus.DISABLE))
                 .orElseThrow(handlerProductNotFound());
 
         entity.setName(dto.getName())
@@ -314,12 +324,15 @@ public class ProductServiceImpl implements ProductService {
         pageSize = Objects.isNull(pageSize) || pageSize <= 1 ? 1 : pageSize;
 
         //get sum number in order-detail of order in during start date and end date
-        Page<NumberProductOrderedQueryDto> page = this.orderDetailRepository.findAllSumInOrderDetailGroupingByProduct(
-                id, startDate.atStartOfDay(), endDate.atStartOfDay(),
-                OrderStatus.FINISH, PageRequest.of(pageNumber - 1, pageSize));
+        Page<Tuple> page = this.orderDetailRepository.findAllSumInOrderDetailGroupingByProduct(
+                        id, startDate.atStartOfDay(), endDate.atStartOfDay(),
+                        OrderStatus.FINISH, PageRequest.of(pageNumber - 1, pageSize));
 
         //Convert to Product count order DTO
-        List<ProductCountOrderResDto> content = page.getContent().stream()
+        List<ProductCountOrderResDto> content = page.getContent()
+                .stream().map(tuple -> new NumberProductOrderedQueryDto(
+                                tuple.get(OrderDetailRepository.PRODUCT, Product.class),
+                                tuple.get(OrderDetailRepository.COUNT, Long.class)))
                 .map(MapperQueriesDTO.INSTANCE::toQueriesProductDto)
                 .collect(toList());
 
