@@ -44,14 +44,14 @@ Bug parse LocalDate to Json:
 
 <h4>Product Creator</h4>
 {
-"creatorAccountId" : null,<br>
-"categoryId" : null,<br>
-"name" : "",<br>
-"brand" : "",<br>
-"shortDescription" : "",<br>
-"description" : "",<br>
-"quantity" : 0,<br>
-"price" : 0.0,<br>
+"creatorAccountId" : "55b90b8d-6977-423d-a587-c720dc4b347d",
+"categoryId" : "4a47954b-99ba-dd4b-8c6d-78ad33ed6420",
+"name" : "Samsung Furniture",
+"brand" : "Samsung",
+"shortDescription" : "This is future furniture for every one",
+"description" : "This is long term support for every one like clean up house",
+"quantity" : 123,
+"price" : 13.0,
 "pointSale" : 13.0
 }
 

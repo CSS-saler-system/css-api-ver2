@@ -57,7 +57,6 @@ public class EnterpriseProductController {
      * @param maxPrice
      * @param minPointSale
      * @param maxPointSale
-     * @param productStatus
      * @param pageNumber
      * @param pageSize
      * @return
@@ -72,14 +71,13 @@ public class EnterpriseProductController {
             @RequestParam(value = "price", required = false) Double maxPrice,
             @RequestParam(value = "pointSale", required = false) Double minPointSale,
             @RequestParam(value = "pointSale", required = false) Double maxPointSale,
-            @RequestParam(value = "status", required = false, defaultValue = "ACTIVE") ProductStatus productStatus,
             @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
             @RequestParam(value = "pageSize", required = false) Integer pageSize
     ) {
         PageImplResDto<ProductResDto> result = productService
                 .findAllProductByIdEnterprise(
                         enterpriseId, name, brand, inStock, minPrice, maxPrice,
-                        minPointSale, maxPointSale, productStatus, pageNumber, pageSize);
+                        minPointSale, maxPointSale, pageNumber, pageSize);
         return ok(result);
     }
 

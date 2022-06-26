@@ -70,7 +70,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public PageImplResDto<ProductResDto> findAllProductByIdEnterprise(
             UUID idEnterprise, String name, String brand, Long inStock, Double minPrice, Double maxPrice,
-            Double minPoint, Double maxPoint, ProductStatus productStatus,
+            Double minPoint, Double maxPoint,
             Integer pageNumber, Integer pageSize) {
 
         Account account = this.accountRepository.findById(idEnterprise)
@@ -84,9 +84,12 @@ public class ProductServiceImpl implements ProductService {
                 .and(Objects.isNull(maxPrice) ? null : ProductSpecifications.priceLessThan(maxPrice))
                 .and(Objects.isNull(minPoint) ? null : ProductSpecifications.pointGreaterThan(minPoint))
                 .and(Objects.isNull(maxPoint) ? null : ProductSpecifications.pointLessThan(maxPoint))
-                .and(Objects.isNull(productStatus) ? null : ProductSpecifications.statusEquals(productStatus))
                 .and(ProductSpecifications.excludeDisableStatus());
 
+        return getProductResDtoPageImplResDto(pageNumber, pageSize, search);
+    }
+
+    private PageImplResDto<ProductResDto> getProductResDtoPageImplResDto(Integer pageNumber, Integer pageSize, Specification<Product> search) {
         pageSize = Objects.isNull(pageSize) || (pageSize <= 1) ? 50 : pageSize;
         pageNumber = Objects.isNull(pageNumber) || (pageNumber <= 1) ? 1 : pageNumber;
 
@@ -106,7 +109,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public PageImplResDto<ProductResDto> findAllProductByCollaborator(
             String name, String brand, Long inStock, Double minPrice, Double maxPrice,
-            Double minPoint, Double maxPoint, ProductStatus productStatus,
+            Double minPoint, Double maxPoint,
             Integer pageNumber, Integer pageSize) {
 
         Specification<Product> search = Specification
@@ -116,22 +119,9 @@ public class ProductServiceImpl implements ProductService {
                 .and(Objects.isNull(maxPrice) ? null : ProductSpecifications.priceLessThan(maxPrice))
                 .and(Objects.isNull(minPoint) ? null : ProductSpecifications.pointGreaterThan(minPoint))
                 .and(Objects.isNull(maxPoint) ? null : ProductSpecifications.pointLessThan(maxPoint))
-                .and(Objects.isNull(productStatus) ? null : ProductSpecifications.statusEquals(productStatus))
                 .and(ProductSpecifications.excludeDisableStatus());
 
-        pageSize = Objects.isNull(pageSize) || (pageSize <= 1) ? 50 : pageSize;
-        pageNumber = Objects.isNull(pageNumber) || (pageNumber <= 1) ? 1 : pageNumber;
-
-        Page<Product> page = this.productRepository
-                .findAll(search, PageRequest.of(pageNumber - 1, pageSize));
-
-        List<ProductResDto> data = page.stream()
-                .map(MapperDTO.INSTANCE::toProductResDto).collect(toList());
-
-        return new PageImplResDto<>(
-                data, page.getNumber() + 1, page.getSize(),
-                page.getTotalElements(), page.getTotalPages(),
-                page.isFirst(), page.isLast());
+        return getProductResDtoPageImplResDto(pageNumber, pageSize, search);
     }
 
     /**
