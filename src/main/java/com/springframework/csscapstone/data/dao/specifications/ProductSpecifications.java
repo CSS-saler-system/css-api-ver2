@@ -1,5 +1,6 @@
 package com.springframework.csscapstone.data.dao.specifications;
 
+import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.Product;
 import com.springframework.csscapstone.data.domain.Product_;
 import com.springframework.csscapstone.data.status.ProductStatus;
@@ -11,8 +12,8 @@ import static com.springframework.csscapstone.data.dao.specifications.ContainsSt
 
 public final class ProductSpecifications {
 
-    public static Specification<Product> enterpriseId(UUID uuid) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Product_.ID), uuid);
+    public static Specification<Product> enterpriseId(Account account) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Product_.ACCOUNT), account);
     }
 
     public static Specification<Product> nameContains(String searchName) {
@@ -50,5 +51,11 @@ public final class ProductSpecifications {
     public static Specification<Product> statusEquals(ProductStatus status) {
         return (root, query, criteriaBuilder) -> criteriaBuilder
                 .equal(root.get(Product_.PRODUCT_STATUS), status);
+    }
+
+    public static Specification<Product> excludeDisableStatus() {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.notEqual(root.get(Product_.PRODUCT_STATUS), ProductStatus.DISABLE);
+
     }
 }

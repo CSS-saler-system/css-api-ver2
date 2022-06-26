@@ -30,4 +30,5 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
             "WHERE p.id = :id")
     Optional<Product> findProductFetchJoinImageAndCategoryAccountById(@Param("id") UUID id);
 
+
 }

@@ -47,6 +47,21 @@ public class EnterpriseProductController {
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
     private final ProductCreatorConvertor productCreatorConvertor;
 
+    /**
+     * todo Controller get list Product by enterprise id
+     * @param enterpriseId
+     * @param name
+     * @param brand
+     * @param inStock
+     * @param minPrice
+     * @param maxPrice
+     * @param minPointSale
+     * @param maxPointSale
+     * @param productStatus
+     * @param pageNumber
+     * @param pageSize
+     * @return
+     */
     @GetMapping(V2_PRODUCT_LIST + "/{enterpriseId}")
     public ResponseEntity<?> getListProductDto(
             @PathVariable("enterpriseId") UUID enterpriseId,
@@ -58,8 +73,8 @@ public class EnterpriseProductController {
             @RequestParam(value = "pointSale", required = false) Double minPointSale,
             @RequestParam(value = "pointSale", required = false) Double maxPointSale,
             @RequestParam(value = "status", required = false, defaultValue = "ACTIVE") ProductStatus productStatus,
-            @RequestParam(value = "page_number", required = false) Integer pageNumber,
-            @RequestParam(value = "page_size", required = false) Integer pageSize
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize
     ) {
         PageImplResDto<ProductResDto> result = productService
                 .findAllProductByIdEnterprise(

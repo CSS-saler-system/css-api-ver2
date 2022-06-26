@@ -18,6 +18,7 @@ import com.springframework.csscapstone.payload.response_dto.enterprise.ProductCo
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResDto;
 import com.springframework.csscapstone.services.ProductService;
 import com.springframework.csscapstone.utils.blob_utils.BlobUploadImages;
+import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.category_exception.CategoryNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
@@ -72,15 +73,19 @@ public class ProductServiceImpl implements ProductService {
             Double minPoint, Double maxPoint, ProductStatus productStatus,
             Integer pageNumber, Integer pageSize) {
 
+        Account account = this.accountRepository.findById(idEnterprise)
+                .orElseThrow(() -> new EntityNotFoundException("Enterprise with id: " + idEnterprise + "was not found"));
+
         Specification<Product> search = Specification
-//                .where(ProductSpecifications.enterpriseId(idEnterprise))
-                .where(StringUtils.isBlank(name) ? null : ProductSpecifications.nameContains(name))
+                .where(ProductSpecifications.enterpriseId(account))
+                .and(StringUtils.isBlank(name) ? null : ProductSpecifications.nameContains(name))
                 .and(StringUtils.isBlank(brand) ? null : ProductSpecifications.brandContains(brand))
                 .and(Objects.isNull(minPrice) ? null : ProductSpecifications.priceGreaterThan(minPrice))
                 .and(Objects.isNull(maxPrice) ? null : ProductSpecifications.priceLessThan(maxPrice))
                 .and(Objects.isNull(minPoint) ? null : ProductSpecifications.pointGreaterThan(minPoint))
                 .and(Objects.isNull(maxPoint) ? null : ProductSpecifications.pointLessThan(maxPoint))
-                .and(Objects.isNull(productStatus) ? null : ProductSpecifications.statusEquals(productStatus));
+                .and(Objects.isNull(productStatus) ? null : ProductSpecifications.statusEquals(productStatus))
+                .and(ProductSpecifications.excludeDisableStatus());
 
         pageSize = Objects.isNull(pageSize) || (pageSize <= 1) ? 50 : pageSize;
         pageNumber = Objects.isNull(pageNumber) || (pageNumber <= 1) ? 1 : pageNumber;
@@ -92,7 +97,7 @@ public class ProductServiceImpl implements ProductService {
                 .map(MapperDTO.INSTANCE::toProductResDto).collect(toList());
 
         return new PageImplResDto<>(
-                data, page.getNumber() + 1, page.getSize(),
+                data, page.getNumber() + 1, data.size(),
                 page.getTotalElements(), page.getTotalPages(),
                 page.isFirst(), page.isLast());
     }
@@ -111,7 +116,8 @@ public class ProductServiceImpl implements ProductService {
                 .and(Objects.isNull(maxPrice) ? null : ProductSpecifications.priceLessThan(maxPrice))
                 .and(Objects.isNull(minPoint) ? null : ProductSpecifications.pointGreaterThan(minPoint))
                 .and(Objects.isNull(maxPoint) ? null : ProductSpecifications.pointLessThan(maxPoint))
-                .and(Objects.isNull(productStatus) ? null : ProductSpecifications.statusEquals(productStatus));
+                .and(Objects.isNull(productStatus) ? null : ProductSpecifications.statusEquals(productStatus))
+                .and(ProductSpecifications.excludeDisableStatus());
 
         pageSize = Objects.isNull(pageSize) || (pageSize <= 1) ? 50 : pageSize;
         pageNumber = Objects.isNull(pageNumber) || (pageNumber <= 1) ? 1 : pageNumber;
