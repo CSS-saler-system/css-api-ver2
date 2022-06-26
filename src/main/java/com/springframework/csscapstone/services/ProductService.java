@@ -27,7 +27,6 @@ public interface ProductService {
             Double maxPrice,
             Double minPoint,
             Double maxPoint,
-            ProductStatus productStatus,
             Integer pageNumber,
             Integer pageSize);
 
@@ -39,7 +38,6 @@ public interface ProductService {
             Double maxPrice,
             Double minPoint,
             Double maxPoint,
-            ProductStatus productStatus,
             Integer pageNumber,
             Integer pageSize);
 

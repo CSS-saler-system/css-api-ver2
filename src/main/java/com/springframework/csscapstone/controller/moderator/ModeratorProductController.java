@@ -31,14 +31,13 @@ public class ModeratorProductController {
             @RequestParam(value = "price", required = false) Double maxPrice,
             @RequestParam(value = "pointSale", required = false) Double minPointSale,
             @RequestParam(value = "pointSale", required = false) Double maxPointSale,
-            @RequestParam(value = "status", required = false, defaultValue = "ACTIVE") ProductStatus productStatus,
             @RequestParam(value = "page_number", required = false) Integer pageNumber,
             @RequestParam(value = "page_size", required = false) Integer pageSize
     ) {
 
         PageImplResDto<ProductResDto> result = productService.findAllProductByCollaborator(
                 name, brand, inStock, minPrice, maxPrice,
-                minPointSale, maxPointSale, productStatus,
+                minPointSale, maxPointSale,
                 pageNumber, pageSize);
         return ok(result);
     }
