@@ -2,7 +2,6 @@ package com.springframework.csscapstone.data.repositories;
 
 import com.springframework.csscapstone.data.domain.OrderDetail;
 import com.springframework.csscapstone.data.status.OrderStatus;
-import com.springframework.csscapstone.payload.queries.NumberProductOrderedQueryDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,8 +28,7 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, UUID> 
      * @return
      */
     @Query(
-            value = "SELECT " +
-                    "od.product AS " + PRODUCT + ", " +
+            value = "SELECT od.product.id AS " + PRODUCT + ", " +
                     "sum(od.quantity) AS " + COUNT + " " +
                     "FROM OrderDetail od " +
                     "JOIN od.order o " +
@@ -39,7 +37,7 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, UUID> 
                     "AND o.createDate <= :endDate " +
                     "AND o.status = :status " +
                     "AND od.product.account.id = :enterpriseId " +
-                    "group by od.product.id",
+                    "GROUP BY od.product.id",
             countQuery = "SELECT count(distinct od.product.id) " +
                     "FROM OrderDetail od " +
                     "JOIN od.order o " +
@@ -48,7 +46,7 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, UUID> 
                     "AND o.createDate <= :endDate " +
                     "AND o.status = :status " +
                     "AND od.product.account.id = :enterpriseId " +
-                    "group by od.product.id")
+                    "GROUP BY od.product.id")
     Page<Tuple> findAllSumInOrderDetailGroupingByProduct(
             @Param("enterpriseId") UUID enterpriseId,
             @Param("startDate") LocalDateTime startDate,

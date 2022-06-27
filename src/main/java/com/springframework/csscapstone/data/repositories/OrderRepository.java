@@ -17,6 +17,8 @@ import java.util.UUID;
 public interface OrderRepository extends JpaRepository<Order, UUID> {
     String COLL_ID = "col_id";
     String TOTAL_QUANTITY = "total_quantity";
+    String CATEGORY = "tuple_category";
+    String QUANTITY_SOLD = "tuple_sold";
 
     @Query("SELECT o FROM Order o " +
             "WHERE o.account = :idCollaborator " +
@@ -58,6 +60,35 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
                     "GROUP BY a.id " +
                     "ORDER BY sum(od.quantity) DESC")
     List<Tuple> getCollaboratorAndTotalQuantitySold(@Param("idProduct") UUID idProduct);
+
+    /**
+     * todo list query separate| need more test
+     * @param collaboratorId
+     * @return
+     */
+    @Query(value = "SELECT c AS " + CATEGORY + ", SUM(od.quantity) AS " + QUANTITY_SOLD + " " +
+            "FROM Order o " +
+            "JOIN o.orderDetails od " +
+            "JOIN od.product p " +
+            "JOIN p.category c " +
+            "WHERE o.account.id = :collaboratorId " +
+            "GROUP BY c")
+    List<Tuple> getCollaboratorWithPerformance(UUID collaboratorId);
+
+    /**
+     * todo list query separate
+     * WORK
+     * @param collaboratorId
+     * @return
+     */
+    @Query(value = "SELECT c.id AS " + CATEGORY + ", SUM(od.quantity) AS " + QUANTITY_SOLD + " " +
+            "FROM Order o " +
+            "JOIN o.orderDetails od " +
+            "JOIN od.product p " +
+            "JOIN p.category c " +
+            "WHERE o.account.id = :collaboratorId " +
+            "GROUP BY c.id")
+    List<Tuple> getCollaboratorWithPerformanceWithId(UUID collaboratorId);
 
 
 }

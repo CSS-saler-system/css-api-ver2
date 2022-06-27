@@ -79,9 +79,6 @@ public class Account {
     @OneToMany(mappedBy = "accountUpdater")
     private List<Customer> customerUpdaterList = new ArrayList<>();
 
-//    @OneToMany(mappedBy = "account")
-//    @ToString.Exclude
-//    private List<Category> categories = new ArrayList<>();
 
     //search product by account
     @OneToMany(mappedBy = "account")
@@ -118,6 +115,9 @@ public class Account {
 
     @Transient
     private Long totalQuantity;
+
+    @Transient
+    Map<Category, Long> percentSoldByCategory = new HashMap<>();
 
     public Account(String name, LocalDate dob, String phone, String email, String address) {
         this.name = name;

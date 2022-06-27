@@ -17,6 +17,7 @@ import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.admin.AccountResDto;
 import com.springframework.csscapstone.payload.response_dto.collaborator.EnterpriseResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.CollaboratorResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.CollaboratorWithQuantitySoldByCategoryDto;
 import com.springframework.csscapstone.payload.sharing.AccountUpdaterJsonDto;
 import com.springframework.csscapstone.services.AccountService;
 import com.springframework.csscapstone.utils.blob_utils.BlobUploadImages;
@@ -69,6 +70,8 @@ public class AccountServiceImpl implements AccountService {
     private final CampaignRepository campaignRepository;
     private final ProductRepository productRepository;
 
+    private final CategoryRepository categoryRepository;
+
     private final FirebaseAuth firebaseAuth;
 
     private final Logger LOGGER = LoggerFactory.getLogger(CategoryServiceImpl.class);
@@ -80,6 +83,26 @@ public class AccountServiceImpl implements AccountService {
 
     @Value("${account_image_container}")
     private String accountContainer;
+
+    @Override
+    public Optional<CollaboratorWithQuantitySoldByCategoryDto> getCollaboratorWithPerformance(UUID uuid) {
+        //check existed account:
+        Account collaborator = this.accountRepository
+                .findById(uuid)
+                .filter(acc -> acc.getRole().getName().equals("Collaborator"))
+                .orElseThrow(() -> new EntityNotFoundException("The collaborator with id: " + uuid + " was not found"));
+
+        this.orderRepository
+                .getCollaboratorWithPerformance(uuid)
+                .stream()
+                .collect(Collectors.toMap(
+                        tuple -> this.categoryRepository
+                                .findById(tuple.get(OrderRepository.CATEGORY, UUID.class))
+                                .get(),
+                        tuple -> tuple.get(OrderRepository.QUANTITY_SOLD, Long.class)
+                ));
+        return Optional.empty();
+    }
 
     /**
      * TODO Admin get All Account
@@ -113,6 +136,8 @@ public class AccountServiceImpl implements AccountService {
         return new PageImplResDto<>(data, page.getNumber() + 1, data.size(),
                 page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
     }
+
+
 
     /**
      * TODO Admin and user get Profiles
@@ -396,12 +421,11 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * todo get collaborators have order selling product
-     *
      * @param idEnterprise
      * @return
      */
     @Override
-    public PageImplResDto<CollaboratorResDto> collaboratorsByEnterpriseIncludeNumberOfOrder(
+    public PageImplResDto<CollaboratorResDto> collaboratorsByEnterpriseIncludeNumberOfQuantitySold(
             UUID idEnterprise, Integer pageNumber, Integer pageSize) {
 
         if (Objects.isNull(idEnterprise)) throw handlerAccountNotFound().get();

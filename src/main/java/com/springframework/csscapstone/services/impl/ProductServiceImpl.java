@@ -47,6 +47,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 @Service
 @RequiredArgsConstructor
@@ -68,6 +69,21 @@ public class ProductServiceImpl implements ProductService {
 
     private final OrderDetailRepository orderDetailRepository;
 
+    /**
+     * todo excludes disable product
+     *
+     * @param idEnterprise
+     * @param name
+     * @param brand
+     * @param inStock
+     * @param minPrice
+     * @param maxPrice
+     * @param minPoint
+     * @param maxPoint
+     * @param pageNumber
+     * @param pageSize
+     * @return
+     */
     @Override
     public PageImplResDto<ProductResDto> findAllProductByIdEnterprise(
             UUID idEnterprise, String name, String brand, Long inStock, Double minPrice, Double maxPrice,
@@ -89,23 +105,6 @@ public class ProductServiceImpl implements ProductService {
 
         return getProductResDtoPageImplResDto(pageNumber, pageSize, search);
     }
-
-    private PageImplResDto<ProductResDto> getProductResDtoPageImplResDto(Integer pageNumber, Integer pageSize, Specification<Product> search) {
-        pageSize = Objects.isNull(pageSize) || (pageSize <= 1) ? 50 : pageSize;
-        pageNumber = Objects.isNull(pageNumber) || (pageNumber <= 1) ? 1 : pageNumber;
-
-        Page<Product> page = this.productRepository
-                .findAll(search, PageRequest.of(pageNumber - 1, pageSize));
-
-        List<ProductResDto> data = page.stream()
-                .map(MapperDTO.INSTANCE::toProductResDto).collect(toList());
-
-        return new PageImplResDto<>(
-                data, page.getNumber() + 1, data.size(),
-                page.getTotalElements(), page.getTotalPages(),
-                page.isFirst(), page.isLast());
-    }
-
 
     @Override
     public PageImplResDto<ProductResDto> findAllProductByCollaborator(
@@ -197,41 +196,6 @@ public class ProductServiceImpl implements ProductService {
         return this.productRepository.save(savedProduct).getId();
     }
 
-    //TODO BUG
-    private Product handleImage(List<MultipartFile> typeImages, List<MultipartFile> certificate, Product entity) {
-        if (!typeImages.isEmpty()) {
-            saveProductImageEntity(typeImages, entity.getId(), ProductImageType.NORMAL)
-                    .ifPresent(entity::addProductImage);
-        }
-        if (!certificate.isEmpty()) {
-            saveProductImageEntity(certificate, entity.getId(), ProductImageType.CERTIFICATION)
-                    .ifPresent(entity::addProductImage);
-        }
-        return entity;
-    }
-
-    private Optional<ProductImage[]> saveProductImageEntity(
-            List<MultipartFile> images, UUID id, ProductImageType type) {
-        if (!images.isEmpty()) {
-            String nameImageOnAzure = id + "/";
-
-            Map<String, MultipartFile> imageMap = images.stream()
-                    .collect(Collectors.toMap(x -> nameImageOnAzure + x.getOriginalFilename(), x -> x));
-
-            imageMap.forEach(blobUploadImages::azureProductStorageHandler);
-
-            ProductImage[] productImages = imageMap.keySet()
-                    .stream()
-                    .map(x -> endpoint + productContainer + "/" + x)
-                    .peek(x -> System.out.println("This is image: " + x))
-                    .map(name -> new ProductImage().setPath(name).setType(type))
-                    .peek(this.imageRepository::save)
-                    .toArray(ProductImage[]::new);
-            return Optional.of(productImages);
-        }
-        return Optional.empty();
-    }
-
     //TODO Changing
     @Transactional
     @Override
@@ -257,6 +221,59 @@ public class ProductServiceImpl implements ProductService {
 
         this.productRepository.save(product);
         return entity.getId();
+    }
+
+    @Transactional
+    @Override
+    public void changeStatusProduct(UUID id, ProductStatus status) {
+        this.productRepository.findById(id)
+//                .filter(product -> product.getProductStatus().equals(ProductStatus.DISABLE))
+                .ifPresent(product -> {
+                    product.setProductStatus(status);
+                    this.productRepository.save(product);
+                });
+    }
+
+    @Transactional
+    @Override
+    public void disableProduct(UUID id) {
+        this.productRepository.findById(id)
+                .ifPresent(x -> {
+                    x.setProductStatus(ProductStatus.DISABLE);
+                    this.productRepository.save(x);
+                });
+    }
+
+    @Override
+    public PageImplResDto<ProductCountOrderResDto> getListProductWithCountOrder(
+            UUID id, LocalDate startDate, LocalDate endDate, Integer pageNumber, Integer pageSize) throws AccountNotFoundException {
+        //throws exception if id not found
+        if (Objects.isNull(id)) throw handlerAccountNotFound().get();
+
+        pageNumber = Objects.isNull(pageNumber) || pageNumber <= 1 ? 1 : pageNumber;
+        pageSize = Objects.isNull(pageSize) || pageSize <= 1 ? 1 : pageSize;
+
+        //get sum number in order-detail of order in during start date and end date
+        Page<Tuple> page = this.orderDetailRepository.findAllSumInOrderDetailGroupingByProduct(
+                id, startDate.atStartOfDay(), endDate.atStartOfDay(),
+                OrderStatus.FINISH, PageRequest.of(pageNumber - 1, pageSize));
+
+        //create numberProductOrderedQueryDto
+        Map<Product, Long> collect = page.getContent()
+                .stream()
+                .collect(toMap(
+                        tuple -> this.productRepository
+                                .findById(tuple.get(OrderDetailRepository.PRODUCT, UUID.class))
+                                .orElse(new Product()),
+                        tuple -> tuple.get(OrderDetailRepository.COUNT, Long.class)));
+        //con-create the ProductCountOrderResDto
+        List<ProductCountOrderResDto> content = collect.entrySet().stream()
+                .map(entry -> new NumberProductOrderedQueryDto(entry.getKey(), entry.getValue()))
+                .map(MapperQueriesDTO.INSTANCE::toQueriesProductDto)
+                .collect(toList());
+
+        return new PageImplResDto<>(content, page.getNumber(), content.size(), page.getTotalElements(),
+                page.getTotalPages(), page.isLast(), page.isFirst());
     }
 
     private Product imageHandler(List<MultipartFile> normalType, List<MultipartFile> certificationType, Product entity) {
@@ -293,53 +310,6 @@ public class ProductServiceImpl implements ProductService {
 
     }
 
-
-    @Override
-    public void changeStatusProduct(UUID id, ProductStatus status) {
-        this.productRepository.findById(id)
-//                .filter(product -> product.getProductStatus().equals(ProductStatus.DISABLE))
-                .ifPresent(product -> {
-                    product.setProductStatus(status);
-                    this.productRepository.save(product);
-                });
-    }
-
-    @Transactional
-    @Override
-    public void disableProduct(UUID id) {
-        this.productRepository.findById(id)
-                .ifPresent(x -> {
-                    x.setProductStatus(ProductStatus.DISABLE);
-                    this.productRepository.save(x);
-                });
-    }
-
-    @Override
-    public PageImplResDto<ProductCountOrderResDto> getListProductWithCountOrder(
-            UUID id, LocalDate startDate, LocalDate endDate, Integer pageNumber, Integer pageSize) throws AccountNotFoundException {
-        //throws exception if id not found
-        if (Objects.isNull(id)) throw handlerAccountNotFound().get();
-
-        pageNumber = Objects.isNull(pageNumber) || pageNumber <= 1 ? 1 : pageNumber;
-        pageSize = Objects.isNull(pageSize) || pageSize <= 1 ? 1 : pageSize;
-
-        //get sum number in order-detail of order in during start date and end date
-        Page<Tuple> page = this.orderDetailRepository.findAllSumInOrderDetailGroupingByProduct(
-                        id, startDate.atStartOfDay(), endDate.atStartOfDay(),
-                        OrderStatus.FINISH, PageRequest.of(pageNumber - 1, pageSize));
-
-        //Convert to Product count order DTO
-        List<ProductCountOrderResDto> content = page.getContent()
-                .stream().map(tuple -> new NumberProductOrderedQueryDto(
-                                tuple.get(OrderDetailRepository.PRODUCT, Product.class),
-                                tuple.get(OrderDetailRepository.COUNT, Long.class)))
-                .map(MapperQueriesDTO.INSTANCE::toQueriesProductDto)
-                .collect(toList());
-
-        return new PageImplResDto<>(content, page.getNumber(), content.size(), page.getTotalElements(),
-                page.getTotalPages(), page.isLast(), page.isFirst());
-    }
-
     //===================Utils Methods====================
     //====================================================
     private Supplier<ProductNotFoundException> handlerProductNotFound() {
@@ -361,4 +331,58 @@ public class ProductServiceImpl implements ProductService {
     private Supplier<ProductInvalidException> handlerProductInvalidException() {
         return () -> new ProductInvalidException(MessagesUtils.getMessage(MessageConstant.Product.INVALID));
     }
+
+    private PageImplResDto<ProductResDto> getProductResDtoPageImplResDto(Integer pageNumber, Integer pageSize, Specification<Product> search) {
+        pageSize = Objects.isNull(pageSize) || (pageSize <= 1) ? 50 : pageSize;
+        pageNumber = Objects.isNull(pageNumber) || (pageNumber <= 1) ? 1 : pageNumber;
+
+        Page<Product> page = this.productRepository
+                .findAll(search, PageRequest.of(pageNumber - 1, pageSize));
+
+        List<ProductResDto> data = page.stream()
+                .map(MapperDTO.INSTANCE::toProductResDto).collect(toList());
+
+        return new PageImplResDto<>(
+                data, page.getNumber() + 1, data.size(),
+                page.getTotalElements(), page.getTotalPages(),
+                page.isFirst(), page.isLast());
+    }
+
+
+    //TODO ASYNC
+    private Product handleImage(List<MultipartFile> typeImages, List<MultipartFile> certificate, Product entity) {
+        if (!typeImages.isEmpty()) {
+            saveProductImageEntity(typeImages, entity.getId(), ProductImageType.NORMAL)
+                    .ifPresent(entity::addProductImage);
+        }
+        if (!certificate.isEmpty()) {
+            saveProductImageEntity(certificate, entity.getId(), ProductImageType.CERTIFICATION)
+                    .ifPresent(entity::addProductImage);
+        }
+        return entity;
+    }
+
+    private Optional<ProductImage[]> saveProductImageEntity(
+            List<MultipartFile> images, UUID id, ProductImageType type) {
+        if (!images.isEmpty()) {
+            String nameImageOnAzure = id + "/";
+
+            Map<String, MultipartFile> imageMap = images.stream()
+                    .collect(Collectors.toMap(x -> nameImageOnAzure + x.getOriginalFilename(), x -> x));
+
+            imageMap.forEach(blobUploadImages::azureProductStorageHandler);
+
+            ProductImage[] productImages = imageMap.keySet()
+                    .stream()
+                    .map(x -> endpoint + productContainer + "/" + x)
+                    .peek(x -> System.out.println("This is image: " + x))
+                    .map(name -> new ProductImage().setPath(name).setType(type))
+                    .peek(this.imageRepository::save)
+                    .toArray(ProductImage[]::new);
+            return Optional.of(productImages);
+        }
+        return Optional.empty();
+    }
+
+
 }

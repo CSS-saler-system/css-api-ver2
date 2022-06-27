@@ -75,7 +75,8 @@ public interface MapperDTO {
 
     AccountTokenDto toAccountTokenDto(AccountToken accountToken);
 
-
+    @Mapping(target = "percentSoldByCategory", source = "percentSoldByCategory")
+    CollaboratorWithQuantitySoldByCategoryDto toCollaboratorWithQuantitySoldByCategoryDto(Account entity);
 
 
 }

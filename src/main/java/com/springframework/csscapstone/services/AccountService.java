@@ -7,6 +7,7 @@ import com.springframework.csscapstone.payload.response_dto.PageEnterpriseResDto
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.admin.AccountResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.CollaboratorResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.CollaboratorWithQuantitySoldByCategoryDto;
 import com.springframework.csscapstone.payload.sharing.AccountUpdaterJsonDto;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountExistException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountInvalidException;
@@ -14,9 +15,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.security.auth.login.AccountNotFoundException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface AccountService {
+
+    Optional<CollaboratorWithQuantitySoldByCategoryDto> getCollaboratorWithPerformance(UUID uuid);
     PageImplResDto<AccountResDto> getAccountDto(
             String name, String phone,
             String email, String address,
@@ -44,7 +48,7 @@ public interface AccountService {
             UUID idEnterprise, Integer pageNumber, Integer pageSize);
 
     //    UUID createAccount(AccountDto dto);
-    PageImplResDto<CollaboratorResDto> collaboratorsByEnterpriseIncludeNumberOfOrder(
+    PageImplResDto<CollaboratorResDto> collaboratorsByEnterpriseIncludeNumberOfQuantitySold(
             UUID idEnterprise, Integer pageNumber, Integer pageSize);
 
     List<CollaboratorResDto> collaboratorMappingCampaign(UUID campaign);
