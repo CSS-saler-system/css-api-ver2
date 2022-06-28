@@ -1,5 +1,6 @@
 package com.springframework.csscapstone.services.impl;
 
+import com.springframework.csscapstone.config.constant.ApiEndPoint;
 import com.springframework.csscapstone.data.dao.specifications.TransactionSpecifications;
 import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.BillImage;
@@ -65,6 +66,7 @@ public class TransactionServicesImpl implements TransactionServices {
         this.accountRepository.findById(enterpriseId)
                 .filter(acc -> acc.getRole().getName().equals("Enterprise"))
                 .orElseThrow(() -> new EntityNotFoundException("The enterprise with id: " + enterpriseId + "was not found"));
+
         createDate = Objects.isNull(createDate) ? defaultMinDate : createDate;
         modifiedDate = Objects.isNull(modifiedDate) ? defaultMaxDate : modifiedDate;
 
@@ -73,7 +75,7 @@ public class TransactionServicesImpl implements TransactionServices {
 
         Page<Transactions> page = this.transactionsRepository
                 .findAllByDate(enterpriseId, createDate, modifiedDate, PageRequest.of(pageNumber - 1, pageSize));
-        LOGGER.info("this is test :");
+
         page.getContent().forEach(System.out::println);
         List<TransactionsDto> collect = page.getContent()
                 .stream()
@@ -205,9 +207,10 @@ public class TransactionServicesImpl implements TransactionServices {
     @Transactional
     @Override
     public UUID rejectTransaction(UUID id) {
-        Transactions transactions = this.transactionsRepository.findById(id)
-                .orElseThrow(() -> new TransactionNotFoundException(
-                        "The transaction with id: " + id + " not found"));
+
+        Transactions transactions = this.transactionsRepository
+                .findById(id)
+                .orElseThrow(() -> new TransactionNotFoundException("The transaction with id: " + id + " not found"));
 
         return this.transactionsRepository
                 .save(transactions.setTransactionStatus(TransactionStatus.REJECT)).getId();
@@ -225,12 +228,16 @@ public class TransactionServicesImpl implements TransactionServices {
 
     @Override
     public PageImplResDto<TransactionsDto> getAllPendingStatusList(Integer pageNumber, Integer pageSize) {
+
         pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
-        Page<Transactions> page = this.transactionsRepository.findAllByPendingStatus(PageRequest.of(pageNumber - 1, pageSize));
+
+        Page<Transactions> page = this.transactionsRepository
+                .findAllByPendingStatus(PageRequest.of(pageNumber - 1, pageSize));
         List<TransactionsDto> pageRes = page.getContent()
                 .stream().map(MapperDTO.INSTANCE::toTransactionsResDto)
                 .collect(Collectors.toList());
+
         return new PageImplResDto<>(pageRes, page.getNumber(), pageRes.size(), page.getTotalElements(), page.getTotalPages(),
                 page.isFirst(), page.isLast());
     }

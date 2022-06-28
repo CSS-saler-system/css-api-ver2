@@ -1,5 +1,6 @@
 package com.springframework.csscapstone.services;
 
+import com.springframework.csscapstone.data.status.TransactionStatus;
 import com.springframework.csscapstone.payload.request_dto.enterprise.TransactionsCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.TransactionsUpdateReqDto;
 import com.springframework.csscapstone.payload.request_dto.moderator.TransactionHandler;

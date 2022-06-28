@@ -1,6 +1,5 @@
 package com.springframework.csscapstone.controller.moderator;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.springframework.csscapstone.payload.request_dto.moderator.TransactionHandler;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.TransactionsDto;
@@ -37,7 +36,7 @@ public class ModeratorTransactionController {
     }
 
     @GetMapping(V4_TRANSACTION_GET + "/{transactionId}")
-    public ResponseEntity<TransactionsDto> getTransactionById(@PathVariable("transactionId") UUID transactionId){
+    public ResponseEntity<TransactionsDto> getTransactionById(@PathVariable("transactionId") UUID transactionId) {
         Optional<TransactionsDto> transactionById = this.transactionServices.getTransactionById(transactionId);
         TransactionsDto result = transactionById.orElseThrow(() -> new EntityNotFoundException("The transaction with id: " + transactionById + " was not found"));
         return ok(result);
@@ -58,11 +57,16 @@ public class ModeratorTransactionController {
         return ok(page);
     }
 
-    @PutMapping(V4_TRANSACTION_HANDLER)
+    @PutMapping(V4_TRANSACTION_ACCEPT)
     public ResponseEntity<?> handledTransaction(
-            @RequestBody @Valid TransactionHandler transactionHanlder
-            ) {
-        UUID uuid = this.transactionServices.acceptedTransaction(transactionHanlder);
+            @RequestBody @Valid TransactionHandler transactionHandler) {
+        UUID uuid = this.transactionServices.acceptedTransaction(transactionHandler);
+        return ok(uuid);
+    }
+
+    @PutMapping(V4_TRANSACTION_REJECT + "/{transactionId}")
+    public ResponseEntity<?> rejectTransaction(@PathVariable("transactionId") UUID transactionId) {
+        UUID uuid = this.transactionServices.rejectTransaction(transactionId);
         return ok(uuid);
     }
 
