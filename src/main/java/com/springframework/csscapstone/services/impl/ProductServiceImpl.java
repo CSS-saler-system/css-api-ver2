@@ -351,11 +351,11 @@ public class ProductServiceImpl implements ProductService {
 
     //TODO ASYNC
     private Product handleImage(List<MultipartFile> typeImages, List<MultipartFile> certificate, Product entity) {
-        if (!typeImages.isEmpty()) {
+        if (Objects.nonNull(typeImages) && !typeImages.isEmpty()) {
             saveProductImageEntity(typeImages, entity.getId(), ProductImageType.NORMAL)
                     .ifPresent(entity::addProductImage);
         }
-        if (!certificate.isEmpty()) {
+        if (Objects.nonNull(certificate) && !certificate.isEmpty()) {
             saveProductImageEntity(certificate, entity.getId(), ProductImageType.CERTIFICATION)
                     .ifPresent(entity::addProductImage);
         }

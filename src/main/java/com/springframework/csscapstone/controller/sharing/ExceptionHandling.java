@@ -162,7 +162,8 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler {
             CategoryInvalidException.class,
             CustomerExistedException.class,
             DataTempException.class,
-            InvalidCampaignAndProductException.class
+            InvalidCampaignAndProductException.class,
+            RuntimeException.class
     })
     public ResponseEntity<?> handleMethodArgNotValid(RuntimeException exception) {
         return createHttpResponse(BAD_REQUEST, exception.getMessage());

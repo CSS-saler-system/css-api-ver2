@@ -86,19 +86,19 @@ public class EnterpriseProductController {
     public ResponseEntity<?> getListTotalNumberOfProduct(
             @PathVariable("enterpriseId") UUID enterpriseId,
 
-            @RequestParam(value = "startDate", required = false, defaultValue = "08-06-1999")
-            @Valid @Pattern(regexp = "^\\d{2}-\\d{2}-\\d{4}$")
+            @RequestParam(value = "startDate", required = false, defaultValue = "08/06/1999")
+            @Valid @Pattern(regexp = "^\\d{2}/\\d{2}/\\d{4}$")
             String startDate,
 
-            @RequestParam(value = "endDate", required = false, defaultValue = "08-06-2030")
-            @Valid @Pattern(regexp = "^\\d{2}-\\d{2}-\\d{4}$")
+            @RequestParam(value = "endDate", required = false, defaultValue = "08/06/2030")
+            @Valid @Pattern(regexp = "^\\d{2}/\\d{2}/\\d{4}$")
             String endDate,
 
             @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
             @RequestParam(value = "pageSize", required = false) Integer pageSize
     ) {
-        LocalDate start = LocalDate.parse(startDate, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-        LocalDate end = LocalDate.parse(endDate, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        LocalDate start = LocalDate.parse(startDate, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        LocalDate end = LocalDate.parse(endDate, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
         LOGGER.info("The start date {}", start);
         LOGGER.info("The end date {}", end);
         PageImplResDto<ProductCountOrderResDto> page =

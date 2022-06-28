@@ -222,7 +222,7 @@ public class ApiEndPoint {
         public static final String V2_TRANSACTION_RETRIEVE = v2_handler + "/retrieve";
         public static final String V2_TRANSACTION_REJECT = v2_handler + "/reject";
         public static final String V2_TRANSACTION_UPDATE = v2_handler + "/update";
-        public static final String V2_TRANSACTION_CREATE = v2_handler;
+        public static final String V2_TRANSACTION_CREATE = v2_handler + "/create";
         public static final String V2_TRANSACTION_DELETE = v2_handler + "/delete";
 
         public static final String V4_TRANSACTION_LIST = v4_handler + "/list";

@@ -154,7 +154,7 @@ public class TransactionServicesImpl implements TransactionServices {
                 .orElseThrow(() -> new TransactionNotFoundException("The transaction with id: " + dto.getId() + " not found"));
 
         if (!transactions.getTransactionStatus().equals(TransactionStatus.PENDING)) {
-            throw new RuntimeException("Transaction with id: " + dto.getId() + "is not allowed to modified!!!");
+            throw new RuntimeException("Transaction with id: " + dto.getId() + "is not allowed to modified, because maybe it's not in pending status !!!");
         }
 
         Account account = this.accountRepository.findById(dto.getCreator().getId())

@@ -42,7 +42,15 @@ public class EnterpriseCampaignController {
             @RequestPart(name = "images") List<MultipartFile> images)
             throws CampaignInvalidException, JsonProcessingException {
         CampaignCreatorReqDto dto = this.objectMapper.readValue(campaignCreatorReqDto, CampaignCreatorReqDto.class);
+
         if (dto.getKpi() < 0) throw new RuntimeException("The KPI must be greater than 0");
+
+        if (dto.getStartDate().isBefore(LocalDateTime.now().plusDays(3)))
+            throw new RuntimeException("The start day must be after 3 days from now");
+
+        if (dto.getStartDate().isAfter(dto.getEndDate()))
+            throw new RuntimeException("The start, end date is invalid");
+
         UUID campaign = campaignService.createCampaign(dto, images);
         return ok(campaign);
     }
@@ -72,6 +80,14 @@ public class EnterpriseCampaignController {
             throws EntityNotFoundException, JsonProcessingException {
         CampaignUpdaterReqDto dto = objectMapper
                 .readValue(campaign, CampaignUpdaterReqDto.class);
+        if (dto.getKpiSaleProduct() < 0) throw new RuntimeException("The KPI must be greater than 0");
+
+        if (dto.getStartDate().isBefore(LocalDateTime.now().plusDays(3)))
+            throw new RuntimeException("The start day must be after 3 days from now");
+
+        if (dto.getStartDate().isAfter(dto.getEndDate()))
+            throw new RuntimeException("The start, end date is invalid");
+
         UUID campaignUUID = campaignService.updateCampaign(dto, images);
         return ok(campaignUUID);
     }

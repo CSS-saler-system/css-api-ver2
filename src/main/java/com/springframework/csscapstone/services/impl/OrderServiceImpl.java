@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -64,6 +65,7 @@ public class OrderServiceImpl implements OrderService {
         return new PageImplResDto<>(content, orders.getNumber() + 1, content.size(),
                 orders.getTotalElements(), orders.getTotalPages(), orders.isFirst(), orders.isLast());
     }
+
     @Transactional
     @Override
     public UUID createOrder(OrderCreatorReqDto dto) {
@@ -116,6 +118,7 @@ public class OrderServiceImpl implements OrderService {
 
         return this.orderRepository.save(order).getId();
     }
+
     @Transactional
     @Override
     public UUID updateOrder(OrderUpdaterDto dto) {
@@ -138,6 +141,7 @@ public class OrderServiceImpl implements OrderService {
 
         return savedOrder.getId();
     }
+
     //todo using for collaborator
     @Transactional
     @Override
@@ -153,8 +157,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Optional<UUID> updateStatusOrder(UUID id, OrderStatus status) {
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> handlerOrderNotFound().get());
+        Order order = orderRepository.findById(id).orElseThrow(() -> handlerOrderNotFound().get());
         order.setStatus(status);
         this.orderRepository.save(order);
         return Optional.of(order.getId());
@@ -165,6 +168,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * Order -> Order-Detail: (total point)
+     *
      * @param orderId
      */
     @Override
@@ -181,17 +185,22 @@ public class OrderServiceImpl implements OrderService {
 //                .map(OrderDetail::getTotalPointProduct)
 //                .mapToDouble(Double::doubleValue)
 //                .sum();
-
+        //get total point in order details
         Double totalPoint = order.getOrderDetails()
                 .stream()
                 .map(OrderDetail::getTotalPointProduct)
                 .reduce(0.0, Double::sum);
 
         //todo find enterprise:
-        Optional<Account> enterprise = order.getOrderDetails()
+        List<Account> enterprises = order.getOrderDetails()
                 .stream()
                 .map(detail -> detail.getProduct().getAccount())
-                .findFirst();
+                .distinct().collect(Collectors.toList());
+        if (enterprises.size() > 1) {
+            throw new RuntimeException("Order wrong with 2 enterprise!!!");
+        }
+
+        Optional<Account> enterprise = Optional.of(enterprises.get(0));
 
         //todo point of enterprise must be large enough
         enterprise.ifPresent(_enterprise -> {
@@ -212,6 +221,7 @@ public class OrderServiceImpl implements OrderService {
         return () -> new OrderNotFoundException(
                 MessagesUtils.getMessage(MessageConstant.Order.NOT_FOUND));
     }
+
     private Supplier<EntityNotFoundException> handlerNotFoundException() {
         return () -> new EntityNotFoundException("The product in order detail was not found");
     }

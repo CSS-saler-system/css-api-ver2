@@ -127,6 +127,10 @@ public class CampaignServiceImpl implements CampaignService {
         Campaign entity = this.campaignRepository.findById(dto.getId())
                 .orElseThrow(campaignNotFoundException());
 
+        if (!entity.getCampaignStatus().equals(CampaignStatus.PENDING)) {
+            throw new RuntimeException("The campaign is not pending status so cant be updated!!!");
+        }
+
         entity.setName(dto.getName())
 //                .setImage(dto.getImage())
                 .setStartDate(dto.getStartDate())
