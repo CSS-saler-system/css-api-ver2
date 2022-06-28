@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.springframework.csscapstone.data.status.TransactionStatus;
 import com.springframework.csscapstone.payload.basic.BillImageBasicDto;
-import com.springframework.csscapstone.payload.request_dto.enterprise.TransactionsCreatorReqDto;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -17,24 +16,17 @@ import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 @Data
 public class TransactionsUpdateReqDto {
     private final UUID id;
-    private final List<BillImageBasicDto> billImage;
     private final double point;
-    private final Set<AccountNestedDto> account;
-
-    private final TransactionStatus status;
+    private final AccountNestedDto creator;
 
     @JsonCreator(mode = PROPERTIES)
     public TransactionsUpdateReqDto(
             @JsonProperty("id") UUID id,
-            @JsonProperty("billImage") List<BillImageBasicDto> billImage,
             @JsonProperty("point") double point,
-            @JsonProperty("account") Set<AccountNestedDto> account,
-            @JsonProperty("status") TransactionStatus status) {
+            @JsonProperty("creator") AccountNestedDto creator) {
         this.id = id;
-        this.billImage = billImage;
         this.point = point;
-        this.account = account;
-        this.status = status;
+        this.creator = creator;
     }
 
     @Data

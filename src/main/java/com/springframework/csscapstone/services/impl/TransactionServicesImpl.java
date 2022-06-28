@@ -100,24 +100,31 @@ public class TransactionServicesImpl implements TransactionServices {
     @Transactional
     @Override
     public UUID createTransaction(TransactionsCreatorReqDto dto, List<MultipartFile> images) {
+        //check account exist
         Account accounts = this.accountRepository
                 .findById(dto.getCreator().getAccountId())
                 .orElseThrow(() -> new EntityNotFoundException("The json not have id of account!!!"));
 
+        //check account transaction
         Transactions entity = new Transactions()
                 .setPoint(dto.getPoint())
                 .setTransactionCreator(accounts)
                 .setTransactionStatus(TransactionStatus.PENDING);
 
+        //check account transaction
         Transactions savedTransaction = this.transactionsRepository.save(entity);
 
         //save images:
-        Optional<BillImage> billImage = handlerImages(images, savedTransaction.getId());
+        if (Objects.nonNull(images) && !images.isEmpty()) {
 
-        billImage.ifPresent(image -> {
-            savedTransaction.addImages(image);
-            this.transactionsRepository.save(savedTransaction);
-        });
+            Optional<BillImage> billImage = handlerImages(images, savedTransaction.getId());
+
+            billImage.ifPresent(image -> {
+                savedTransaction.addImages(image);
+                this.transactionsRepository.save(savedTransaction);
+            });
+
+        }
 
         return savedTransaction.getId();
     }
@@ -138,31 +145,34 @@ public class TransactionServicesImpl implements TransactionServices {
                 .findFirst();
     }
 
-    //todo enterprise update transasction
+    //todo enterprise update transaction
     @Transactional
     @Override
     public UUID updateTransaction(TransactionsUpdateReqDto dto, List<MultipartFile> images) {
+
         Transactions transactions = this.transactionsRepository.findById(dto.getId())
                 .orElseThrow(() -> new TransactionNotFoundException("The transaction with id: " + dto.getId() + " not found"));
 
-        Set<Account> accounts = dto.getAccount()
-                .stream()
-                .map(TransactionsUpdateReqDto.AccountNestedDto::getId)
-                .map(uuid -> this.accountRepository
-                        .findById(uuid)
-                        .orElseThrow(() -> new EntityNotFoundException("The account inside transaction dto not found")))
-                .collect(Collectors.toSet());
+        if (!transactions.getTransactionStatus().equals(TransactionStatus.PENDING)) {
+            throw new RuntimeException("Transaction with id: " + dto.getId() + "is not allowed to modified!!!");
+        }
 
-        transactions
-                .setPoint(dto.getPoint())
-//                todo creator
-//                .setTransactionApprover(accounts)
-                .setTransactionStatus(dto.getStatus());
-        Optional<BillImage> billImage = handlerImages(images, transactions.getId());
-        billImage.ifPresent(image -> {
-            transactions.addImages(image);
-            this.transactionsRepository.save(transactions);
-        });
+        Account account = this.accountRepository.findById(dto.getCreator().getId())
+                .orElseThrow(() -> new EntityNotFoundException("The creator with: " + dto.getId() + " was not found"));
+
+        if (!transactions.getTransactionCreator().equals(account)) {
+            throw new RuntimeException("The creator is invalid!!!");
+        }
+
+        transactions.setPoint(dto.getPoint());
+
+        if (Objects.nonNull(images) && !images.isEmpty()) {
+            Optional<BillImage> billImage = handlerImages(images, transactions.getId());
+            billImage.ifPresent(image -> {
+                transactions.addImages(image);
+                this.transactionsRepository.save(transactions);
+            });
+        }
 
         return transactions.getId();
     }
