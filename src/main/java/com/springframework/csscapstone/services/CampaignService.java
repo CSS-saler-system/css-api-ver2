@@ -24,6 +24,14 @@ public interface CampaignService {
 //            Long kpi,
 //            CampaignStatus status);
     PageImplResDto<CampaignResDto> findCampaign(
+            UUID enterpriseId,
+            String name,
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            Long minKpi, Long maxKpi, CampaignStatus status,
+            Integer pageNumber, Integer pageSize);
+
+    PageImplResDto<CampaignResDto> findCampaignWithoutEnterpriseId(
             String name,
             LocalDateTime startDate,
             LocalDateTime endDate,

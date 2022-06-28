@@ -1,10 +1,12 @@
 package com.springframework.csscapstone.data.dao.specifications;
 
+import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.Campaign;
 import com.springframework.csscapstone.data.domain.Campaign_;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static com.springframework.csscapstone.data.dao.specifications.ContainsString.contains;
 
@@ -34,4 +36,8 @@ public class CampaignSpecifications {
                 .greaterThan(root.get(Campaign_.END_DATE), endDate);
     }
 
+    public static Specification<Campaign> equalsEnterpriseId(Account enterprise) {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get(Campaign_.ACCOUNT), enterprise);
+    }
 }

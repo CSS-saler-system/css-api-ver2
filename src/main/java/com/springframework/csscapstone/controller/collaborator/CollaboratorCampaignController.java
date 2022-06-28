@@ -41,7 +41,7 @@ public class CollaboratorCampaignController {
             @RequestParam(value = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
             @RequestParam(value = "maxSize", required = false, defaultValue = "0") Integer pageSize
     ) {
-        PageImplResDto<CampaignResDto> campaign = campaignService.findCampaign(
+        PageImplResDto<CampaignResDto> campaign = campaignService.findCampaignWithoutEnterpriseId(
                 campaignName, startDate, endDate, minKpi, maxKpi, CampaignStatus.PENDING,pageNumber, pageSize);
         return ResponseEntity.ok(campaign);
     }

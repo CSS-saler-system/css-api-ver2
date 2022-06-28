@@ -49,8 +49,8 @@ public class ModeratorCampaignController {
             @RequestParam(value = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
             @RequestParam(value = "pageSize", required = false, defaultValue = "0") Integer pageSize
     ) {
-        PageImplResDto<CampaignResDto> campaign = campaignService.findCampaign(
-                campaignName, startDate, endDate, minKpi, maxKpi,status, pageNumber, pageSize);
+        PageImplResDto<CampaignResDto> campaign = campaignService
+                .findCampaignWithoutEnterpriseId(campaignName, startDate, endDate, minKpi, maxKpi,status, pageNumber, pageSize);
         return ResponseEntity.ok(campaign);
     }
 

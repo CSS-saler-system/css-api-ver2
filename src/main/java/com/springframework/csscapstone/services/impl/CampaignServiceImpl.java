@@ -61,42 +61,8 @@ public class CampaignServiceImpl implements CampaignService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
-    //TODO Need Modified
-//    @Cacheable(cacheNames = "campaigns")
-//    @Override
-//    public List<CampaignResDto> findCampaign(
-//            String name, LocalDateTime createdDate,
-//            LocalDateTime lastModifiedDate, LocalDateTime startDate,
-//            LocalDateTime endDate, String description,
-//            Long kpi, CampaignStatus status) {
-//        CriteriaBuilder builder = em.getCriteriaBuilder();
-//        CriteriaQuery<Campaign> query = builder.createQuery(Campaign.class);
-//        Root<Campaign> root = query.from(Campaign.class);
-//
-//        List<Predicate> predicates = Arrays.asList(
-//                builder.like(root.get(Campaign_.NAME), name),
-//                builder.greaterThan(root.get(Campaign_.LAST_MODIFIED_DATE), createdDate),
-//                builder.lessThan(root.get(Campaign_.LAST_MODIFIED_DATE), lastModifiedDate),
-//                builder.greaterThan(root.get(Campaign_.START_DATE), startDate),
-//                builder.lessThan(root.get(Campaign_.END_DATE), endDate),
-//                builder.greaterThan(root.get(Campaign_.KPI_SALE_PRODUCT), kpi),
-//                builder.like(root.get(Campaign_.CAMPAIGN_DESCRIPTION), description),
-//                builder.equal(root.get(Campaign_.CAMPAIGN_STATUS), status)
-//        );
-//
-//        CriteriaQuery<Campaign> processQuery = query.where(builder.and(predicates.toArray(new Predicate[0])));
-//
-//        return em.createQuery(processQuery).getResultList()
-//                .stream().map(MapperDTO.INSTANCE::toCampaignResDto)
-//                .collect(Collectors.toList());
-//    }
-
-
     @Override
-    public PageImplResDto<CampaignResDto> findCampaign(
-            String name, LocalDateTime startDate,
-            LocalDateTime endDate, Long minKpi, Long maxKpi, CampaignStatus status,
-            Integer pageNumber, Integer pageSize) {
+    public PageImplResDto<CampaignResDto> findCampaignWithoutEnterpriseId(String name, LocalDateTime startDate, LocalDateTime endDate, Long minKpi, Long maxKpi, CampaignStatus status, Integer pageNumber, Integer pageSize) {
         Specification<Campaign> condition = Specification
                 .where(StringUtils.isEmpty(name) ? null : CampaignSpecifications.containsName(name))
                 .and(startDate == null ? null : CampaignSpecifications.afterStartDate(startDate))
@@ -104,18 +70,28 @@ public class CampaignServiceImpl implements CampaignService {
                 .and(minKpi == null || minKpi == 0 ? null : CampaignSpecifications.greaterKpi(minKpi))
                 .and(maxKpi == null || maxKpi == 0 ? null : CampaignSpecifications.smallerKpi(maxKpi));
 
-        pageNumber = Objects.isNull(pageNumber) || pageNumber == 0 ? 1 : pageNumber;
-        pageSize = Objects.isNull(pageSize) || pageSize == 0 ? 1 : pageSize;
+        return getCampaignResDtoPageImplResDto(status, pageNumber, pageSize, condition);
+    }
 
-        Page<Campaign> page = this.campaignRepository.findAll(condition, PageRequest.of(pageNumber - 1, pageSize));
-        List<CampaignResDto> content = page.getContent()
-                .stream()
-                .filter(campaign -> campaign.getCampaignStatus().equals(status))
-                .map(MapperDTO.INSTANCE::toCampaignResDto)
-                .collect(Collectors.toList());
-        return new PageImplResDto<>(
-                content, page.getNumber() + 1, content.size(), page.getTotalElements(),
-                page.getTotalPages(), page.isFirst(), page.isLast());
+    @Override
+    public PageImplResDto<CampaignResDto> findCampaign(
+            UUID enterpriseId, String name, LocalDateTime startDate,
+            LocalDateTime endDate, Long minKpi, Long maxKpi, CampaignStatus status,
+            Integer pageNumber, Integer pageSize) {
+
+        Account enterprise = this.accountRepository.findById(enterpriseId)
+                .filter(acc -> acc.getRole().getName().equals("Enterprise"))
+                .orElseThrow(() -> new EntityNotFoundException("The Enterprise with id: " + enterpriseId + " was not found"));
+
+        Specification<Campaign> condition = Specification
+                .where(CampaignSpecifications.equalsEnterpriseId(enterprise))
+                .and(StringUtils.isEmpty(name) ? null : CampaignSpecifications.containsName(name))
+                .and(startDate == null ? null : CampaignSpecifications.afterStartDate(startDate))
+                .and(endDate == null ? null : CampaignSpecifications.beforeEndDate(endDate))
+                .and(minKpi == null || minKpi == 0 ? null : CampaignSpecifications.greaterKpi(minKpi))
+                .and(maxKpi == null || maxKpi == 0 ? null : CampaignSpecifications.smallerKpi(maxKpi));
+
+        return getCampaignResDtoPageImplResDto(status, pageNumber, pageSize, condition);
     }
 
     @Override
@@ -164,38 +140,6 @@ public class CampaignServiceImpl implements CampaignService {
         this.campaignRepository.save(campaign);
         return entity.getId();
     }
-
-    private Campaign handlerImage(List<MultipartFile> images, Campaign campaign) {
-        if (Objects.nonNull(images)) {
-            return images
-                    .stream()
-                    .flatMap(image -> this.saveImageOnAzure(image, campaign.getId())
-                            .map(Stream::of)
-                            .orElseGet(Stream::empty))
-                    .filter(Objects::nonNull)
-                    .map(campaign::addImage)
-                    .findFirst().orElseThrow(() -> new RuntimeException("Some thing went wrong in handler image"));
-        }
-        return campaign;
-    }
-
-    private Optional<CampaignImage> saveImageOnAzure(MultipartFile multipartFile, UUID campaignId) {
-        String nameImageOnAzure = campaignId + "/";
-        Map<String, MultipartFile> collect = Stream.of(multipartFile)
-                .collect(Collectors.toMap(
-                        image -> nameImageOnAzure + image.getOriginalFilename(),
-                        image -> image));
-
-        collect.forEach(blobUploadImages::azureCampaignStorageHandler);
-
-        return collect.keySet()
-                .stream()
-                .map(imageName -> new CampaignImage(endpoint + campaignContainer + "/" + imageName))
-                .peek(image -> LOGGER.info("the image path {}", image.getPath()))
-                .peek(this.campaignImageRepository::save)
-                .findFirst();
-    }
-
 
     @Transactional
     @Override
@@ -296,4 +240,54 @@ public class CampaignServiceImpl implements CampaignService {
     private Supplier<EntityNotFoundException> campaignNotFoundException() {
         return () -> new EntityNotFoundException(MessagesUtils.getMessage(MessageConstant.Campaign.NOT_FOUND));
     }
+
+
+    private PageImplResDto<CampaignResDto> getCampaignResDtoPageImplResDto(CampaignStatus status, Integer pageNumber, Integer pageSize, Specification<Campaign> condition) {
+        pageNumber = Objects.isNull(pageNumber) || pageNumber == 0 ? 1 : pageNumber;
+        pageSize = Objects.isNull(pageSize) || pageSize == 0 ? 1 : pageSize;
+
+        Page<Campaign> page = this.campaignRepository.findAll(condition, PageRequest.of(pageNumber - 1, pageSize));
+        List<CampaignResDto> content = page.getContent()
+                .stream()
+                .filter(campaign -> campaign.getCampaignStatus().equals(status))
+                .map(MapperDTO.INSTANCE::toCampaignResDto)
+                .collect(Collectors.toList());
+        return new PageImplResDto<>(
+                content, page.getNumber() + 1, content.size(), page.getTotalElements(),
+                page.getTotalPages(), page.isFirst(), page.isLast());
+    }
+
+
+    private Campaign handlerImage(List<MultipartFile> images, Campaign campaign) {
+        if (Objects.nonNull(images)) {
+            return images
+                    .stream()
+                    .flatMap(image -> this.saveImageOnAzure(image, campaign.getId())
+                            .map(Stream::of)
+                            .orElseGet(Stream::empty))
+                    .filter(Objects::nonNull)
+                    .map(campaign::addImage)
+                    .findFirst().orElseThrow(() -> new RuntimeException("Some thing went wrong in handler image"));
+        }
+        return campaign;
+    }
+
+    private Optional<CampaignImage> saveImageOnAzure(MultipartFile multipartFile, UUID campaignId) {
+        String nameImageOnAzure = campaignId + "/";
+        Map<String, MultipartFile> collect = Stream.of(multipartFile)
+                .collect(Collectors.toMap(
+                        image -> nameImageOnAzure + image.getOriginalFilename(),
+                        image -> image));
+
+        collect.forEach(blobUploadImages::azureCampaignStorageHandler);
+
+        return collect.keySet()
+                .stream()
+                .map(imageName -> new CampaignImage(endpoint + campaignContainer + "/" + imageName))
+                .peek(image -> LOGGER.info("the image path {}", image.getPath()))
+                .peek(this.campaignImageRepository::save)
+                .findFirst();
+    }
+
+
 }

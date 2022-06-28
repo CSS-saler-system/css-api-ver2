@@ -36,7 +36,7 @@ public class EnterpriseTransactionController {
     @PostMapping(value = V2_TRANSACTION_CREATE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createTransaction(
             @RequestPart("transaction") String transactionCreatorDto,
-            @RequestPart("image") List<MultipartFile> images) throws JsonProcessingException {
+            @RequestPart(value = "image", required = false) List<MultipartFile> images) throws JsonProcessingException {
         TransactionsCreatorReqDto dto = objectMapper.readValue(transactionCreatorDto, TransactionsCreatorReqDto.class);
         UUID transaction = this.transactionServices.createTransaction(dto, images);
         return ok(transaction);
@@ -62,7 +62,7 @@ public class EnterpriseTransactionController {
 
     @PutMapping(value = V2_TRANSACTION_UPDATE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateTransaction(
-            @RequestPart("billImages") List<MultipartFile> images,
+            @RequestPart(value = "billImages", required = false) List<MultipartFile> images,
             @RequestPart("updateTransaction") String dto
     ) throws JsonProcessingException {
         TransactionsUpdateReqDto transactionsUpdateReqDto = objectMapper

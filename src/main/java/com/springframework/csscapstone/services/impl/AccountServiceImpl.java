@@ -92,16 +92,19 @@ public class AccountServiceImpl implements AccountService {
                 .filter(acc -> acc.getRole().getName().equals("Collaborator"))
                 .orElseThrow(() -> new EntityNotFoundException("The collaborator with id: " + uuid + " was not found"));
 
-        this.orderRepository
-                .getCollaboratorWithPerformance(uuid)
+        Map<Category, Long> performance = this.orderRepository
+                .getCollaboratorWithPerformanceWithId(uuid)
                 .stream()
                 .collect(Collectors.toMap(
                         tuple -> this.categoryRepository
                                 .findById(tuple.get(OrderRepository.CATEGORY, UUID.class))
-                                .get(),
+                                .orElse(new Category()),
                         tuple -> tuple.get(OrderRepository.QUANTITY_SOLD, Long.class)
                 ));
-        return Optional.empty();
+        performance.forEach((key, value) -> System.out.println(key + ": " + value));
+        LOGGER.info("");
+        Account account = collaborator.setPercentSoldByCategory(performance);
+        return Optional.of(MapperDTO.INSTANCE.toCollaboratorWithQuantitySoldByCategoryDto(account));
     }
 
     /**
@@ -136,7 +139,6 @@ public class AccountServiceImpl implements AccountService {
         return new PageImplResDto<>(data, page.getNumber() + 1, data.size(),
                 page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
     }
-
 
 
     /**
@@ -176,6 +178,7 @@ public class AccountServiceImpl implements AccountService {
      *     Using By Admin creates Account
      *     Upload information into firebase
      *     Upload Image into Azure Storage
+     *
      * @param dto
      * @return
      * @throws AccountExistException
@@ -421,6 +424,7 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * todo get collaborators have order selling product
+     *
      * @param idEnterprise
      * @return
      */

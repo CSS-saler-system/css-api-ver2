@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.springframework.csscapstone.data.domain.Category;
 import com.springframework.csscapstone.payload.basic.AccountImageBasicDto;
 import com.springframework.csscapstone.payload.response_dto.admin.CategoryResDto;
 import lombok.Data;
@@ -36,10 +37,11 @@ public class CollaboratorWithQuantitySoldByCategoryDto implements Serializable {
     private final AccountImageBasicDto licenses;
     private final AccountImageBasicDto idCard;
 
-    private final Map<CategoryInnerResDto, Long> percentSoldByCategory;
+//    private final Map<CategoryInnerResDto, Long> percentSoldByCategory;
+    private final Map<Category, Long> percentSoldByCategory;
 
     @Data
-    static class CategoryInnerResDto {
+    public static class CategoryInnerResDto {
         private final String name;
 
         public CategoryInnerResDto(@JsonProperty("categoryName") String name) {
@@ -60,7 +62,7 @@ public class CollaboratorWithQuantitySoldByCategoryDto implements Serializable {
             @JsonProperty("avatar") AccountImageBasicDto avatar,
             @JsonProperty("license") AccountImageBasicDto license,
             @JsonProperty("idCard") AccountImageBasicDto idCard,
-            @JsonProperty("percentSoldByCategory") Map<CategoryInnerResDto, Long> percentSoldByCategory) {
+            @JsonProperty("percentSoldByCategory") Map<Category, Long> percentSoldByCategory) {
         this.id = id;
         this.name = name;
         this.dob = dob;

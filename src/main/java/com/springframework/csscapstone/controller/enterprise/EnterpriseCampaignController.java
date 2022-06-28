@@ -2,7 +2,6 @@ package com.springframework.csscapstone.controller.enterprise;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springframework.csscapstone.data.repositories.CampaignRepository;
 import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.CampaignUpdaterReqDto;
@@ -36,7 +35,7 @@ public class EnterpriseCampaignController {
 
 
     @PostMapping(
-            value = V2_CREATE_CAMPAIGN,
+            value = V2_CAMPAIGN_CREATE,
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<UUID> addNewCampaign(
             @RequestPart(name = "campaign") String campaignCreatorReqDto,
@@ -48,8 +47,9 @@ public class EnterpriseCampaignController {
         return ok(campaign);
     }
 
-    @GetMapping(V2_LIST_CAMPAIGN)
+    @GetMapping(V2_CAMPAIGN_LIST + "/{enterpriseId}")
     public ResponseEntity<?> getListDto(
+            @PathVariable("enterpriseId") UUID enterpriseId,
             @RequestParam(value = "campaignName", required = false) String campaignName,
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
@@ -60,12 +60,12 @@ public class EnterpriseCampaignController {
             @RequestParam(value = "maxSize", required = false, defaultValue = "0") Integer pageSize
     ) {
         PageImplResDto<CampaignResDto> campaign = campaignService.findCampaign(
-                campaignName, startDate, endDate, minKpi, maxKpi,status, pageNumber, pageSize);
+                enterpriseId, campaignName, startDate, endDate, minKpi, maxKpi,status, pageNumber, pageSize);
         return ResponseEntity.ok(campaign);
     }
 
 
-    @PutMapping(value = V2_UPDATE_CAMPAIGN, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value = V2_CAMPAIGN_UPDATE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<UUID> updateCampaign(
             @RequestPart("campaign") String campaign,
             @RequestPart("images") List<MultipartFile> images)
@@ -74,6 +74,12 @@ public class EnterpriseCampaignController {
                 .readValue(campaign, CampaignUpdaterReqDto.class);
         UUID campaignUUID = campaignService.updateCampaign(dto, images);
         return ok(campaignUUID);
+    }
+
+    @GetMapping(V2_CAMPAIGN_GET + "/{campaignId}")
+    public ResponseEntity<?> getCampaignById(@PathVariable("campaignId") UUID campaignId) {
+        CampaignResDto result = this.campaignService.findById(campaignId);
+        return ok(result);
     }
 
 }
