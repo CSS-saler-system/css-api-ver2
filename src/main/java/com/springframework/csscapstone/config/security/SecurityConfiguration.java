@@ -43,7 +43,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> corsConfiguration())
+                .cors().configurationSource(cors -> corsConfiguration()).and()
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .addFilterBefore(authenticationHandlerFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests(
