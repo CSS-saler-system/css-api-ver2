@@ -49,9 +49,9 @@ public class ApiEndPoint {
 
     public static class Account {
         public static final String v1_handler = ADMIN + "/account";
-        public static final String v2_handler = ENTERPRISE + "/account";
-        public static final String v3_handler = COLLABORATOR;
-        public static final String v4_handler = MODERATOR + "/account";
+        public static final String v2_handler = ENTERPRISE + "/collaborator";
+        public static final String v3_handler = COLLABORATOR + "/customer";
+        public static final String v4_handler = MODERATOR + "/enterprise";
 
 
         public static final String V1_LIST_ACCOUNT = v1_handler + "/list";
@@ -60,10 +60,11 @@ public class ApiEndPoint {
         public static final String V1_DELETE_ACCOUNT = v1_handler + "/delete";
         public static final String V1_UPDATE_ACCOUNT = v1_handler + "/update";
 
-        public static final String V2_LIST_ACCOUNT = v2_handler + "/list";
-        public static final String V2_LIST_ORDER_COLLABORATOR = v2_handler + "/count-order/list";
+        public static final String V2_COLLABORATOR_LIST = v2_handler + "/list";
+        public static final String V2_ORDER_COLLABORATOR_LIST = v2_handler + "/count-order/list";
+        public static final String V2_COLLABORATOR_PERFORMANCE = v2_handler + "/performance/retrieve";
 
-        public static final String V2_LIST_COLLABORATOR_CAMPAIGN = v2_handler + "/campaign-join/list";
+        public static final String V2_COLLABORATOR_CAMPAIGN_LIST = v2_handler + "/campaign-join/list";
 
 
         public static final String V3_LIST_ACCOUNT = v3_handler + "/enterprise/list";
@@ -85,11 +86,12 @@ public class ApiEndPoint {
         public static final String v4_handler = MODERATOR + "/campaign";
 
 
-        public static final String V2_LIST_CAMPAIGN = v2_handler + "/list";
+        public static final String V2_CAMPAIGN_LIST = v2_handler + "/list";
         public static final String V2_GET_CAMPAIGN = v2_handler + "/get";
-        public static final String V2_UPDATE_CAMPAIGN = v2_handler + "/update";
-        public static final String V2_CREATE_CAMPAIGN = v2_handler + "/new";
+        public static final String V2_CAMPAIGN_UPDATE = v2_handler + "/update";
+        public static final String V2_CAMPAIGN_CREATE = v2_handler + "/new";
         public static final String V2_DELETE_CAMPAIGN = v2_handler + "/delete";
+        public static final String V2_CAMPAIGN_GET = v2_handler + "/get";
 
         public static final String V3_LIST_CAMPAIGN = v3_handler + "/list";
         public static final String V3_GET_CAMPAIGN = v3_handler + "/get";
