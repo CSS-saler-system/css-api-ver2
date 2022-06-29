@@ -30,7 +30,7 @@ public class CollaboratorCustomerController {
     }
 
     @GetMapping(V3_GET_CUSTOMER_BY_PHONE)
-    public ResponseEntity<?> getCustomerByPhone(@RequestParam("phone") @Pattern(regexp = RegexConstant.REGEX_PHONE) String phone) {
+    public ResponseEntity<?> getCustomerByPhone(@RequestParam("phone") @Pattern(regexp = RegexConstant.PHONE_REGEX) String phone) {
         return ok(this.customerService.findCustomerByPhone(phone));
     }
 

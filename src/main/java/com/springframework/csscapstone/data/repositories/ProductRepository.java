@@ -17,6 +17,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpecificationExecutor<Product> {
+    String CATEGORY_NAME = "tuple_categories";
+    String PRODUCT_LIST = "tuple_products";
     @Transactional(readOnly = true)
     List<Product> findProductByCategory(Category category);
     @Transactional(readOnly = true)
@@ -29,6 +31,13 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
             "LEFT JOIN FETCH p.image " +
             "WHERE p.id = :id")
     Optional<Product> findProductFetchJoinImageAndCategoryAccountById(@Param("id") UUID id);
+
+    @Query("SELECT p.category.categoryName AS "+ CATEGORY_NAME + ", " +
+            "p AS " + PRODUCT_LIST + " " +
+            "FROM Product p " +
+            "WHERE p.account.id = :enterpriseId " +
+            "GROUP BY p.category, p")
+    List<Tuple> getProductByCategoryAndEnterprise(UUID enterpriseId);
 
 
 }

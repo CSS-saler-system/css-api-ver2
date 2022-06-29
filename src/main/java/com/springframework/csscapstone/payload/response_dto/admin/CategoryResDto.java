@@ -1,12 +1,16 @@
 package com.springframework.csscapstone.payload.response_dto.admin;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.springframework.csscapstone.config.constant.ApiEndPoint;
+import com.springframework.csscapstone.data.domain.Category;
 import com.springframework.csscapstone.data.status.CategoryStatus;
 import com.springframework.csscapstone.data.status.ProductStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.ProductImageReqDto;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,6 +21,15 @@ public class CategoryResDto implements Serializable {
     private final CategoryStatus status;
     private final List<ProductInnerCategoryResDto> products;
 
+    public CategoryResDto() {
+        System.out.println("This is called");
+        this.id = null;
+        this.categoryName = "";
+        this.products = Collections.emptyList();
+        this.status = CategoryStatus.DISABLE;
+    }
+
+    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public CategoryResDto(@JsonProperty("id") UUID id,
                           @JsonProperty("categoryName") String categoryName,
                           @JsonProperty("status") CategoryStatus status,
@@ -61,5 +74,13 @@ public class CategoryResDto implements Serializable {
             this.productStatus = productStatus;
             this.image = image;
         }
+    }
+
+    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    public CategoryResDto(Category category, List<ProductInnerCategoryResDto> products) {
+        this.id = category.getId();
+        this.categoryName = category.getCategoryName();
+        this.status = category.getStatus();
+        this.products = products;
     }
 }

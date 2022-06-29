@@ -38,9 +38,11 @@ public class ModeratorTransactionController {
     @GetMapping(V4_TRANSACTION_GET + "/{transactionId}")
     public ResponseEntity<TransactionsDto> getTransactionById(@PathVariable("transactionId") UUID transactionId) {
         Optional<TransactionsDto> transactionById = this.transactionServices.getTransactionById(transactionId);
-        TransactionsDto result = transactionById.orElseThrow(() -> new EntityNotFoundException("The transaction with id: " + transactionById + " was not found"));
+        TransactionsDto result = transactionById.orElseThrow(() -> new EntityNotFoundException(
+                "The transaction with id: " + transactionById + " was not found"));
         return ok(result);
     }
+
 
     @GetMapping(V4_TRANSACTION_LIST + "/{enterpriseId}")
     public ResponseEntity<?> listTransaction(

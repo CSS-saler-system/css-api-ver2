@@ -113,6 +113,7 @@ public class ProductServiceImpl implements ProductService {
             Integer pageNumber, Integer pageSize) {
 
         Specification<Product> search = Specification
+//                .where(ProductSpecifications.enterpriseId(enterpriseId))
                 .where(StringUtils.isBlank(name) ? null : ProductSpecifications.nameContains(name))
                 .and(StringUtils.isBlank(brand) ? null : ProductSpecifications.brandContains(brand))
                 .and(Objects.isNull(minPrice) ? null : ProductSpecifications.priceGreaterThan(minPrice))

@@ -53,7 +53,7 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.springframework.csscapstone.config.constant.RegexConstant.REGEX_ROLE;
+import static com.springframework.csscapstone.config.constant.RegexConstant.ROLE_REGEX;
 import static com.springframework.csscapstone.data.status.AccountImageType.*;
 import static java.util.stream.Collectors.toList;
 
@@ -158,7 +158,6 @@ public class AccountServiceImpl implements AccountService {
     private void saveAccountOnFirebase(String email, String phone) throws FirebaseAuthException {
         //check email or phone is null:
         if (StringUtils.isNotEmpty(email) && StringUtils.isNotEmpty(phone)) {
-            LOGGER.info("This is email and phone: {} - {}", email, phone);
             this.accountRepository.findAccountByPhone(phone)
                     .ifPresent(acc -> {
                         throw new RuntimeException("Phone was duplicate");
@@ -189,7 +188,9 @@ public class AccountServiceImpl implements AccountService {
             AccountCreatorReqDto dto, MultipartFile avatar,
             MultipartFile licenses, MultipartFile idCards)
             throws AccountExistException, FirebaseAuthException {
+
         String phone = "";
+
         //check email existed
         this.accountRepository.findAccountByEmail(dto.getEmail())
                 .ifPresent(acc -> {
@@ -197,11 +198,10 @@ public class AccountServiceImpl implements AccountService {
                 });
 
         //TODO check ROlE null <BUG>
-        Specification.where(RoleSpecification.equalNames(StringUtils.isEmpty(dto.getRole()) ||
-                !dto.getRole().matches(REGEX_ROLE) ? "Collaborator" : dto.getRole()));
+        Specification<Role> where = Specification.where(RoleSpecification.equalNames(
+                StringUtils.isEmpty(dto.getRole()) || !dto.getRole().matches(ROLE_REGEX) ? "Enterprise" : dto.getRole()));
 
-        Role role = roleRepository
-                .findAllByName(dto.getRole()).get();
+        Role role = roleRepository.findOne(where).get();
 
         //set phone number follow pattern +23453
         if (StringUtils.isNotEmpty(dto.getPhone())) {
@@ -220,6 +220,8 @@ public class AccountServiceImpl implements AccountService {
 
         //save on firebase
         //create Thread handling this
+
+        LOGGER.info("The email {}", account.getEmail());
         saveAccountOnFirebase(account.getEmail(), phone);
 
         //save to get

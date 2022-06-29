@@ -44,7 +44,7 @@ public class ApiEndPoint {
         public static final String V4_CREATE_PRODUCT = v4_handler + "/new";
         public static final String V4_DELETE_PRODUCT = v4_handler + "/delete";
 
-        public static final String V4_ACTIVE_PRODUCT = v4_handler + "/active";
+        public static final String V4_ACTIVE_PRODUCT = v4_handler + "/handler";
     }
 
     public static class Account {
@@ -72,10 +72,11 @@ public class ApiEndPoint {
 
         public static final String V4_LIST_ACCOUNT = v4_handler + "/list";
         public static final String V4_GET_ACCOUNT = v4_handler + "/get";
-        public static final String V4_UPDATE_ACCOUNT = v4_handler + "/update";
+        public static final String V4_ACCOUNT_UPDATE = v4_handler + "/update";
 
-        public static final String V4_CREATE_ACCOUNT = v4_handler + "/new";
+        public static final String V4_ACCOUNT_CREATE = v4_handler + "/new";
         public static final String V4_DELETE_ACCOUNT = v4_handler + "/delete";
+        public static final String V4_ACCOUNT_GET = v4_handler + "/get";
     }
 
 
@@ -113,11 +114,11 @@ public class ApiEndPoint {
         public static final String v4_handler = MODERATOR + "/category";
 
 
-        public static final String V2_LIST_CATEGORY = v2_handler + "/list";
-        public static final String V2_GET_CATEGORY = v2_handler + "/get";
-        public static final String V2_UPDATE_CATEGORY = v2_handler + "/update";
-        public static final String V2_CREATE_CATEGORY = v2_handler + "/new";
-        public static final String V2_DELETE_CATEGORY = v2_handler + "/delete";
+        public static final String V2_CATEGORY_LIST = v2_handler + "/list";
+        public static final String V2_CATEGORY_GET = v2_handler + "/get";
+        public static final String V2_CATEGORY_UPDATE = v2_handler + "/update";
+        public static final String V2_CATEGORY_CREATE = v2_handler + "/new";
+        public static final String V2_CATEGORY_DELETE = v2_handler + "/delete";
 
         public static final String V3_LIST_CATEGORY = v3_handler + "/list";
         public static final String V3_GET_CATEGORY = v3_handler + "/get";

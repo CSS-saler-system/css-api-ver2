@@ -22,8 +22,9 @@ import static org.springframework.http.ResponseEntity.ok;
 public class ModeratorProductController {
     private final ProductService productService;
 
-    @GetMapping(V4_LIST_PRODUCT)
+    @GetMapping(V4_LIST_PRODUCT + "/{enterpriseId}")
     public ResponseEntity<?> getListProductDto(
+            @PathVariable("enterpriseId") UUID enterpriseId,
             @RequestParam(value = "productName", required = false) String name,
             @RequestParam(value = "brand", required = false) String brand,
             @RequestParam(value = "inStock", required = false) Long inStock,
@@ -35,8 +36,8 @@ public class ModeratorProductController {
             @RequestParam(value = "pageSize", required = false) Integer pageSize
     ) {
 
-        PageImplResDto<ProductResDto> result = productService.findAllProductByCollaborator(
-                name, brand, inStock, minPrice, maxPrice,
+        PageImplResDto<ProductResDto> result = productService.findAllProductByIdEnterprise(
+                enterpriseId, name, brand, inStock, minPrice, maxPrice,
                 minPointSale, maxPointSale,
                 pageNumber, pageSize);
         return ok(result);
