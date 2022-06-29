@@ -6,6 +6,7 @@ import com.springframework.csscapstone.data.status.OrderStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +15,7 @@ import javax.persistence.Tuple;
 import java.util.List;
 import java.util.UUID;
 @Transactional(readOnly = true)
-public interface OrderRepository extends JpaRepository<Order, UUID> {
+public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecificationExecutor<Order> {
     String COLL_ID = "col_id";
     String TOTAL_QUANTITY = "total_quantity";
     String CATEGORY = "tuple_category";

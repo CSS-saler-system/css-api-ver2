@@ -10,6 +10,8 @@ import com.springframework.csscapstone.services.OrderService;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,14 +25,16 @@ import static org.springframework.http.ResponseEntity.ok;
 @Tag(name = "Order (Collaborator)")
 public class CollaboratorOrderController {
     private final OrderService orderService;
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     @GetMapping(V3_ORDER_LIST + "/{collaboratorId}")
     public ResponseEntity<?> getPageOrderOfCollaborator(
             @PathVariable("collaboratorId") UUID idCollaborator,
-            @RequestParam(value = "status", required = false, defaultValue = "WAITING") OrderStatus status,
+            @RequestParam(value = "status", required = false) OrderStatus status,
             @RequestParam(value = "pageNumber", required = false, defaultValue = "1") Integer pageNumber,
             @RequestParam(value = "pageSize", required = false, defaultValue = "1") Integer pageSize
     ) {
+        LOGGER.info("The status {}", status);
         PageImplResDto<OrderResDto> page = this.orderService
                 .pageOrderOfCollaborator(idCollaborator, status, pageNumber, pageSize);
         return ok(page);

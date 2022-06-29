@@ -38,6 +38,11 @@ public interface MapperDTO {
     @Mapping(target = "idCard", source = "idCard")
     AccountResDto toAccountResDto(Account entity);
 
+    @Mapping(target = "campaignPrizes", source = "prizes")
+    @Mapping(target = "products", source = "products")
+    @Mapping(target = "campaignId", source = "id")
+//    @Mapping(target = "prizeId", source = "entity.prizes.id")
+//    @Mapping(target = "productId", source = "entity.products.id")
     CampaignResDto toCampaignResDto(Campaign entity);
 
     CategoryResDto toCategoryResDto(Category entity);

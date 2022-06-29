@@ -35,14 +35,13 @@ public class CollaboratorCampaignController {
     public ResponseEntity<?> getListDto(
             @RequestParam(value = "campaignName", required = false) String campaignName,
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
             @RequestParam(value = "minKpi", required = false, defaultValue = "0") Long minKpi,
-            @RequestParam(value = "maxKpi", required = false, defaultValue = "0") Long maxKpi,
-            @RequestParam(value = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
-            @RequestParam(value = "maxSize", required = false, defaultValue = "0") Integer pageSize
+            @RequestParam(value = "status", required = false) CampaignStatus status,
+            @RequestParam(value = "pageNumber", required = false, defaultValue = "1") Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize
     ) {
         PageImplResDto<CampaignResDto> campaign = campaignService.findCampaignWithoutEnterpriseId(
-                campaignName, startDate, endDate, minKpi, maxKpi, CampaignStatus.PENDING,pageNumber, pageSize);
+                campaignName, startDate, minKpi, status, pageNumber, pageSize);
         return ResponseEntity.ok(campaign);
     }
 

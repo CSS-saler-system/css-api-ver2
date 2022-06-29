@@ -131,8 +131,17 @@ public class Campaign {
     }
 
     public Campaign addPrize(Prize... prize) {
-//        this.campaignPrizes.
-        return null;
+        Arrays.stream(prize)
+                .peek(this.getPrizes()::add)
+                .forEach(_prize -> _prize.getCampaigns().add(this));
+        return this;
+    }
+
+    public Campaign addProducts(Product... products) {
+        Arrays.stream(products)
+                .peek(this.products::add)
+                .forEach(p -> p.getCampaign().add(this));
+        return this;
     }
 
 }

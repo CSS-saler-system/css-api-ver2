@@ -1,6 +1,7 @@
 package com.springframework.csscapstone.services.impl;
 
 import com.springframework.csscapstone.config.constant.MessageConstant;
+import com.springframework.csscapstone.data.dao.specifications.OrdersSpecification;
 import com.springframework.csscapstone.data.domain.*;
 import com.springframework.csscapstone.data.repositories.*;
 import com.springframework.csscapstone.data.status.OrderStatus;
@@ -15,8 +16,10 @@ import com.springframework.csscapstone.utils.exception_utils.order_exception.Ord
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.sql.ordering.antlr.OrderingSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,8 +57,13 @@ public class OrderServiceImpl implements OrderService {
         pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 1 : pageSize;
 
+        Specification<Order> conditions = Specification
+                .where(Objects.isNull(orderStatus) ? null : OrdersSpecification.equalsStatus(orderStatus))
+                .and(OrdersSpecification.equalsCollaborator(account));
+
         Page<Order> orders = this.orderRepository
-                .pageOrderCollaboratorCreate(account, orderStatus, PageRequest.of(pageNumber - 1, pageSize));
+                .findAll(conditions, PageRequest.of(pageNumber - 1, pageSize));
+
         List<OrderResDto> content = orders
                 .getContent()
                 .stream()

@@ -32,11 +32,8 @@ public interface CampaignService {
             Integer pageNumber, Integer pageSize);
 
     PageImplResDto<CampaignResDto> findCampaignWithoutEnterpriseId(
-            String name,
-            LocalDateTime startDate,
-            LocalDateTime endDate,
-            Long minKpi, Long maxKpi, CampaignStatus status,
-            Integer pageNumber, Integer pageSize);
+            String name, LocalDateTime date, Long kpi,
+            CampaignStatus status, Integer pageNumber, Integer pageSize);
 
     CampaignResDto findById(UUID id) throws EntityNotFoundException;
 

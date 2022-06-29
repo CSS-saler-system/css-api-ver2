@@ -3,6 +3,7 @@ package com.springframework.csscapstone.data.dao.specifications;
 import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.Campaign;
 import com.springframework.csscapstone.data.domain.Campaign_;
+import com.springframework.csscapstone.data.status.CampaignStatus;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
@@ -11,6 +12,11 @@ import java.util.UUID;
 import static com.springframework.csscapstone.data.dao.specifications.ContainsString.contains;
 
 public class CampaignSpecifications {
+
+    public static Specification<Campaign> equalsStatus(CampaignStatus status) {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get(Campaign_.CAMPAIGN_STATUS), status);
+    }
     public static Specification<Campaign> containsName(String name) {
         return (root, query, criteriaBuilder) -> criteriaBuilder
                 .like(root.get(Campaign_.NAME), contains(name));

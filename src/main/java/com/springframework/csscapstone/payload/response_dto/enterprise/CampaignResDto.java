@@ -22,7 +22,7 @@ import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 
 @Data
 public class CampaignResDto implements Serializable {
-    private final UUID id;
+    private final UUID campaignId;
     private final String name;
     private final List<CampaignImageBasicDto> image;
     @JsonSerialize(using = LocalDateTimeSerializer.class)
@@ -50,7 +50,7 @@ public class CampaignResDto implements Serializable {
 
     @JsonCreator(mode = PROPERTIES)
     public CampaignResDto(
-            @JsonProperty("id") UUID id,
+            @JsonProperty("campaignId") UUID campaignId,
             @JsonProperty("name") String name,
             @JsonProperty("image") List<CampaignImageBasicDto> image,
             @JsonProperty("createDate") LocalDateTime createDate,
@@ -63,7 +63,7 @@ public class CampaignResDto implements Serializable {
             @JsonProperty("campaignStatus") CampaignStatus campaignStatus,
             @JsonProperty("campaignPrizes") List<CampaignPrizeInnerCampaignResDto> campaignPrizes,
             @JsonProperty("products") Set<ProductInnerCampaignResDto> products) {
-        this.id = id;
+        this.campaignId = campaignId;
         this.name = name;
         this.image = image;
         this.createDate = createDate;

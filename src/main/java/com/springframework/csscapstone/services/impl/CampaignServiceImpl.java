@@ -3,10 +3,7 @@ package com.springframework.csscapstone.services.impl;
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.dao.specifications.CampaignSpecifications;
 import com.springframework.csscapstone.data.domain.*;
-import com.springframework.csscapstone.data.repositories.AccountRepository;
-import com.springframework.csscapstone.data.repositories.CampaignImageRepository;
-import com.springframework.csscapstone.data.repositories.CampaignRepository;
-import com.springframework.csscapstone.data.repositories.OrderRepository;
+import com.springframework.csscapstone.data.repositories.*;
 import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.CampaignUpdaterReqDto;
@@ -47,11 +44,14 @@ public class CampaignServiceImpl implements CampaignService {
     private final OrderRepository orderRepository;
 
     private final AccountRepository accountRepository;
-    private final EntityManager em;
+
+    private final ProductRepository productRepository;
 
     private final BlobUploadImages blobUploadImages;
 
     private final CampaignImageRepository campaignImageRepository;
+
+    private final PrizeRepository prizeRepository;
 
     @Value("${endpoint}")
     private String endpoint;
@@ -62,15 +62,16 @@ public class CampaignServiceImpl implements CampaignService {
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     @Override
-    public PageImplResDto<CampaignResDto> findCampaignWithoutEnterpriseId(String name, LocalDateTime startDate, LocalDateTime endDate, Long minKpi, Long maxKpi, CampaignStatus status, Integer pageNumber, Integer pageSize) {
+    public PageImplResDto<CampaignResDto> findCampaignWithoutEnterpriseId(
+            String name, LocalDateTime date, Long kpi,
+            CampaignStatus status, Integer pageNumber, Integer pageSize) {
         Specification<Campaign> condition = Specification
                 .where(StringUtils.isEmpty(name) ? null : CampaignSpecifications.containsName(name))
-                .and(startDate == null ? null : CampaignSpecifications.afterStartDate(startDate))
-                .and(endDate == null ? null : CampaignSpecifications.beforeEndDate(endDate))
-                .and(minKpi == null || minKpi == 0 ? null : CampaignSpecifications.greaterKpi(minKpi))
-                .and(maxKpi == null || maxKpi == 0 ? null : CampaignSpecifications.smallerKpi(maxKpi));
+                .and(date == null ? null : CampaignSpecifications.beforeEndDate(date))
+                .and(kpi == null || kpi == 0 ? null : CampaignSpecifications.smallerKpi(kpi))
+                .and(status == null ? null : CampaignSpecifications.equalsStatus(status));
 
-        return getCampaignResDtoPageImplResDto(status, pageNumber, pageSize, condition);
+        return getCampaignResDtoPageImplResDto(pageNumber, pageSize, condition);
     }
 
     @Override
@@ -91,7 +92,7 @@ public class CampaignServiceImpl implements CampaignService {
                 .and(minKpi == null || minKpi == 0 ? null : CampaignSpecifications.greaterKpi(minKpi))
                 .and(maxKpi == null || maxKpi == 0 ? null : CampaignSpecifications.smallerKpi(maxKpi));
 
-        return getCampaignResDtoPageImplResDto(status, pageNumber, pageSize, condition);
+        return getCampaignResDtoPageImplResDto(pageNumber, pageSize, condition);
     }
 
     @Override
@@ -107,14 +108,35 @@ public class CampaignServiceImpl implements CampaignService {
     public UUID createCampaign(CampaignCreatorReqDto dto, List<MultipartFile> images)
             throws CampaignInvalidException {
 
+        Account enterprise = this.accountRepository
+                .findById(dto.getEnterprise().getEnterpriseId())
+                .filter(acc -> acc.getRole().getName().equals("Enterprise"))
+                .filter(Account::getIsActive)
+                .orElseThrow(() -> new EntityNotFoundException("The enterprise with id: " +
+                        dto.getEnterprise().getEnterpriseId() + " was not found!!!"));
+
+        List<Product> productList = this.productRepository
+                .findAllById(dto.getProducts().stream()
+                        .map(CampaignCreatorReqDto.ProductInnerCampaignCreatorDto::getProductId)
+                        .collect(Collectors.toList()));
+
+        List<Prize> prize = this.prizeRepository.findAllById(dto.getPrizeInnerCampaignCreatorDto()
+                .stream()
+                .map(CampaignCreatorReqDto.PrizeInnerCampaignCreatorDto::getPrizeId)
+                .collect(Collectors.toList()));
+
         Campaign campaign = new Campaign()
+                .setAccount(enterprise)
                 .setName(dto.getName())
                 .setCampaignShortDescription(dto.getCampaignShortDescription())
                 .setCampaignDescription(dto.getCampaignDescription())
                 .setStartDate(dto.getStartDate())
                 .setEndDate(dto.getEndDate())
                 .setKpiSaleProduct(dto.getKpi());
-//                .a;
+
+        if (!productList.isEmpty()) campaign.addProducts(productList.toArray(new Product[0]));
+
+        if (!productList.isEmpty()) campaign.addPrize(prize.toArray(new Prize[0]));
 
         Campaign saved = this.campaignRepository.save(campaign);
 
@@ -210,9 +232,9 @@ public class CampaignServiceImpl implements CampaignService {
         //filter collaborators have enough standard: ASC
 //        List<Account> accounts = collaborator.entrySet().stream()
 //                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                //todo test so in active unlock this code
+        //todo test so in active unlock this code
 //                .filter(_entry -> _entry.getValue() >= campaign.getKpiSaleProduct())
-                //todo get number of element by campaign Prize size
+        //todo get number of element by campaign Prize size
 //                .limit(campaignPrizes.size())
 //                .flatMap(entry -> this.accountRepository
 //                        .findById(entry.getKey())
@@ -248,14 +270,15 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
 
-    private PageImplResDto<CampaignResDto> getCampaignResDtoPageImplResDto(CampaignStatus status, Integer pageNumber, Integer pageSize, Specification<Campaign> condition) {
+    private PageImplResDto<CampaignResDto> getCampaignResDtoPageImplResDto(Integer pageNumber, Integer pageSize, Specification<Campaign> condition) {
         pageNumber = Objects.isNull(pageNumber) || pageNumber == 0 ? 1 : pageNumber;
-        pageSize = Objects.isNull(pageSize) || pageSize == 0 ? 1 : pageSize;
+        pageSize = Objects.isNull(pageSize) || pageSize == 0 ? 10 : pageSize;
 
-        Page<Campaign> page = this.campaignRepository.findAll(condition, PageRequest.of(pageNumber - 1, pageSize));
+        Page<Campaign> page = this.campaignRepository.findAll(condition,
+                PageRequest.of(pageNumber - 1, pageSize));
+
         List<CampaignResDto> content = page.getContent()
                 .stream()
-                .filter(campaign -> campaign.getCampaignStatus().equals(status))
                 .map(MapperDTO.INSTANCE::toCampaignResDto)
                 .collect(Collectors.toList());
         return new PageImplResDto<>(
