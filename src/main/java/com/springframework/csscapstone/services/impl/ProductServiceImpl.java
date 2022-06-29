@@ -86,7 +86,8 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     public PageImplResDto<ProductResDto> findAllProductByIdEnterprise(
-            UUID idEnterprise, String name, String brand, Long inStock, Double minPrice, Double maxPrice,
+            UUID idEnterprise, UUID categoryId,
+            String categoryName,String name, String brand, Long inStock, Double minPrice, Double maxPrice,
             Double minPoint, Double maxPoint,
             Integer pageNumber, Integer pageSize) {
 
@@ -95,6 +96,8 @@ public class ProductServiceImpl implements ProductService {
 
         Specification<Product> search = Specification
                 .where(ProductSpecifications.enterpriseId(account))
+                .and(Objects.isNull(categoryId) ? null : ProductSpecifications.byCategoryId(categoryId))
+                .and(StringUtils.isEmpty(categoryName) ? null : ProductSpecifications.byCategoryName(categoryName))
                 .and(StringUtils.isBlank(name) ? null : ProductSpecifications.nameContains(name))
                 .and(StringUtils.isBlank(brand) ? null : ProductSpecifications.brandContains(brand))
                 .and(Objects.isNull(minPrice) ? null : ProductSpecifications.priceGreaterThan(minPrice))

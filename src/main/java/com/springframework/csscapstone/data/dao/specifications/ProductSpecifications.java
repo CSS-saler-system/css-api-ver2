@@ -1,6 +1,7 @@
 package com.springframework.csscapstone.data.dao.specifications;
 
 import com.springframework.csscapstone.data.domain.Account;
+import com.springframework.csscapstone.data.domain.Category_;
 import com.springframework.csscapstone.data.domain.Product;
 import com.springframework.csscapstone.data.domain.Product_;
 import com.springframework.csscapstone.data.status.ProductStatus;
@@ -11,6 +12,16 @@ import java.util.UUID;
 import static com.springframework.csscapstone.data.dao.specifications.ContainsString.contains;
 
 public final class ProductSpecifications {
+
+    public static Specification<Product> byCategoryId(UUID categoryId) {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get(Product_.CATEGORY).get(Category_.ID), categoryId);
+    }
+
+    public static Specification<Product> byCategoryName(String categoryName) {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get(Product_.CATEGORY).get(Category_.CATEGORY_NAME), categoryName);
+    }
 
     public static Specification<Product> enterpriseId(Account account) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Product_.ACCOUNT), account);
@@ -33,6 +44,7 @@ public final class ProductSpecifications {
         return (root, query, criteriaBuilder) -> criteriaBuilder
                 .and(criteriaBuilder.greaterThan(root.get(Product_.PRICE), minPrice));
     }
+
     public static Specification<Product> priceLessThan(double maxPrice) {
         return (root, query, criteriaBuilder) -> criteriaBuilder
                 .and(criteriaBuilder.lessThan(root.get(Product_.PRICE), maxPrice));

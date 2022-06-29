@@ -20,6 +20,8 @@ public interface ProductService {
 
     PageImplResDto<ProductResDto> findAllProductByIdEnterprise(
             UUID idEnterprise,
+            UUID categoryId,
+            String categoryName,
             String name,
             String brand,
             Long inStock,
@@ -65,4 +67,5 @@ public interface ProductService {
     PageImplResDto<ProductCountOrderResDto> getListProductWithCountOrder(
             UUID id, LocalDate startDate, LocalDate endDate, Integer pageNumber, Integer pageSize)
             throws AccountNotFoundException;
+
 }

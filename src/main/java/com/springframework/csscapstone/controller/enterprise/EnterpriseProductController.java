@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -64,6 +65,8 @@ public class EnterpriseProductController {
     @GetMapping(V2_PRODUCT_LIST + "/{enterpriseId}")
     public ResponseEntity<?> getListProductDto(
             @PathVariable("enterpriseId") UUID enterpriseId,
+            @RequestParam(value = "categoryId", required = false) UUID categoryId,
+            @RequestParam(value = "categoryName", required = false) String categoryName,
             @RequestParam(value = "productName", required = false) String name,
             @RequestParam(value = "brand", required = false) String brand,
             @RequestParam(value = "inStock", required = false) Long inStock,
@@ -76,7 +79,7 @@ public class EnterpriseProductController {
     ) {
         PageImplResDto<ProductResDto> result = productService
                 .findAllProductByIdEnterprise(
-                        enterpriseId, name, brand, inStock, minPrice, maxPrice,
+                        enterpriseId, categoryId, categoryName,name, brand, inStock, minPrice, maxPrice,
                         minPointSale, maxPointSale, pageNumber, pageSize);
         return ok(result);
     }

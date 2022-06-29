@@ -28,6 +28,7 @@ public class ApiEndPoint {
 
         public static final String V2_PRODUCT_LIST = v2_handler + "/list";
         public static final String V2_PRODUCT_COUNT_LIST = v2_handler + "/count-sold/list";
+        public static final String V2_PRODUCT_GET_BY_CATEGORY = v2_handler + "/by-category/list";
         public static final String V2_PRODUCT_GET = v2_handler + "/get";
         public static final String V2_PRODUCT_CREATE = v2_handler + "/new";
         public static final String V2_PRODUCT_DELETE = v2_handler + "/delete";
