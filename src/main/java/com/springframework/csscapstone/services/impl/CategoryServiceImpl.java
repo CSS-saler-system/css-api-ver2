@@ -11,6 +11,7 @@ import com.springframework.csscapstone.data.repositories.ProductImageRepository;
 import com.springframework.csscapstone.data.repositories.ProductRepository;
 import com.springframework.csscapstone.data.status.CategoryStatus;
 import com.springframework.csscapstone.data.status.ProductImageType;
+import com.springframework.csscapstone.payload.basic.CategoryBasicDto;
 import com.springframework.csscapstone.payload.request_dto.admin.CategoryCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.admin.CategorySearchReqDto;
 import com.springframework.csscapstone.payload.request_dto.admin.CategoryUpdaterReqDto;
@@ -33,11 +34,10 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -51,6 +51,16 @@ public class CategoryServiceImpl implements CategoryService {
     private final Logger LOGGER = LoggerFactory.getLogger(CategoryServiceImpl.class);
 
     private final EntityManager em;
+
+    @Override
+    public List<CategoryResDto> getListCategory() {
+        return this.categoryRepository
+                .findAll()
+                .stream()
+                .filter(cate -> cate.getStatus().equals(CategoryStatus.ACTIVE))
+                .map(MapperDTO.INSTANCE::toCategoryResDto)
+                .collect(toList());
+    }
 
     @Override
     public List<CategoryResDto> findCategories(CategorySearchReqDto dto) {
@@ -141,6 +151,32 @@ public class CategoryServiceImpl implements CategoryService {
         this.categoryRepository.findById(id)
                 .map(x -> x.setStatus(CategoryStatus.DISABLE))
                 .orElseThrow(categoryErrorNotFound());
+    }
+
+    @Override
+    public List<CategoryResDto> getListCategoryByEnterprise(UUID enterpriseId) {
+//        Map<Category, List<Product>> result = this.categoryRepository
+//                .findAll()
+//                .stream().collect(Collectors.toMap(
+//                        cate -> cate,
+//                        cate -> cate.getProducts()
+//                                .stream()
+//                                .filter(pro -> pro.getAccount().getId().equals(enterpriseId))
+//                                .collect(toList())));
+//        return result.entrySet().stream().map(entry -> new CategoryResDto(entry.getKey(), entry.getValue().stream()
+//                .map(MapperDTO.INSTANCE::CategoryInner).collect(toList())));
+        return null;
+    }
+
+    @Override
+    public List<CategoryBasicDto> getCategoryBasicResDto() {
+        List<CategoryBasicDto> result = this.categoryRepository
+                .findAll()
+                .stream()
+                .filter(cate -> cate.getStatus().equals(CategoryStatus.ACTIVE))
+                .map(MapperDTO.INSTANCE::toCategoryBasicDto)
+                .collect(toList());
+        return result;
     }
 
     //    =============================================

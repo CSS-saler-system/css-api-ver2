@@ -2,6 +2,7 @@ package com.springframework.csscapstone.utils.mapper_utils.dto_mapper;
 
 import com.springframework.csscapstone.data.domain.*;
 import com.springframework.csscapstone.payload.basic.AccountImageBasicDto;
+import com.springframework.csscapstone.payload.basic.CategoryBasicDto;
 import com.springframework.csscapstone.payload.basic.ProductImageBasicDto;
 import com.springframework.csscapstone.payload.basic.RoleBasicDto;
 import com.springframework.csscapstone.payload.response_dto.AccountTokenDto;
@@ -78,5 +79,8 @@ public interface MapperDTO {
     @Mapping(target = "percentSoldByCategory", source = "percentSoldByCategory")
     CollaboratorWithQuantitySoldByCategoryDto toCollaboratorWithQuantitySoldByCategoryDto(Account entity);
 
+
+    @Mapping(target = "categoryId", source = "id")
+    CategoryBasicDto toCategoryBasicDto(Category entity);
 
 }
