@@ -89,10 +89,6 @@ public class Account {
     @ToString.Exclude
     private List<Campaign> campaigns = new ArrayList<>();
 
-    @OneToMany(mappedBy = "account")
-    @ToString.Exclude
-    private List<CampaignPrize> campaignsPrizes = new ArrayList<>();
-
     @OneToMany(mappedBy = "creator")
     @ToString.Exclude
     private List<Prize> prizes = new ArrayList<>();
@@ -118,6 +114,10 @@ public class Account {
 
     @Transient
     Map<Category, Long> percentSoldByCategory = new HashMap<>();
+
+    public Account(UUID id) {
+        this.id = id;
+    }
 
     public Account(String name, LocalDate dob, String phone, String email, String address) {
         this.name = name;
@@ -216,11 +216,6 @@ public class Account {
 
     //=================Utils=========================
     //=================Campaign Prizes===============
-    public Account addCampaignPrizes(CampaignPrize campaignPrize) {
-        this.getCampaignsPrizes().add(campaignPrize);
-        campaignPrize.setAccount(this);
-        return this;
-    }
 
 
     //=================Utils=========================

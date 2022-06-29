@@ -107,12 +107,14 @@ public class CampaignServiceImpl implements CampaignService {
     public UUID createCampaign(CampaignCreatorReqDto dto, List<MultipartFile> images)
             throws CampaignInvalidException {
 
-        Campaign campaign = new Campaign().setName(dto.getName())
+        Campaign campaign = new Campaign()
+                .setName(dto.getName())
                 .setCampaignShortDescription(dto.getCampaignShortDescription())
                 .setCampaignDescription(dto.getCampaignDescription())
                 .setStartDate(dto.getStartDate())
                 .setEndDate(dto.getEndDate())
                 .setKpiSaleProduct(dto.getKpi());
+//                .a;
 
         Campaign saved = this.campaignRepository.save(campaign);
 
@@ -196,35 +198,35 @@ public class CampaignServiceImpl implements CampaignService {
         }
 
         //get all [prize] -> sort campaign prize:
-        List<CampaignPrize> campaignPrizes = campaign.getCampaignPrizes().stream()
-                //todo sort by comparing price of prize
-                .sorted(Comparator.comparing((CampaignPrize cp) -> cp.getPrize().getPrice()).reversed())
-                .collect(Collectors.toList());
+//        List<CampaignPrize> campaignPrizes = campaign.getCampaignPrizes().stream()
+//                todo sort by comparing price of prize
+//                .sorted(Comparator.comparing((CampaignPrize cp) -> cp.getPrize().getPrice()).reversed())
+//                .collect(Collectors.toList());
 
-        campaignPrizes.stream()
-                .map(CampaignPrize::getPrize)
-                .forEach(System.out::println);
-
+//        campaignPrizes.stream()
+//                .map(CampaignPrize::getPrize)
+//                .forEach(System.out::println);
+//
         //filter collaborators have enough standard: ASC
-        List<Account> accounts = collaborator.entrySet().stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+//        List<Account> accounts = collaborator.entrySet().stream()
+//                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 //todo test so in active unlock this code
-                .filter(_entry -> _entry.getValue() >= campaign.getKpiSaleProduct())
+//                .filter(_entry -> _entry.getValue() >= campaign.getKpiSaleProduct())
                 //todo get number of element by campaign Prize size
-                .limit(campaignPrizes.size())
-                .flatMap(entry -> this.accountRepository
-                        .findById(entry.getKey())
-                        .map(Stream::of).orElseGet(Stream::empty))
-                .collect(Collectors.toList());
-
-        if (accounts.isEmpty()) throw handlerNotEnoughKPIException().get();
+//                .limit(campaignPrizes.size())
+//                .flatMap(entry -> this.accountRepository
+//                        .findById(entry.getKey())
+//                        .map(Stream::of).orElseGet(Stream::empty))
+//                .collect(Collectors.toList());
+//
+//        if (accounts.isEmpty()) throw handlerNotEnoughKPIException().get();
 
         //mapping prize by using campaign prize with greater than KPI on campaign KPI
-        int count = 0;
-        for (Account account : accounts) {
-            account.addCampaignPrizes(campaignPrizes.get(count++));
-            this.accountRepository.save(account);
-        }
+//        int count = 0;
+//        for (Account account : accounts) {
+//            account.addCampaignPrizes(campaignPrizes.get(count++));
+//            this.accountRepository.save(account);
+//        }
     }
 
     private Supplier<NotEnoughKpiException> handlerNotEnoughKPIException() {

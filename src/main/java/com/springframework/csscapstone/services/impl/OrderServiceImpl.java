@@ -168,15 +168,17 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * Order -> Order-Detail: (total point)
-     *
+     * todo Notification to collaborators:
      * @param orderId
      */
     @Override
     public void completedOrder(UUID orderId) {
+
+        //check order valid
         Order order = this.orderRepository.findById(orderId)
                 .filter(_order -> _order.getStatus() != OrderStatus.FINISH)
                 .orElseThrow(() -> handlerOrderNotFound().get());
-
+        //get collaborator who create order
         Account collaborator = order.getAccount();
 
 //        todo good code
@@ -185,6 +187,7 @@ public class OrderServiceImpl implements OrderService {
 //                .map(OrderDetail::getTotalPointProduct)
 //                .mapToDouble(Double::doubleValue)
 //                .sum();
+
         //get total point in order details
         Double totalPoint = order.getOrderDetails()
                 .stream()
@@ -196,14 +199,13 @@ public class OrderServiceImpl implements OrderService {
                 .stream()
                 .map(detail -> detail.getProduct().getAccount())
                 .distinct().collect(Collectors.toList());
+
         if (enterprises.size() > 1) {
             throw new RuntimeException("Order wrong with 2 enterprise!!!");
         }
 
-        Optional<Account> enterprise = Optional.of(enterprises.get(0));
-
         //todo point of enterprise must be large enough
-        enterprise.ifPresent(_enterprise -> {
+        Optional.of(enterprises.get(0)).ifPresent(_enterprise -> {
             if (_enterprise.getPoint() < totalPoint) throw handlerLackPoint().get();
 
             _enterprise.setPoint(_enterprise.getPoint() - totalPoint);

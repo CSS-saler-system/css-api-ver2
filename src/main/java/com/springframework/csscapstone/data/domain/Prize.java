@@ -8,10 +8,7 @@ import lombok.experimental.Accessors;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Getter
 @Setter
@@ -43,8 +40,8 @@ public class Prize {
     @OneToMany(mappedBy = "prize")
     private List<PrizeImage> prizeImages = new ArrayList<>();
 
-    @OneToMany(mappedBy = "prize")
-    private List<CampaignPrize> campaignPrizes = new ArrayList<>();
+    @ManyToMany(mappedBy = "prizes")
+    private Set<Campaign> campaigns = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "account_id")

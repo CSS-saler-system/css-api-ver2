@@ -62,9 +62,13 @@ public class Campaign {
 //            joinColumns = @JoinColumn(name = "campaign_id"),
 //            inverseJoinColumns = @JoinColumn(name = "order_id"))
 //    private Set<Order> orders = new HashSet<>();
+//
 
-    @OneToMany(mappedBy = "campaign")
-    private List<CampaignPrize> campaignPrizes = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(name = "campaign_prize",
+    joinColumns = @JoinColumn(name = "camapaign_id"),
+    inverseJoinColumns = @JoinColumn(name = "prize_id"))
+    private Set<Prize> prizes = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "account_id")
@@ -125,4 +129,10 @@ public class Campaign {
         campaignImage.setCampaign(this);
         return this;
     }
+
+    public Campaign addPrize(Prize... prize) {
+//        this.campaignPrizes.
+        return null;
+    }
+
 }
