@@ -52,13 +52,13 @@ public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecific
 
     //todo for mapping: get account then quantity and sort asc
     @Query(
-            "SELECT a.id as " + COLL_ID + " , " +
+            "SELECT _collaborator.id as " + COLL_ID + " , " +
                     "sum(od.quantity) as " + TOTAL_QUANTITY + " " +
                     "FROM Order o " +
                     "JOIN o.orderDetails od " +
-                    "JOIN o.account a " +
+                    "JOIN o.account _collaborator " +
                     "WHERE od.product.id = :idProduct " +
-                    "GROUP BY a.id " +
+                    "GROUP BY _collaborator.id " +
                     "ORDER BY sum(od.quantity) DESC")
     List<Tuple> getCollaboratorAndTotalQuantitySold(@Param("idProduct") UUID idProduct);
 

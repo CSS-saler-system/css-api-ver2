@@ -213,7 +213,6 @@ public class CampaignServiceImpl implements CampaignService {
                 .collect(Collectors.toList());
 
 //        idProduct.forEach(System.out::println);
-
         for (UUID productId : idProduct) {
 
             Map<UUID, Long> _tmp = this.orderRepository
@@ -226,24 +225,24 @@ public class CampaignServiceImpl implements CampaignService {
 
         //get all [prize] -> sort campaign prize:
         List<Prize> campaignPrizes = campaign.getPrizes().stream()
-//                todo sort by comparing price of prize
+                //todo sort by comparing price of prize
                 .sorted(Comparator.comparing(Prize::getPrice).reversed())
                 .collect(Collectors.toList());
 
-//        campaignPrizes.stream()
-//                .map(CampaignPrize::getPrize)
-//                .forEach(System.out::println);
-//
         //filter collaborators have enough standard: ASC
         List<Account> accounts = collaborator.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+
                 //todo test so in active unlock this code
                 .filter(_entry -> _entry.getValue() >= campaign.getKpiSaleProduct())
+
                 //todo get number of element by campaign Prize size
                 .limit(campaignPrizes.size())
+
                 .flatMap(entry -> this.accountRepository
                         .findById(entry.getKey())
                         .map(Stream::of).orElseGet(Stream::empty))
+
                 .collect(Collectors.toList());
 
         if (accounts.isEmpty()) throw handlerNotEnoughKPIException().get();
