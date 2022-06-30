@@ -88,8 +88,8 @@ public class CampaignServiceImpl implements CampaignService {
                 .where(CampaignSpecifications.equalsEnterpriseId(enterprise))
                 .and(StringUtils.isEmpty(name) ? null : CampaignSpecifications.containsName(name))
                 .and(startDate == null ? null : CampaignSpecifications.afterStartDate(startDate))
-                .and(endDate == null ? null : CampaignSpecifications.beforeEndDate(endDate))
-                .and(minKpi == null || minKpi == 0 ? null : CampaignSpecifications.greaterKpi(minKpi))
+//                .and(endDate == null ? null : CampaignSpecifications.beforeEndDate(endDate))
+//                .and(minKpi == null || minKpi == 0 ? null : CampaignSpecifications.greaterKpi(minKpi))
                 .and(maxKpi == null || maxKpi == 0 ? null : CampaignSpecifications.smallerKpi(maxKpi));
 
         return getCampaignResDtoPageImplResDto(pageNumber, pageSize, condition);
@@ -105,14 +105,14 @@ public class CampaignServiceImpl implements CampaignService {
 
     @Transactional
     @Override
-    public UUID createCampaign(CampaignCreatorReqDto dto, List<MultipartFile> images)
-            throws CampaignInvalidException {
+    public UUID createCampaign(CampaignCreatorReqDto dto, List<MultipartFile> images) throws CampaignInvalidException {
 
         Account enterprise = this.accountRepository
                 .findById(dto.getEnterprise().getEnterpriseId())
                 .filter(acc -> acc.getRole().getName().equals("Enterprise"))
                 .filter(Account::getIsActive)
-                .orElseThrow(() -> new EntityNotFoundException("The enterprise with id: " +
+                .orElseThrow(() ->
+                        new EntityNotFoundException("The enterprise with id: " +
                         dto.getEnterprise().getEnterpriseId() + " was not found!!!"));
 
         List<Product> productList = this.productRepository
@@ -139,6 +139,9 @@ public class CampaignServiceImpl implements CampaignService {
         if (!productList.isEmpty()) campaign.addPrize(prize.toArray(new Prize[0]));
 
         Campaign saved = this.campaignRepository.save(campaign);
+
+        this.prizeRepository.saveAll(prize);
+        this.productRepository.saveAll(productList);
 
         //todo save image
         return this.campaignRepository.save(handlerImage(images, saved)).getId();
