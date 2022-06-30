@@ -40,6 +40,8 @@ public class OrderServiceImpl implements OrderService {
 
     private final ProductRepository productRepository;
 
+//    private final FirebaseMe
+
     @Override
     public OrderResDto getOrderResDtoById(UUID id) {
         return this.orderRepository.findById(id)

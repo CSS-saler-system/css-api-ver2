@@ -200,17 +200,22 @@ public class CampaignServiceImpl implements CampaignService {
 
         //find campaign and status not finish
         Campaign campaign = this.campaignRepository.findById(id)
-                .filter(_campaign -> !_campaign.getCampaignStatus().equals(CampaignStatus.FINISHED))
+                .filter(_campaign -> !_campaign.getCampaignStatus()
+                        .equals(CampaignStatus.FINISHED))
                 .orElseThrow(handlerCampaignNotFoundException());
 
-        //get sort collaborator by OrderRepository
+        //get sort collaborator and Long by OrderRepository
         Map<UUID, Long> collaborator = new HashMap<>();
 
-        List<UUID> idProduct = campaign.getProducts().stream().map(Product::getId).collect(Collectors.toList());
+        //get product in campaign
+        List<UUID> idProduct = campaign.getProducts().stream()
+                .map(Product::getId)
+                .collect(Collectors.toList());
 
 //        idProduct.forEach(System.out::println);
 
         for (UUID productId : idProduct) {
+
             Map<UUID, Long> _tmp = this.orderRepository
                     .getCollaboratorAndTotalQuantitySold(productId).stream()
                     .collect(Collectors.toMap(
@@ -220,35 +225,37 @@ public class CampaignServiceImpl implements CampaignService {
         }
 
         //get all [prize] -> sort campaign prize:
-//        List<CampaignPrize> campaignPrizes = campaign.getCampaignPrizes().stream()
+        List<Prize> campaignPrizes = campaign.getPrizes().stream()
 //                todo sort by comparing price of prize
-//                .sorted(Comparator.comparing((CampaignPrize cp) -> cp.getPrize().getPrice()).reversed())
-//                .collect(Collectors.toList());
+                .sorted(Comparator.comparing(Prize::getPrice).reversed())
+                .collect(Collectors.toList());
 
 //        campaignPrizes.stream()
 //                .map(CampaignPrize::getPrize)
 //                .forEach(System.out::println);
 //
         //filter collaborators have enough standard: ASC
-//        List<Account> accounts = collaborator.entrySet().stream()
-//                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-        //todo test so in active unlock this code
-//                .filter(_entry -> _entry.getValue() >= campaign.getKpiSaleProduct())
-        //todo get number of element by campaign Prize size
-//                .limit(campaignPrizes.size())
-//                .flatMap(entry -> this.accountRepository
-//                        .findById(entry.getKey())
-//                        .map(Stream::of).orElseGet(Stream::empty))
-//                .collect(Collectors.toList());
-//
-//        if (accounts.isEmpty()) throw handlerNotEnoughKPIException().get();
+        List<Account> accounts = collaborator.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                //todo test so in active unlock this code
+                .filter(_entry -> _entry.getValue() >= campaign.getKpiSaleProduct())
+                //todo get number of element by campaign Prize size
+                .limit(campaignPrizes.size())
+                .flatMap(entry -> this.accountRepository
+                        .findById(entry.getKey())
+                        .map(Stream::of).orElseGet(Stream::empty))
+                .collect(Collectors.toList());
 
-        //mapping prize by using campaign prize with greater than KPI on campaign KPI
-//        int count = 0;
-//        for (Account account : accounts) {
-//            account.addCampaignPrizes(campaignPrizes.get(count++));
-//            this.accountRepository.save(account);
-//        }
+        if (accounts.isEmpty()) throw handlerNotEnoughKPIException().get();
+//
+//        mapping prize by using campaign prize with greater than KPI on campaign KPI
+        int count = 0;
+        for (Account account : accounts) {
+            if (count < campaignPrizes.size()) {
+                account.awardPrize(campaignPrizes.get(count++));
+                this.accountRepository.save(account);
+            }
+        }
     }
 
     private Supplier<NotEnoughKpiException> handlerNotEnoughKPIException() {

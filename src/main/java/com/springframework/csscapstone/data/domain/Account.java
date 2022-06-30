@@ -109,6 +109,14 @@ public class Account {
     @JoinColumn(name = "role_id")
     private Role role;
 
+
+    @ManyToMany
+    @JoinTable(name = "account_prize",
+            joinColumns = @JoinColumn(name = "account_id"),
+            inverseJoinColumns = @JoinColumn(name = "prize_id"))
+    private Set<Prize> awards = new HashSet<>();
+
+
     @Transient
     private Long totalQuantity;
 
@@ -126,18 +134,21 @@ public class Account {
         this.email = email;
         this.address = address;
     }
+
     @Named("avatar")
     public AccountImage getAvatar() {
         return this.images.stream()
                 .filter(image -> image.getType().equals(AVATAR))
                 .findFirst().orElse(AccountImage.emptyInstance(AVATAR));
     }
+
     @Named("license")
     public AccountImage getLicense() {
         return this.images.stream()
                 .filter(image -> image.getType().equals(AccountImageType.LICENSE))
                 .findFirst().orElse(AccountImage.emptyInstance(LICENSE));
     }
+
     @Named("idCard")
     public AccountImage getIdCard() {
         return this.images.stream()
@@ -223,6 +234,12 @@ public class Account {
     public Account addApproverTransaction(Transactions transactions) {
         transactions.setTransactionApprover(this);
         this.getTransactionApprovedList().add(transactions);
+        return this;
+    }
+
+    public Account awardPrize(Prize prize) {
+        this.getAwards().add(prize);
+        prize.getRecipients().add(this);
         return this;
     }
 

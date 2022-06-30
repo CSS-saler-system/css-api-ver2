@@ -32,7 +32,7 @@ public class CollaboratorOrderController {
             @PathVariable("collaboratorId") UUID idCollaborator,
             @RequestParam(value = "status", required = false) OrderStatus status,
             @RequestParam(value = "pageNumber", required = false, defaultValue = "1") Integer pageNumber,
-            @RequestParam(value = "pageSize", required = false, defaultValue = "1") Integer pageSize
+            @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize
     ) {
         LOGGER.info("The status {}", status);
         PageImplResDto<OrderResDto> page = this.orderService

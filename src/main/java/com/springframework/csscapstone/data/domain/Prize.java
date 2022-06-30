@@ -47,6 +47,9 @@ public class Prize {
     @JoinColumn(name = "account_id")
     private Account creator;
 
+    @ManyToMany(mappedBy = "awards")
+    private Set<Account> recipients = new HashSet<>();
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

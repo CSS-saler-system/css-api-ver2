@@ -42,10 +42,12 @@ public class FirebaseMessageService {
             throws JsonProcessingException, ExecutionException, InterruptedException {
         //get message from preconfigured with data
         Message message = getPreconfiguredMessageWithData(data, request);
+
         objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         String jsonOutput = objectMapper
                 .writerWithDefaultPrettyPrinter()
                 .writeValueAsString(message);
+
         String res = sendAndGetResponse(message);
         LOGGER.info("Sent message with data. Topic: " + request.getTopic()
                 + ", " + res + " msg " + jsonOutput);
