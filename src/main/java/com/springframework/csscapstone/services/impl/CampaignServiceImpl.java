@@ -120,7 +120,7 @@ public class CampaignServiceImpl implements CampaignService {
                         .map(CampaignCreatorReqDto.ProductInnerCampaignCreatorDto::getProductId)
                         .collect(Collectors.toList()));
 
-        List<Prize> prize = this.prizeRepository.findAllById(dto.getPrizeInnerCampaignCreatorDto()
+        List<Prize> prize = this.prizeRepository.findAllById(dto.getPrizes()
                 .stream()
                 .map(CampaignCreatorReqDto.PrizeInnerCampaignCreatorDto::getPrizeId)
                 .collect(Collectors.toList()));
@@ -225,8 +225,10 @@ public class CampaignServiceImpl implements CampaignService {
 
         //get all [prize] -> sort campaign prize:
         List<Prize> campaignPrizes = campaign.getPrizes().stream()
+
                 //todo sort by comparing price of prize
                 .sorted(Comparator.comparing(Prize::getPrice).reversed())
+
                 .collect(Collectors.toList());
 
         //filter collaborators have enough standard: ASC

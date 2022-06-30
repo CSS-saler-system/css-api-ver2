@@ -37,7 +37,8 @@ public class CampaignCreatorReqDto {
     @Min(1)
     private Long kpi;
 
-    private final List<PrizeInnerCampaignCreatorDto> prizeInnerCampaignCreatorDto;
+
+    private final List<PrizeInnerCampaignCreatorDto> prizes;
     private final AccountInnerCampaignCreatorDto enterprise;
     private final Set<ProductInnerCampaignCreatorDto> products;
 
@@ -45,7 +46,8 @@ public class CampaignCreatorReqDto {
     public static class AccountInnerCampaignCreatorDto implements Serializable {
         private final UUID enterpriseId;
 
-        public AccountInnerCampaignCreatorDto(UUID enterpriseId) {
+        @JsonCreator(mode = PROPERTIES)
+        public AccountInnerCampaignCreatorDto(@JsonProperty("enterpriseId") UUID enterpriseId) {
             this.enterpriseId = enterpriseId;
         }
     }
@@ -54,7 +56,8 @@ public class CampaignCreatorReqDto {
     public static class PrizeInnerCampaignCreatorDto implements Serializable {
         private final UUID prizeId;
 
-        public PrizeInnerCampaignCreatorDto(UUID prizeId) {
+        @JsonCreator(mode = PROPERTIES)
+        public PrizeInnerCampaignCreatorDto(@JsonProperty("prizeId") UUID prizeId) {
             this.prizeId = prizeId;
         }
     }
@@ -64,7 +67,8 @@ public class CampaignCreatorReqDto {
     public static class ProductInnerCampaignCreatorDto implements Serializable {
         private final UUID productId;
 
-        public ProductInnerCampaignCreatorDto(UUID productId) {
+        @JsonCreator(mode = PROPERTIES)
+        public ProductInnerCampaignCreatorDto(@JsonProperty("productId") UUID productId) {
             this.productId = productId;
         }
     }
@@ -77,7 +81,7 @@ public class CampaignCreatorReqDto {
             @JsonProperty("campaignShortDescription") String campaignShortDescription,
             @JsonProperty("campaignDescription") String campaignDescription,
             @JsonProperty("kpi") Long kpi,
-            @JsonProperty("prizeDto") List<PrizeInnerCampaignCreatorDto> prizeInnerCampaignCreatorDto,
+            @JsonProperty("prizes") List<PrizeInnerCampaignCreatorDto> prizes,
             @JsonProperty("enterprise") AccountInnerCampaignCreatorDto enterprise,
             @JsonProperty("products") Set<ProductInnerCampaignCreatorDto> products) {
         this.name = name;
@@ -86,7 +90,7 @@ public class CampaignCreatorReqDto {
         this.campaignShortDescription = campaignShortDescription;
         this.campaignDescription = campaignDescription;
         this.kpi = kpi;
-        this.prizeInnerCampaignCreatorDto = prizeInnerCampaignCreatorDto;
+        this.prizes = prizes;
         this.enterprise = enterprise;
         this.products = products;
     }
