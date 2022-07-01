@@ -211,12 +211,14 @@ public class CampaignServiceImpl implements CampaignService {
         Map<UUID, Long> collaborator = new HashMap<>();
 
         //get product in campaign
-        List<UUID> idProduct = campaign.getProducts().stream()
+        List<UUID> productIds = campaign.getProducts().stream()
                 .map(Product::getId)
                 .collect(Collectors.toList());
 
-//        idProduct.forEach(System.out::println);
-        for (UUID productId : idProduct) {
+        if(productIds.isEmpty())
+            throw new RuntimeException("The campaign has no product!!!");
+//        productIds.forEach(System.out::println);
+        for (UUID productId : productIds) {
 
             Map<UUID, Long> _tmp = this.orderRepository
                     .getCollaboratorAndTotalQuantitySold(productId).stream()
@@ -233,6 +235,9 @@ public class CampaignServiceImpl implements CampaignService {
                 .sorted(Comparator.comparing(Prize::getPrice).reversed())
 
                 .collect(Collectors.toList());
+
+        if (campaignPrizes.isEmpty())
+            throw new RuntimeException("The campaign has no prize!!!");
 
         //filter collaborators have enough standard: ASC
         List<Account> accounts = collaborator.entrySet().stream()
