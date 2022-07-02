@@ -8,6 +8,7 @@ import com.springframework.csscapstone.data.status.OrderStatus;
 import com.springframework.csscapstone.payload.request_dto.collaborator.OrderCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.collaborator.OrderUpdaterDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.EnterpriseRevenueDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.OrderEnterpriseManageResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.OrderResDto;
 import com.springframework.csscapstone.services.OrderService;
@@ -244,6 +245,12 @@ public class OrderServiceImpl implements OrderService {
         return new PageImplResDto<>(content, page.getNumber() + 1, content.size(),
                 page.getTotalElements(), page.getTotalPages(),
                 page.isFirst(), page.isLast());
+    }
+
+    @Override
+    public Optional<EnterpriseRevenueDto> getRevenue(UUID enterpriseId) {
+
+        return Optional.empty();
     }
 
     private Supplier<LackPointException> handlerLackPoint() {

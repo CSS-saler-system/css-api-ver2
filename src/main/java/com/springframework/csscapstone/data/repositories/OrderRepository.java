@@ -99,4 +99,7 @@ public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecific
             "WHERE enterprise.id = :enterpriseId " +
             "AND NOT EXISTS (SELECT _order FROM Order _order WHERE _order.status = 'DISABLE')")
     Page<Order> getOrderByEnterprise(UUID enterpriseId, Pageable pageable);
+
+
+
 }
