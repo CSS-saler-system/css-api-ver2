@@ -1,4 +1,4 @@
-package com.springframework.csscapstone.data.domain;
+package com.springframework.csscapstone.payload.response_dto.enterprise;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -22,6 +22,7 @@ public class OrderEnterpriseManageResDto implements Serializable {
     @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
     private final LocalDateTime createDate;
     private final Double totalPrice;
+
     private final OrderStatus status;
     private final AccountInnerOrderDto account;
     private final CustomerInnerOrderDto customer;

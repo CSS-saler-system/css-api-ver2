@@ -14,13 +14,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 @RequiredArgsConstructor
 public class WebScheduler {
     private final CampaignService campaignService;
-    private final Logger LOGGER = LoggerFactory.getLogger(WebScheduler.class);
     @Scheduled(cron = "${cron_time}") // 0 0 0 * * *
     public void finishCampaignConfiguration() {
-        LOGGER.debug("The completing campaign is running!!!");
-        System.out.println("I'm calling");
         this.campaignService.scheduleCloseCampaign();
-        LOGGER.debug("The completing campaign is done!!!");
     }
 
 }

@@ -1,10 +1,10 @@
 package com.springframework.csscapstone.services;
 
-import com.springframework.csscapstone.data.domain.OrderEnterpriseManageResDto;
 import com.springframework.csscapstone.data.status.OrderStatus;
 import com.springframework.csscapstone.payload.request_dto.collaborator.OrderCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.collaborator.OrderUpdaterDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.OrderEnterpriseManageResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.OrderResDto;
 
 import java.util.Optional;

@@ -8,6 +8,7 @@ import com.springframework.csscapstone.data.status.OrderStatus;
 import com.springframework.csscapstone.payload.request_dto.collaborator.OrderCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.collaborator.OrderUpdaterDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.OrderEnterpriseManageResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.OrderResDto;
 import com.springframework.csscapstone.services.OrderService;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
@@ -239,10 +240,9 @@ public class OrderServiceImpl implements OrderService {
                 .collect(Collectors.toList());
 
 
-        PageImplResDto<OrderEnterpriseManageResDto> result = new PageImplResDto<>(content, page.getNumber() + 1, content.size(),
+        return new PageImplResDto<>(content, page.getNumber() + 1, content.size(),
                 page.getTotalElements(), page.getTotalPages(),
                 page.isFirst(), page.isLast());
-        return result;
     }
 
     private Supplier<LackPointException> handlerLackPoint() {

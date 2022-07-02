@@ -1,10 +1,9 @@
 package com.springframework.csscapstone.controller.enterprise;
 
 import com.springframework.csscapstone.config.constant.MessageConstant;
-import com.springframework.csscapstone.data.domain.OrderEnterpriseManageResDto;
 import com.springframework.csscapstone.data.status.OrderStatus;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
-import com.springframework.csscapstone.payload.response_dto.enterprise.OrderResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.OrderEnterpriseManageResDto;
 import com.springframework.csscapstone.services.OrderService;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
