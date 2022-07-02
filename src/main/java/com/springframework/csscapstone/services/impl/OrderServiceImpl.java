@@ -44,6 +44,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderResDto getOrderResDtoById(UUID id) {
         return this.orderRepository.findById(id)
+                .filter(order -> !order.getStatus().equals(OrderStatus.DISABLE))
                 .map(MapperDTO.INSTANCE::toOrderResDto)
                 .orElseThrow(() -> new RuntimeException("No have Order With id: " + id));
     }

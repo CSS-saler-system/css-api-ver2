@@ -191,6 +191,7 @@ public class ApiEndPoint {
         public static final String V2_ORDER_UPDATE_STATUS = v2_handler + "/order";
         public static final String V2_ORDER_COMPLETE = v2_handler + "/complete";
         public static final String V2_ORDER_LIST_BY_ENTERPRISE = v2_handler + "/list";
+        public static final String  V2_ORDER_GET = v2_handler + "/get";
         public static final String V3_ORDER_CREATE = v3_handler + "/new";
         public static final String V3_ORDER_GET = v3_handler + "/get";
         public static final String V3_ORDER_LIST = v3_handler + "/list";

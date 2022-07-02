@@ -39,16 +39,8 @@ public class OrderResDto implements Serializable {
         private final UUID id;
         private final String nameProduct;
         private final Double productPrice;
-        private final Double productPoint;
         private final Long quantity;
-        private final Double totalPointProduct;
         private final Double totalPriceProduct;
-        private final ProductInnerOrderResDto product;
-
-        @Data
-        public static class ProductInnerOrderResDto implements Serializable {
-            private final UUID id;
-        }
     }
 
     @Data
@@ -64,11 +56,6 @@ public class OrderResDto implements Serializable {
         private final String name;
         private final String phone;
         private final String address;
-
-        @JsonSerialize(using = LocalDateSerializer.class)
-        @JsonDeserialize(using = LocalDateDeserializer.class)
-        @JsonFormat(pattern = "yyyy/MM/dd")
-        private final LocalDate dob;
         private final String description;
     }
 }
