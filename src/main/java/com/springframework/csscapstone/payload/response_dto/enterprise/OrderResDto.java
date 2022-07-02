@@ -7,6 +7,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.springframework.csscapstone.data.status.OrderStatus;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -29,6 +30,7 @@ public class OrderResDto implements Serializable {
     private final String customerName;
     private final String deliveryPhone;
     private final String deliveryAddress;
+    private final OrderStatus status;
 
     private final List<OrderDetailInnerOrderResDto> orderDetails;
     private final AccountInnerOrderResDto account;

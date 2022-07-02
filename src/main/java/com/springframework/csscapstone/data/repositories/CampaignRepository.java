@@ -17,7 +17,7 @@ public interface CampaignRepository extends JpaRepository<Campaign, UUID>,
     @Query("SELECT _campaign FROM Campaign _campaign " +
             "LEFT JOIN FETCH _campaign.products " +
             "LEFT JOIN FETCH _campaign.prizes " +
-            "WHERE NOT EXISTS (SELECT c FROM Campaign c WHERE c.campaignStatus = 'FINISHED')" +
+            "WHERE NOT _campaign.campaignStatus = 'FINISHED'" +
             "AND _campaign.id = :id")
     Optional<Campaign> loadFetchOnProducts(@Param("id") UUID id);
 
