@@ -74,7 +74,7 @@ public interface MapperDTO {
     EnterpriseResDto toEnterpriseDto(Account entity);
 
     //todo mapper entity to <ProductResponseDTO>
-    @Mapping(target = "quantity", source = "quantityInStock")
+//    @Mapping(target = "quantity", source = "quantityInStock")
     ProductResDto toProductResDto(Product entity);
 
     AccountTokenDto toAccountTokenDto(AccountToken accountToken);
@@ -90,5 +90,15 @@ public interface MapperDTO {
     @Mapping(target = "account.accountId", source = "entity.account.id")
     @Mapping(target = "customer.customerId", source = "entity.customer.id")
     OrderEnterpriseManageResDto toOrderEnterpriseManageResDto(Order entity);
+
+
+    @Mapping(target = "requestId", source = "id")
+    @Mapping(target = "product.productID", source = "entity.product.id")
+    @Mapping(target = "product.productName", source = "entity.product.name")
+    @Mapping(target = "account", source = "entity.account")
+    @Mapping(target = "account.collaboratorId", source = "entity.account.id")
+    @Mapping(target = "account.collaboratorName", source = "entity.account.name")
+    @Mapping(target = "account.collaboratorPhone", source = "entity.account.phone")
+    RequestSellingProductEnterpriseManagerDto toRequestSellingProductEnterpriseManagerDto(RequestSellingProduct entity);
 
 }

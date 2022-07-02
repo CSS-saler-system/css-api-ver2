@@ -20,6 +20,8 @@ public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecific
     String TOTAL_QUANTITY = "total_quantity";
     String CATEGORY = "tuple_category";
     String QUANTITY_SOLD = "tuple_sold";
+    String ORDER_DATE = "tuple_date";
+    String ORDER_REVENUE = "tuple_revenue";
 
     @Query("SELECT o FROM Order o " +
             "WHERE o.account = :idCollaborator " +
@@ -100,6 +102,23 @@ public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecific
             "AND NOT EXISTS (SELECT _order FROM Order _order WHERE _order.status = 'DISABLE')")
     Page<Order> getOrderByEnterprise(UUID enterpriseId, Pageable pageable);
 
+    /**
+     * SELECT MONTH(o.create_date) AS ORDER_MONTH,
+     *        sum(o.total_price) AS ORDER_REVENUE
+     * FROM orders o GROUP BY MONTH(o.create_date)
+     * @param id
+     * @return
+     */
+    @Query("SELECT MONTH(o.createDate) AS " + ORDER_DATE + ", " +
+            "sum(o.totalPrice) AS " + ORDER_REVENUE + " " +
+            "FROM Order o " +
+            "JOIN o.orderDetails od " +
+            "JOIN od.product p " +
+            "JOIN p.account a " +
+            "WHERE o.status = 'FINISH' " +
+            "AND a.id = :id " +
+            "GROUP BY MONTH(o.createDate)")
+    List<Tuple> getRevenueByEnterprise(UUID id);
 
 
 }

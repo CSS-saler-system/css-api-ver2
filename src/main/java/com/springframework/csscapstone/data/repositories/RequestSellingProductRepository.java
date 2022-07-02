@@ -6,6 +6,7 @@ import com.springframework.csscapstone.data.status.RequestStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 @Transactional(readOnly = true)
-public interface RequestSellingProductRepository extends JpaRepository<RequestSellingProduct, UUID> {
+public interface RequestSellingProductRepository extends JpaRepository<RequestSellingProduct, UUID>,
+        JpaSpecificationExecutor<RequestSellingProduct> {
 
     @Query(value = "" +
             "SELECT r FROM RequestSellingProduct r " +
@@ -30,6 +32,7 @@ public interface RequestSellingProductRepository extends JpaRepository<RequestSe
             "SELECT r FROM RequestSellingProduct r " +
                     "LEFT JOIN r.product p " +
                     "WHERE r.requestStatus = :requestStatus AND p.account.id = :enterpriseId",
+
             countQuery = "SELECT count(r) FROM RequestSellingProduct r " +
                     "JOIN r.product p " +
                     "WHERE r.requestStatus = :requestStatus AND p.account.id = :enterpriseId")

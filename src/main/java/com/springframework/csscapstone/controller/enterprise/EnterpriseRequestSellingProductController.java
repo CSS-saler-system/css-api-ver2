@@ -28,7 +28,8 @@ public class EnterpriseRequestSellingProductController {
             @RequestParam(value = "pageSize", required = false) Integer pageSize,
             @RequestParam(value = "pageNumber", required = false) Integer pageNumber
     ) {
-        return ok(requestSellingProductService.getAllRequestByStatusAndEnterprise(enterpriseId, status, pageSize, pageNumber));
+        return ok(requestSellingProductService
+                .getAllRequestByStatusAndEnterprise(enterpriseId, status, pageSize, pageNumber));
     }
 
     @GetMapping(V2_REQUEST_GET + "/{requestId}")

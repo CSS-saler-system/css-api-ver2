@@ -47,7 +47,7 @@ public class CategoryResDto implements Serializable {
         private final String brand;
         private final String shortDescription;
         private final String description;
-        private final Long quantityInStock;
+//        private final Long quantityInStock;
         private final Double price;
         private final Double pointSale;
         private final ProductStatus productStatus;
@@ -58,7 +58,7 @@ public class CategoryResDto implements Serializable {
                            @JsonProperty("brand") String brand,
                            @JsonProperty("shortDescription") String shortDescription,
                            @JsonProperty("description") String description,
-                           @JsonProperty("quantity") Long quantityInStock,
+//                           @JsonProperty("quantity") Long quantityInStock,
                            @JsonProperty("price") Double price,
                            @JsonProperty("pointSale") Double pointSale,
                            @JsonProperty("productStatus") ProductStatus productStatus,
@@ -68,7 +68,6 @@ public class CategoryResDto implements Serializable {
             this.brand = brand;
             this.shortDescription = shortDescription;
             this.description = description;
-            this.quantityInStock = quantityInStock;
             this.price = price;
             this.pointSale = pointSale;
             this.productStatus = productStatus;

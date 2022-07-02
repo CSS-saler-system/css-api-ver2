@@ -36,9 +36,9 @@ public final class ProductSpecifications {
     }
 
 
-    public static Specification<Product> inStockEquals(Long inStock) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Product_.QUANTITY_IN_STOCK), inStock);
-    }
+//    public static Specification<Product> inStockEquals(Long inStock) {
+//        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Product_.QUANTITY_IN_STOCK), inStock);
+//    }
 
     public static Specification<Product> priceGreaterThan(double minPrice) {
         return (root, query, criteriaBuilder) -> criteriaBuilder

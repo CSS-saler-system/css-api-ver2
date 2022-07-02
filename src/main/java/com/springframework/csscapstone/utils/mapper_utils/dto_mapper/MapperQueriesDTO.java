@@ -15,7 +15,6 @@ public interface MapperQueriesDTO {
     @Mapping(target = "name", source = "product.name")
     @Mapping(target = "shortDescription", source = "product.shortDescription")
     @Mapping(target = "description", source = "product.description")
-    @Mapping(target = "quantityInStock", source = "product.quantityInStock")
     @Mapping(target = "price", source = "product.price")
     @Mapping(target = "pointSale", source = "product.pointSale")
     @Mapping(target = "productStatus", source = "product.productStatus")

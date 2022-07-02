@@ -94,7 +94,7 @@ public class CategoryServiceImpl implements CategoryService {
                         product.getBrand(),
                         product.getShortDescription(),
                         product.getDescription(),
-                        product.getQuantityInStock(),
+//                        product.getQuantityInStock(),
                         product.getPrice(),
                         product.getPointSale(),
                         product.getProductStatus(),

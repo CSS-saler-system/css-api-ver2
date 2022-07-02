@@ -2,9 +2,11 @@ package com.springframework.csscapstone.services.impl;
 
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.config.firebase_config.FirebaseMessageService;
+import com.springframework.csscapstone.data.dao.specifications.RequestSellingProductSpecifications;
 import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.Product;
 import com.springframework.csscapstone.data.domain.RequestSellingProduct;
+import com.springframework.csscapstone.data.domain.RequestSellingProductEnterpriseManagerDto;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.data.repositories.AccountTokenRepository;
 import com.springframework.csscapstone.data.repositories.ProductRepository;
@@ -21,6 +23,7 @@ import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -102,17 +105,22 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
     }
 
     @Override
-    public PageImplResDto<RequestSellingProductResDto> getAllRequestByStatusAndEnterprise(
+    public PageImplResDto<RequestSellingProductEnterpriseManagerDto> getAllRequestByStatusAndEnterprise(
             UUID enterpriseId, RequestStatus status, Integer pageNumber, Integer pageSize) {
+
+        Specification<RequestSellingProduct> conditions = Specification
+                .where(Objects.isNull(status) ? null : RequestSellingProductSpecifications.equalsStatus(status))
+                .and(RequestSellingProductSpecifications.containsEnterpriseId(enterpriseId));
 
         pageSize = Objects.nonNull(pageSize) && pageSize > 1 ? pageSize : 10;
         pageNumber = Objects.nonNull(pageNumber) && pageNumber > 1 ? pageNumber : 1;
 
         Page<RequestSellingProduct> page = this.requestSellingProductRepository
-                .findAllByRequestStatusByEnterprise(enterpriseId, status, PageRequest.of(pageNumber - 1, pageSize));
-        List<RequestSellingProductResDto> data = page
+                .findAll(conditions, PageRequest.of(pageNumber - 1, pageSize));
+
+        List<RequestSellingProductEnterpriseManagerDto> data = page
                 .getContent().stream()
-                .map(MapperDTO.INSTANCE::toRequestSellingProductResDto)
+                .map(MapperDTO.INSTANCE::toRequestSellingProductEnterpriseManagerDto)
                 .collect(Collectors.toList());
 
         return new PageImplResDto<>(data,

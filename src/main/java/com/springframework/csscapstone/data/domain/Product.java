@@ -37,7 +37,7 @@ public class Product {
     private String shortDescription;
     @Lob
     private String description;
-    private Long quantityInStock;
+//    private Long quantityInStock;
     private Double price;
     private Double pointSale;
     @Enumerated(EnumType.STRING)
@@ -75,7 +75,7 @@ public class Product {
         this.brand = brand;
         this.shortDescription = shortDescription;
         this.description = description;
-        this.quantityInStock = quantityInStock;
+//        this.quantityInStock = quantityInStock;
         this.price = price;
         this.pointSale = pointSale;
         this.productStatus = productStatus;
@@ -105,7 +105,7 @@ public class Product {
                 ", brand='" + brand + '\'' +
                 ", shortDescription='" + shortDescription + '\'' +
                 ", description='" + description + '\'' +
-                ", quantityInStock=" + quantityInStock +
+//                ", quantityInStock=" + quantityInStock +
                 ", price=" + price +
                 ", pointSale=" + pointSale +
                 ", productStatus=" + productStatus +

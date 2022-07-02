@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class EnterpriseRevenueDto {
-    private final Long unitMonth;
+    private final Integer month;
     private final Double minRevenue;
     private final Double maxRevenue;
 

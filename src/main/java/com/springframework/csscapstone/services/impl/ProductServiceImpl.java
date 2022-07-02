@@ -186,7 +186,7 @@ public class ProductServiceImpl implements ProductService {
                 .setDescription(dto.getDescription())
                 .setShortDescription(dto.getShortDescription())
                 .setProductStatus(ProductStatus.ACTIVE)
-                .setQuantityInStock(dto.getQuantity())
+//                .setQuantityInStock(dto.getQuantity())
                 .setPointSale(dto.getPointSale())
                 .addAccount(account)
                 .addCategory(category);
@@ -218,8 +218,8 @@ public class ProductServiceImpl implements ProductService {
                 .setDescription(dto.getDescription())
                 .setShortDescription(dto.getShortDescription())
                 .setPointSale(dto.getPointSale())
-                .setPrice(dto.getPrice())
-                .setQuantityInStock(dto.getQuantity());
+                .setPrice(dto.getPrice());
+//                .setQuantityInStock(dto.getQuantity());
 
         Product product = imageHandler(normalType, certificationType, entity);
 

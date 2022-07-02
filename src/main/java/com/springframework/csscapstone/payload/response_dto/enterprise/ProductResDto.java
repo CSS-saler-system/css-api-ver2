@@ -17,7 +17,7 @@ public class ProductResDto implements Serializable {
     private final String brand;
     private final String shortDescription;
     private final String description;
-    private final Long quantity;
+//    private final Long quantity;
     private final Double price;
     private final Double pointSale;
     private final ProductStatus productStatus;
@@ -32,7 +32,7 @@ public class ProductResDto implements Serializable {
             @JsonProperty("brand") String brand,
             @JsonProperty("shortDescription") String shortDescription,
             @JsonProperty("description") String description,
-            @JsonProperty("quantity") Long quantity,
+//            @JsonProperty("quantity") Long quantity,
             @JsonProperty("price") Double price,
             @JsonProperty("pointSale") Double pointSale,
             @JsonProperty("productStatus") ProductStatus productStatus,
@@ -44,7 +44,7 @@ public class ProductResDto implements Serializable {
         this.brand = brand;
         this.shortDescription = shortDescription;
         this.description = description;
-        this.quantity = quantity;
+//        this.quantity = quantity;
         this.price = price;
         this.pointSale = pointSale;
         this.productStatus = productStatus;
