@@ -92,17 +92,16 @@ public class AccountServiceImpl implements AccountService {
                 .filter(acc -> acc.getRole().getName().equals("Collaborator"))
                 .orElseThrow(() -> new EntityNotFoundException("The collaborator with id: " + uuid + " was not found"));
 
-        Map<Category, Long> performance = this.orderRepository
+        Map<String, Long> performance = this.orderRepository
                 .getCollaboratorWithPerformanceWithId(uuid)
                 .stream()
                 .collect(Collectors.toMap(
                         tuple -> this.categoryRepository
                                 .findById(tuple.get(OrderRepository.CATEGORY, UUID.class))
-                                .orElse(new Category()),
+                                .map(Category::getCategoryName)
+                                .orElse(""),
                         tuple -> tuple.get(OrderRepository.QUANTITY_SOLD, Long.class)
                 ));
-        performance.forEach((key, value) -> System.out.println(key + ": " + value));
-        LOGGER.info("");
         Account account = collaborator.setPercentSoldByCategory(performance);
         return Optional.of(MapperDTO.INSTANCE.toCollaboratorWithQuantitySoldByCategoryDto(account));
     }

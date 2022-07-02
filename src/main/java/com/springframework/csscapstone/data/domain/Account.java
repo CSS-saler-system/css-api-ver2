@@ -14,7 +14,9 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.*;
 
-import static com.springframework.csscapstone.data.status.AccountImageType.*;
+import static com.springframework.csscapstone.data.status.AccountImageType.AVATAR;
+import static com.springframework.csscapstone.data.status.AccountImageType.ID_CARD;
+import static com.springframework.csscapstone.data.status.AccountImageType.LICENSE;
 import static javax.persistence.FetchType.LAZY;
 
 @Getter
@@ -121,7 +123,7 @@ public class Account {
     private Long totalQuantity;
 
     @Transient
-    Map<Category, Long> percentSoldByCategory = new HashMap<>();
+    Map<String, Long> percentSoldByCategory = new HashMap<>();
 
     public Account(UUID id) {
         this.id = id;

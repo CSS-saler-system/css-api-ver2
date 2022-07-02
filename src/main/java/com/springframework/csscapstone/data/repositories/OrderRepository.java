@@ -94,13 +94,19 @@ public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecific
     List<Tuple> getCollaboratorWithPerformanceWithId(UUID collaboratorId);
 
 
-    @Query("SELECT o FROM Order  o " +
+    @Query(value = "SELECT o FROM Order  o " +
             "JOIN o.orderDetails od " +
             "JOIN od.product p " +
             "JOIN p.account enterprise " +
             "WHERE enterprise.id = :enterpriseId " +
-            "AND NOT EXISTS (SELECT _order FROM Order _order WHERE _order.status = 'DISABLE')")
-    Page<Order> getOrderByEnterprise(UUID enterpriseId, Pageable pageable);
+            "AND NOT o.status = 'DISABLE' ",
+    countQuery = "SELECT count(o) FROM Order  o " +
+            "JOIN o.orderDetails od " +
+            "JOIN od.product p " +
+            "JOIN p.account enterprise " +
+            "WHERE enterprise.id = :enterpriseId " +
+            "AND NOT o.status = 'DISABLE'")
+    Page<Order> getOrderByEnterprise(@Param("enterpriseId") UUID enterpriseId, Pageable pageable);
 
     /**
      * SELECT MONTH(o.create_date) AS ORDER_MONTH,

@@ -103,4 +103,18 @@ public class Order {
         customer.getOrders().add(this);
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", createDate=" + createDate +
+                ", totalPrice=" + totalPrice +
+                ", totalPointSale=" + totalPointSale +
+                ", customerName='" + customerName + '\'' +
+                ", deliveryPhone='" + deliveryPhone + '\'' +
+                ", deliveryAddress='" + deliveryAddress + '\'' +
+                ", status=" + status +
+                '}';
+    }
 }
