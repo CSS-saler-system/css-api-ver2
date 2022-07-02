@@ -28,7 +28,7 @@ public class Prize {
 
     private Double price;
 
-    private Long quantity;
+//    private Long quantity;
 
     @Lob
     private String description;
@@ -37,8 +37,8 @@ public class Prize {
     @Enumerated(EnumType.STRING)
     private PrizeStatus prizeStatus;
 
-    @OneToMany(mappedBy = "prize")
-    private List<PrizeImage> prizeImages = new ArrayList<>();
+//    @OneToMany(mappedBy = "prize")
+//    private List<PrizeImage> prizeImages = new ArrayList<>();
 
     @ManyToMany(mappedBy = "prizes")
     private Set<Campaign> campaigns = new HashSet<>();
@@ -71,15 +71,14 @@ public class Prize {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", price=" + price +
-                ", quantity=" + quantity +
                 ", description='" + description + '\'' +
                 '}';
     }
-
-//===================== Utils ====================
-    public Prize addImage(PrizeImage prizeImage) {
-        this.getPrizeImages().add(prizeImage);
-        prizeImage.setPrize(this);
-        return this;
-    }
+//
+////===================== Utils ====================
+//    public Prize addImage(PrizeImage prizeImage) {
+//        this.getPrizeImages().add(prizeImage);
+//        prizeImage.setPrize(this);
+//        return this;
+//    }
 }

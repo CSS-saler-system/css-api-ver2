@@ -209,7 +209,7 @@ public class ApiEndPoint {
         public static final String V2_PRIZE_GET = v2_handler + "/get";
         public static final String V2_PRIZE_RETRIEVE = v2_handler + "/retrieve";
         public static final String V2_PRIZE_UPDATE = v2_handler + "/update";
-        public static final String V2_PRIZE_CREATE = v2_handler + "/list";
+        public static final String V2_PRIZE_CREATE = v2_handler + "/create";
 
     }
 

@@ -1,9 +1,19 @@
 package com.springframework.csscapstone.services.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.dao.specifications.CampaignSpecifications;
-import com.springframework.csscapstone.data.domain.*;
-import com.springframework.csscapstone.data.repositories.*;
+import com.springframework.csscapstone.data.domain.Account;
+import com.springframework.csscapstone.data.domain.Campaign;
+import com.springframework.csscapstone.data.domain.CampaignImage;
+import com.springframework.csscapstone.data.domain.Prize;
+import com.springframework.csscapstone.data.domain.Product;
+import com.springframework.csscapstone.data.repositories.AccountRepository;
+import com.springframework.csscapstone.data.repositories.CampaignImageRepository;
+import com.springframework.csscapstone.data.repositories.CampaignRepository;
+import com.springframework.csscapstone.data.repositories.OrderRepository;
+import com.springframework.csscapstone.data.repositories.PrizeRepository;
+import com.springframework.csscapstone.data.repositories.ProductRepository;
 import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.CampaignUpdaterReqDto;
@@ -19,6 +29,7 @@ import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.mapstruct.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -113,7 +124,7 @@ public class CampaignServiceImpl implements CampaignService {
                 .filter(Account::getIsActive)
                 .orElseThrow(() ->
                         new EntityNotFoundException("The enterprise with id: " +
-                        dto.getEnterprise().getEnterpriseId() + " was not found!!!"));
+                                dto.getEnterprise().getEnterpriseId() + " was not found!!!"));
 
         List<Product> productList = this.productRepository
                 .findAllById(dto.getProducts().stream()
@@ -181,15 +192,23 @@ public class CampaignServiceImpl implements CampaignService {
                 .orElseThrow(campaignNotFoundException());
     }
 
+    @Transactional
+    @Override
     public void scheduleCloseCampaign() {
+        System.out.println("I'm running");
         this.campaignRepository
                 .findAll().stream()
 //                .filter(campaign -> campaign.getStartDate().isBefore(LocalDateTime.now()))
                 .filter(campaign -> campaign.getEndDate().isBefore(LocalDateTime.now()))
                 .filter(campaign -> campaign.getCampaignStatus().equals(CampaignStatus.PENDING))
                 .map(Campaign::getId)
-                .peek(this::completeCampaign)
-                .close();
+                .forEach(uuid -> {
+                    try {
+                        this.completeCampaign(uuid);
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
     }
 
     /**
@@ -199,12 +218,11 @@ public class CampaignServiceImpl implements CampaignService {
      */
     @Transactional
     @Override
-    public void completeCampaign(UUID id) {
-
+    public void completeCampaign(UUID id) throws JsonProcessingException {
         //find campaign and status not finish
-        Campaign campaign = this.campaignRepository.findById(id)
-                .filter(_campaign -> !_campaign.getCampaignStatus()
-                        .equals(CampaignStatus.FINISHED))
+        Campaign campaign = this.campaignRepository.loadFetchOnProducts(id)
+                .filter(_campaign -> Objects.nonNull(_campaign.getPrizes()))
+                .filter(_campaign -> Objects.nonNull(_campaign.getProducts()))
                 .orElseThrow(handlerCampaignNotFoundException());
 
         //get sort collaborator and Long by OrderRepository
@@ -215,8 +233,9 @@ public class CampaignServiceImpl implements CampaignService {
                 .map(Product::getId)
                 .collect(Collectors.toList());
 
-        if(productIds.isEmpty())
-            throw new RuntimeException("The campaign has no product!!!");
+//        if (productIds.isEmpty())
+//            throw new RuntimeException("The campaign has no product!!!");
+
 //        productIds.forEach(System.out::println);
         for (UUID productId : productIds) {
 
@@ -235,9 +254,8 @@ public class CampaignServiceImpl implements CampaignService {
                 .sorted(Comparator.comparing(Prize::getPrice).reversed())
 
                 .collect(Collectors.toList());
-
-        if (campaignPrizes.isEmpty())
-            throw new RuntimeException("The campaign has no prize!!!");
+//        if (campaignPrizes.isEmpty())
+//            throw new RuntimeException("The campaign has no prize!!!");
 
         //filter collaborators have enough standard: ASC
         List<Account> accounts = collaborator.entrySet().stream()
@@ -261,10 +279,12 @@ public class CampaignServiceImpl implements CampaignService {
         int count = 0;
         for (Account account : accounts) {
             if (count < campaignPrizes.size()) {
-                account.awardPrize(campaignPrizes.get(count++));
-                this.accountRepository.save(account);
+                Account accountMapping = account.awardPrize(campaignPrizes.get(count));
+                this.accountRepository.save(accountMapping);
             }
         }
+
+        this.campaignRepository.save(campaign.setCampaignStatus(CampaignStatus.FINISHED));
     }
 
     private Supplier<NotEnoughKpiException> handlerNotEnoughKPIException() {

@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 import static com.springframework.csscapstone.config.constant.ApiEndPoint.Prize.*;
 import static org.springframework.http.ResponseEntity.ok;
@@ -33,15 +34,9 @@ public class EnterprisePrizeController {
    public ResponseEntity<?> getAllPrize(
            @RequestParam(value = "namePrize", required = false) String namePrize,
            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
-           @RequestParam(value = "pageSize", required = false) Integer pageSize
-
-   ) {
-        return ok(this.prizeService.getAll(namePrize, pageNumber, pageSize));
+           @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+      return ok(this.prizeService.getAll(namePrize, pageNumber, pageSize));
    }
-
-   /**
-    * PrizeService
-    */
 
    @PostMapping(value = V2_PRIZE_CREATE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
    public ResponseEntity<?> createPrize(
@@ -49,11 +44,12 @@ public class EnterprisePrizeController {
            @RequestPart("images") List<MultipartFile> images
    ) {
       PrizeCreatorReqDto dto = prizeCreatorConvertor.convert(prizeJson);
-      if (Objects.isNull(dto.getPrice())  || dto.getPrice() < 1.0)
+
+      if (dto.getPrice() == null || Objects.isNull(dto.getPrice())  || dto.getPrice() < 1.0)
          throw new RuntimeException("The price of prize is not null");
-      if (Objects.isNull(dto.getQuantity()) || dto.getQuantity() < 0)
-         throw new RuntimeException("The quantity of prize is not null and greater than 0");
+
       UUID prize = this.prizeService.createPrize(dto, images);
+
       return ok(prize);
    }
 
@@ -63,16 +59,25 @@ public class EnterprisePrizeController {
            @RequestPart("images") List<MultipartFile> images
    ) {
       PrizeUpdaterReqDto dto = prizeUpdaterConvertor.convert(prizeJson);
-      if (Objects.isNull(dto.getPrice())  || dto.getPrice() < 1.0)
+
+      if (dto.getPrice() == null || Objects.isNull(dto.getPrice())  || dto.getPrice() < 1.0)
          throw new RuntimeException("The price of prize is not null");
+
       if (Objects.isNull(dto.getQuantity()) || dto.getQuantity() < 0)
          throw new RuntimeException("The quantity of prize is not null and greater than 0");
+
       UUID prize = this.prizeService.updatePrize(dto, images);
+
       return ok(prize);
    }
 
    @GetMapping(V2_PRIZE_RETRIEVE + "/{prizeId}")
    public ResponseEntity<?> retrievePrizeById(@PathVariable("prizeId") UUID id) {
-      return ok(this.prizeService.getPrizeByPrize(id).orElseThrow(() -> new EntityNotFoundException("The prize with id: " + id + " not found")));
+      return ok(this.prizeService.getPrizeByPrize(id)
+              .orElseThrow(handlerEntityNotFoundException(id)));
+   }
+
+   private Supplier<EntityNotFoundException> handlerEntityNotFoundException(UUID id) {
+      return () -> new EntityNotFoundException("The prize with id: " + id + " not found");
    }
 }

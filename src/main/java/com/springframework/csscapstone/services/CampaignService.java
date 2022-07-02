@@ -1,5 +1,6 @@
 package com.springframework.csscapstone.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.CampaignUpdaterReqDto;
@@ -46,6 +47,6 @@ public interface CampaignService {
     void scheduleCloseCampaign();
 
     //todo close campaign
-    void completeCampaign(UUID id);
+    void completeCampaign(UUID id) throws JsonProcessingException;
 
 }

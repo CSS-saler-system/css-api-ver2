@@ -28,11 +28,9 @@ public interface MapperDTO {
 
     //========================= End Image ========================
     //========================= Role ============================
-
     RoleBasicDto toRoleResDto(Role entity);
 
     //========================= End Role ========================
-
     @Mapping(target = "avatar", source = "avatar")
     @Mapping(target = "licenses", source = "license")
     @Mapping(target = "idCard", source = "idCard")
