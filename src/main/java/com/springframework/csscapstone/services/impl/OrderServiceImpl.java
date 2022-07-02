@@ -16,7 +16,6 @@ import com.springframework.csscapstone.utils.exception_utils.order_exception.Ord
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.sql.ordering.antlr.OrderingSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -26,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -223,6 +221,28 @@ public class OrderServiceImpl implements OrderService {
             this.accountRepository.save(collaborator);
             this.accountRepository.save(_enterprise);
         });
+    }
+
+    @Override
+    public PageImplResDto<OrderEnterpriseManageResDto> getOrderResDtoByEnterprise(
+            UUID enterpriseId, Integer pageNumber, Integer pageSize) {
+
+        pageNumber = Objects.isNull(pageNumber) || pageNumber == 0  ? 1 : pageNumber;
+        pageSize = Objects.isNull(pageSize) || pageSize == 0  ? 10 : pageSize;
+
+        Page<Order> page = this.orderRepository
+                .getOrderByEnterprise(enterpriseId, PageRequest.of(pageNumber - 1, pageSize));
+
+        List<OrderEnterpriseManageResDto> content = page.getContent()
+                .stream()
+                .map(MapperDTO.INSTANCE::toOrderEnterpriseManageResDto)
+                .collect(Collectors.toList());
+
+
+        PageImplResDto<OrderEnterpriseManageResDto> result = new PageImplResDto<>(content, page.getNumber() + 1, content.size(),
+                page.getTotalElements(), page.getTotalPages(),
+                page.isFirst(), page.isLast());
+        return result;
     }
 
     private Supplier<LackPointException> handlerLackPoint() {

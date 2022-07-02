@@ -1,7 +1,10 @@
 package com.springframework.csscapstone.controller.enterprise;
 
 import com.springframework.csscapstone.config.constant.MessageConstant;
+import com.springframework.csscapstone.data.domain.OrderEnterpriseManageResDto;
 import com.springframework.csscapstone.data.status.OrderStatus;
+import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.OrderResDto;
 import com.springframework.csscapstone.services.OrderService;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,8 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.springframework.csscapstone.config.constant.ApiEndPoint.Order.V2_ORDER_COMPLETE;
-import static com.springframework.csscapstone.config.constant.ApiEndPoint.Order.V2_ORDER_UPDATE_STATUS;
+import static com.springframework.csscapstone.config.constant.ApiEndPoint.Order.*;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
@@ -34,6 +36,17 @@ public class EnterpriseOrderController {
     public ResponseEntity<?> completeOrder(@PathVariable("orderId") UUID orderId) {
         this.orderService.completedOrder(orderId);
         return ok(MessagesUtils.getMessage(MessageConstant.REQUEST_SUCCESS));
+    }
+
+    @GetMapping(V2_ORDER_LIST_BY_ENTERPRISE + "/{enterpriseId}")
+    public ResponseEntity<?> getAllOrderByEnterprise(
+            @PathVariable("enterpriseId") UUID enterpriseId,
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        PageImplResDto<OrderEnterpriseManageResDto> result = this.orderService
+                .getOrderResDtoByEnterprise(enterpriseId, pageNumber, pageSize);
+
+        return ok(result);
     }
 
 }

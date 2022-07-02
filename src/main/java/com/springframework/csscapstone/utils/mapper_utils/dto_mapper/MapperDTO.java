@@ -86,4 +86,9 @@ public interface MapperDTO {
     @Mapping(target = "categoryId", source = "id")
     CategoryBasicDto toCategoryBasicDto(Category entity);
 
+    @Mapping(target = "orderId", source = "id")
+    @Mapping(target = "account.accountId", source = "entity.account.id")
+    @Mapping(target = "customer.customerId", source = "entity.customer.id")
+    OrderEnterpriseManageResDto toOrderEnterpriseManageResDto(Order entity);
+
 }
