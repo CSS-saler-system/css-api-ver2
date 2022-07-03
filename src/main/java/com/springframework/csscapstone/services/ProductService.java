@@ -5,6 +5,7 @@ import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorR
 import com.springframework.csscapstone.payload.request_dto.enterprise.ProductUpdaterReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductCountOrderResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.ProductDetailEnterpriseDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResDto;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
@@ -20,11 +21,8 @@ public interface ProductService {
 
     PageImplResDto<ProductResDto> findAllProductByIdEnterprise(
             UUID idEnterprise,
-            UUID categoryId,
-            String categoryName,
             String name,
             String brand,
-            Long inStock,
             Double minPrice,
             Double maxPrice,
             Double minPoint,
@@ -47,7 +45,7 @@ public interface ProductService {
     List<ProductResDto> findProductByIdAccount(UUID accountId) throws AccountNotFoundException;
 
 
-    ProductResDto findById(UUID id) throws ProductNotFoundException;
+    ProductDetailEnterpriseDto findById(UUID id) throws ProductNotFoundException;
 
     UUID createProduct(
             ProductCreatorReqDto dto,

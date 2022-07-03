@@ -1,5 +1,6 @@
 package com.springframework.csscapstone.data.domain;
 
+import com.springframework.csscapstone.data.status.ProductImageType;
 import com.springframework.csscapstone.data.status.ProductStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,10 +8,12 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Where;
+import org.mapstruct.Named;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -63,24 +66,36 @@ public class Product {
     @ManyToMany(mappedBy = "products")
     private Set<Campaign> campaign = new HashSet<>();
 
-    public Product(String name,
-                   String brand,
+    public Product(String name, String brand,
                    String shortDescription,
-                   String description,
-                   Long quantityInStock,
-                   Double price,
-                   Double pointSale,
-                   ProductStatus productStatus) {
+                   String description, Double price,
+                   Double pointSale, ProductStatus productStatus) {
         this.name = name;
         this.brand = brand;
         this.shortDescription = shortDescription;
         this.description = description;
-//        this.quantityInStock = quantityInStock;
         this.price = price;
         this.pointSale = pointSale;
         this.productStatus = productStatus;
-//        this.category = category;
     }
+
+    @Named("normal")
+    public List<ProductImage> getNormal() {
+        return this.image
+                .stream()
+                .filter(image -> image.getType().equals(ProductImageType.NORMAL))
+                .collect(Collectors.toList());
+    }
+
+    @Named("certification")
+    public List<ProductImage> getCertification() {
+        return this.image
+                .stream()
+                .filter(image -> image.getType().equals(ProductImageType.CERTIFICATION))
+                .collect(Collectors.toList());
+    }
+
+
 
     @Override
     public boolean equals(Object o) {

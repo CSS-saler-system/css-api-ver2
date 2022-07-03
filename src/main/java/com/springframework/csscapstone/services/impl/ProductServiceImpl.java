@@ -15,6 +15,7 @@ import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorR
 import com.springframework.csscapstone.payload.request_dto.enterprise.ProductUpdaterReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductCountOrderResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.ProductDetailEnterpriseDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResDto;
 import com.springframework.csscapstone.services.ProductService;
 import com.springframework.csscapstone.utils.blob_utils.BlobUploadImages;
@@ -86,8 +87,7 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     public PageImplResDto<ProductResDto> findAllProductByIdEnterprise(
-            UUID idEnterprise, UUID categoryId,
-            String categoryName,String name, String brand, Long inStock, Double minPrice, Double maxPrice,
+            UUID idEnterprise, String name, String brand, Double minPrice, Double maxPrice,
             Double minPoint, Double maxPoint,
             Integer pageNumber, Integer pageSize) {
 
@@ -96,8 +96,6 @@ public class ProductServiceImpl implements ProductService {
 
         Specification<Product> search = Specification
                 .where(ProductSpecifications.enterpriseId(account))
-                .and(Objects.isNull(categoryId) ? null : ProductSpecifications.byCategoryId(categoryId))
-                .and(StringUtils.isEmpty(categoryName) ? null : ProductSpecifications.byCategoryName(categoryName))
                 .and(StringUtils.isBlank(name) ? null : ProductSpecifications.nameContains(name))
                 .and(StringUtils.isBlank(brand) ? null : ProductSpecifications.brandContains(brand))
                 .and(Objects.isNull(minPrice) ? null : ProductSpecifications.priceGreaterThan(minPrice))
@@ -140,10 +138,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResDto findById(UUID id) throws ProductNotFoundException {
+    public ProductDetailEnterpriseDto findById(UUID id) throws ProductNotFoundException {
         return productRepository.findById(id)
                 .filter(product -> !product.getProductStatus().equals(ProductStatus.DISABLE))
-                .map(MapperDTO.INSTANCE::toProductResDto)
+                .map(MapperDTO.INSTANCE::toProductDetailEnterpriseDto)
                 .orElseThrow(handlerProductNotFound());
     }
 

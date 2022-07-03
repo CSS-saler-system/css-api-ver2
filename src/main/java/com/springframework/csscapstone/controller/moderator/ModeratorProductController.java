@@ -25,11 +25,8 @@ public class ModeratorProductController {
     @GetMapping(V4_LIST_PRODUCT + "/{enterpriseId}")
     public ResponseEntity<?> getListProductDto(
             @PathVariable("enterpriseId") UUID enterpriseId,
-            @RequestParam(value = "categoryId", required = false) UUID categoryId,
-            @RequestParam(value = "categoryName", required = false) String categoryName,
             @RequestParam(value = "productName", required = false) String name,
             @RequestParam(value = "brand", required = false) String brand,
-            @RequestParam(value = "inStock", required = false) Long inStock,
             @RequestParam(value = "price", required = false) Double minPrice,
             @RequestParam(value = "price", required = false) Double maxPrice,
             @RequestParam(value = "pointSale", required = false) Double minPointSale,
@@ -39,9 +36,8 @@ public class ModeratorProductController {
     ) {
 
         PageImplResDto<ProductResDto> result = productService.findAllProductByIdEnterprise(
-                enterpriseId, categoryId, categoryName, name, brand, inStock, minPrice, maxPrice,
-                minPointSale, maxPointSale,
-                pageNumber, pageSize);
+                enterpriseId, name, brand, minPrice,
+                maxPrice, minPointSale, maxPointSale, pageNumber, pageSize);
         return ok(result);
     }
     @GetMapping(V4_GET_PRODUCT + "/{productId}")

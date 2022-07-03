@@ -53,7 +53,6 @@ public class EnterpriseProductController {
      * @param enterpriseId
      * @param name
      * @param brand
-     * @param inStock
      * @param minPrice
      * @param maxPrice
      * @param minPointSale
@@ -65,11 +64,8 @@ public class EnterpriseProductController {
     @GetMapping(V2_PRODUCT_LIST + "/{enterpriseId}")
     public ResponseEntity<?> getListProductDto(
             @PathVariable("enterpriseId") UUID enterpriseId,
-            @RequestParam(value = "categoryId", required = false) UUID categoryId,
-            @RequestParam(value = "categoryName", required = false) String categoryName,
             @RequestParam(value = "productName", required = false) String name,
             @RequestParam(value = "brand", required = false) String brand,
-            @RequestParam(value = "inStock", required = false) Long inStock,
             @RequestParam(value = "price", required = false) Double minPrice,
             @RequestParam(value = "price", required = false) Double maxPrice,
             @RequestParam(value = "pointSale", required = false) Double minPointSale,
@@ -78,8 +74,7 @@ public class EnterpriseProductController {
             @RequestParam(value = "pageSize", required = false) Integer pageSize
     ) {
         PageImplResDto<ProductResDto> result = productService
-                .findAllProductByIdEnterprise(
-                        enterpriseId, categoryId, categoryName,name, brand, inStock, minPrice, maxPrice,
+                .findAllProductByIdEnterprise(enterpriseId, name, brand, minPrice, maxPrice,
                         minPointSale, maxPointSale, pageNumber, pageSize);
         return ok(result);
     }
@@ -107,7 +102,6 @@ public class EnterpriseProductController {
         PageImplResDto<ProductCountOrderResDto> page =
                 this.productService.getListProductWithCountOrder(enterpriseId, start, end, pageNumber, pageSize);
         return ok(page);
-
     }
 
     @GetMapping(V2_PRODUCT_GET + "/{productId}")

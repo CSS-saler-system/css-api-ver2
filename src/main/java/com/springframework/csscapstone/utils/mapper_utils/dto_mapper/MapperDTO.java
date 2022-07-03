@@ -106,4 +106,12 @@ public interface MapperDTO {
     @Mapping(target = "account.collaboratorPhone", source = "entity.account.phone")
     RequestSellingProductEnterpriseManagerDto toRequestSellingProductEnterpriseManagerDto(RequestSellingProduct entity);
 
+    @Mapping(target = "normal", source = "normal")
+    @Mapping(target = "certification", source = "certification")
+    @Mapping(target = "category", source = "category")
+    @Mapping(target = "category.categoryId", source = "category.id")
+    @Mapping(target = "category.categoryName", source = "category.categoryName")
+    ProductDetailEnterpriseDto toProductDetailEnterpriseDto(Product entity);
+
+
 }
