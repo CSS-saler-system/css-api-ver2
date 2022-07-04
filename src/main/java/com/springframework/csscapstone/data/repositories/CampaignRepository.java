@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,5 +21,10 @@ public interface CampaignRepository extends JpaRepository<Campaign, UUID>,
             "WHERE NOT _campaign.campaignStatus = 'FINISHED'" +
             "AND _campaign.id = :id")
     Optional<Campaign> loadFetchOnProducts(@Param("id") UUID id);
+
+    @Query("SELECT _camp FROM Campaign _camp " +
+            "WHERE _camp.startDate = CURRENT_DATE " +
+            "AND _camp.campaignStatus = 'SENT'")
+    List<Campaign> getAllCampaignInDate();
 
 }

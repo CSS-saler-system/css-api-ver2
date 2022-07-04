@@ -55,14 +55,7 @@ public class Campaign {
     private Long kpiSaleProduct;
 
     @Enumerated(EnumType.STRING)
-    private CampaignStatus campaignStatus = CampaignStatus.PENDING;
-
-//    @ManyToMany
-//    @JoinTable(name = "campaign_order",
-//            joinColumns = @JoinColumn(name = "campaign_id"),
-//            inverseJoinColumns = @JoinColumn(name = "order_id"))
-//    private Set<Order> orders = new HashSet<>();
-//
+    private CampaignStatus campaignStatus = CampaignStatus.CREATED;
 
     @ManyToMany
     @JoinTable(name = "campaign_prize",
@@ -100,6 +93,9 @@ public class Campaign {
 
         return Objects.equals(id, campaign.id);
     }
+
+    @OneToMany(mappedBy = "campaign")
+    private List<FeedBack> feedBacks = new ArrayList<>();
 
     @Override
     public int hashCode() {

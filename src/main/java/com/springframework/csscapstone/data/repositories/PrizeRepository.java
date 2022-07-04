@@ -14,4 +14,5 @@ import java.util.UUID;
 public interface PrizeRepository extends JpaRepository<Prize, UUID>, JpaSpecificationExecutor<Prize> {
     @Query("SELECT p FROM Prize p ")
     Page<Prize> getAllPrize(Pageable pageable);
+
 }

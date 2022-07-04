@@ -6,6 +6,6 @@ package com.springframework.csscapstone.data.status;
  * todo status FINISHED: System Role
  */
 public enum CampaignStatus {
-    PENDING, CANCELLED, WAITING,
-    FINISHED
+    CREATED, DISABLED, SENT, //enterprise
+    REJECTED, APPROVAL, FINISHED //moderator
 }

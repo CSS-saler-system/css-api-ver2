@@ -76,7 +76,6 @@ public class ProductServiceImpl implements ProductService {
      * @param idEnterprise
      * @param name
      * @param brand
-     * @param inStock
      * @param minPrice
      * @param maxPrice
      * @param minPoint

@@ -107,6 +107,12 @@ public class Account {
     @OneToMany(mappedBy = "transactionApprover")
     private List<Transactions> transactionApprovedList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "approver")
+    private List<FeedBack> approverFeedback = new ArrayList<>();
+
+    @OneToMany(mappedBy = "creator")
+    private List<FeedBack> creatorFeedback = new ArrayList<>();
+
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;

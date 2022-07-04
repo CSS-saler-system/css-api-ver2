@@ -9,11 +9,4 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @Configuration
 @EnableJpaAuditing
 @EnableCaching
-public class WebBeanConfiguration {
-
-    @Bean
-    public ObjectMapper getObjectMapper() {
-        return new ObjectMapper();
-    }
-
-}
+public class WebBeanConfiguration {}

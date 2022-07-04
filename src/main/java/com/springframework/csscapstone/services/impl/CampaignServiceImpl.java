@@ -18,6 +18,7 @@ import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.CampaignUpdaterReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.CampaignDetailDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.CampaignResDto;
 import com.springframework.csscapstone.services.CampaignService;
 import com.springframework.csscapstone.utils.blob_utils.BlobUploadImages;
@@ -29,7 +30,6 @@ import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.mapstruct.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +40,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Supplier;
@@ -99,17 +98,15 @@ public class CampaignServiceImpl implements CampaignService {
                 .where(CampaignSpecifications.equalsEnterpriseId(enterprise))
                 .and(StringUtils.isEmpty(name) ? null : CampaignSpecifications.containsName(name))
                 .and(startDate == null ? null : CampaignSpecifications.afterStartDate(startDate))
-//                .and(endDate == null ? null : CampaignSpecifications.beforeEndDate(endDate))
-//                .and(minKpi == null || minKpi == 0 ? null : CampaignSpecifications.greaterKpi(minKpi))
                 .and(maxKpi == null || maxKpi == 0 ? null : CampaignSpecifications.smallerKpi(maxKpi));
 
         return getCampaignResDtoPageImplResDto(pageNumber, pageSize, condition);
     }
 
     @Override
-    public CampaignResDto findById(UUID id) throws EntityNotFoundException {
+    public CampaignDetailDto findById(UUID id) throws EntityNotFoundException {
         return campaignRepository
-                .findById(id).map(MapperDTO.INSTANCE::toCampaignResDto)
+                .findById(id).map(MapperDTO.INSTANCE::toCampaignDetailDto)
                 .orElseThrow(campaignNotFoundException());
     }
 
@@ -165,7 +162,7 @@ public class CampaignServiceImpl implements CampaignService {
         Campaign entity = this.campaignRepository.findById(dto.getId())
                 .orElseThrow(campaignNotFoundException());
 
-        if (!entity.getCampaignStatus().equals(CampaignStatus.PENDING)) {
+        if (!entity.getCampaignStatus().equals(CampaignStatus.CREATED)) {
             throw new RuntimeException("The campaign is not pending status so cant be updated!!!");
         }
 
@@ -200,7 +197,7 @@ public class CampaignServiceImpl implements CampaignService {
                 .findAll().stream()
 //                .filter(campaign -> campaign.getStartDate().isBefore(LocalDateTime.now()))
                 .filter(campaign -> campaign.getEndDate().isBefore(LocalDateTime.now()))
-                .filter(campaign -> campaign.getCampaignStatus().equals(CampaignStatus.PENDING))
+                .filter(campaign -> campaign.getCampaignStatus().equals(CampaignStatus.CREATED))
                 .map(Campaign::getId)
                 .forEach(uuid -> {
                     try {
@@ -287,6 +284,14 @@ public class CampaignServiceImpl implements CampaignService {
         this.campaignRepository.save(campaign.setCampaignStatus(CampaignStatus.FINISHED));
     }
 
+    @Override
+    public void rejectCampaignInDate() {
+        this.campaignRepository
+                .getAllCampaignInDate().stream()
+                .map(camp -> camp.setCampaignStatus(CampaignStatus.REJECTED))
+                .forEach(this.campaignRepository::save);
+    }
+
     private Supplier<NotEnoughKpiException> handlerNotEnoughKPIException() {
         return () -> new NotEnoughKpiException(MessagesUtils.getMessage(MessageConstant.KPI_NOT_ENOUGH));
     }
@@ -296,7 +301,7 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     private Campaign deleteCampaign(Campaign x) {
-        x.setCampaignStatus(CampaignStatus.CANCELLED);
+        x.setCampaignStatus(CampaignStatus.REJECTED);
         this.campaignRepository.save(x);
         return x;
     }
@@ -306,7 +311,8 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
 
-    private PageImplResDto<CampaignResDto> getCampaignResDtoPageImplResDto(Integer pageNumber, Integer pageSize, Specification<Campaign> condition) {
+    private PageImplResDto<CampaignResDto> getCampaignResDtoPageImplResDto(
+            Integer pageNumber, Integer pageSize, Specification<Campaign> condition) {
         pageNumber = Objects.isNull(pageNumber) || pageNumber == 0 ? 1 : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize == 0 ? 10 : pageSize;
 

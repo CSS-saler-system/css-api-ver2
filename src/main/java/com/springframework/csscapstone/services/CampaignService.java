@@ -5,9 +5,11 @@ import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.CampaignUpdaterReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.CampaignDetailDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.CampaignResDto;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignInvalidException;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -36,7 +38,7 @@ public interface CampaignService {
             String name, LocalDateTime date, Long kpi,
             CampaignStatus status, Integer pageNumber, Integer pageSize);
 
-    CampaignResDto findById(UUID id) throws EntityNotFoundException;
+    CampaignDetailDto findById(UUID id) throws EntityNotFoundException;
 
     UUID createCampaign(CampaignCreatorReqDto dto, List<MultipartFile> images) throws CampaignInvalidException;
 
@@ -48,5 +50,10 @@ public interface CampaignService {
 
     //todo close campaign
     void completeCampaign(UUID id) throws JsonProcessingException;
+
+    @Query("SELECT _camp FROM Campaign _camp " +
+            "WHERE _camp.startDate <= CURRENT_DATE " +
+            "AND NOT _camp.campaignStatus = 'FINISHED'")
+    void rejectCampaignInDate();
 
 }

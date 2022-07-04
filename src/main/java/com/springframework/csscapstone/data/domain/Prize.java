@@ -74,11 +74,5 @@ public class Prize {
                 ", description='" + description + '\'' +
                 '}';
     }
-//
-////===================== Utils ====================
-//    public Prize addImage(PrizeImage prizeImage) {
-//        this.getPrizeImages().add(prizeImage);
-//        prizeImage.setPrize(this);
-//        return this;
-//    }
+
 }

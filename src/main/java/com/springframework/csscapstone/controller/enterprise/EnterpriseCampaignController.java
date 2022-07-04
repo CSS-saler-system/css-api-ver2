@@ -6,6 +6,7 @@ import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.CampaignUpdaterReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.CampaignDetailDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.CampaignResDto;
 import com.springframework.csscapstone.services.CampaignService;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
@@ -95,7 +96,7 @@ public class EnterpriseCampaignController {
 
     @GetMapping(V2_CAMPAIGN_GET + "/{campaignId}")
     public ResponseEntity<?> getCampaignById(@PathVariable("campaignId") UUID campaignId) {
-        CampaignResDto result = this.campaignService.findById(campaignId);
+        CampaignDetailDto result = this.campaignService.findById(campaignId);
         return ok(result);
     }
 
