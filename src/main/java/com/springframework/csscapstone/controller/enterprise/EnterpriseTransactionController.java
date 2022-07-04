@@ -31,7 +31,7 @@ import static org.springframework.http.ResponseEntity.ok;
 @Tag(name = "Transaction (Enterprise)")
 public class EnterpriseTransactionController {
     private final TransactionServices transactionServices;
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @PostMapping(value = V2_TRANSACTION_CREATE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createTransaction(

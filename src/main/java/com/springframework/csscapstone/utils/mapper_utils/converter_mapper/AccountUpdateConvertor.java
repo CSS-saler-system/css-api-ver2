@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AccountUpdateConvertor implements Converter<String, CustomerResDto.AccountUpdaterInnerCustomerResDto> {
 
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     @SneakyThrows

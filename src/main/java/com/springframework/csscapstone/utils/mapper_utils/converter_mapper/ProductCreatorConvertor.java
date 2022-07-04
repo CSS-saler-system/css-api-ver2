@@ -14,7 +14,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ProductCreatorConvertor implements Converter<String, ProductCreatorReqDto> {
 
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     @SneakyThrows

@@ -36,7 +36,7 @@ import static org.springframework.http.ResponseEntity.ok;
 public class ModeratorCampaignController {
 
     private final CampaignService campaignService;
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @GetMapping(V4_LIST_CAMPAIGN)
     public ResponseEntity<?> getListDto(

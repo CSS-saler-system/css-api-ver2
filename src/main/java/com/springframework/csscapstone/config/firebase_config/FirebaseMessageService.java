@@ -26,8 +26,8 @@ import java.util.concurrent.ExecutionException;
 @RequiredArgsConstructor
 public class FirebaseMessageService {
 
-    private Logger LOGGER = LoggerFactory.getLogger(getClass());
-    private final ObjectMapper objectMapper;
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * todo send message

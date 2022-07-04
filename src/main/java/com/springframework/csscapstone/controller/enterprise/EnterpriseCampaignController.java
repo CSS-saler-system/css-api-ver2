@@ -31,7 +31,7 @@ import static org.springframework.http.ResponseEntity.ok;
 @Tag(name = "Campaign (Enterprise)")
 public class EnterpriseCampaignController {
 
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private final CampaignService campaignService;
 
 

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class PrizeUpdaterConvertor implements Converter<String, PrizeUpdaterReqDto> {
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @SneakyThrows
     @Override

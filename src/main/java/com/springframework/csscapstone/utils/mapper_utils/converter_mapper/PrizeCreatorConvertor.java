@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class PrizeCreatorConvertor implements Converter<String, PrizeCreatorReqDto> {
 
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @SneakyThrows
     @Override
