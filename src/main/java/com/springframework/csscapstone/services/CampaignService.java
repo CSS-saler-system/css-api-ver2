@@ -51,9 +51,8 @@ public interface CampaignService {
     //todo close campaign
     void completeCampaign(UUID id) throws JsonProcessingException;
 
-    @Query("SELECT _camp FROM Campaign _camp " +
-            "WHERE _camp.startDate <= CURRENT_DATE " +
-            "AND NOT _camp.campaignStatus = 'FINISHED'")
     void rejectCampaignInDate();
 
+    void updateStatusCampaignForModerator(
+            UUID campaignId, CampaignStatus status);
 }

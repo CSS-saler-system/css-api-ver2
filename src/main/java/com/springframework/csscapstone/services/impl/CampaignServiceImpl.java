@@ -140,7 +140,8 @@ public class CampaignServiceImpl implements CampaignService {
                 .setCampaignDescription(dto.getCampaignDescription())
                 .setStartDate(dto.getStartDate())
                 .setEndDate(dto.getEndDate())
-                .setKpiSaleProduct(dto.getKpi());
+                .setKpiSaleProduct(dto.getKpi())
+                .setCampaignStatus(CampaignStatus.CREATED);
 
         if (!productList.isEmpty()) campaign.addProducts(productList.toArray(new Product[0]));
 
@@ -160,11 +161,12 @@ public class CampaignServiceImpl implements CampaignService {
     public UUID updateCampaign(CampaignUpdaterReqDto dto, List<MultipartFile> images) throws EntityNotFoundException {
 
         Campaign entity = this.campaignRepository.findById(dto.getId())
+                .filter(camp -> camp.getCampaignStatus().equals(CampaignStatus.CREATED))
                 .orElseThrow(campaignNotFoundException());
 
-        if (!entity.getCampaignStatus().equals(CampaignStatus.CREATED)) {
-            throw new RuntimeException("The campaign is not pending status so cant be updated!!!");
-        }
+//        if (!entity.getCampaignStatus().equals(CampaignStatus.SENT)) {
+//            throw new RuntimeException("The campaign is not pending status so cant be updated!!!");
+//        }
 
         entity.setName(dto.getName())
 //                .setImage(dto.getImage())
@@ -290,6 +292,16 @@ public class CampaignServiceImpl implements CampaignService {
                 .getAllCampaignInDate().stream()
                 .map(camp -> camp.setCampaignStatus(CampaignStatus.REJECTED))
                 .forEach(this.campaignRepository::save);
+    }
+
+    @Transactional
+    @Override
+    public void updateStatusCampaignForModerator(UUID campaignId, CampaignStatus status) {
+        this.campaignRepository
+                .findById(campaignId)
+                .map(camp -> camp.setCampaignStatus(status))
+                .map(this.campaignRepository::save)
+                .orElseThrow(() -> campaignNotFoundException().get());
     }
 
     private Supplier<NotEnoughKpiException> handlerNotEnoughKPIException() {

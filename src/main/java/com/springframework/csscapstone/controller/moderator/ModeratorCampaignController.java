@@ -57,15 +57,16 @@ public class ModeratorCampaignController {
         return ok(campaignService.findById(id));
     }
 
-    @PutMapping(value = V4_UPDATE_CAMPAIGN, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<UUID> updateCampaign(
-            @RequestPart("campaign") String campaign,
-            @RequestPart("images") List<MultipartFile> images)
-            throws EntityNotFoundException, JsonProcessingException {
-        CampaignUpdaterReqDto dto = objectMapper
-                .readValue(campaign, CampaignUpdaterReqDto.class);
-        UUID campaignUUID = campaignService.updateCampaign(dto, images);
-        return ok(campaignUUID);
+    @PutMapping(V4_REJECT_CAMPAIGN + "/{campaignId}")
+    public ResponseEntity<?> rejectCampaign(@PathVariable("campaignId") UUID campaignID) {
+        this.campaignService.updateStatusCampaignForModerator(campaignID, CampaignStatus.REJECTED);
+        return ok(MessagesUtils.getMessage(MessageConstant.REQUEST_SUCCESS));
+    }
+
+    @PutMapping(V4_APPROVAL_CAMPAIGN + "/{campaignId}")
+    public ResponseEntity<?> approvalCampaign(@PathVariable("campaignId") UUID campaignID) {
+        this.campaignService.updateStatusCampaignForModerator(campaignID, CampaignStatus.APPROVAL);
+        return ok(MessagesUtils.getMessage(MessageConstant.REQUEST_SUCCESS));
     }
 
 
