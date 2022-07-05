@@ -29,7 +29,7 @@ public class EnterpriseRequestSellingProductController {
             @RequestParam(value = "pageNumber", required = false) Integer pageNumber
     ) {
         return ok(requestSellingProductService
-                .getAllRequestByStatusAndEnterprise(enterpriseId, status, pageSize, pageNumber));
+                .getAllRequestByStatusAndEnterprise(enterpriseId, status, pageNumber, pageSize));
     }
 
     @GetMapping(V2_REQUEST_GET + "/{requestId}")

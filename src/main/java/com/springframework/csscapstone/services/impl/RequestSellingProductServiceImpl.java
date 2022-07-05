@@ -81,7 +81,8 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
 //
         RequestSellingProduct requestSellingProduct = new RequestSellingProduct()
                 .setProduct(product)
-                .setAccount(collaborator).setRequestStatus(RequestStatus.PENDING);
+                .setAccount(collaborator)
+                .setRequestStatus(RequestStatus.CREATED);
 //      todo send notification
 //        Map<String, String> msg = new HashMap<>();
 //

@@ -1,6 +1,7 @@
 package com.springframework.csscapstone.data.status;
 
 public enum RequestStatus {
-    PENDING, //Collaborator Role
+    CREATED,     //Collaborator Role
+    //PENDING,
     REGISTERED, REJECT //Enterprise Role
 }

@@ -2,6 +2,7 @@ package com.springframework.csscapstone.config.web;
 
 import com.springframework.csscapstone.services.CampaignService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -13,6 +14,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @RequiredArgsConstructor
 public class WebScheduler {
 
+//    @Qualifier(value = "threadPoolTaskExecutor")
     private final ThreadPoolTaskExecutor executor;
     private final CampaignService campaignService;
 
