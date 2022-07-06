@@ -2,6 +2,7 @@ package com.springframework.csscapstone.controller.enterprise;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.CampaignUpdaterReqDto;
@@ -11,6 +12,7 @@ import com.springframework.csscapstone.payload.response_dto.enterprise.CampaignR
 import com.springframework.csscapstone.services.CampaignService;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignInvalidException;
+import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -98,6 +100,12 @@ public class EnterpriseCampaignController {
     public ResponseEntity<?> getCampaignById(@PathVariable("campaignId") UUID campaignId) {
         CampaignDetailDto result = this.campaignService.findById(campaignId);
         return ok(result);
+    }
+
+    @PutMapping(V2_CAMPAIGN_SENT + "/{campaignId}")
+    public ResponseEntity<?> sentCampaign(@PathVariable("campaignId") UUID campaignId) {
+        this.campaignService.sentCampaign(campaignId);
+        return ok(MessagesUtils.getMessage(MessageConstant.REQUEST_SUCCESS));
     }
 
 }

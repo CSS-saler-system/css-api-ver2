@@ -80,8 +80,7 @@ public class CampaignServiceImpl implements CampaignService {
                 .and(date == null ? null : CampaignSpecifications.beforeEndDate(date))
                 .and(kpi == null || kpi == 0 ? null : CampaignSpecifications.smallerKpi(kpi))
                 .and(status == null
-                        ? CampaignSpecifications.equalsStatus(CampaignStatus.SENT)
-                        : CampaignSpecifications.equalsStatus(status))
+                        ? null : CampaignSpecifications.equalsStatus(status))
                 .and(CampaignSpecifications.excludeStatus(
                         CampaignStatus.CREATED,
                         CampaignStatus.DISABLED,
@@ -309,6 +308,16 @@ public class CampaignServiceImpl implements CampaignService {
                 .map(camp -> camp.setCampaignStatus(status))
                 .map(this.campaignRepository::save)
                 .orElseThrow(() -> campaignNotFoundException().get());
+    }
+    @Transactional
+    @Override
+    public void sentCampaign(UUID campaignId) {
+        Campaign campaign = this.campaignRepository
+                .findById(campaignId)
+                .orElseThrow(() -> new EntityNotFoundException("The campaign was not found"));
+
+        this.campaignRepository.save(campaign.setCampaignStatus(CampaignStatus.SENT));
+
     }
 
     private Supplier<NotEnoughKpiException> handlerNotEnoughKPIException() {

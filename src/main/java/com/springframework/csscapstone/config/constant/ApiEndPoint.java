@@ -94,6 +94,7 @@ public class ApiEndPoint {
         public static final String V2_CAMPAIGN_CREATE = v2_handler + "/new";
         public static final String V2_DELETE_CAMPAIGN = v2_handler + "/delete";
         public static final String V2_CAMPAIGN_GET = v2_handler + "/get";
+        public static final String V2_CAMPAIGN_SENT = v2_handler + "/sent";
 
         public static final String V3_LIST_CAMPAIGN = v3_handler + "/list";
         public static final String V3_GET_CAMPAIGN = v3_handler + "/get";

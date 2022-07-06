@@ -39,8 +39,8 @@ public class CampaignSpecifications {
 //    }
     public static Specification<Campaign> excludeStatus(CampaignStatus... exclude) {
         return
-                (root, query, criteriaBuilder) -> criteriaBuilder.not(root
-                         .get(Campaign_.CAMPAIGN_STATUS).in(Arrays.asList(exclude)));
+                (root, query, criteriaBuilder) -> criteriaBuilder
+                        .not(root.get(Campaign_.CAMPAIGN_STATUS).in(Arrays.asList(exclude)));
     }
 
     public static Specification<Campaign> containsName(String name) {

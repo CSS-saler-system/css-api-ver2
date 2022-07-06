@@ -49,4 +49,6 @@ public interface CampaignService {
 
     void updateStatusCampaignForModerator(
             UUID campaignId, CampaignStatus status);
+
+    void sentCampaign(UUID campaignId);
 }
