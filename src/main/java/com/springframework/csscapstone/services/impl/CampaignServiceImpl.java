@@ -79,13 +79,18 @@ public class CampaignServiceImpl implements CampaignService {
                 .where(StringUtils.isEmpty(name) ? null : CampaignSpecifications.containsName(name))
                 .and(date == null ? null : CampaignSpecifications.beforeEndDate(date))
                 .and(kpi == null || kpi == 0 ? null : CampaignSpecifications.smallerKpi(kpi))
-                .and(status == null ? null : CampaignSpecifications.equalsStatus(status));
-
+                .and(status == null
+                        ? CampaignSpecifications.equalsStatus(CampaignStatus.SENT)
+                        : CampaignSpecifications.equalsStatus(status))
+                .and(CampaignSpecifications.excludeStatus(
+                        CampaignStatus.CREATED,
+                        CampaignStatus.DISABLED,
+                        CampaignStatus.FINISHED));
         return getCampaignResDtoPageImplResDto(pageNumber, pageSize, condition);
     }
 
     @Override
-    public PageImplResDto<CampaignResDto> findCampaign(
+    public PageImplResDto<CampaignResDto>  findCampaign(
             UUID enterpriseId, String name, LocalDateTime startDate,
             LocalDateTime endDate, Long minKpi, Long maxKpi, CampaignStatus status,
             Integer pageNumber, Integer pageSize) {
@@ -98,7 +103,9 @@ public class CampaignServiceImpl implements CampaignService {
                 .where(CampaignSpecifications.equalsEnterpriseId(enterprise))
                 .and(StringUtils.isEmpty(name) ? null : CampaignSpecifications.containsName(name))
                 .and(startDate == null ? null : CampaignSpecifications.afterStartDate(startDate))
-                .and(maxKpi == null || maxKpi == 0 ? null : CampaignSpecifications.smallerKpi(maxKpi));
+                .and(maxKpi == null || maxKpi == 0 ? null : CampaignSpecifications.smallerKpi(maxKpi))
+                .and(status == null ? null : CampaignSpecifications.equalsStatus(status))
+                .and(CampaignSpecifications.excludeStatus(CampaignStatus.SENT, CampaignStatus.DISABLED));
 
         return getCampaignResDtoPageImplResDto(pageNumber, pageSize, condition);
     }

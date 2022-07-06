@@ -63,11 +63,11 @@ public class EnterpriseCampaignController {
             @RequestParam(value = "campaignName", required = false) String campaignName,
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
-            @RequestParam(value = "minKpi", required = false, defaultValue = "0") Long minKpi,
-            @RequestParam(value = "maxKpi", required = false, defaultValue = "0") Long maxKpi,
-            @RequestParam(value = "status", required = false, defaultValue = "PENDING") CampaignStatus status,
-            @RequestParam(value = "maxKpi", required = false, defaultValue = "0") Integer pageNumber,
-            @RequestParam(value = "maxSize", required = false, defaultValue = "0") Integer pageSize
+            @RequestParam(value = "minKpi", required = false) Long minKpi,
+            @RequestParam(value = "maxKpi", required = false) Long maxKpi,
+            @RequestParam(value = "status", required = false) CampaignStatus status,
+            @RequestParam(value = "maxKpi", required = false) Integer pageNumber,
+            @RequestParam(value = "maxSize", required = false) Integer pageSize
     ) {
         PageImplResDto<CampaignResDto> campaign = campaignService.findCampaign(
                 enterpriseId, campaignName, startDate, endDate, minKpi, maxKpi,status, pageNumber, pageSize);

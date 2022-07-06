@@ -8,7 +8,7 @@ package com.springframework.csscapstone.data.status;
 public enum CampaignStatus {
     // enterprise, load reject approve finish,
     // <exclude> sent
-    CREATED, DISABLED,
+    CREATED, DISABLED, //load !SENT,
     SENT, //not load
 
     // moderator load sent

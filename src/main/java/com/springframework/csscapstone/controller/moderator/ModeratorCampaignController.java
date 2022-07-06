@@ -41,9 +41,11 @@ public class ModeratorCampaignController {
     @GetMapping(V4_LIST_CAMPAIGN)
     public ResponseEntity<?> getListDto(
             @RequestParam(value = "campaignName", required = false) String campaignName,
-            @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(value = "startDate", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam(value = "minKpi", required = false, defaultValue = "0") Long minKpi,
-            @RequestParam(value = "status", required = false, defaultValue = "PENDING") CampaignStatus status,
+//            @RequestParam(value = "status", required = false, defaultValue = "SENT") CampaignStatus status,
+            @RequestParam(value = "status", required = false) CampaignStatus status,
             @RequestParam(value = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
             @RequestParam(value = "pageSize", required = false, defaultValue = "0") Integer pageSize
     ) {

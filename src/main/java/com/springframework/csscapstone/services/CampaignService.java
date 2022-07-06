@@ -18,14 +18,7 @@ import java.util.UUID;
 
 public interface CampaignService {
 
-    //    List<CampaignResDto> findCampaign(
-//            String name, LocalDateTime createdDate,
-//            LocalDateTime lastModifiedDate,
-//            LocalDateTime startDate,
-//            LocalDateTime endDate,
-//            String description,
-//            Long kpi,
-//            CampaignStatus status);
+    //todo for enterprise
     PageImplResDto<CampaignResDto> findCampaign(
             UUID enterpriseId,
             String name,
@@ -34,6 +27,7 @@ public interface CampaignService {
             Long minKpi, Long maxKpi, CampaignStatus status,
             Integer pageNumber, Integer pageSize);
 
+    //todo for moderator
     PageImplResDto<CampaignResDto> findCampaignWithoutEnterpriseId(
             String name, LocalDateTime date, Long kpi,
             CampaignStatus status, Integer pageNumber, Integer pageSize);
