@@ -3,6 +3,9 @@ package com.springframework.csscapstone.controller;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobContainerClientBuilder;
+import com.springframework.csscapstone.data.domain.User;
+import com.springframework.csscapstone.services.EmailServices;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +17,7 @@ import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
@@ -24,10 +28,13 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
-@RequestMapping("/user/blob")
+@RequestMapping("/user")
 @PropertySource(value = "classpath:application-storage.properties")
+@RequiredArgsConstructor
 public class BlobTestController {
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
+
+    private final EmailServices emailServices;
 
     @Value("${product_image_container}")
     private String productContainer;
@@ -48,6 +55,14 @@ public class BlobTestController {
         BlobClient blobClient = container.getBlobClient(blobName);
 //        blobClient.upload(file.getInputStream(), file.getSize(), true);
         return ok(blobName);
+    }
+
+    @GetMapping("/send-mail")
+    public ResponseEntity<?> sendEmail(
+            @RequestParam("name") String name,
+            @RequestParam("email") String email) {
+        emailServices.sendEmailNotification(new User(name, email));
+        return ok("sending email");
     }
 
 }
