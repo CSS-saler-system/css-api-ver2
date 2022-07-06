@@ -108,4 +108,10 @@ public class EnterpriseCampaignController {
         return ok(MessagesUtils.getMessage(MessageConstant.REQUEST_SUCCESS));
     }
 
+    @DeleteMapping(V2_CAMPAIGN_DELETE + "/{campaignId}")
+    public ResponseEntity<?> deleteCampaign(@PathVariable("campaignId") UUID campaignId) {
+        this.campaignService.deleteCampaign(campaignId);
+        return ok(MessagesUtils.getMessage(MessageConstant.REQUEST_SUCCESS));
+    }
+
 }

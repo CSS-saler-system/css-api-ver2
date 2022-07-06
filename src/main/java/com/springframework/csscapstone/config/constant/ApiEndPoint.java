@@ -92,15 +92,14 @@ public class ApiEndPoint {
         public static final String V2_GET_CAMPAIGN = v2_handler + "/get";
         public static final String V2_CAMPAIGN_UPDATE = v2_handler + "/update";
         public static final String V2_CAMPAIGN_CREATE = v2_handler + "/new";
-        public static final String V2_DELETE_CAMPAIGN = v2_handler + "/delete";
         public static final String V2_CAMPAIGN_GET = v2_handler + "/get";
         public static final String V2_CAMPAIGN_SENT = v2_handler + "/sent";
-
+        public static final String V2_CAMPAIGN_DELETE = v2_handler + "/delete";
         public static final String V3_LIST_CAMPAIGN = v3_handler + "/list";
         public static final String V3_GET_CAMPAIGN = v3_handler + "/get";
-        public static final String V3_UPDATE_CAMPAIGN = v3_handler + "/update";
-        public static final String V3_CREATE_CAMPAIGN = v3_handler + "/new";
-        public static final String V3_DELETE_CAMPAIGN = v3_handler + "/delete";
+        public static final String V3_CAMPAIGN_UPDATE = v3_handler + "/update";
+        public static final String V3_CAMPAIGN_CREATE = v3_handler + "/new";
+        public static final String V3_CAMPAIGN_DELETE = v3_handler + "/delete";
 
         public static final String V4_LIST_CAMPAIGN = v4_handler + "/list";
         public static final String V4_GET_CAMPAIGN = v4_handler + "/get";

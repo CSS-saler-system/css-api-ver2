@@ -192,8 +192,8 @@ public class CampaignServiceImpl implements CampaignService {
     @Override
     public void deleteCampaign(UUID id) throws EntityNotFoundException {
         this.campaignRepository.findById(id)
-                .map(this::deleteCampaign)
-                .map(MapperDTO.INSTANCE::toCampaignResDto)
+                .map(x -> x.setCampaignStatus(CampaignStatus.DISABLED))
+                .map(this.campaignRepository::save)
                 .orElseThrow(campaignNotFoundException());
     }
 
@@ -312,12 +312,11 @@ public class CampaignServiceImpl implements CampaignService {
     @Transactional
     @Override
     public void sentCampaign(UUID campaignId) {
-        Campaign campaign = this.campaignRepository
+        this.campaignRepository
                 .findById(campaignId)
+                .map(camp -> camp.setCampaignStatus(CampaignStatus.SENT))
+                .map(this.campaignRepository::save)
                 .orElseThrow(() -> new EntityNotFoundException("The campaign was not found"));
-
-        this.campaignRepository.save(campaign.setCampaignStatus(CampaignStatus.SENT));
-
     }
 
     private Supplier<NotEnoughKpiException> handlerNotEnoughKPIException() {
@@ -326,12 +325,6 @@ public class CampaignServiceImpl implements CampaignService {
 
     private Supplier<CampaignNotFoundException> handlerCampaignNotFoundException() {
         return () -> new CampaignNotFoundException(MessagesUtils.getMessage(MessageConstant.Campaign.NOT_FOUND));
-    }
-
-    private Campaign deleteCampaign(Campaign x) {
-        x.setCampaignStatus(CampaignStatus.REJECTED);
-        this.campaignRepository.save(x);
-        return x;
     }
 
     private Supplier<EntityNotFoundException> campaignNotFoundException() {

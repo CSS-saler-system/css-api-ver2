@@ -43,11 +43,10 @@ public class ModeratorCampaignController {
             @RequestParam(value = "campaignName", required = false) String campaignName,
             @RequestParam(value = "startDate", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-            @RequestParam(value = "minKpi", required = false, defaultValue = "0") Long minKpi,
-//            @RequestParam(value = "status", required = false, defaultValue = "SENT") CampaignStatus status,
+            @RequestParam(value = "minKpi", required = false) Long minKpi,
             @RequestParam(value = "status", required = false) CampaignStatus status,
-            @RequestParam(value = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
-            @RequestParam(value = "pageSize", required = false, defaultValue = "0") Integer pageSize
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize
     ) {
         PageImplResDto<CampaignResDto> campaign = campaignService
                 .findCampaignWithoutEnterpriseId(campaignName, startDate, minKpi, status, pageNumber, pageSize);
@@ -70,12 +69,4 @@ public class ModeratorCampaignController {
         this.campaignService.updateStatusCampaignForModerator(campaignID, CampaignStatus.APPROVAL);
         return ok(MessagesUtils.getMessage(MessageConstant.REQUEST_SUCCESS));
     }
-
-
-    @DeleteMapping(V4_DELETE_CAMPAIGN + "/{campaignId}")
-    public ResponseEntity<String> disableCampaign(@PathVariable("campaignId") UUID id) throws EntityNotFoundException {
-        campaignService.deleteCampaign(id);
-        return ResponseEntity.ok(MessagesUtils.getMessage(MessageConstant.REQUEST_SUCCESS));
-    }
-
 }
