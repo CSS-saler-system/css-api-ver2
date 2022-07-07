@@ -18,7 +18,6 @@ public class WebScheduler {
 
     @Scheduled(cron = "${cron_time}") // 0 0 0 * * *
     public void finishCampaignConfiguration() {
-//        this.campaignService.scheduleCloseCampaign();
         executor.execute(this.campaignService::scheduleCloseCampaign);
     }
 

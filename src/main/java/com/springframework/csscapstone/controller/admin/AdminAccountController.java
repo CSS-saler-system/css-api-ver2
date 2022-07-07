@@ -40,7 +40,6 @@ public class AdminAccountController {
             @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
             @RequestParam(value = "pageSize", required = false) Integer pageSize
     ) {
-//        PageAccountDto page = service.getAccountDto(accountName, phone, email, address, pageSize, pageNumber);
         PageImplResDto<AccountResDto> page = service.getAccountDto(accountName, phone, email, address, pageSize, pageNumber);
         return ResponseEntity.ok(page);
     }
