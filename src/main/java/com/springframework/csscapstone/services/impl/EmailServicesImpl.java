@@ -16,15 +16,15 @@ public class EmailServicesImpl implements EmailServices {
     @Override
     @SneakyThrows
     public void sendEmailNotification(User user) {
-        SimpleMailMessage mail = new SimpleMailMessage();
-
-        mail.setTo(user.getEmailAddress());
-        mail.setFrom("test@gmail.com");
-        mail.setSubject("This is subject");
-        mail.setText("""
-                    Hi, my Friends, %s
-                """.formatted(user.getName()));
-
-        javaMailSender.send(mail);
+//        SimpleMailMessage mail = new SimpleMailMessage();
+//
+//        mail.setTo(user.getEmailAddress());
+//        mail.setFrom("test@gmail.com");
+//        mail.setSubject("This is subject");
+//        mail.setText("""
+//                    Hi, my Friends, %s
+//                """.formatted(user.getName()));
+//
+//        javaMailSender.send(mail);
     }
 }
