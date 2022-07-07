@@ -13,8 +13,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @EnableScheduling
 @RequiredArgsConstructor
 public class WebScheduler {
-
-//    @Qualifier(value = "threadPoolTaskExecutor")
     private final ThreadPoolTaskExecutor executor;
     private final CampaignService campaignService;
 

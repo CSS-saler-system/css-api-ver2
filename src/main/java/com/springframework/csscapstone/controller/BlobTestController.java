@@ -39,21 +39,13 @@ public class BlobTestController {
     @Value("${product_image_container}")
     private String productContainer;
 
-    @Value("${account_image_container}")
-    private String accountContainer;
-
     @PostMapping(value = "/upload", consumes = {MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> uploadImageTest(@RequestParam("file") List<MultipartFile> file) throws IOException {
-//
-        String consStr = "";
         BlobContainerClient container = new BlobContainerClientBuilder()
-//                .connectionString()
                 .containerName(this.productContainer)
                 .buildClient();
 
         String blobName = UUID.randomUUID().toString();
-        BlobClient blobClient = container.getBlobClient(blobName);
-//        blobClient.upload(file.getInputStream(), file.getSize(), true);
         return ok(blobName);
     }
 
