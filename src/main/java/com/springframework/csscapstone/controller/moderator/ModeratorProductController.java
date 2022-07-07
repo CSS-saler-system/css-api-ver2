@@ -46,9 +46,15 @@ public class ModeratorProductController {
     }
 
     @PutMapping(V4_ACTIVE_PRODUCT + "/{productId}")
-    public ResponseEntity<String> updateProduct(
-            @PathVariable("productId") UUID id, @RequestParam("product_status") ProductStatus status) throws ProductNotFoundException, ProductInvalidException {
-        productService.changeStatusProduct(id, status);
+    public ResponseEntity<String> activeProduct(
+            @PathVariable("productId") UUID productId) throws ProductNotFoundException, ProductInvalidException {
+        productService.changeStatusProduct(productId, ProductStatus.ACTIVE);
+        return ok("If product id exists in our database,status of product will changed");
+    }
+
+    @PutMapping(V4_DISABLE_PRODUCT +"/{productId}")
+    public ResponseEntity<?> disableProduct(@PathVariable("productId") UUID productId) {
+        productService.changeStatusProduct(productId, ProductStatus.DISABLE);
         return ok("If product id exists in our database,status of product will changed");
     }
 

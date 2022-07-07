@@ -12,12 +12,11 @@ import java.util.UUID;
 
 public interface PrizeService {
 
-    PageImplResDto<PrizeResDto> getAll(String name, Integer pageNumber, Integer pageSize);
-//    PageImplResDto<PrizeResDto> getAll(Integer pageNumber, Integer pageSize);
+    PageImplResDto<PrizeResDto> getAll(UUID enterpriseId, String name, Integer pageNumber, Integer pageSize);
 
-    UUID updatePrize(PrizeUpdaterReqDto prizeUpdater, List<MultipartFile> images);
+    UUID updatePrize(PrizeUpdaterReqDto prizeUpdater);
 
-    UUID createPrize(PrizeCreatorReqDto prizeCreatorReqDto, List<MultipartFile> images);
+    UUID createPrize(PrizeCreatorReqDto prizeCreatorReqDto);
 
     Optional<PrizeResDto> getPrizeByPrize(UUID uuid);
 

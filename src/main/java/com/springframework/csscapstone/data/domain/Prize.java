@@ -36,10 +36,6 @@ public class Prize {
     @Column(name = "status_prize")
     @Enumerated(EnumType.STRING)
     private PrizeStatus prizeStatus;
-
-//    @OneToMany(mappedBy = "prize")
-//    private List<PrizeImage> prizeImages = new ArrayList<>();
-
     @ManyToMany(mappedBy = "prizes")
     private Set<Campaign> campaigns = new HashSet<>();
 

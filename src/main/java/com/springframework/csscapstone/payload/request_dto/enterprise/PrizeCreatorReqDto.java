@@ -17,22 +17,14 @@ public class PrizeCreatorReqDto {
     @NotNull(message = "The price must be not null")
     @Min(value = 1, message = "The quantity must be greater than 1.0")
     private final Double price;
-
-//    @Min(value = 1, message = "The quantity must be greater than 1")
-//    private final Long quantity;
-    private final String description;
     private final AccountDto creator;
 
     public PrizeCreatorReqDto(
             @JsonProperty("name") String name,
             @JsonProperty("price") Double price,
-//            @JsonProperty("quantity") Long quantity,
-            @JsonProperty("description") String description,
             @JsonProperty("creator") AccountDto creator) {
         this.name = name;
         this.price = price;
-//        this.quantity = quantity;
-        this.description = description;
         this.creator = creator;
     }
 

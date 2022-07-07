@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -26,58 +28,56 @@ import static org.springframework.http.ResponseEntity.ok;
 @RequiredArgsConstructor
 @Tag(name = "Prize (Enterprise)")
 public class EnterprisePrizeController {
-   private final PrizeService prizeService;
-   private final PrizeCreatorConvertor prizeCreatorConvertor;
-   private final PrizeUpdaterConvertor prizeUpdaterConvertor;
-//
-   @GetMapping(V2_PRIZE_LIST)
-   public ResponseEntity<?> getAllPrize(
-           @RequestParam(value = "namePrize", required = false) String namePrize,
-           @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
-           @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-      return ok(this.prizeService.getAll(namePrize, pageNumber, pageSize));
-   }
+    private final PrizeService prizeService;
 
-   @PostMapping(value = V2_PRIZE_CREATE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-   public ResponseEntity<?> createPrize(
-           @RequestPart("prize") String prizeJson,
-           @RequestPart("images") List<MultipartFile> images
-   ) {
-      PrizeCreatorReqDto dto = prizeCreatorConvertor.convert(prizeJson);
+    //
+    @GetMapping(V2_PRIZE_LIST + "/{enterpriseId}")
+    public ResponseEntity<?> getAllPrize(
+            @PathVariable("enterpriseId") UUID enterpriseId,
+            @RequestParam(value = "namePrize", required = false) String namePrize,
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        return ok(this.prizeService.getAll(enterpriseId, namePrize, pageNumber, pageSize));
+    }
 
-      if (dto.getPrice() == null || Objects.isNull(dto.getPrice())  || dto.getPrice() < 1.0)
-         throw new RuntimeException("The price of prize is not null");
+    @PostMapping(value = V2_PRIZE_CREATE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> createPrize(
+            @RequestParam("name") @Valid @NotNull String prizeName,
+            @RequestParam("price") @Valid @NotNull Double price,
+            @RequestParam("price") @Valid @NotNull UUID accountId) {
 
-      UUID prize = this.prizeService.createPrize(dto, images);
+        if (price == null || price < 1.0)
+            throw new RuntimeException("The price of prize is not null");
 
-      return ok(prize);
-   }
+        UUID prize = this.prizeService.createPrize(
+                new PrizeCreatorReqDto(prizeName, price,
+                        new PrizeCreatorReqDto.AccountDto(accountId)));
 
-   @PutMapping(value = V2_PRIZE_UPDATE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-   public ResponseEntity<?> updatePrize(
-           @RequestPart("prize") String prizeJson,
-           @RequestPart("images") List<MultipartFile> images
-   ) {
-      PrizeUpdaterReqDto dto = prizeUpdaterConvertor.convert(prizeJson);
+        return ok(prize);
+    }
 
-      if (dto.getPrice() == null || Objects.isNull(dto.getPrice())  || dto.getPrice() < 1.0)
-         throw new RuntimeException("The price of prize is not null");
+    @PutMapping(value = V2_PRIZE_UPDATE + "/{prizeId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updatePrize(
+            @PathVariable("prizeId") UUID prizeId,
+            @RequestParam("prizeName") String prizeName,
+            @RequestParam("price") Double price
+    ) {
 
-      if (Objects.isNull(dto.getQuantity()) || dto.getQuantity() < 0)
-         throw new RuntimeException("The quantity of prize is not null and greater than 0");
+        if (price == null || price < 1.0)
+            throw new RuntimeException("The price of prize is not null");
 
-      UUID prize = this.prizeService.updatePrize(dto, images);
+        UUID prize = this.prizeService.updatePrize(new PrizeUpdaterReqDto(prizeId, prizeName, price));
 
-      return ok(prize);
-   }
+        return ok(prize);
+    }
 
-   @GetMapping(V2_PRIZE_RETRIEVE + "/{prizeId}")
-   public ResponseEntity<?> retrievePrizeById(@PathVariable("prizeId") UUID id) {
-      return ok(this.prizeService.getPrizeByPrize(id)
-              .orElseThrow(handlerEntityNotFoundException(id)));
-   }
+    @GetMapping(V2_PRIZE_RETRIEVE + "/{prizeId}")
+    public ResponseEntity<?> retrievePrizeById(@PathVariable("prizeId") UUID id) {
+        return ok(this.prizeService.getPrizeByPrize(id)
+                .orElseThrow(handlerEntityNotFoundException(id)));
+    }
 
-   private Supplier<EntityNotFoundException> handlerEntityNotFoundException(UUID id) {
-      return () -> new EntityNotFoundException("The prize with id: " + id + " not found");
-   }
+    private Supplier<EntityNotFoundException> handlerEntityNotFoundException(UUID id) {
+        return () -> new EntityNotFoundException("The prize with id: " + id + " not found");
+    }
 }

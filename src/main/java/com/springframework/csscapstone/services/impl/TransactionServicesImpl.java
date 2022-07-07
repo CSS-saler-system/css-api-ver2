@@ -1,11 +1,8 @@
 package com.springframework.csscapstone.services.impl;
 
-import com.springframework.csscapstone.config.constant.ApiEndPoint;
-import com.springframework.csscapstone.data.dao.specifications.TransactionSpecifications;
 import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.BillImage;
 import com.springframework.csscapstone.data.domain.Transactions;
-import com.springframework.csscapstone.data.domain.Transactions_;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.data.repositories.BillImageRepository;
 import com.springframework.csscapstone.data.repositories.TransactionsRepository;
@@ -26,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -111,7 +107,7 @@ public class TransactionServicesImpl implements TransactionServices {
         Transactions entity = new Transactions()
                 .setPoint(dto.getPoint())
                 .setTransactionCreator(accounts)
-                .setTransactionStatus(TransactionStatus.PENDING);
+                .setTransactionStatus(TransactionStatus.CREATED);
 
         //check account transaction
         Transactions savedTransaction = this.transactionsRepository.save(entity);
@@ -155,7 +151,7 @@ public class TransactionServicesImpl implements TransactionServices {
         Transactions transactions = this.transactionsRepository.findById(dto.getId())
                 .orElseThrow(() -> new TransactionNotFoundException("The transaction with id: " + dto.getId() + " not found"));
 
-        if (!transactions.getTransactionStatus().equals(TransactionStatus.PENDING)) {
+        if (!transactions.getTransactionStatus().equals(TransactionStatus.CREATED)) {
             throw new RuntimeException("Transaction with id: " + dto.getId() + "is not allowed to modified, because maybe it's not in pending status !!!");
         }
 

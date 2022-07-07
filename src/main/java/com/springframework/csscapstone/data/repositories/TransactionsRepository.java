@@ -40,7 +40,7 @@ public interface TransactionsRepository
             @Param("endDate") LocalDateTime endDate,
             Pageable pageable);
 
-    @Query("SELECT t FROM Transactions t where t.transactionStatus = 'PENDING'")
+    @Query("SELECT t FROM Transactions t where t.transactionStatus = 'CREATED'")
     Page<Transactions> findAllByPendingStatus(Pageable pageable);
 
 }

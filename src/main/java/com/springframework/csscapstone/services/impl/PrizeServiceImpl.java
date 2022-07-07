@@ -2,7 +2,9 @@ package com.springframework.csscapstone.services.impl;
 
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.dao.specifications.PrizeSpecifications;
+import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.Prize;
+import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.data.repositories.PrizeRepository;
 import com.springframework.csscapstone.data.status.PrizeStatus;
 import com.springframework.csscapstone.payload.request_dto.enterprise.PrizeCreatorReqDto;
@@ -11,6 +13,7 @@ import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.PrizeResDto;
 import com.springframework.csscapstone.services.PrizeService;
 import com.springframework.csscapstone.utils.blob_utils.BlobUploadImages;
+import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.prize_exception.PrizeJsonBadException;
 import com.springframework.csscapstone.utils.exception_utils.prize_exception.PrizeNotFoundException;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
@@ -36,24 +39,21 @@ import java.util.stream.Collectors;
 @PropertySource(value = "classpath:application-storage.properties")
 @RequiredArgsConstructor
 public class PrizeServiceImpl implements PrizeService {
-
     private final PrizeRepository prizeRepository;
-
-    private final BlobUploadImages blobUploadImages;
-    @Value("${endpoint}")
-    private String endpoint;
-
-    @Value("${prize_image_container}")
-    private String prizeContainer;
+    private final AccountRepository accountRepository;
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     @Override
-    public PageImplResDto<PrizeResDto> getAll(String name, Integer pageNumber, Integer pageSize) {
+    public PageImplResDto<PrizeResDto> getAll(UUID enterpriseId, String name, Integer pageNumber, Integer pageSize) {
+
+        Account enterprise = this.accountRepository.findById(enterpriseId)
+                .orElseThrow(() -> new EntityNotFoundException("The enterprise with id: " + enterpriseId + " not found"));
 
         Specification<Prize> prizeSpecifications = Specification
-                .where(StringUtils.isEmpty(name) ? null : PrizeSpecifications.containsName(name));
+                .where(StringUtils.isEmpty(name) ? null : PrizeSpecifications.containsName(name))
+                .and(PrizeSpecifications.belongEnterpriseId(enterprise));
 
-        pageNumber = Objects.nonNull(pageNumber) && pageNumber > 1 ? pageSize : 1; //default pagenumber 1
+        pageNumber = Objects.nonNull(pageNumber) && pageNumber > 1 ? pageSize : 1;
         pageSize = Objects.nonNull(pageSize) && pageSize > 1 ? pageSize : 10;
 
         Page<Prize> result = this.prizeRepository.findAll(prizeSpecifications, PageRequest.of(pageNumber - 1, pageSize));
@@ -81,65 +81,25 @@ public class PrizeServiceImpl implements PrizeService {
 
     @Transactional
     @Override
-    public UUID updatePrize(PrizeUpdaterReqDto prizeUpdater, List<MultipartFile> images) {
+    public UUID updatePrize(PrizeUpdaterReqDto prizeUpdater) {
         if (Objects.isNull(prizeUpdater.getId())) throw handlerBadRequestException().get();
         Prize prize = this.prizeRepository.findById(prizeUpdater.getId()).orElseThrow(handlerPrizeNotFound());
 
         prize.setName(prizeUpdater.getName())
-                .setDescription(prizeUpdater.getDescription())
-                .setPrizeStatus(prizeUpdater.getStatus())
                 .setPrice(prizeUpdater.getPrice());
-
-        //TODO update image override images
-//        Prize result = handlerImage(images, prize)
-//                .orElseThrow(() -> new RuntimeException("Some thing went wrong in Image prize!!!"));
-
         return this.prizeRepository.save(prize).getId();
     }
 
     @Transactional
     @Override
-    public UUID createPrize(PrizeCreatorReqDto prizeCreatorReqDto, List<MultipartFile> images) {
+    public UUID createPrize(PrizeCreatorReqDto prizeCreatorReqDto) {
 
         Prize prize = new Prize()
                 .setName(prizeCreatorReqDto.getName())
-                .setDescription(prizeCreatorReqDto.getDescription())
                 .setPrizeStatus(PrizeStatus.ACTIVE)
                 .setPrice(prizeCreatorReqDto.getPrice());
-
-        //TODO image
-//        Prize result = handlerImage(images, prize)
-//                .orElseThrow(() -> new RuntimeException("Some thing went wrong in Image prize!!!"));
-
         return this.prizeRepository.save(prize).getId();
     }
-//
-//    //todo add image to account
-//    private Optional<Prize> handlerImage(List<MultipartFile> images, Prize prize) {
-//        return images.stream()
-//                .filter(Objects::nonNull)
-//                .flatMap(img -> this.processesImage(img, prize.getId())
-//                        .map(Stream::of)
-//                        .orElseGet(Stream::empty)
-//                        .map(prize::addImage))
-//                .findFirst();
-//    }
-
-    //todo save image on azure
-//    private Optional<PrizeImage> processesImage(MultipartFile multipartFile, UUID prizeId) {
-//        String nameImageOnAzure = prizeId + "/";
-//
-//        Map<String, MultipartFile> imageMap = Stream.of(multipartFile)
-//                .collect(Collectors.toMap(
-//                        image -> nameImageOnAzure + image.getOriginalFilename(),
-//                        image -> image));
-//        imageMap.forEach(blobUploadImages::azurePrizeStorageHandler);
-//        return imageMap.keySet()
-//                .stream()
-//                .map(imageName -> new PrizeImage(endpoint + prizeContainer + "/" + imageName))
-//                .peek(this.prizeImageRepository::save)
-//                .findFirst();
-//    }
 
     private Supplier<PrizeNotFoundException> handlerPrizeNotFound() {
         return () -> new PrizeNotFoundException(MessagesUtils.getMessage(MessageConstant.Prize.NOT_FOUND));

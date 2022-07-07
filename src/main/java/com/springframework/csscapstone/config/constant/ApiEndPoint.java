@@ -45,7 +45,8 @@ public class ApiEndPoint {
         public static final String V4_CREATE_PRODUCT = v4_handler + "/new";
         public static final String V4_DELETE_PRODUCT = v4_handler + "/delete";
 
-        public static final String V4_ACTIVE_PRODUCT = v4_handler + "/handler";
+        public static final String V4_ACTIVE_PRODUCT = v4_handler + "/active";
+        public static final String V4_DISABLE_PRODUCT = v4_handler + "/disable";
     }
 
     public static class Account {

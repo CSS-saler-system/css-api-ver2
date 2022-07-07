@@ -4,7 +4,7 @@ public enum OrderStatus {
     //enterprise
     FINISH,
     DISABLE, //delete
-    PENDING,
+    CREATED,
     //collaborator
     CANCEL,
     WAITING//delete
