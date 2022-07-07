@@ -32,9 +32,8 @@ import static org.springframework.http.ResponseEntity.ok;
 @PropertySource(value = "classpath:application-storage.properties")
 @RequiredArgsConstructor
 public class BlobTestController {
-    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
-    private final EmailServices emailServices;
+//    private final EmailServices emailServices;
 
     @Value("${product_image_container}")
     private String productContainer;
@@ -48,13 +47,13 @@ public class BlobTestController {
         String blobName = UUID.randomUUID().toString();
         return ok(blobName);
     }
-
-    @GetMapping("/send-mail")
-    public ResponseEntity<?> sendEmail(
-            @RequestParam("name") String name,
-            @RequestParam("email") String email) {
-        emailServices.sendEmailNotification(new User(name, email));
-        return ok("sending email");
-    }
+//
+//    @GetMapping("/send-mail")
+//    public ResponseEntity<?> sendEmail(
+//            @RequestParam("name") String name,
+//            @RequestParam("email") String email) {
+//        emailServices.sendEmailNotification(new User(name, email));
+//        return ok("sending email");
+//    }
 
 }
