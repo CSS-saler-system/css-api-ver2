@@ -1,11 +1,8 @@
 package com.springframework.csscapstone.services.impl;
 
-import com.springframework.csscapstone.data.domain.User;
 import com.springframework.csscapstone.services.EmailServices;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,9 +10,9 @@ import org.springframework.stereotype.Service;
 public class EmailServicesImpl implements EmailServices {
 //    private final JavaMailSender javaMailSender;
 
-    @Override
-    @SneakyThrows
-    public void sendEmailNotification(User user) {
+//    @Override
+//    @SneakyThrows
+//    public void sendEmailNotification(User user) {
 //        SimpleMailMessage mail = new SimpleMailMessage();
 //
 //        mail.setTo(user.getEmailAddress());
@@ -26,5 +23,5 @@ public class EmailServicesImpl implements EmailServices {
 //                """.formatted(user.getName()));
 //
 //        javaMailSender.send(mail);
-    }
+//    }
 }
