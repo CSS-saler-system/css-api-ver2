@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 public interface ProductService {
 
@@ -51,12 +52,12 @@ public interface ProductService {
             ProductCreatorReqDto dto,
             List<MultipartFile> typeImages,
             List<MultipartFile> certificationImages)
-            throws ProductNotFoundException, ProductInvalidException, AccountNotFoundException, IOException;
+            throws ProductNotFoundException, ProductInvalidException, AccountNotFoundException, IOException, ExecutionException, InterruptedException;
 
     UUID updateProductDto(
             ProductUpdaterReqDto dto,
             List<MultipartFile> normalType,
-            List<MultipartFile> certificationType) throws ProductNotFoundException, ProductInvalidException;
+            List<MultipartFile> certificationType) throws ProductNotFoundException, ProductInvalidException, ExecutionException, InterruptedException;
 
     void changeStatusProduct(UUID id, ProductStatus status);
 

@@ -33,6 +33,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -114,7 +115,7 @@ public class EnterpriseProductController {
             @RequestPart(value = "typeImage") @Valid MultipartFile[] typeImages,
             @RequestPart(value = "certificationImage") @Valid MultipartFile[] certificationImages,
             @RequestPart(value = "product") String dto
-    ) throws ProductInvalidException, AccountNotFoundException, IOException {
+    ) throws ProductInvalidException, AccountNotFoundException, IOException, ExecutionException, InterruptedException {
         List<MultipartFile> types = Stream.of(typeImages).collect(Collectors.toList());
         List<MultipartFile> certifications = Stream.of(certificationImages).collect(Collectors.toList());
         ProductCreatorReqDto productCreatorReqDto = this.productCreatorConvertor.convert(dto);
@@ -124,7 +125,7 @@ public class EnterpriseProductController {
     @PutMapping(value = V2_PRODUCT_UPDATE, consumes = {MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> updateProduct(
             @RequestPart String dto, @RequestPart List<MultipartFile> normalType,
-            @RequestPart List<MultipartFile> certificationType) throws JsonProcessingException {
+            @RequestPart List<MultipartFile> certificationType) throws JsonProcessingException, ExecutionException, InterruptedException {
         ProductUpdaterReqDto object = new ObjectMapper().readValue(dto, ProductUpdaterReqDto.class);
         return ok(this.productService.updateProductDto(object, normalType, certificationType));
     }
