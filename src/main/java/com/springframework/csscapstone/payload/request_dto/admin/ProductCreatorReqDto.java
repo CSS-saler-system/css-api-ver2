@@ -28,9 +28,6 @@ public class ProductCreatorReqDto implements Serializable {
     @NotEmpty(message = "The description must be not empty")
     private final String description;
 
-    @NotNull(message = "The quantity must be not null")
-    private final Long quantity;
-
     @NotNull(message = "The point must be not null")
     private final Double price;
 
@@ -54,7 +51,6 @@ public class ProductCreatorReqDto implements Serializable {
         this.brand = brand;
         this.shortDescription = shortDescription;
         this.description = description;
-        this.quantity = quantity;
         this.price = price;
         this.pointSale = pointSale;
     }
@@ -68,7 +64,6 @@ public class ProductCreatorReqDto implements Serializable {
                 ", brand='" + brand + '\'' +
                 ", shortDescription='" + shortDescription + '\'' +
                 ", description='" + description + '\'' +
-                ", quantity=" + quantity +
                 ", price=" + price +
                 ", pointSale=" + pointSale +
                 '}';

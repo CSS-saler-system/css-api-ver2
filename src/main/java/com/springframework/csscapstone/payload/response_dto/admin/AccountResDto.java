@@ -47,8 +47,8 @@ public class AccountResDto implements Serializable {
             @JsonProperty("point") Double point,
             @JsonProperty("role") RoleBasicDto role,
             @JsonProperty("avatar") AccountImageBasicDto avatar,
-            @JsonProperty("avatar") AccountImageBasicDto licenses,
-            @JsonProperty("avatar") AccountImageBasicDto idCard) {
+            @JsonProperty("licenses") AccountImageBasicDto licenses,
+            @JsonProperty("idCard") AccountImageBasicDto idCard) {
         this.id = id;
         this.name = name;
         this.dob = dob;

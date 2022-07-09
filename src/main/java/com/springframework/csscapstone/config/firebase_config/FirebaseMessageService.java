@@ -31,7 +31,8 @@ public class FirebaseMessageService {
 
     /**
      * todo send message
-     *
+     * noti request for collaborator
+     * complement win campaign for collab
      * @param data
      * @param request
      * @throws JsonProcessingException

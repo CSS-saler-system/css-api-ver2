@@ -56,10 +56,12 @@ public class LoginServiceImpl implements LoginService {
         String email = _user.getEmail();
 
         Optional<Account> accountByEmail = accountRepository.findAccountByEmail(email);
+
         if (accountByEmail.isPresent()) {
             return accountByEmail
-                    .map(account -> new WebUserDetail(account,
-                            this.jwtTokenProvider.generateJwtTokenForCollaborator(
+                    .map(account -> new WebUserDetail(
+                            account, this.jwtTokenProvider
+                            .generateJwtTokenForCollaborator(
                                     account.getRole().getName(),
                                     account.getEmail()))).get();
         }
@@ -88,29 +90,38 @@ public class LoginServiceImpl implements LoginService {
      */
     @Transactional
     @Override
-    public UserDetails collaboratorLoginByFirebaseService(String firebaseToken, String registrationToken) throws FirebaseAuthException {
+    public UserDetails collaboratorLoginByFirebaseService(
+            String firebaseToken, String registrationToken) throws FirebaseAuthException {
         FirebaseToken verifiedToken = firebaseAuth.verifyIdToken(firebaseToken);
         UserRecord _user = FirebaseAuth.getInstance().getUser(verifiedToken.getUid());
         String phone = _user.getPhoneNumber();
 
         Optional<Account> accountByPhoneNumber = accountRepository.findAccountsByPhone(phone);
         if (accountByPhoneNumber.isPresent()) {
-            return accountByPhoneNumber.map(account -> new AppUserDetail(account, this.jwtTokenProvider
-                    .generateJwtTokenForCollaborator(account.getRole().getName(), account.getPhone()))).get();
+
+            Account account = accountByPhoneNumber.get();
+
+            //todo save registration token
+            if (StringUtils.isNotEmpty(registrationToken) || !registrationToken.equals("string")) {
+                AccountToken token = new AccountToken(registrationToken);
+                AccountToken savedToken = this.accountTokenRepository.save(token);
+                account.addRegistration(savedToken);
+            }
+            return accountByPhoneNumber
+                    .map(acc -> new AppUserDetail(acc,
+                            this.jwtTokenProvider.generateJwtTokenForCollaborator(
+                            acc.getRole().getName(), acc.getPhone()))).get();
+
+
         }
 
         Account account = new Account().setPhone(phone).setPoint(0.0);
 
-        //todo save registration token
-        if (StringUtils.isNotEmpty(registrationToken) || !registrationToken.equals("string")) {
-            AccountToken token = new AccountToken(registrationToken);
-            AccountToken savedToken = this.accountTokenRepository.save(token);
-            account.addRegistration(savedToken);
-        }
-
         account.addRole(this.roleRepository.getById("ROLE_3"));
 
         Account savedAccount = accountRepository.save(account);
+
+        //write account onto firebase database
 
         return new AppUserDetail(savedAccount, jwtTokenProvider.generateJwtTokenForCollaborator(
                 savedAccount.getRole().getName(),

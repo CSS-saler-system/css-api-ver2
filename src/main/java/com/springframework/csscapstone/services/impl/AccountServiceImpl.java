@@ -118,7 +118,9 @@ public class AccountServiceImpl implements AccountService {
      * @return
      */
     @Override
-    public PageImplResDto<AccountResDto> getAccountDto(String name, String phone, String email, String address, Integer pageSize, Integer pageNumber) {
+    public PageImplResDto<AccountResDto> getAccountDto(
+            String name, String phone, String email, String address,
+            Integer pageSize, Integer pageNumber) {
 
         Specification<Account> specifications = Specification
                 .where(Objects.nonNull(name) ? AccountSpecifications.nameContains(name) : null)
@@ -221,6 +223,7 @@ public class AccountServiceImpl implements AccountService {
         //create Thread handling this
 
         LOGGER.info("The email {}", account.getEmail());
+        //separate to services
         saveAccountOnFirebase(account.getEmail(), phone);
 
         //save to get

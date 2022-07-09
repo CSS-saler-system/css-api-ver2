@@ -16,7 +16,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @EnableScheduling
 @RequiredArgsConstructor
 public class WebScheduler {
-//    private final ThreadPoolTaskExecutor executor;
     private final CampaignService campaignService;
 
 //    @Scheduled(cron = "*/10 * * * * *") // 0 0 0 * * *
