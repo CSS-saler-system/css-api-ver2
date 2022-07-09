@@ -44,6 +44,7 @@ import javax.security.auth.login.AccountNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -183,7 +184,6 @@ public class ProductServiceImpl implements ProductService {
                 .setDescription(dto.getDescription())
                 .setShortDescription(dto.getShortDescription())
                 .setProductStatus(ProductStatus.ACTIVE)
-//                .setQuantityInStock(dto.getQuantity())
                 .setPointSale(dto.getPointSale())
                 .addAccount(account)
                 .addCategory(category);
@@ -371,7 +371,8 @@ public class ProductServiceImpl implements ProductService {
             Map<String, MultipartFile> imageMap = images.stream()
                     .collect(Collectors.toMap(x -> nameImageOnAzure + x.getOriginalFilename(), x -> x));
 
-            imageMap.forEach(blobUploadImages::azureProductStorageHandler);
+            imageMap.forEach((key, value) ->
+                    CompletableFuture.runAsync(() -> blobUploadImages.azureProductStorageHandler(key, value)));
 
             ProductImage[] productImages = imageMap.keySet()
                     .stream()
