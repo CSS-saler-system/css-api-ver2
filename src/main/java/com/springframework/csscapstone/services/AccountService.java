@@ -29,7 +29,7 @@ public interface AccountService {
     AccountResDto getById(UUID id) throws AccountInvalidException, AccountNotFoundException;
 
     //todo for admin and moderator role create enterprise
-    UUID createAccount(
+    UUID createEnterpriseAccount(
             AccountCreatorReqDto dto,
             MultipartFile avatar,
             MultipartFile license,

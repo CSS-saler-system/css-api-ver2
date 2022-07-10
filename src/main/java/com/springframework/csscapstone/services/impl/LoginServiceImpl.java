@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,28 +59,33 @@ public class LoginServiceImpl implements LoginService {
         Optional<Account> accountByEmail = accountRepository.findAccountByEmail(email);
 
         if (accountByEmail.isPresent()) {
+
+            Account account = accountByEmail.get();
+
+            //todo save registration token
+            if (StringUtils.isNotEmpty(registrationToken) || !registrationToken.equals("string")) {
+                AccountToken token = new AccountToken(registrationToken);
+                AccountToken savedToken = this.accountTokenRepository.save(token);
+                account.addRegistration(savedToken);
+            }
+
             return accountByEmail
-                    .map(account -> new WebUserDetail(
-                            account, this.jwtTokenProvider
+                    .map(acc -> new WebUserDetail(acc, this.jwtTokenProvider
                             .generateJwtTokenForCollaborator(
-                                    account.getRole().getName(),
-                                    account.getEmail()))).get();
-        }
-        Account account = new Account().setEmail(email).setPoint(0.0);
-
-        //todo save registration token
-        if (StringUtils.isNotEmpty(registrationToken) || !registrationToken.equals("string")) {
-            AccountToken token = new AccountToken(registrationToken);
-            AccountToken savedToken = this.accountTokenRepository.save(token);
-            account.addRegistration(savedToken);
+                                    acc.getRole().getName(),
+                                    acc.getEmail()))).get();
         }
 
-        Account savedAccount = accountRepository.save(account
-                .addRole(this.roleRepository.getById("ROLE_2")));
+//        Account account = new Account().setEmail(email).setPoint(0.0);
+//
+//        Account savedAccount = accountRepository.save(account
+//                .addRole(this.roleRepository.getById("ROLE_2")));
+//
+//        return new WebUserDetail(savedAccount, this.jwtTokenProvider.generateJwtTokenForCollaborator(
+//                account.getRole().getName(),
+//                account.getEmail()));
 
-        return new WebUserDetail(savedAccount, this.jwtTokenProvider.generateJwtTokenForCollaborator(
-                account.getRole().getName(),
-                account.getEmail()));
+        throw new BadCredentialsException("email or password was wrong");
     }
 
     /**
@@ -92,6 +98,7 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public UserDetails collaboratorLoginByFirebaseService(
             String firebaseToken, String registrationToken) throws FirebaseAuthException {
+
         FirebaseToken verifiedToken = firebaseAuth.verifyIdToken(firebaseToken);
         UserRecord _user = FirebaseAuth.getInstance().getUser(verifiedToken.getUid());
         String phone = _user.getPhoneNumber();
@@ -107,6 +114,7 @@ public class LoginServiceImpl implements LoginService {
                 AccountToken savedToken = this.accountTokenRepository.save(token);
                 account.addRegistration(savedToken);
             }
+
             return accountByPhoneNumber
                     .map(acc -> new AppUserDetail(acc,
                             this.jwtTokenProvider.generateJwtTokenForCollaborator(

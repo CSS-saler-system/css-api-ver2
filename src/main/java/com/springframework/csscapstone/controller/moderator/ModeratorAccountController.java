@@ -73,8 +73,8 @@ public class ModeratorAccountController {
             System.out.println(accountCreatorReqDto.getPhone());
             throw new RuntimeException("The phone was not follow format, length 10");
         }
-
-        UUID account = accountService.createAccount(accountCreatorReqDto, avatars, licenses, idCards);
+        //create enterprise
+        UUID account = accountService.createEnterpriseAccount(accountCreatorReqDto, avatars, licenses, idCards);
         return ok(account);
     }
 

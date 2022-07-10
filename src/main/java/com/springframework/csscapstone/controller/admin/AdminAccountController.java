@@ -82,7 +82,7 @@ public class AdminAccountController {
             @RequestPart(value = "idCard", required = false) MultipartFile idCards)
             throws AccountExistException, AccountNotFoundException, JsonProcessingException, FirebaseAuthException {
         AccountCreatorReqDto accountCreatorReqDto = new ObjectMapper().readValue(dto, AccountCreatorReqDto.class);
-        UUID account = service.createAccount(accountCreatorReqDto, avatars, licenses, idCards);
+        UUID account = service.createEnterpriseAccount(accountCreatorReqDto, avatars, licenses, idCards);
         return ok(account);
     }
 

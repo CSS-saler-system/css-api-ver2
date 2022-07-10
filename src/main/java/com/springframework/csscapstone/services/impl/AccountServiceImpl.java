@@ -1,11 +1,9 @@
 package com.springframework.csscapstone.services.impl;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.UserRecord;
 import com.springframework.csscapstone.config.constant.MessageConstant;
+import com.springframework.csscapstone.config.firebase_config.FirebaseAuthService;
 import com.springframework.csscapstone.data.dao.specifications.AccountSpecifications;
-import com.springframework.csscapstone.data.dao.specifications.RoleSpecification;
 import com.springframework.csscapstone.data.domain.*;
 import com.springframework.csscapstone.data.repositories.*;
 import com.springframework.csscapstone.data.status.AccountImageType;
@@ -47,13 +45,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.Tuple;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
+import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.springframework.csscapstone.config.constant.RegexConstant.ROLE_REGEX;
 import static com.springframework.csscapstone.data.status.AccountImageType.*;
 import static java.util.stream.Collectors.toList;
 
@@ -61,6 +56,11 @@ import static java.util.stream.Collectors.toList;
 @PropertySource(value = "classpath:application-storage.properties")
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
+    public static final int DEFAULT_PAGE_NUMBER = 1;
+    public static final int DEFAULT_PAGE_SIZE = 10;
+    public static final int SHIFT_TO_ACTUAL_PAGE = 1;
+
+    public static final double DEFAULT_POINT = 0.0;
     private final PasswordEncoder passwordEncoder;
     private final AccountRepository accountRepository;
     private final RoleRepository roleRepository;
@@ -72,7 +72,7 @@ public class AccountServiceImpl implements AccountService {
 
     private final CategoryRepository categoryRepository;
 
-    private final FirebaseAuth firebaseAuth;
+    private final FirebaseAuthService firebaseAuthService;
 
     private final Logger LOGGER = LoggerFactory.getLogger(CategoryServiceImpl.class);
 
@@ -84,16 +84,27 @@ public class AccountServiceImpl implements AccountService {
     @Value("${account_image_container}")
     private String accountContainer;
 
+    private final Predicate<Account> isCollaborator = acc -> acc.getRole().getName().equals("Collaborator");
+
+    private final Function<UUID, Supplier<EntityNotFoundException>> entityNotFoundExceptionFunction =
+            (id) -> () -> new EntityNotFoundException("The collaborator with id: " + id + " was not found");
+
+    private final Consumer<Account> duplicateEmailExceptionConsumer = acc -> {
+        throw new RuntimeException("Duplication Email!!!");
+    };
+
+    private final Supplier<Role> getDefaultRoleSupplier = () -> new Role("ROLE_3", "Collaborator");
+
     @Override
     public Optional<CollaboratorWithQuantitySoldByCategoryDto> getCollaboratorWithPerformance(UUID uuid) {
-        //check existed account:
+
         Account collaborator = this.accountRepository
                 .findById(uuid)
-                .filter(acc -> acc.getRole().getName().equals("Collaborator"))
-                .orElseThrow(() -> new EntityNotFoundException("The collaborator with id: " + uuid + " was not found"));
+                .filter(isCollaborator)
+                .orElseThrow(entityNotFoundExceptionFunction.apply(uuid));
 
         Map<String, Long> performance = this.orderRepository
-                .getCollaboratorWithPerformanceWithId(uuid)
+                .getCollaboratorWithPerformanceById(uuid)
                 .stream()
                 .collect(Collectors.toMap(
                         tuple -> this.categoryRepository
@@ -127,17 +138,20 @@ public class AccountServiceImpl implements AccountService {
                 .and(StringUtils.isNotBlank(phone) ? AccountSpecifications.phoneEquals(phone) : null)
                 .and(StringUtils.isNotBlank(email) ? AccountSpecifications.emailEquals(email) : null);
 
-        pageNumber = Objects.nonNull(pageNumber) && (pageNumber >= 1) ? pageNumber : 1;
-        pageSize = Objects.nonNull(pageSize) && (pageSize >= 1) ? pageSize : 10;
+
+        pageNumber = Objects.nonNull(pageNumber) && (pageNumber >= DEFAULT_PAGE_NUMBER) ? pageNumber : DEFAULT_PAGE_NUMBER;
+        pageSize = Objects.nonNull(pageSize) && (pageSize >= DEFAULT_PAGE_SIZE) ? pageSize : DEFAULT_PAGE_SIZE;
+
 
         Page<Account> page = this.accountRepository.findAll(specifications,
-                PageRequest.of(pageNumber - 1, pageSize));
+                PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize));
 
         List<AccountResDto> data = page.stream()
                 .map(MapperDTO.INSTANCE::toAccountResDto)
                 .collect(toList());
 
-        return new PageImplResDto<>(data, page.getNumber() + 1, data.size(),
+        return new PageImplResDto<>(
+                data, page.getNumber() + SHIFT_TO_ACTUAL_PAGE, data.size(),
                 page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
     }
 
@@ -155,23 +169,6 @@ public class AccountServiceImpl implements AccountService {
         return MapperDTO.INSTANCE.toAccountResDto(result);
     }
 
-    //    @Async
-    private void saveAccountOnFirebase(String email, String phone) throws FirebaseAuthException {
-        //check email or phone is null:
-        if (StringUtils.isNotEmpty(email) && StringUtils.isNotEmpty(phone)) {
-            this.accountRepository.findAccountByPhone(phone)
-                    .ifPresent(acc -> {
-                        throw new RuntimeException("Phone was duplicate");
-                    });
-            UserRecord.CreateRequest createRequest = new UserRecord.CreateRequest()
-                    .setEmail(email)
-                    .setPhoneNumber(phone)
-                    .setEmailVerified(true);
-            FirebaseAuth.getInstance().createUser(createRequest);
-            return;
-        }
-        throw new RuntimeException("Phone or Email must not be null");
-    }
 
     /**
      * TODO <BR>
@@ -185,29 +182,25 @@ public class AccountServiceImpl implements AccountService {
      */
     @Transactional
     @Override
-    public UUID createAccount(
+    public UUID createEnterpriseAccount(
             AccountCreatorReqDto dto, MultipartFile avatar,
             MultipartFile licenses, MultipartFile idCards)
             throws AccountExistException, FirebaseAuthException {
 
-        String phone = "";
-
-        //check email existed
-        this.accountRepository.findAccountByEmail(dto.getEmail())
-                .ifPresent(acc -> {
-                    throw new RuntimeException("Duplication Email!!!");
-                });
-
-        //TODO check ROlE null <BUG>
-        Specification<Role> where = Specification.where(RoleSpecification.equalNames(
-                StringUtils.isEmpty(dto.getRole()) || !dto.getRole().matches(ROLE_REGEX) ? "Enterprise" : dto.getRole()));
-
-        Role role = roleRepository.findOne(where).get();
-
-        //set phone number follow pattern +23453
-        if (StringUtils.isNotEmpty(dto.getPhone())) {
-            phone = "+84" + StringUtils.substring(dto.getPhone(), 1);
+        if (Objects.isNull(dto.getEmail()) || Objects.isNull(dto.getPhone())) {
+            throw new RuntimeException("The email or phone was null!!!");
         }
+        //check email existed
+        this.accountRepository
+                .findAccountByEmail(dto.getEmail())
+                .ifPresent(duplicateEmailExceptionConsumer);
+
+        Role role = roleRepository
+                .findByName(dto.getName())
+                .orElseGet(getDefaultRoleSupplier);
+
+        String phone = getFormatPhone(dto);
+
 
         Account account = new Account()
                 .setName(dto.getName()).setAddress(dto.getAddress())
@@ -216,23 +209,28 @@ public class AccountServiceImpl implements AccountService {
                 .setEmail(dto.getEmail())
                 .setPassword(passwordEncoder.encode(dto.getPassword()))
                 .setDescription(dto.getDescription())
-                .setPoint(0.0)
-                .setGender(dto.getGender()).setRole(role);
+                .setPoint(DEFAULT_POINT)
+                .setGender(dto.getGender())
+                .setRole(role);
 
-        //save on firebase
-        //create Thread handling this
-
-        LOGGER.info("The email {}", account.getEmail());
         //separate to services
-        saveAccountOnFirebase(account.getEmail(), phone);
+        firebaseAuthService.saveAccountOnFirebase(account.getEmail(), phone);
 
         //save to get
         Account saved = accountRepository.save(account);
-        LOGGER.info("This is phone {}", phone);
 
         //create Thread handling
         Account _account = imageHandler(avatar, licenses, idCards, saved);
         return this.accountRepository.save(_account).getId();
+    }
+
+    private String getFormatPhone(AccountCreatorReqDto dto) {
+        String phone = "";
+        //set phone number follow pattern +23453
+        if (StringUtils.isNotEmpty(dto.getPhone())) {
+            phone = "+84" + StringUtils.substring(dto.getPhone(), 1);
+        }
+        return phone;
     }
 
     //todo mapping to account

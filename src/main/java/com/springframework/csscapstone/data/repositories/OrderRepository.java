@@ -91,7 +91,7 @@ public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecific
             "JOIN p.category c " +
             "WHERE o.account.id = :collaboratorId " +
             "GROUP BY c.id")
-    List<Tuple> getCollaboratorWithPerformanceWithId(UUID collaboratorId);
+    List<Tuple> getCollaboratorWithPerformanceById(UUID collaboratorId);
 
 
     @Query(value = "SELECT o FROM Order  o " +
