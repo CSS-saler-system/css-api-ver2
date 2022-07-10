@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static com.springframework.csscapstone.config.constant.ApiEndPoint.Account.*;
@@ -69,7 +68,7 @@ public class EnterpriseCollaboratorsController {
     public ResponseEntity<?> listAllCollaboratorAfterCampaign(
             @PathVariable("campaignId") UUID campaignId
     ) {
-        List<CollaboratorResDto> result = accountService.collaboratorMappingCampaign(campaignId);
+        List<CollaboratorResDto> result = accountService.awardCollaboratorByCampaign(campaignId);
         return ok(result);
     }
 }

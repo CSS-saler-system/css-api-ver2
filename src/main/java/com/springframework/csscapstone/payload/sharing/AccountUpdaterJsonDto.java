@@ -22,6 +22,8 @@ public class AccountUpdaterJsonDto {
     @NotEmpty(message = "The phone must not be empty")
     private final String name;
 
+    private final String phone;
+
     @NotNull(message = "The id must not be empty")
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
@@ -53,6 +55,7 @@ public class AccountUpdaterJsonDto {
         this.dob = dob;
         this.email = email;
         this.address = address;
+        this.phone = phone;
         this.description = description;
         this.gender = gender;
     }

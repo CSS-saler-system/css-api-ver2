@@ -247,7 +247,7 @@ public class CampaignServiceImpl implements CampaignService {
             Map<UUID, Long> _tmp = this.orderRepository
                     .getCollaboratorAndTotalQuantitySold(productId).stream()
                     .collect(Collectors.toMap(
-                            tuple -> tuple.get(OrderRepository.COLL_ID, UUID.class),
+                            tuple -> tuple.get(OrderRepository.COLLABORATOR_IDS, UUID.class),
                             tuple -> tuple.get(OrderRepository.TOTAL_QUANTITY, Long.class)));
             _tmp.forEach((key, value) -> collaborator.compute(key, (k, v) -> Objects.isNull(v) ? value : v + value));
         }

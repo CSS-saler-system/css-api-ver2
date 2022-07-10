@@ -5,6 +5,7 @@ import com.springframework.csscapstone.payload.basic.AccountImageBasicDto;
 import com.springframework.csscapstone.payload.basic.CategoryBasicDto;
 import com.springframework.csscapstone.payload.basic.ProductImageBasicDto;
 import com.springframework.csscapstone.payload.basic.RoleBasicDto;
+import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorReqDto;
 import com.springframework.csscapstone.payload.response_dto.AccountTokenDto;
 import com.springframework.csscapstone.payload.response_dto.admin.AccountResDto;
 import com.springframework.csscapstone.payload.response_dto.admin.CategoryResDto;
@@ -12,12 +13,13 @@ import com.springframework.csscapstone.payload.response_dto.collaborator.Custome
 import com.springframework.csscapstone.payload.response_dto.collaborator.EnterpriseResDto;
 import com.springframework.csscapstone.payload.response_dto.collaborator.OrderDetailResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.*;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import com.springframework.csscapstone.services.impl.AccountServiceImpl;
+import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = "spring")
 public interface MapperDTO {
+
     MapperDTO INSTANCE = Mappers.getMapper(MapperDTO.class);
 
     //========================= Image ============================
@@ -31,10 +33,6 @@ public interface MapperDTO {
     RoleBasicDto toRoleResDto(Role entity);
 
     //========================= End Role ========================
-    @Mapping(target = "avatar", source = "avatar")
-    @Mapping(target = "licenses", source = "license")
-    @Mapping(target = "idCard", source = "idCard")
-    AccountResDto toAccountResDto(Account entity);
 
     @Mapping(target = "campaignId", source = "id")
     CampaignResDto toCampaignResDto(Campaign entity);
@@ -44,6 +42,7 @@ public interface MapperDTO {
     OrderResDto toOrderResDto(Order entity);
 
     PrizeResDto toPrizeDto(Prize entity);
+
     PrizeResDto toPrizeResDto(Prize entity);
 
     OrderDetailResDto toOrderDetailResDto(OrderDetail entity);
@@ -75,7 +74,7 @@ public interface MapperDTO {
 
     AccountTokenDto toAccountTokenDto(AccountToken accountToken);
 
-//    @Mapping(target = "percentSoldByCategory.key.categoryId", source = "entity.percentSoldByCategory.Category.id")
+    //    @Mapping(target = "percentSoldByCategory.key.categoryId", source = "entity.percentSoldByCategory.Category.id")
     @Mapping(target = "percentSoldByCategory.key.categoryName", source = "entity.percentSoldByCategory.key")
     @Mapping(target = "percentSoldByCategory.value", source = "percentSoldByCategory.value")
     @Mapping(target = "avatar.id", source = "entity.avatar.id")
@@ -113,5 +112,7 @@ public interface MapperDTO {
 //    @Mapping(target = "prizeInnerCampaignDto.prizeId", source = "entity.prizes.prize.id")
     @Mapping(target = "products", source = "products")
     CampaignDetailDto toCampaignDetailDto(Campaign entity);
+
+
 
 }

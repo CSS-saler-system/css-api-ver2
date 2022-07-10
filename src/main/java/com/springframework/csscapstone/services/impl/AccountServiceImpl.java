@@ -1,6 +1,5 @@
 package com.springframework.csscapstone.services.impl;
 
-import com.google.firebase.auth.FirebaseAuthException;
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.config.firebase_config.FirebaseAuthService;
 import com.springframework.csscapstone.data.dao.specifications.AccountSpecifications;
@@ -8,7 +7,6 @@ import com.springframework.csscapstone.data.domain.*;
 import com.springframework.csscapstone.data.repositories.*;
 import com.springframework.csscapstone.data.status.AccountImageType;
 import com.springframework.csscapstone.data.status.RequestStatus;
-import com.springframework.csscapstone.payload.basic.AccountImageBasicDto;
 import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageEnterpriseResDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
@@ -26,6 +24,7 @@ import com.springframework.csscapstone.utils.exception_utils.account_exception.A
 import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.data_exception.DataTempException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
+import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.AccountMapper;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.CollaboratorResMapperDTO;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
@@ -38,32 +37,40 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.Tuple;
-import java.util.*;
-import java.util.function.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.springframework.csscapstone.data.status.AccountImageType.*;
+import static com.springframework.csscapstone.data.status.AccountImageType.AVATAR;
+import static com.springframework.csscapstone.data.status.AccountImageType.ID_CARD;
+import static com.springframework.csscapstone.data.status.AccountImageType.LICENSE;
 import static java.util.stream.Collectors.toList;
 
 @Service
 @PropertySource(value = "classpath:application-storage.properties")
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
+    private static final String enterpriseRole = "Enterprise";
     public static final int DEFAULT_PAGE_NUMBER = 1;
     public static final int DEFAULT_PAGE_SIZE = 10;
     public static final int SHIFT_TO_ACTUAL_PAGE = 1;
-
-    public static final double DEFAULT_POINT = 0.0;
-    private final PasswordEncoder passwordEncoder;
     private final AccountRepository accountRepository;
-    private final RoleRepository roleRepository;
     private final AccountImageRepository accountImageRepository;
     private final BlobUploadImages blobUploadImages;
     private final OrderRepository orderRepository;
@@ -93,8 +100,37 @@ public class AccountServiceImpl implements AccountService {
         throw new RuntimeException("Duplication Email!!!");
     };
 
-    private final Supplier<Role> getDefaultRoleSupplier = () -> new Role("ROLE_3", "Collaborator");
+    private final Supplier<InvalidCampaignAndProductException> handlerInvalidCampaignAndProduct =
+            () -> new InvalidCampaignAndProductException(MessagesUtils.getMessage(MessageConstant.DATA.PRODUCT_NOT_BELONG_ACCOUNT));
 
+    private final Supplier<CampaignNotFoundException> handlerCampaignNotFoundException =
+            () -> new CampaignNotFoundException(MessagesUtils.getMessage(MessageConstant.Campaign.NOT_FOUND));
+
+
+    private final Supplier<DataTempException> handlerDataTempException =
+            () -> new DataTempException(MessagesUtils.getMessage(MessageConstant.DATA.INVALID));
+
+
+    private final Supplier<ProductNotFoundException> handlerProductNotFound = () -> new ProductNotFoundException(
+            MessagesUtils.getMessage(MessageConstant.Product.NOT_FOUND));
+    /**
+     * Exception handler
+     */
+    private final Supplier<AccountInvalidException> handlerAccountInvalid =
+            () -> new AccountInvalidException(MessagesUtils.getMessage(MessageConstant.Account.INVALID));
+
+    private final Supplier<EntityNotFoundException> handlerAccountNotFound =
+            () -> new EntityNotFoundException(MessagesUtils.getMessage(MessageConstant.Account.NOT_FOUND));
+
+
+//    private final Supplier<Role> getDefaultRoleSupplier = () -> new Role("ROLE_3", "Collaborator");
+
+    /**
+     * todo Get Collaborator With performance skill selling
+     *
+     * @param uuid
+     * @return
+     */
     @Override
     public Optional<CollaboratorWithQuantitySoldByCategoryDto> getCollaboratorWithPerformance(UUID uuid) {
 
@@ -110,7 +146,7 @@ public class AccountServiceImpl implements AccountService {
                         tuple -> this.categoryRepository
                                 .findById(tuple.get(OrderRepository.CATEGORY, UUID.class))
                                 .map(Category::getCategoryName)
-                                .orElse(""),
+                                .orElse("Other"),
                         tuple -> tuple.get(OrderRepository.QUANTITY_SOLD, Long.class)
                 ));
         Account account = collaborator.setPercentSoldByCategory(performance);
@@ -147,7 +183,7 @@ public class AccountServiceImpl implements AccountService {
                 PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize));
 
         List<AccountResDto> data = page.stream()
-                .map(MapperDTO.INSTANCE::toAccountResDto)
+                .map(AccountMapper.INSTANCE::toAccountResDto)
                 .collect(toList());
 
         return new PageImplResDto<>(
@@ -165,8 +201,10 @@ public class AccountServiceImpl implements AccountService {
      */
     @Override
     public AccountResDto getById(UUID id) throws AccountInvalidException {
-        Account result = accountRepository.findById(id).orElseThrow(handlerAccountNotFound());
-        return MapperDTO.INSTANCE.toAccountResDto(result);
+        return accountRepository
+                .findById(id)
+                .map(AccountMapper.INSTANCE::toAccountResDto)
+                .orElseThrow(handlerAccountNotFound);
     }
 
 
@@ -176,138 +214,228 @@ public class AccountServiceImpl implements AccountService {
      *     Upload information into firebase
      *     Upload Image into Azure Storage
      *
-     * @param dto
+     * @param reqDto
      * @return
      * @throws AccountExistException
      */
     @Transactional
     @Override
     public UUID createEnterpriseAccount(
-            AccountCreatorReqDto dto, MultipartFile avatar,
+            AccountCreatorReqDto reqDto, MultipartFile avatar,
             MultipartFile licenses, MultipartFile idCards)
-            throws AccountExistException, FirebaseAuthException {
+            throws AccountExistException {
 
-        if (Objects.isNull(dto.getEmail()) || Objects.isNull(dto.getPhone())) {
+        if (Objects.isNull(reqDto.getEmail()) || Objects.isNull(reqDto.getPhone())) {
             throw new RuntimeException("The email or phone was null!!!");
         }
-        //check email existed
+
         this.accountRepository
-                .findAccountByEmail(dto.getEmail())
+                .findAccountByEmail(reqDto.getEmail())
                 .ifPresent(duplicateEmailExceptionConsumer);
 
-        Role role = roleRepository
-                .findByName(dto.getName())
-                .orElseGet(getDefaultRoleSupplier);
+        Account account = AccountMapper.INSTANCE.accountReqDtoToAccount(reqDto);
 
-        String phone = getFormatPhone(dto);
-
-
-        Account account = new Account()
-                .setName(dto.getName()).setAddress(dto.getAddress())
-                .setDob(dto.getDayOfBirth())
-                .setPhone(phone)
-                .setEmail(dto.getEmail())
-                .setPassword(passwordEncoder.encode(dto.getPassword()))
-                .setDescription(dto.getDescription())
-                .setPoint(DEFAULT_POINT)
-                .setGender(dto.getGender())
-                .setRole(role);
-
-        //separate to services
+        String phone = formatPhone(reqDto);
         firebaseAuthService.saveAccountOnFirebase(account.getEmail(), phone);
-
-        //save to get
+//
         Account saved = accountRepository.save(account);
+//
+        Account completedAccount = accountSaveImages(avatar, licenses, idCards, saved);
 
-        //create Thread handling
-        Account _account = imageHandler(avatar, licenses, idCards, saved);
-        return this.accountRepository.save(_account).getId();
-    }
-
-    private String getFormatPhone(AccountCreatorReqDto dto) {
-        String phone = "";
-        //set phone number follow pattern +23453
-        if (StringUtils.isNotEmpty(dto.getPhone())) {
-            phone = "+84" + StringUtils.substring(dto.getPhone(), 1);
-        }
-        return phone;
-    }
-
-    //todo mapping to account
-    private Account imageHandler(MultipartFile avatar, MultipartFile licenses, MultipartFile idCards, Account account) {
-        if (Objects.nonNull(avatar)) {
-            saveAccountImageEntity(avatar, account.getId(), AccountImageType.AVATAR)
-                    .ifPresent(account::addImage);
-        }
-        if (Objects.nonNull(licenses)) {
-            saveAccountImageEntity(idCards, account.getId(), AccountImageType.ID_CARD)
-                    .ifPresent(account::addImage);
-        }
-        if (Objects.nonNull(idCards)) {
-            saveAccountImageEntity(licenses, account.getId(), AccountImageType.LICENSE)
-                    .ifPresent(account::addImage);
-        }
-
-        return account;
-    }
-
-    /**
-     * //todo Create save Account-Image
-     *
-     * @param images
-     * @return
-     */
-    private Optional<AccountImage> saveAccountImageEntity(MultipartFile images, UUID id, AccountImageType type) {
-
-        String nameImageOnAzure = id + "/";
-
-        //Map<name, multiple-file>
-        Map<String, MultipartFile> imageMap = Stream.of(images)
-                .collect(Collectors.toMap(
-                        x -> nameImageOnAzure + x.getOriginalFilename(),
-                        x -> x));
-
-        //upload to Azure:
-        imageMap.forEach(blobUploadImages::azureAccountStorageHandler);
-
-        //Create save Account-Image
-        return imageMap.keySet().stream()
-                .map(imageName -> new AccountImage(type, endpoint + accountContainer + "/" + imageName))
-                .peek(this.accountImageRepository::save)
-                .findFirst();
+        return this.accountRepository.save(completedAccount).getId();
     }
 
     /**
      * TODO Update Account for Collaborator
      *
-     * @param dto
+     * @param reqUpdateDto
      * @return
      * @throws AccountInvalidException
      */
     @Transactional
     @Override
-    public UUID updateAccount(AccountUpdaterJsonDto dto,
+    public UUID updateAccount(AccountUpdaterJsonDto reqUpdateDto,
                               MultipartFile avatars,
                               MultipartFile licenses,
-                              MultipartFile idCards)
-            throws AccountInvalidException {
-        //check exist entity
-        Account entity = accountRepository.findById(dto.getId())
-                .orElseThrow(handlerAccountInvalid());
+                              MultipartFile idCards) throws AccountInvalidException {
 
-        //update entity
-        entity.setName(dto.getName())
-                .setEmail(dto.getEmail())
-                .setDob(dto.getDob())
-                .setAddress(dto.getAddress())
-                .setDescription(dto.getDescription())
-                .setGender(dto.getGender());
+        //check exist entity
+        Account entity = accountRepository.findById(reqUpdateDto.getId()).orElseThrow(handlerAccountInvalid);
+
+        AccountMapper.INSTANCE.updateAccountFromAccountUpdaterJsonDto(reqUpdateDto, entity);
 
         //override image in database
         Account account = imageUpdateHandler(avatars, licenses, idCards, entity);
 
         this.accountRepository.save(account);
         return entity.getId();
+    }
+
+    /**
+     * todo for admin disable account
+     *
+     * @param id
+     */
+    @Transactional
+    @Override
+    public void disableAccount(UUID id) {
+        accountRepository.findById(id).ifPresent(x -> {
+            x.setIsActive(false);
+            accountRepository.save(x);
+        });
+    }
+
+    //todo for collaborator
+    @Override
+    public PageEnterpriseResDto getAllHavingEnterpriseRole(Integer pageNumber, Integer pageSize) {
+        pageNumber = Objects.isNull(pageNumber) || pageNumber <= DEFAULT_PAGE_NUMBER ? DEFAULT_PAGE_NUMBER : pageNumber;
+        pageSize = Objects.isNull(pageSize) || pageSize <= DEFAULT_PAGE_SIZE ? DEFAULT_PAGE_SIZE : pageSize;
+
+
+        Page<Account> page = this.accountRepository
+                .findAccountByRole(enterpriseRole, PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize));
+
+        List<EnterpriseResDto> data = page.getContent().stream()
+                .map(MapperDTO.INSTANCE::toEnterpriseResDto).collect(toList());
+
+        return new PageEnterpriseResDto(
+                data, page.getNumber() + SHIFT_TO_ACTUAL_PAGE, page.getSize(),
+                page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
+    }
+
+    /**
+     * TODO Changing BUG
+     * TODO Get Collaborator by join Request and Account
+     *
+     * @param idEnterprise
+     * @return
+     */
+    @Override
+    public PageImplResDto<AccountResDto> getAllCollaboratorsOfEnterprise(
+            UUID idEnterprise, Integer pageNumber, Integer pageSize) {
+
+        if (Objects.isNull(idEnterprise)) handlerAccountNotFound.get();
+
+        pageNumber = Objects.isNull(pageNumber) || pageNumber < DEFAULT_PAGE_NUMBER ? DEFAULT_PAGE_NUMBER : pageNumber;
+        pageSize = Objects.isNull(pageSize) || pageSize < DEFAULT_PAGE_SIZE ? DEFAULT_PAGE_SIZE : pageSize;
+
+        //todo convert to Account response Dto
+        Page<Account> page = requestSellingProductRepository
+                .findAllCollaboratorByRequestSellingProduct(
+                        idEnterprise, RequestStatus.REGISTERED,
+                        PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize));
+
+        List<AccountResDto> responseDto = page.getContent()
+                .stream()
+                .map(AccountMapper.INSTANCE::toAccountResDto)
+                .collect(toList());
+
+        return new PageImplResDto<>(
+                responseDto, page.getNumber() + SHIFT_TO_ACTUAL_PAGE,
+                responseDto.size(), page.getTotalElements(),
+                page.getTotalPages(), page.isFirst(), page.isLast());
+    }
+
+    /**
+     * todo get collaborators have order selling product
+     *
+     * @param idEnterprise
+     * @return
+     */
+    @Override
+    public PageImplResDto<CollaboratorResDto> collaboratorsByEnterpriseIncludeNumberOfQuantitySold(
+            UUID idEnterprise, Integer pageNumber, Integer pageSize) {
+
+        if (Objects.isNull(idEnterprise)) handlerAccountNotFound.get();
+
+        pageNumber = Objects.isNull(pageNumber) || pageNumber < DEFAULT_PAGE_NUMBER ? DEFAULT_PAGE_NUMBER : pageNumber;
+        pageSize = Objects.isNull(pageSize) || pageSize < DEFAULT_PAGE_SIZE ? DEFAULT_PAGE_SIZE : pageSize;
+
+        Page<Tuple> collaboratorSortBySellingPage = this.orderRepository
+                .sortedPageCollaboratorByQuantitySelling(
+                        idEnterprise, PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize));
+
+        List<CollaboratorResDto> collaboratorsRes = collaboratorSortBySellingPage.getContent()
+                .stream()
+                .map(tuple -> this.accountRepository
+                        .findById(tuple.get(OrderRepository.COLLABORATOR_IDS, UUID.class))
+                        .map(peek(acc -> acc.setTotalQuantity(tuple.get(OrderRepository.TOTAL_QUANTITY, Long.class))))
+                        .map(CollaboratorResMapperDTO.INSTANCE::toCollaboratorResDto))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .sorted(Comparator.comparing(CollaboratorResDto::getTotalSold).reversed())
+                .collect(toList());
+
+        return new PageImplResDto<>(
+                collaboratorsRes, collaboratorSortBySellingPage.getNumber(), collaboratorsRes.size(),
+                collaboratorSortBySellingPage.getTotalElements(), collaboratorSortBySellingPage.getTotalPages(),
+                collaboratorSortBySellingPage.isFirst(), collaboratorSortBySellingPage.isLast());
+    }
+
+
+    /**
+     * todo list collaborator sort by quantity he sold
+     *
+     * @param campaign
+     * @return
+     */
+    @Override
+    public List<CollaboratorResDto> awardCollaboratorByCampaign(UUID campaign) {
+        Map<UUID, Long> collaboratorProduct = new HashMap<>();
+
+        Campaign campaignEntity = this.campaignRepository
+                .findById(campaign)
+                .orElseThrow(handlerCampaignNotFoundException);
+
+        List<UUID> productIds = Stream.of(campaignEntity)
+                .flatMap(camp -> camp.getProducts().stream())
+                .map(Product::getId)
+                .collect(toList());
+
+        //todo throw product not found if list<UUID> is empty
+        if (productIds.isEmpty()) handlerProductNotFound.get();
+
+        //todo check enterprise is own product
+        boolean checkConstraintProdWithEnterprise = productIds.stream()
+                .map(uuid -> this.productRepository.findById(uuid).orElseThrow(handlerDataTempException))
+                .noneMatch(product -> product.getAccount().getId().equals(campaignEntity.getAccount().getId()));
+
+        if (checkConstraintProdWithEnterprise) handlerInvalidCampaignAndProduct.get();
+
+        //todo main handle: case list uuid not empty
+        for (UUID id : productIds) {
+            Map<UUID, Long> tmp = this.orderRepository.getCollaboratorAndTotalQuantitySold(id)
+                    .stream().collect(Collectors.toMap(
+                            tuple -> tuple.get(OrderRepository.COLLABORATOR_IDS, UUID.class),
+                            tuple -> tuple.get(OrderRepository.TOTAL_QUANTITY, Long.class)));
+            /**
+             * todo check hashmap contains add or increase collaboratorProduct
+             * todo need test
+             */
+            tmp.forEach((key, value) -> collaboratorProduct.compute(key, (k, v) -> v == null ? value : v + value));
+        }
+        return collaboratorProduct
+                .entrySet().stream()
+                .map(entry -> CollaboratorResMapperDTO.INSTANCE
+                        .toCollaboratorResDto(this.accountRepository.findById(entry.getKey())
+                                .map(peek(acc -> acc.setTotalQuantity(entry.getValue())))
+                                .orElse(null)))
+                .sorted(Comparator.comparing(CollaboratorResDto::getTotalSold).reversed())
+                .collect(toList());
+    }
+
+    /**
+     * todo peek method using for Optional java 8
+     *
+     * @param consumer
+     * @param <T>
+     * @return
+     */
+    private <T> UnaryOperator<T> peek(Consumer<T> consumer) {
+        return x -> {
+            consumer.accept(x);
+            return x;
+        };
     }
 
     /**
@@ -341,6 +469,7 @@ public class AccountServiceImpl implements AccountService {
 
     private Optional<AccountImage> updateImage(MultipartFile image, Account entity, AccountImageType type) {
         String imageOriginalPath = entity.getId() + "/";
+
         if (Objects.nonNull(image)) {
             AccountImage accountImage = this.accountImageRepository
                     .findByAccountAndType(entity.getId(), type)
@@ -357,208 +486,60 @@ public class AccountServiceImpl implements AccountService {
             String path = endpoint + accountContainer + "/" + imageOriginalPath + image.getOriginalFilename();
             accountImage.setPath(path).setAccount(entity).setType(type);
 
-            LOGGER.info("path image for update {}", path);
             return Optional.of(accountImage);
         }
         return Optional.empty();
     }
 
-    /**
-     * todo for admin disable account
-     *
-     * @param id
-     */
-    @Transactional
-    @Override
-    public void disableAccount(UUID id) {
-        accountRepository.findById(id).ifPresent(x -> {
-            x.setIsActive(false);
-            accountRepository.save(x);
-        });
-    }
 
-    //todo for collaborator
-    @Override
-    public PageEnterpriseResDto getAllHavingEnterpriseRole(Integer pageNumber, Integer pageSize) {
-        pageNumber = Objects.isNull(pageNumber) || pageNumber <= 1 ? 1 : pageNumber;
-        pageSize = Objects.isNull(pageSize) || pageSize <= 1 ? 1 : pageSize;
-        Page<Account> page = this.accountRepository
-                .findAccountByRole("Enterprise", PageRequest.of(pageNumber - 1, pageSize));
-        List<EnterpriseResDto> data = page.getContent().stream()
-                .map(MapperDTO.INSTANCE::toEnterpriseResDto).collect(toList());
-        return new PageEnterpriseResDto(data, page.getNumber() + 1, page.getSize(), page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
-    }
-
-    /**
-     * TODO Changing BUG
-     * TODO Get Collaborator by join Request and Account
-     *
-     * @param idEnterprise
-     * @return
-     */
-    @Override
-    public PageImplResDto<AccountResDto> getAllCollaboratorsOfEnterprise(
-            UUID idEnterprise, Integer pageNumber, Integer pageSize) {
-
-        if (Objects.isNull(idEnterprise)) throw handlerAccountNotFound().get();
-
-        pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
-        pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 1 : pageSize;
-        //todo get all request selling
-
-        //todo convert to Account response Dto
-        Page<Account> page = requestSellingProductRepository
-                .findAllCollaboratorByRequestSellingProduct(
-                        idEnterprise, RequestStatus.REGISTERED,
-                        PageRequest.of(pageNumber - 1, pageSize));
-
-        List<AccountResDto> responseDto = page.getContent()
-                .stream()
-                .map(MapperDTO.INSTANCE::toAccountResDto)
-                .collect(toList());
-
-        return new PageImplResDto<>(
-                responseDto, page.getNumber() + 1,
-                responseDto.size(), page.getTotalElements(),
-                page.getTotalPages(), page.isFirst(), page.isLast());
-//        return null;
-    }
-
-    /**
-     * todo get collaborators have order selling product
-     *
-     * @param idEnterprise
-     * @return
-     */
-    @Override
-    public PageImplResDto<CollaboratorResDto> collaboratorsByEnterpriseIncludeNumberOfQuantitySold(
-            UUID idEnterprise, Integer pageNumber, Integer pageSize) {
-
-        if (Objects.isNull(idEnterprise)) throw handlerAccountNotFound().get();
-
-        pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
-        pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 1 : pageSize;
-
-        Page<Tuple> page = this.orderRepository
-                .sortedPageCollaboratorByQuantitySelling(idEnterprise, PageRequest.of(pageNumber - 1, pageSize));
-
-        List<CollaboratorResDto> result = page.getContent()
-                .stream()
-                .map(tuple -> this.accountRepository
-                        .findById(tuple.get(OrderRepository.COLL_ID, UUID.class))
-                        .map(peek(acc -> acc.setTotalQuantity(tuple.get(OrderRepository.TOTAL_QUANTITY, Long.class))))
-                        .map(CollaboratorResMapperDTO.INSTANCE::toCollaboratorResDto))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .sorted(Comparator.comparing(CollaboratorResDto::getTotalSold).reversed())
-                .collect(toList());
-
-        return new PageImplResDto<>(
-                result, page.getNumber(), result.size(),
-                page.getTotalElements(), page.getTotalPages(),
-                page.isFirst(), page.isLast());
-    }
-
-
-    /**
-     * todo list collaborator sort by quantity he sold
-     *
-     * @param campaign
-     * @return
-     */
-    @Override
-    public List<CollaboratorResDto> collaboratorMappingCampaign(UUID campaign) {
-        Map<UUID, Long> collaboratorProduct = new HashMap<>();
-
-        Campaign campaignEntity = this.campaignRepository
-                .findById(campaign)
-                .orElseThrow(handlerCampaignNotFoundException());
-
-        List<UUID> productId = Stream.of(campaignEntity)
-                .flatMap(_campaign -> _campaign.getProducts().stream())
-                .map(Product::getId)
-                .collect(toList());
-
-        //todo throw product not found if list<UUID> is empty
-        if (productId.isEmpty()) throw handlerProductNotFound().get();
-
-        //todo check enterprise id is own product
-        boolean checkConstraintAccount = productId.stream()
-                .map(uuid -> this.productRepository.findById(uuid).orElseThrow(handlerDataTempException()))
-                .noneMatch(product -> product.getAccount().getId().equals(campaignEntity.getAccount().getId()));
-
-        if (checkConstraintAccount) throw handlerInvalidCampaignAndProduct().get();
-
-        //todo main handle: case list uuid not empty
-        for (UUID id : productId) {
-            Map<UUID, Long> _tmp = this.orderRepository.getCollaboratorAndTotalQuantitySold(id)
-                    .stream().collect(Collectors.toMap(
-                            tuple -> tuple.get(OrderRepository.COLL_ID, UUID.class),
-                            tuple -> tuple.get(OrderRepository.TOTAL_QUANTITY, Long.class)));
-            /**
-             * todo check hashmap contains add or increase collaboratorProduct
-             * todo need test
-             */
-            _tmp.forEach((key, value) -> collaboratorProduct
-                    .compute(key, (k, v) -> v == null ? value : v + value));
+    private String formatPhone(AccountCreatorReqDto dto) {
+        String phone = "";
+        //set phone number follow pattern +23453
+        if (StringUtils.isNotEmpty(dto.getPhone())) {
+            phone = "+84" + StringUtils.substring(dto.getPhone(), 1);
         }
-        return collaboratorProduct
-                .entrySet().stream()
-                .map(entry -> CollaboratorResMapperDTO.INSTANCE
-                        .toCollaboratorResDto(this.accountRepository.findById(entry.getKey())
-                                .map(peek(acc -> acc.setTotalQuantity(entry.getValue())))
-                                .orElse(null)))
-                .sorted(Comparator.comparing(CollaboratorResDto::getTotalSold).reversed())
-                .collect(toList());
+        return phone;
     }
 
-    private Supplier<InvalidCampaignAndProductException> handlerInvalidCampaignAndProduct() {
-        return () -> new InvalidCampaignAndProductException(MessagesUtils.getMessage(MessageConstant.DATA.PRODUCT_NOT_BELONG_ACCOUNT));
-    }
+    //todo mapping to account
+    private Account accountSaveImages(MultipartFile avatar, MultipartFile licenses, MultipartFile idCards, Account account) {
+        if (Objects.nonNull(avatar)) {
+            saveAccountImageEntity(avatar, account.getId(), AccountImageType.AVATAR)
+                    .ifPresent(account::addImage);
+        }
+        if (Objects.nonNull(licenses)) {
+            saveAccountImageEntity(idCards, account.getId(), AccountImageType.ID_CARD)
+                    .ifPresent(account::addImage);
+        }
+        if (Objects.nonNull(idCards)) {
+            saveAccountImageEntity(licenses, account.getId(), AccountImageType.LICENSE)
+                    .ifPresent(account::addImage);
+        }
 
-    private Supplier<CampaignNotFoundException> handlerCampaignNotFoundException() {
-        return () -> new CampaignNotFoundException(MessagesUtils.getMessage(MessageConstant.Campaign.NOT_FOUND));
-    }
-
-    private Supplier<DataTempException> handlerDataTempException() {
-        return () -> new DataTempException(MessagesUtils.getMessage(MessageConstant.DATA.INVALID));
-    }
-
-    private Supplier<ProductNotFoundException> handlerProductNotFound() {
-        return () -> new ProductNotFoundException(MessagesUtils.getMessage(MessageConstant.Product.NOT_FOUND));
+        return account;
     }
 
     /**
-     * Exception handler
+     * //todo Create save Account-Image
      *
+     * @param images
      * @return
      */
-    private Supplier<AccountInvalidException> handlerAccountInvalid() {
-        return () -> new AccountInvalidException(MessagesUtils.getMessage(MessageConstant.Account.INVALID));
-    }
+    private Optional<AccountImage> saveAccountImageEntity(MultipartFile images, UUID id, AccountImageType type) {
 
-    private Supplier<EntityNotFoundException> handlerAccountNotFound() {
-        return () -> new EntityNotFoundException(MessagesUtils.getMessage(MessageConstant.Account.NOT_FOUND));
-    }
+        String nameImageOnAzure = id + "/";
 
-    /**
-     * todo Consume image of Account
-     *
-     * @param collection
-     * @param type
-     * @return
-     */
-    private Consumer<Account> avatarConsumer(List<AccountImageBasicDto> collection, AccountImageType type) {
-        return x -> collection.addAll(x.getImages().stream()
-                .filter(image -> image.getType().equals(type))
-                .map(MapperDTO.INSTANCE::toAccountImageResDto)
-                .collect(toList()));
-    }
+        //Map<name, multiple-file>
+        Map<String, MultipartFile> imageMap = Stream.of(images)
+                .collect(Collectors.toMap(x -> nameImageOnAzure + x.getOriginalFilename(), x -> x));
 
-    private <T> UnaryOperator<T> peek(Consumer<T> consumer) {
-        return x -> {
-            consumer.accept(x);
-            return x;
-        };
+        //upload to Azure:
+        imageMap.forEach(blobUploadImages::azureAccountStorageHandler);
+
+        //Create save Account-Image
+        return imageMap.keySet().stream()
+                .map(imageName -> new AccountImage(type, endpoint + accountContainer + "/" + imageName))
+                .peek(this.accountImageRepository::save)
+                .findFirst();
     }
 }

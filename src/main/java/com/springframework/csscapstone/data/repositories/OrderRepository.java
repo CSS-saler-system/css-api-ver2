@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.UUID;
 @Transactional(readOnly = true)
 public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecificationExecutor<Order> {
-    String COLL_ID = "col_id";
+    String COLLABORATOR_IDS = "col_id";
     String TOTAL_QUANTITY = "total_quantity";
     String CATEGORY = "tuple_category";
     String QUANTITY_SOLD = "tuple_sold";
@@ -39,7 +39,7 @@ public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecific
      * @return
      */
     @Query(
-            "SELECT col.id as " + COLL_ID + ", " +
+            "SELECT col.id as " + COLLABORATOR_IDS + ", " +
                     "sum(od.quantity) as " + TOTAL_QUANTITY + " " +
                     "FROM Order o " +
                     "JOIN o.account col " +
@@ -54,7 +54,7 @@ public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecific
 
     //todo for mapping: get account then quantity and sort asc
     @Query(
-            "SELECT _collaborator.id as " + COLL_ID + " , " +
+            "SELECT _collaborator.id as " + COLLABORATOR_IDS + " , " +
                     "sum(od.quantity) as " + TOTAL_QUANTITY + " " +
                     "FROM Order o " +
                     "JOIN o.orderDetails od " +

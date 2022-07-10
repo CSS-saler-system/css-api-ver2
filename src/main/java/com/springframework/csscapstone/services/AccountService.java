@@ -51,6 +51,6 @@ public interface AccountService {
     PageImplResDto<CollaboratorResDto> collaboratorsByEnterpriseIncludeNumberOfQuantitySold(
             UUID idEnterprise, Integer pageNumber, Integer pageSize);
 
-    List<CollaboratorResDto> collaboratorMappingCampaign(UUID campaign);
+    List<CollaboratorResDto> awardCollaboratorByCampaign(UUID campaign);
 
 }

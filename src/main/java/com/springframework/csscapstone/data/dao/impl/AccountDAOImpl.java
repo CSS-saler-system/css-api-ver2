@@ -4,6 +4,7 @@ import com.springframework.csscapstone.data.dao.AccountDAO;
 import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.Account_;
 import com.springframework.csscapstone.payload.response_dto.admin.AccountResDto;
+import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.AccountMapper;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import lombok.RequiredArgsConstructor;
 
@@ -35,7 +36,7 @@ public class AccountDAOImpl implements AccountDAO {
                         builder.equal(root.get(Account_.IS_ACTIVE), status)));
 
         return em.createQuery(processQuery)
-                .getResultList().stream().map(MapperDTO.INSTANCE::toAccountResDto)
+                .getResultList().stream().map(AccountMapper.INSTANCE::toAccountResDto)
                 .collect(Collectors.toList());
     }
 }

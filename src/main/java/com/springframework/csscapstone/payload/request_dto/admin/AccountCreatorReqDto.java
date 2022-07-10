@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.springframework.csscapstone.payload.basic.RoleBasicDto;
 import lombok.Data;
 
 import javax.validation.constraints.Email;
@@ -31,9 +32,6 @@ public class AccountCreatorReqDto {
     @Email(message = "Email is not correct format")
     private final String email;
 
-    @NotEmpty(message = "The password must be not empty")
-    private final String password;
-
     @NotEmpty(message = "The address must be not empty")
     private final String address;
 
@@ -44,7 +42,7 @@ public class AccountCreatorReqDto {
     private final Boolean gender;
 
     @NotEmpty(message = "The role must be not empty")
-    private String role;
+    private RoleBasicDto role;
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
 
@@ -53,16 +51,14 @@ public class AccountCreatorReqDto {
             @JsonProperty("dayOfBirth") LocalDate dayOfBirth,
             @JsonProperty("phone") String phone,
             @JsonProperty("email") String email,
-            @JsonProperty("password") String password,
             @JsonProperty("address") String address,
             @JsonProperty("description") String description,
             @JsonProperty("gender") Boolean gender,
-            @JsonProperty("role") String role) {
+            @JsonProperty("role") RoleBasicDto role) {
         this.name = name;
         this.dayOfBirth = dayOfBirth;
         this.phone = phone;
         this.email = email;
-        this.password = password;
         this.address = address;
         this.description = description;
         this.gender = gender;
