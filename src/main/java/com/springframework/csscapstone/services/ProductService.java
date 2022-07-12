@@ -55,6 +55,7 @@ public interface ProductService {
             throws ProductNotFoundException, ProductInvalidException, AccountNotFoundException, IOException, ExecutionException, InterruptedException;
 
     UUID updateProductDto(
+            UUID productId,
             ProductUpdaterReqDto dto,
             List<MultipartFile> normalType,
             List<MultipartFile> certificationType) throws ProductNotFoundException, ProductInvalidException, ExecutionException, InterruptedException;

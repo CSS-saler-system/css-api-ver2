@@ -65,8 +65,6 @@ public class ProductServiceImpl implements ProductService {
     private final AccountRepository accountRepository;
     private final CategoryRepository categoryRepository;
     private final ProductImageRepository imageRepository;
-    @Value("${connection-string}")
-    private String connectionString;
     private final BlobUploadImages blobUploadImages;
 
     private final OrderDetailRepository orderDetailRepository;
@@ -200,13 +198,13 @@ public class ProductServiceImpl implements ProductService {
     //TODO Changing
     @Transactional
     @Override
-    public UUID updateProductDto(ProductUpdaterReqDto dto,
+    public UUID updateProductDto(UUID productId,
+                                 ProductUpdaterReqDto dto,
                                  List<MultipartFile> normalType,
                                  List<MultipartFile> certificationType) throws ProductNotFoundException, ProductInvalidException {
-        if (dto.getId() == null) throw handlerProductInvalidException().get();
 
         Product entity = this.productRepository
-                .findById(dto.getId())
+                .findById(productId)
                 .filter(product -> !product.getProductStatus().equals(ProductStatus.DISABLE))
                 .orElseThrow(handlerProductNotFound());
 
@@ -216,7 +214,6 @@ public class ProductServiceImpl implements ProductService {
                 .setShortDescription(dto.getShortDescription())
                 .setPointSale(dto.getPointSale())
                 .setPrice(dto.getPrice());
-//                .setQuantityInStock(dto.getQuantity());
 
         Product product = imageHandler(normalType, certificationType, entity);
 

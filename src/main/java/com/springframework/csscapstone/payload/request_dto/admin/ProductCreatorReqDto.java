@@ -42,7 +42,6 @@ public class ProductCreatorReqDto implements Serializable {
             @JsonProperty("brand") String brand,
             @JsonProperty("shortDescription") String shortDescription,
             @JsonProperty("description") String description,
-            @JsonProperty("quantity") Long quantity,
             @JsonProperty("price") Double price,
             @JsonProperty("pointSale") Double pointSale
     ) { this.creatorAccountId = creatorAccountId;

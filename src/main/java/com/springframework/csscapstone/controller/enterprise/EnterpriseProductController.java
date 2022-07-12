@@ -122,12 +122,15 @@ public class EnterpriseProductController {
         return ok(this.productService.createProduct(productCreatorReqDto, types, certifications));
     }
 
-    @PutMapping(value = V2_PRODUCT_UPDATE, consumes = {MULTIPART_FORM_DATA_VALUE})
+    @PutMapping(value = V2_PRODUCT_UPDATE + "/{productId}", consumes = {MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> updateProduct(
-            @RequestPart String dto, @RequestPart List<MultipartFile> normalType,
-            @RequestPart List<MultipartFile> certificationType) throws JsonProcessingException, ExecutionException, InterruptedException {
+            @PathVariable("productId") UUID productId,
+            @RequestPart String dto,
+            @RequestPart(required = false) List<MultipartFile> normalType,
+            @RequestPart(required = false) List<MultipartFile> certificationType)
+            throws JsonProcessingException, ExecutionException, InterruptedException {
         ProductUpdaterReqDto object = new ObjectMapper().readValue(dto, ProductUpdaterReqDto.class);
-        return ok(this.productService.updateProductDto(object, normalType, certificationType));
+        return ok(this.productService.updateProductDto(productId, object, normalType, certificationType));
     }
 
     @DeleteMapping(V2_PRODUCT_DELETE + "/{productId}")
