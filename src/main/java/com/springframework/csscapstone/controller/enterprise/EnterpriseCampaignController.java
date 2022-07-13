@@ -77,8 +77,9 @@ public class EnterpriseCampaignController {
     }
 
 
-    @PutMapping(value = V2_CAMPAIGN_UPDATE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value = V2_CAMPAIGN_UPDATE + "/{campaignId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<UUID> updateCampaign(
+            @PathVariable("campaignId") UUID campaignId,
             @RequestPart("campaign") String campaign,
             @RequestPart("images") List<MultipartFile> images)
             throws EntityNotFoundException, JsonProcessingException {
@@ -92,7 +93,7 @@ public class EnterpriseCampaignController {
         if (dto.getStartDate().isAfter(dto.getEndDate()))
             throw new RuntimeException("The start, end date is invalid");
 
-        UUID campaignUUID = campaignService.updateCampaign(dto, images);
+        UUID campaignUUID = campaignService.updateCampaign(campaignId, dto, images);
         return ok(campaignUUID);
     }
 

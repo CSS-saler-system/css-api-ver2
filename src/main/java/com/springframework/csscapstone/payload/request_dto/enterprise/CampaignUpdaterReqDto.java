@@ -16,7 +16,6 @@ import java.util.UUID;
 
 @Data
 public class CampaignUpdaterReqDto {
-    private final UUID id;
     private final String name;
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
@@ -45,7 +44,6 @@ public class CampaignUpdaterReqDto {
     }
 
     public CampaignUpdaterReqDto(
-            @JsonProperty("id") UUID id,
             @JsonProperty("name") String name,
             @JsonProperty("startDate") LocalDateTime startDate,
             @JsonProperty("endDate") LocalDateTime endDate,
@@ -55,7 +53,6 @@ public class CampaignUpdaterReqDto {
             @JsonProperty("account") CampaignCreatorReqDto.AccountDto account,
             @JsonProperty("products") Set<CampaignCreatorReqDto.ProductDto> products,
             @JsonProperty("status") CampaignStatus status) {
-        this.id = id;
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;

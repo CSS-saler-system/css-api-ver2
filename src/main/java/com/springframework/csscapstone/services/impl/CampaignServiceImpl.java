@@ -164,9 +164,9 @@ public class CampaignServiceImpl implements CampaignService {
 
     @Transactional
     @Override
-    public UUID updateCampaign(CampaignUpdaterReqDto dto, List<MultipartFile> images) throws EntityNotFoundException {
+    public UUID updateCampaign(UUID campaignId, CampaignUpdaterReqDto dto, List<MultipartFile> images) throws EntityNotFoundException {
 
-        Campaign entity = this.campaignRepository.findById(dto.getId())
+        Campaign entity = this.campaignRepository.findById(campaignId)
                 .filter(camp -> camp.getCampaignStatus().equals(CampaignStatus.CREATED))
                 .orElseThrow(campaignNotFoundException());
 
