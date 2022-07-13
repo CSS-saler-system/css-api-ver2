@@ -81,7 +81,7 @@ public class EnterpriseCampaignController {
     public ResponseEntity<UUID> updateCampaign(
             @PathVariable("campaignId") UUID campaignId,
             @RequestPart("campaign") String campaign,
-            @RequestPart("images") List<MultipartFile> images)
+            @RequestPart(value = "images", required = false) List<MultipartFile> images)
             throws EntityNotFoundException, JsonProcessingException {
         CampaignUpdaterReqDto dto = objectMapper
                 .readValue(campaign, CampaignUpdaterReqDto.class);

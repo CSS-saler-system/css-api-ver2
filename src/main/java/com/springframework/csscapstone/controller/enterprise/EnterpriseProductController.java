@@ -122,7 +122,9 @@ public class EnterpriseProductController {
         return ok(this.productService.createProduct(productCreatorReqDto, types, certifications));
     }
 
-    @PutMapping(value = V2_PRODUCT_UPDATE + "/{productId}", consumes = {MULTIPART_FORM_DATA_VALUE})
+    @PutMapping(
+            value = V2_PRODUCT_UPDATE + "/{productId}",
+            consumes = {MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> updateProduct(
             @PathVariable("productId") UUID productId,
             @RequestPart String dto,

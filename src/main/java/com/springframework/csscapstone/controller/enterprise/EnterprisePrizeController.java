@@ -56,7 +56,9 @@ public class EnterprisePrizeController {
         return ok(prize);
     }
 
-    @PutMapping(value = V2_PRIZE_UPDATE + "/{prizeId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(
+            value = V2_PRIZE_UPDATE + "/{prizeId}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updatePrize(
             @PathVariable("prizeId") UUID prizeId,
             @RequestParam("prizeName") String prizeName,

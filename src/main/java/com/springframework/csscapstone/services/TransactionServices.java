@@ -23,7 +23,7 @@ public interface TransactionServices {
 
     UUID createTransaction(TransactionsCreatorReqDto dto, List<MultipartFile> images);
 
-    UUID updateTransaction(TransactionsUpdateReqDto dto, List<MultipartFile> images);
+    UUID updateTransaction(UUID transactionId, TransactionsUpdateReqDto dto, List<MultipartFile> images);
 
     UUID acceptedTransaction(TransactionHandler handler);
 

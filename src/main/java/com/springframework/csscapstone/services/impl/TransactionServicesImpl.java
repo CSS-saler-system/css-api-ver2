@@ -146,17 +146,17 @@ public class TransactionServicesImpl implements TransactionServices {
     //todo enterprise update transaction
     @Transactional
     @Override
-    public UUID updateTransaction(TransactionsUpdateReqDto dto, List<MultipartFile> images) {
+    public UUID updateTransaction(UUID transactionId, TransactionsUpdateReqDto dto, List<MultipartFile> images) {
 
-        Transactions transactions = this.transactionsRepository.findById(dto.getId())
-                .orElseThrow(() -> new TransactionNotFoundException("The transaction with id: " + dto.getId() + " not found"));
+        Transactions transactions = this.transactionsRepository.findById(transactionId)
+                .orElseThrow(() -> new TransactionNotFoundException("The transaction with id: " + transactionId + " not found"));
 
         if (!transactions.getTransactionStatus().equals(TransactionStatus.CREATED)) {
-            throw new RuntimeException("Transaction with id: " + dto.getId() + "is not allowed to modified, because maybe it's not in pending status !!!");
+            throw new RuntimeException("Transaction with id: " + transactionId + "is not allowed to modified, because maybe it's not in pending status !!!");
         }
 
         Account account = this.accountRepository.findById(dto.getCreator().getId())
-                .orElseThrow(() -> new EntityNotFoundException("The creator with: " + dto.getId() + " was not found"));
+                .orElseThrow(() -> new EntityNotFoundException("The creator with: " + transactionId + " was not found"));
 
         if (!transactions.getTransactionCreator().equals(account)) {
             throw new RuntimeException("The creator is invalid!!!");

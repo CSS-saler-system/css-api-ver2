@@ -33,7 +33,9 @@ public class EnterpriseTransactionController {
     private final TransactionServices transactionServices;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @PostMapping(value = V2_TRANSACTION_CREATE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(
+            value = V2_TRANSACTION_CREATE,
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createTransaction(
             @RequestPart("transaction") String transactionCreatorDto,
             @RequestPart(value = "image", required = false) List<MultipartFile> images) throws JsonProcessingException {
@@ -60,16 +62,18 @@ public class EnterpriseTransactionController {
         return ok(transactionsResDto);
     }
 
-    @PutMapping(value = V2_TRANSACTION_UPDATE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(
+            value = V2_TRANSACTION_UPDATE + "/{transactionId}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateTransaction(
+            @PathVariable("transactionId") UUID transactionId,
             @RequestPart(value = "billImages", required = false) List<MultipartFile> images,
             @RequestPart("updateTransaction") String dto
     ) throws JsonProcessingException {
         TransactionsUpdateReqDto transactionsUpdateReqDto = objectMapper
                 .readValue(dto, TransactionsUpdateReqDto.class);
-        if (Objects.isNull(transactionsUpdateReqDto.getId()))
-            throw new RuntimeException("The Json's id field is empty");
-        UUID uuid = this.transactionServices.updateTransaction(transactionsUpdateReqDto, images);
+        UUID uuid = this.transactionServices.updateTransaction(
+                transactionId, transactionsUpdateReqDto, images);
         return ok(uuid);
     }
 

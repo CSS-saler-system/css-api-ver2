@@ -15,16 +15,13 @@ import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 
 @Data
 public class TransactionsUpdateReqDto {
-    private final UUID id;
     private final double point;
     private final AccountNestedDto creator;
 
     @JsonCreator(mode = PROPERTIES)
     public TransactionsUpdateReqDto(
-            @JsonProperty("id") UUID id,
             @JsonProperty("point") double point,
             @JsonProperty("creator") AccountNestedDto creator) {
-        this.id = id;
         this.point = point;
         this.creator = creator;
     }
