@@ -8,6 +8,7 @@ import com.springframework.csscapstone.data.repositories.*;
 import com.springframework.csscapstone.data.status.AccountImageType;
 import com.springframework.csscapstone.data.status.RequestStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorReqDto;
+import com.springframework.csscapstone.payload.request_dto.enterprise.EnterpriseSignUpDto;
 import com.springframework.csscapstone.payload.response_dto.PageEnterpriseResDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.admin.AccountResDto;
@@ -53,19 +54,20 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.springframework.csscapstone.data.status.AccountImageType.AVATAR;
 import static com.springframework.csscapstone.data.status.AccountImageType.ID_CARD;
 import static com.springframework.csscapstone.data.status.AccountImageType.LICENSE;
+import static com.springframework.csscapstone.utils.exception_catch_utils.ExceptionCatchHandler.peek;
 import static java.util.stream.Collectors.toList;
 
 @Service
 @PropertySource(value = "classpath:application-storage.properties")
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
+    private static final String prefixPhoneNumber = "+84";
     private static final String enterpriseRole = "Enterprise";
     public static final int DEFAULT_PAGE_NUMBER = 1;
     public static final int DEFAULT_PAGE_SIZE = 10;
@@ -111,8 +113,8 @@ public class AccountServiceImpl implements AccountService {
             () -> new DataTempException(MessagesUtils.getMessage(MessageConstant.DATA.INVALID));
 
 
-    private final Supplier<ProductNotFoundException> handlerProductNotFound = () -> new ProductNotFoundException(
-            MessagesUtils.getMessage(MessageConstant.Product.NOT_FOUND));
+    private final Supplier<ProductNotFoundException> handlerProductNotFound =
+            () -> new ProductNotFoundException(MessagesUtils.getMessage(MessageConstant.Product.NOT_FOUND));
     /**
      * Exception handler
      */
@@ -122,7 +124,9 @@ public class AccountServiceImpl implements AccountService {
     private final Supplier<EntityNotFoundException> handlerAccountNotFound =
             () -> new EntityNotFoundException(MessagesUtils.getMessage(MessageConstant.Account.NOT_FOUND));
 
+    Supplier<RuntimeException> duplicatedEmailException = () -> new RuntimeException("The email was existed!!!");
 
+    Supplier<RuntimeException> duplicatedPhoneEnterpriseException = () -> new RuntimeException("The phone was existed!!!");
 //    private final Supplier<Role> getDefaultRoleSupplier = () -> new Role("ROLE_3", "Collaborator");
 
     /**
@@ -207,7 +211,6 @@ public class AccountServiceImpl implements AccountService {
                 .orElseThrow(handlerAccountNotFound);
     }
 
-
     /**
      * TODO <BR>
      *     Using By Admin creates Account
@@ -260,7 +263,9 @@ public class AccountServiceImpl implements AccountService {
                               MultipartFile idCards) throws AccountInvalidException {
 
         //check exist entity
-        Account entity = accountRepository.findById(reqUpdateDto.getId()).orElseThrow(handlerAccountInvalid);
+        Account entity = accountRepository
+                .findById(reqUpdateDto.getId())
+                .orElseThrow(handlerAccountInvalid);
 
         AccountMapper.INSTANCE.updateAccountFromAccountUpdaterJsonDto(reqUpdateDto, entity);
 
@@ -424,18 +429,24 @@ public class AccountServiceImpl implements AccountService {
                 .collect(toList());
     }
 
-    /**
-     * todo peek method using for Optional java 8
-     *
-     * @param consumer
-     * @param <T>
-     * @return
-     */
-    private <T> UnaryOperator<T> peek(Consumer<T> consumer) {
-        return x -> {
-            consumer.accept(x);
-            return x;
-        };
+    @Override
+    public Optional<UUID> singUpEnterprise(EnterpriseSignUpDto enterprise) {
+        Account account = AccountMapper.INSTANCE.enterpriseSignUpDtoToAccount(enterprise);
+
+        Account checkedEmailAccount = this.accountRepository
+                .findAccountByEmail(account.getEmail())
+                .filter(Objects::nonNull)
+                .orElseThrow(duplicatedEmailException);
+
+        if (Objects.nonNull(checkedEmailAccount.getPhone())) {
+            String phone = checkedEmailAccount.getPhone();
+            this.accountRepository.findAccountByPhone(phone)
+                    .filter(Objects::nonNull)
+                    .orElseThrow(duplicatedPhoneEnterpriseException);
+        }
+        Account savedAccount = this.accountRepository.save(checkedEmailAccount);
+
+        return Optional.of(savedAccount.getId());
     }
 
     /**
@@ -449,6 +460,12 @@ public class AccountServiceImpl implements AccountService {
      */
     private Account imageUpdateHandler(MultipartFile avatars, MultipartFile licenses,
                                        MultipartFile idCards, Account entity) {
+
+        /**
+         * updateImage(avatars, entity, AVATAR)
+         *                 .map(peek(entity::addImage))
+         *                 .ifPresent(this.accountImageRepository::save);
+         */
 
         //load image from database
         updateImage(avatars, entity, AVATAR).ifPresent(image -> {
@@ -496,13 +513,16 @@ public class AccountServiceImpl implements AccountService {
         String phone = "";
         //set phone number follow pattern +23453
         if (StringUtils.isNotEmpty(dto.getPhone())) {
-            phone = "+84" + StringUtils.substring(dto.getPhone(), 1);
+            phone = prefixPhoneNumber + StringUtils.substring(dto.getPhone(), 1);
         }
         return phone;
     }
 
     //todo mapping to account
-    private Account accountSaveImages(MultipartFile avatar, MultipartFile licenses, MultipartFile idCards, Account account) {
+    private Account accountSaveImages(
+            MultipartFile avatar, MultipartFile licenses,
+            MultipartFile idCards, Account account) {
+
         if (Objects.nonNull(avatar)) {
             saveAccountImageEntity(avatar, account.getId(), AccountImageType.AVATAR)
                     .ifPresent(account::addImage);
@@ -520,7 +540,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     /**
-     * //todo Create save Account-Image
+     * todo Create save Account-Image
      *
      * @param images
      * @return

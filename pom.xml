@@ -130,7 +130,17 @@
             <version>2.7.0</version>
         </dependency>
         <!-- End Web Socket-->
+        <!-- Spring email -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+        <!-- End Spring email-->
+        <!-- modelmapper -->
+        <!-- end modelmapper -->
+
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -142,8 +152,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <source>8</source>
-                    <target>8</target>
+                    <source>15</source>
+                    <target>15</target>
                     <annotationProcessorPaths>
                         <path>
                             <!-- https://mvnrepository.com/artifact/org.mapstruct/mapstruct-processor -->

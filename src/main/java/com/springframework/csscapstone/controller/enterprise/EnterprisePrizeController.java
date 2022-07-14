@@ -4,20 +4,14 @@ import com.springframework.csscapstone.payload.request_dto.enterprise.PrizeCreat
 import com.springframework.csscapstone.payload.request_dto.enterprise.PrizeUpdaterReqDto;
 import com.springframework.csscapstone.services.PrizeService;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
-import com.springframework.csscapstone.utils.mapper_utils.converter_mapper.PrizeCreatorConvertor;
-import com.springframework.csscapstone.utils.mapper_utils.converter_mapper.PrizeUpdaterConvertor;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.json.JsonParseException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Supplier;
 

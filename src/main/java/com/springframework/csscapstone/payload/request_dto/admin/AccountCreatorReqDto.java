@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.springframework.csscapstone.data.domain.Role;
 import com.springframework.csscapstone.payload.basic.RoleBasicDto;
 import lombok.Data;
 
@@ -42,7 +43,7 @@ public class AccountCreatorReqDto {
     private final Boolean gender;
 
     @NotEmpty(message = "The role must be not empty")
-    private RoleBasicDto role;
+    private Role role;
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
 
@@ -54,7 +55,7 @@ public class AccountCreatorReqDto {
             @JsonProperty("address") String address,
             @JsonProperty("description") String description,
             @JsonProperty("gender") Boolean gender,
-            @JsonProperty("role") RoleBasicDto role) {
+            @JsonProperty("role") String role) {
         this.name = name;
         this.dayOfBirth = dayOfBirth;
         this.phone = phone;
@@ -62,6 +63,13 @@ public class AccountCreatorReqDto {
         this.address = address;
         this.description = description;
         this.gender = gender;
-        this.role = role;
+
+        switch(role) {
+            case "Admin": this.role = new Role("ROLE_1", "Admin"); break;
+            case "Enterprise": this.role = new Role("ROLE_2", "Enterprise"); break;
+            case "Customer": this.role = new Role("ROLE_4", "Customer"); break;
+            case "Moderator": this.role = new Role("ROLE_5", "Moderator"); break;
+            default: this.role = new Role("ROLE_3", "Collaborator"); break;
+        }
     }
 }

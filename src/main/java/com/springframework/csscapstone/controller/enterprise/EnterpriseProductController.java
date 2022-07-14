@@ -47,7 +47,7 @@ import static org.springframework.http.ResponseEntity.ok;
 public class EnterpriseProductController {
     private final ProductService productService;
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
-    private final ProductCreatorConvertor productCreatorConvertor;
+//    private final ProductCreatorConvertor productCreatorConvertor;
 
     /**
      * todo Controller get list Product by enterprise id
@@ -118,7 +118,8 @@ public class EnterpriseProductController {
     ) throws ProductInvalidException, AccountNotFoundException, IOException, ExecutionException, InterruptedException {
         List<MultipartFile> types = Stream.of(typeImages).collect(Collectors.toList());
         List<MultipartFile> certifications = Stream.of(certificationImages).collect(Collectors.toList());
-        ProductCreatorReqDto productCreatorReqDto = this.productCreatorConvertor.convert(dto);
+        ProductCreatorReqDto productCreatorReqDto = new ObjectMapper()
+                .readValue(dto, ProductCreatorReqDto.class);
         return ok(this.productService.createProduct(productCreatorReqDto, types, certifications));
     }
 

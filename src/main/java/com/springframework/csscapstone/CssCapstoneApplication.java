@@ -16,8 +16,4 @@ public class CssCapstoneApplication {
         SpringApplication.run(CssCapstoneApplication.class, args);
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 }

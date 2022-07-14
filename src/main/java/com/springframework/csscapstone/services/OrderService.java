@@ -8,6 +8,7 @@ import com.springframework.csscapstone.payload.response_dto.enterprise.Enterpris
 import com.springframework.csscapstone.payload.response_dto.enterprise.OrderEnterpriseManageResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.OrderResDto;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -44,5 +45,5 @@ public interface OrderService {
     PageImplResDto<OrderEnterpriseManageResDto> getOrderResDtoByEnterprise(
             UUID enterpriseId, Integer pageNumber, Integer pageSize);
 
-    Optional<EnterpriseRevenueDto> getRevenue(UUID enterpriseId);
+    Optional<List<EnterpriseRevenueDto>> getRevenue(UUID enterpriseId);
 }

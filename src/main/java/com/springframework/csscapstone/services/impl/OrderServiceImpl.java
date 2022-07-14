@@ -18,13 +18,16 @@ import com.springframework.csscapstone.utils.exception_utils.order_exception.Ord
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -33,6 +36,7 @@ import static java.util.stream.Collectors.toMap;
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
+    private static final double priceLatch = 0.0;
     private final OrderRepository orderRepository;
     private final AccountRepository accountRepository;
     private final OrderDetailRepository orderDetailRepository;
@@ -79,24 +83,43 @@ public class OrderServiceImpl implements OrderService {
 
     @Transactional
     @Override
-    public UUID createOrder(OrderCreatorReqDto dto) {
+    public UUID createOrder(OrderCreatorReqDto orderCreatorDto) {
 
-        Account account = this.accountRepository.findById(dto.getAccount().getAccountId())
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "The collaborator with id: " + dto.getAccount().getAccountId() + " not found"));
+        Supplier<EntityNotFoundException> entityNotFoundException =
+                () -> new EntityNotFoundException("The collaborator with id: " + orderCreatorDto.getAccount().getAccountId() + " not found");
 
-        Customer customer = this.customerRepository.findById(dto.getCustomer().getCustomerId())
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "The customer with id: " + dto.getCustomer().getCustomerId() + " was not found"));
+        Supplier<RuntimeException> notSameEnterpriseException = () -> new RuntimeException("Product not have same id enterprise!!!");
+
+
+        Account account = this.accountRepository
+                .findById(orderCreatorDto.getAccount().getAccountId())
+                .orElseThrow(entityNotFoundException);
+
+        Predicate<UUID> isSameEnterpriseId = enterpriseId -> !enterpriseId.equals(account.getId());
+
+        Customer customer = this.customerRepository
+                .findById(orderCreatorDto.getCustomer().getCustomerId())
+                .orElseThrow(entityNotFoundException);
+
+        //check field
+        orderCreatorDto.getOrderDetails()
+                .stream()
+                .map(OrderCreatorReqDto.OrderDetailInnerCreatorDto::getProduct)
+                .map(OrderCreatorReqDto.OrderDetailInnerCreatorDto.ProductDto::getProductId)
+                .filter(isSameEnterpriseId)
+                .findAny()
+                .orElseThrow(notSameEnterpriseException);
+
 
         //todo map<Product, quantity>
-        Map<Product, Long> details = dto.getOrderDetails().stream()
+        Map<Product, Long> quantityProducts = orderCreatorDto.getOrderDetails().stream()
                 .collect(toMap(
-                        od -> this.productRepository.findById(od.getProduct().getProductId())
+                        od -> this.productRepository
+                                .findById(od.getProduct().getProductId())
                                 .orElseThrow(handlerNotFoundException()),
                         OrderCreatorReqDto.OrderDetailInnerCreatorDto::getQuantity));
 
-        List<OrderDetail> oderDetails = details.entrySet()
+        List<OrderDetail> oderDetails = quantityProducts.entrySet()
                 .stream()
                 .map(entry -> new OrderDetail(
                         entry.getKey().getName(),
@@ -110,19 +133,20 @@ public class OrderServiceImpl implements OrderService {
                 .collect(Collectors.toList());
 
         //todo get total price by map double with orderDetails
-        double totalPrize = oderDetails
+        double totalPrice = oderDetails
                 .stream()
                 .mapToDouble(OrderDetail::getTotalPointProduct)
                 .sum();
 
         //todo get total point by map double with orderDetails
+
         double totalPointSale = oderDetails
                 .stream()
                 .map(OrderDetail::getTotalPriceProduct)
-                .reduce(0.0, Double::sum);
+                .reduce(priceLatch, Double::sum);
 
-        Order order = new Order(totalPrize, totalPointSale, customer.getName(),
-                dto.getDeliveryPhone(), dto.getDeliveryAddress())
+        Order order = new Order(totalPrice, totalPointSale, customer.getName(),
+                orderCreatorDto.getDeliveryPhone(), orderCreatorDto.getDeliveryAddress())
                 .addOrderDetails(oderDetails)
                 .addAccount(account)
                 .addCustomer(customer);
@@ -180,6 +204,7 @@ public class OrderServiceImpl implements OrderService {
     /**
      * Order -> Order-Detail: (total point)
      * todo Notification to collaborators:
+     *
      * @param orderId
      */
     @Override
@@ -203,7 +228,7 @@ public class OrderServiceImpl implements OrderService {
         Double totalPoint = order.getOrderDetails()
                 .stream()
                 .map(OrderDetail::getTotalPointProduct)
-                .reduce(0.0, Double::sum);
+                .reduce(priceLatch, Double::sum);
 
         //todo find enterprise:
         List<Account> enterprises = order.getOrderDetails()
@@ -230,8 +255,8 @@ public class OrderServiceImpl implements OrderService {
     public PageImplResDto<OrderEnterpriseManageResDto> getOrderResDtoByEnterprise(
             UUID enterpriseId, Integer pageNumber, Integer pageSize) {
 
-        pageNumber = Objects.isNull(pageNumber) || pageNumber == 0  ? 1 : pageNumber;
-        pageSize = Objects.isNull(pageSize) || pageSize == 0  ? 10 : pageSize;
+        pageNumber = Objects.isNull(pageNumber) || pageNumber == 0 ? 1 : pageNumber;
+        pageSize = Objects.isNull(pageSize) || pageSize == 0 ? 10 : pageSize;
 
         Page<Order> page = this.orderRepository
                 .getOrderByEnterprise(enterpriseId, PageRequest.of(pageNumber - 1, pageSize));
@@ -248,9 +273,18 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Optional<EnterpriseRevenueDto> getRevenue(UUID enterpriseId) {
-
-        return Optional.empty();
+    public Optional<List<EnterpriseRevenueDto>> getRevenue(UUID enterpriseId) {
+        List<EnterpriseRevenueDto> revenueDtos = this.orderRepository
+                .getRevenueByEnterprise(enterpriseId)
+                .stream()
+                .collect(
+                        toMap(tuple -> tuple.get(OrderRepository.ORDER_DATE, Integer.class),
+                              tuple -> tuple.get(OrderRepository.ORDER_REVENUE, Double.class)))
+                .entrySet()
+                .stream()
+                .map(entry -> new EnterpriseRevenueDto(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+        return Optional.of(revenueDtos);
     }
 
     private Supplier<LackPointException> handlerLackPoint() {

@@ -13,6 +13,7 @@ public class ApiEndPoint {
     public static final String ADMIN_LOGIN = ADMIN + "/login";
     public static final String COLLABORATOR_LOGIN = COLLABORATOR + "/login";
     public static final String ENTERPRISE_LOGIN = ENTERPRISE + "/login";
+    public static final String ENTERPRISE_SIGNUP = ENTERPRISE + "/singup";
 
     public static final String MODERATOR_LOGIN = MODERATOR + "/login";
 

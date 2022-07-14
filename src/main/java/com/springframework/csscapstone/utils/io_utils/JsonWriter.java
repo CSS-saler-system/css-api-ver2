@@ -1,4 +1,4 @@
-package com.springframework.csscapstone.utils.io;
+package com.springframework.csscapstone.utils.io_utils;
 
 import java.io.File;
 import java.nio.file.Path;
