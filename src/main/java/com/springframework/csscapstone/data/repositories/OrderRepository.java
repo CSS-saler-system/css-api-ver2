@@ -94,13 +94,15 @@ public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecific
     List<Tuple> getCollaboratorWithPerformanceById(UUID collaboratorId);
 
 
-    @Query(value = "SELECT o FROM Order  o " +
+    @Query(value = "SELECT distinct o " +
+            "FROM Order  o " +
             "JOIN o.orderDetails od " +
             "JOIN od.product p " +
             "JOIN p.account enterprise " +
             "WHERE enterprise.id = :enterpriseId " +
-            "AND NOT o.status = 'DISABLE' ",
-    countQuery = "SELECT count(o) FROM Order  o " +
+            "AND NOT o.status = 'DISABLE'",
+    countQuery = "SELECT count( distinct o) " +
+            "FROM Order  o " +
             "JOIN o.orderDetails od " +
             "JOIN od.product p " +
             "JOIN p.account enterprise " +
