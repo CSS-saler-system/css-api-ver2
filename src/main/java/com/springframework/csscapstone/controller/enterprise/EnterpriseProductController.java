@@ -75,8 +75,10 @@ public class EnterpriseProductController {
             @RequestParam(value = "pageSize", required = false) Integer pageSize
     ) {
         PageImplResDto<ProductResDto> result = productService
-                .findAllProductByIdEnterprise(enterpriseId, name, brand, minPrice, maxPrice,
-                        minPointSale, maxPointSale, pageNumber, pageSize);
+                .findAllProductByIdEnterprise(
+                        enterpriseId, name, brand,
+                        minPrice, maxPrice, minPointSale,
+                        maxPointSale, pageNumber, pageSize);
         return ok(result);
     }
 

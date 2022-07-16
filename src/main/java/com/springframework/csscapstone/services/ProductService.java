@@ -43,7 +43,7 @@ public interface ProductService {
             Integer pageNumber,
             Integer pageSize);
 
-    List<ProductResDto> findProductByIdAccount(UUID accountId) throws AccountNotFoundException;
+    List<ProductResDto> findProductByIdEnterprise(UUID accountId) throws AccountNotFoundException;
 
 
     ProductDetailEnterpriseDto findById(UUID id) throws ProductNotFoundException;

@@ -34,8 +34,7 @@ public interface MapperDTO {
 
     //========================= End Role ========================
 
-    @Mapping(target = "campaignId", source = "id")
-    CampaignResDto toCampaignResDto(Campaign entity);
+
 
     CategoryResDto toCategoryResDto(Category entity);
 
@@ -108,10 +107,6 @@ public interface MapperDTO {
     @Mapping(target = "category.categoryName", source = "category.categoryName")
     ProductDetailEnterpriseDto toProductDetailEnterpriseDto(Product entity);
 
-    @Mapping(target = "prizes", source = "prizes")
-//    @Mapping(target = "prizeInnerCampaignDto.prizeId", source = "entity.prizes.prize.id")
-    @Mapping(target = "products", source = "products")
-    CampaignDetailDto toCampaignDetailDto(Campaign entity);
 
 
 

@@ -1,6 +1,11 @@
 package com.springframework.csscapstone.payload.response_dto.collaborator;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.springframework.csscapstone.data.status.PrizeStatus;
 import com.springframework.csscapstone.payload.basic.CampaignImageBasicDto;
 import lombok.Data;
@@ -12,11 +17,17 @@ import java.util.Set;
 import java.util.UUID;
 
 @Data
-public class CampaignResDto implements Serializable {
+public class CampaignForCollaboratorResDto implements Serializable {
     private final UUID id;
     private final String name;
     private final List<CampaignImageBasicDto> image;
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
     private final LocalDateTime startDate;
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
     private final LocalDateTime endDate;
     private final String campaignShortDescription;
     private final String campaignDescription;
@@ -24,7 +35,7 @@ public class CampaignResDto implements Serializable {
     private final Set<PrizeDto> prizes;
     private final Set<ProductDto> products;
 
-    public CampaignResDto(
+    public CampaignForCollaboratorResDto(
             @JsonProperty("id") UUID id,
             @JsonProperty("name") String name,
             @JsonProperty("image") List<CampaignImageBasicDto> image,

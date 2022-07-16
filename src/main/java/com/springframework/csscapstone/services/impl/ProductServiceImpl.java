@@ -85,7 +85,8 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     public PageImplResDto<ProductResDto> findAllProductByIdEnterprise(
-            UUID idEnterprise, String name, String brand, Double minPrice, Double maxPrice,
+            UUID idEnterprise, String name,
+            String brand, Double minPrice, Double maxPrice,
             Double minPoint, Double maxPoint,
             Integer pageNumber, Integer pageSize) {
 
@@ -120,7 +121,6 @@ public class ProductServiceImpl implements ProductService {
                 .and(Objects.isNull(minPoint) ? null : ProductSpecifications.pointGreaterThan(minPoint))
                 .and(Objects.isNull(maxPoint) ? null : ProductSpecifications.pointLessThan(maxPoint))
                 .and(ProductSpecifications.excludeDisableStatus());
-
         return getProductResDtoPageImplResDto(pageNumber, pageSize, search);
     }
 
@@ -128,7 +128,7 @@ public class ProductServiceImpl implements ProductService {
      * todo find product by account <Completed></>
      */
     @Override
-    public List<ProductResDto> findProductByIdAccount(UUID accountId) throws AccountNotFoundException {
+    public List<ProductResDto> findProductByIdEnterprise(UUID accountId) throws AccountNotFoundException {
         Account account = this.accountRepository.findById(accountId).orElseThrow(handlerAccountNotFound());
         return account.getProducts().stream()
                 .filter(product -> !product.getProductStatus().equals(ProductStatus.DISABLE))

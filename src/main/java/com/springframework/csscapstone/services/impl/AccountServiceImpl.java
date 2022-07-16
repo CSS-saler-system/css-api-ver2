@@ -123,12 +123,13 @@ public class AccountServiceImpl implements AccountService {
 
     private final Supplier<EntityNotFoundException> handlerAccountNotFound =
             () -> new EntityNotFoundException(MessagesUtils.getMessage(MessageConstant.Account.NOT_FOUND));
-
-    Supplier<RuntimeException> duplicatedEmailException = () -> new RuntimeException("The email was existed!!!");
-
-    Supplier<RuntimeException> duplicatedPhoneEnterpriseException = () -> new RuntimeException("The phone was existed!!!");
 //    private final Supplier<Role> getDefaultRoleSupplier = () -> new Role("ROLE_3", "Collaborator");
-
+    private final Function<String, Consumer<Account>> duplicationEmailException = email -> {
+        throw new RuntimeException("The email: " + email + " was existed!!!");
+    };
+    private final Function<String, Consumer<Account>> duplicationPhoneException = email -> {
+        throw new RuntimeException("The email: " + email + " was existed!!!");
+    };
     /**
      * todo Get Collaborator With performance skill selling
      *
@@ -430,22 +431,24 @@ public class AccountServiceImpl implements AccountService {
                 .collect(toList());
     }
 
+    /**
+     * create account<BR>
+     *     </>
+     * @param enterprise
+     * @return
+     */
     @Override
     public Optional<UUID> singUpEnterprise(EnterpriseSignUpDto enterprise) {
         Account account = AccountMapper.INSTANCE.enterpriseSignUpDtoToAccount(enterprise);
 
-        Account checkedEmailAccount = this.accountRepository
+        this.accountRepository
                 .findAccountByEmail(account.getEmail())
-                .filter(Objects::nonNull)
-                .orElseThrow(duplicatedEmailException);
+                .ifPresent(duplicationEmailException.apply(account.getEmail()));
 
-        if (Objects.nonNull(checkedEmailAccount.getPhone())) {
-            String phone = checkedEmailAccount.getPhone();
-            this.accountRepository.findAccountByPhone(phone)
-                    .filter(Objects::nonNull)
-                    .orElseThrow(duplicatedPhoneEnterpriseException);
-        }
-        Account savedAccount = this.accountRepository.save(checkedEmailAccount);
+        this.accountRepository.findAccountByPhone(account.getPhone())
+                .ifPresent(duplicationPhoneException.apply(account.getPhone()));
+
+        Account savedAccount = this.accountRepository.save(account);
 
         return Optional.of(savedAccount.getId());
     }

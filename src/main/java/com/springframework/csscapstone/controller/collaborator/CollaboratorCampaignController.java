@@ -1,9 +1,8 @@
 package com.springframework.csscapstone.controller.collaborator;
 
-import com.springframework.csscapstone.config.constant.DataConstraint;
 import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
-import com.springframework.csscapstone.payload.response_dto.enterprise.CampaignResDto;
+import com.springframework.csscapstone.payload.response_dto.collaborator.CampaignForCollaboratorResDto;
 import com.springframework.csscapstone.services.CampaignService;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,12 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.UUID;
 
 import static com.springframework.csscapstone.config.constant.ApiEndPoint.Campaign.V3_GET_CAMPAIGN;
 import static com.springframework.csscapstone.config.constant.ApiEndPoint.Campaign.V3_LIST_CAMPAIGN;
-import static com.springframework.csscapstone.utils.request_utils.RequestUtils.getRequestParam;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
@@ -40,9 +37,9 @@ public class CollaboratorCampaignController {
             @RequestParam(value = "pageNumber", required = false, defaultValue = "1") Integer pageNumber,
             @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize
     ) {
-        PageImplResDto<CampaignResDto> campaign = campaignService.findCampaignWithoutEnterpriseId(
-                campaignName, startDate, minKpi, status, pageNumber, pageSize);
-        return ResponseEntity.ok(campaign);
+        PageImplResDto<CampaignForCollaboratorResDto> result = campaignService
+                .listCampaignWithoutEnterpriseIdForCollaborator(campaignName, startDate, minKpi, status, pageNumber, pageSize);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping(V3_GET_CAMPAIGN + "/{campaignId}")

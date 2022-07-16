@@ -18,6 +18,7 @@ import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.CampaignUpdaterReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
+import com.springframework.csscapstone.payload.response_dto.collaborator.CampaignForCollaboratorResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.CampaignDetailDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.CampaignResDto;
 import com.springframework.csscapstone.services.CampaignService;
@@ -26,6 +27,7 @@ import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundExcep
 import com.springframework.csscapstone.utils.exception_utils.account_exception.NotEnoughKpiException;
 import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignNotFoundException;
+import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.CampaignMapper;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
@@ -70,11 +72,23 @@ public class CampaignServiceImpl implements CampaignService {
     private String campaignContainer;
 
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
+    private final Supplier<NotEnoughKpiException> handlerNotEnoughKPIException =
+            () -> new NotEnoughKpiException(MessagesUtils.getMessage(MessageConstant.KPI_NOT_ENOUGH));
+
+    private final Supplier<CampaignNotFoundException> handlerCampaignNotFoundException =
+            () -> new CampaignNotFoundException(MessagesUtils.getMessage(MessageConstant.Campaign.NOT_FOUND));
+
+    private final Supplier<EntityNotFoundException> campaignNotFoundException =
+            () -> new EntityNotFoundException(MessagesUtils.getMessage(MessageConstant.Campaign.NOT_FOUND));
+
 
     @Override
     public PageImplResDto<CampaignResDto> findCampaignWithoutEnterpriseId(
             String name, LocalDateTime date, Long kpi,
             CampaignStatus status, Integer pageNumber, Integer pageSize) {
+
+
+
         Specification<Campaign> condition = Specification
                 .where(StringUtils.isEmpty(name) ? null : CampaignSpecifications.containsName(name))
                 .and(date == null ? null : CampaignSpecifications.beforeEndDate(date))
@@ -86,6 +100,35 @@ public class CampaignServiceImpl implements CampaignService {
                         CampaignStatus.DISABLED,
                         CampaignStatus.FINISHED));
         return getCampaignResDtoPageImplResDto(pageNumber, pageSize, condition);
+    }
+
+
+    //sort by start date
+    @Override
+    public PageImplResDto<CampaignForCollaboratorResDto> listCampaignWithoutEnterpriseIdForCollaborator(
+            String name, LocalDateTime date, Long kpi, CampaignStatus status, Integer pageNumber, Integer pageSize) {
+
+        //condition:
+        Specification<Campaign> condition = Specification
+                .where(StringUtils.isEmpty(name) ? null : CampaignSpecifications.containsName(name))
+                .and(date == null ? null : CampaignSpecifications.beforeEndDate(date))
+                .and(kpi == null || kpi == 0 ? null : CampaignSpecifications.smallerKpi(kpi))
+                .and(status == null ? null : CampaignSpecifications.equalsStatus(status))
+                .and(CampaignSpecifications.equalsStatus(CampaignStatus.APPROVAL));
+
+        pageNumber = Objects.isNull(pageNumber) || pageNumber == 0 ? 1 : pageNumber;
+        pageSize = Objects.isNull(pageSize) || pageSize == 0 ? 10 : pageSize;
+
+        Page<Campaign> page = this.campaignRepository
+                .findAll(condition, PageRequest.of(pageNumber - 1, pageSize));
+
+        List<CampaignForCollaboratorResDto> result = page.getContent().stream()
+                .sorted(Comparator.comparing(Campaign::getStartDate).reversed())
+                .map(CampaignMapper.INSTANCE::campaignToCampaignForCollaboratorResDto)
+                .collect(Collectors.toList());
+        return new PageImplResDto<>(result, page.getNumber() + 1,
+                result.size(), page.getTotalElements(), page.getTotalPages(),
+                page.isFirst(), page.isLast());
     }
 
     @Override
@@ -112,8 +155,8 @@ public class CampaignServiceImpl implements CampaignService {
     @Override
     public CampaignDetailDto findById(UUID id) throws EntityNotFoundException {
         return campaignRepository
-                .findById(id).map(MapperDTO.INSTANCE::toCampaignDetailDto)
-                .orElseThrow(campaignNotFoundException());
+                .findById(id).map(CampaignMapper.INSTANCE::toCampaignDetailDto)
+                .orElseThrow(campaignNotFoundException);
     }
 
 
@@ -168,7 +211,7 @@ public class CampaignServiceImpl implements CampaignService {
 
         Campaign entity = this.campaignRepository.findById(campaignId)
                 .filter(camp -> camp.getCampaignStatus().equals(CampaignStatus.CREATED))
-                .orElseThrow(campaignNotFoundException());
+                .orElseThrow(campaignNotFoundException);
 
 //        if (!entity.getCampaignStatus().equals(CampaignStatus.SENT)) {
 //            throw new RuntimeException("The campaign is not pending status so cant be updated!!!");
@@ -194,7 +237,7 @@ public class CampaignServiceImpl implements CampaignService {
         this.campaignRepository.findById(id)
                 .map(x -> x.setCampaignStatus(CampaignStatus.DISABLED))
                 .map(this.campaignRepository::save)
-                .orElseThrow(campaignNotFoundException());
+                .orElseThrow(campaignNotFoundException);
     }
 
     @Transactional
@@ -228,7 +271,7 @@ public class CampaignServiceImpl implements CampaignService {
         Campaign campaign = this.campaignRepository.loadFetchOnProducts(id)
                 .filter(_campaign -> Objects.nonNull(_campaign.getPrizes()))
                 .filter(_campaign -> Objects.nonNull(_campaign.getProducts()))
-                .orElseThrow(handlerCampaignNotFoundException());
+                .orElseThrow(handlerCampaignNotFoundException);
 
         //get sort collaborator and Long by OrderRepository
         Map<UUID, Long> collaborator = new HashMap<>();
@@ -278,7 +321,7 @@ public class CampaignServiceImpl implements CampaignService {
 
                 .collect(Collectors.toList());
 
-        if (accounts.isEmpty()) throw handlerNotEnoughKPIException().get();
+        if (accounts.isEmpty()) throw handlerNotEnoughKPIException.get();
 //
 //        mapping prize by using campaign prize with greater than KPI on campaign KPI
         int count = 0;
@@ -291,7 +334,7 @@ public class CampaignServiceImpl implements CampaignService {
 
         this.campaignRepository.save(campaign.setCampaignStatus(CampaignStatus.FINISHED));
     }
-
+    @Transactional
     @Override
     public void rejectCampaignInDate() {
         this.campaignRepository
@@ -307,7 +350,7 @@ public class CampaignServiceImpl implements CampaignService {
                 .findById(campaignId)
                 .map(camp -> camp.setCampaignStatus(status))
                 .map(this.campaignRepository::save)
-                .orElseThrow(() -> campaignNotFoundException().get());
+                .orElseThrow(campaignNotFoundException);
     }
     @Transactional
     @Override
@@ -319,19 +362,6 @@ public class CampaignServiceImpl implements CampaignService {
                 .orElseThrow(() -> new EntityNotFoundException("The campaign was not found"));
     }
 
-    private Supplier<NotEnoughKpiException> handlerNotEnoughKPIException() {
-        return () -> new NotEnoughKpiException(MessagesUtils.getMessage(MessageConstant.KPI_NOT_ENOUGH));
-    }
-
-    private Supplier<CampaignNotFoundException> handlerCampaignNotFoundException() {
-        return () -> new CampaignNotFoundException(MessagesUtils.getMessage(MessageConstant.Campaign.NOT_FOUND));
-    }
-
-    private Supplier<EntityNotFoundException> campaignNotFoundException() {
-        return () -> new EntityNotFoundException(MessagesUtils.getMessage(MessageConstant.Campaign.NOT_FOUND));
-    }
-
-
     private PageImplResDto<CampaignResDto> getCampaignResDtoPageImplResDto(
             Integer pageNumber, Integer pageSize, Specification<Campaign> condition) {
         pageNumber = Objects.isNull(pageNumber) || pageNumber == 0 ? 1 : pageNumber;
@@ -342,7 +372,7 @@ public class CampaignServiceImpl implements CampaignService {
 
         List<CampaignResDto> content = page.getContent()
                 .stream()
-                .map(MapperDTO.INSTANCE::toCampaignResDto)
+                .map(CampaignMapper.INSTANCE::toCampaignResDto)
                 .collect(Collectors.toList());
         return new PageImplResDto<>(
                 content, page.getNumber() + 1, content.size(), page.getTotalElements(),

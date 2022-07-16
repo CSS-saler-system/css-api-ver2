@@ -36,6 +36,7 @@ public class ApiEndPoint {
         public static final String V2_PRODUCT_UPDATE = v2_handler + "/update";
 
         public static final String V3_LIST_PRODUCT = v3_handler + "/list";
+        public static final String V3_PRODUCT_List_By_ENTERPRISE = v3_handler + "/list";
         public static final String V3_GET_PRODUCT = v3_handler + "/get";
         public static final String V3_CREATE_PRODUCT = v3_handler + "/new";
         public static final String V3_DELETE_PRODUCT = v3_handler + "/delete";

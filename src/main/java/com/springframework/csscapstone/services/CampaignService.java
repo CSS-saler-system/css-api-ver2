@@ -5,11 +5,11 @@ import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.CampaignUpdaterReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
+import com.springframework.csscapstone.payload.response_dto.collaborator.CampaignForCollaboratorResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.CampaignDetailDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.CampaignResDto;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignInvalidException;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -29,6 +29,11 @@ public interface CampaignService {
 
     //todo for moderator
     PageImplResDto<CampaignResDto> findCampaignWithoutEnterpriseId(
+            String name, LocalDateTime date, Long kpi,
+            CampaignStatus status, Integer pageNumber, Integer pageSize);
+
+    //todo for Collaborator:
+    PageImplResDto<CampaignForCollaboratorResDto> listCampaignWithoutEnterpriseIdForCollaborator(
             String name, LocalDateTime date, Long kpi,
             CampaignStatus status, Integer pageNumber, Integer pageSize);
 
