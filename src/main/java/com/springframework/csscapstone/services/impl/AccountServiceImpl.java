@@ -239,6 +239,7 @@ public class AccountServiceImpl implements AccountService {
         Account account = AccountMapper.INSTANCE.accountReqDtoToAccount(reqDto);
 
         String phone = formatPhone(reqDto);
+
         firebaseAuthService.saveAccountOnFirebase(account.getEmail(), phone);
 //
         Account saved = accountRepository.save(account);

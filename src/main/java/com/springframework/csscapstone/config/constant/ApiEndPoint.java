@@ -71,6 +71,7 @@ public class ApiEndPoint {
 
 
         public static final String V3_LIST_ACCOUNT = v3_handler + "/enterprise/list";
+        public static final String V3_ENTERPRISE_ID = v3_handler + "/enterprise";
         public static final String V3_UPDATE_ACCOUNT = v3_handler + "/update";
 
         public static final String V4_LIST_ACCOUNT = v4_handler + "/list";

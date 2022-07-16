@@ -68,7 +68,7 @@ public class EnterpriseTransactionController {
     public ResponseEntity<?> updateTransaction(
             @PathVariable("transactionId") UUID transactionId,
             @RequestPart(value = "billImages", required = false) List<MultipartFile> images,
-            @RequestPart("updateTransaction") String dto
+            @RequestPart(value = "updateTransaction", required = false) String dto
     ) throws JsonProcessingException {
         TransactionsUpdateReqDto transactionsUpdateReqDto = objectMapper
                 .readValue(dto, TransactionsUpdateReqDto.class);

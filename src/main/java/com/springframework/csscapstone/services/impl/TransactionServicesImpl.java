@@ -29,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Service
@@ -148,15 +149,22 @@ public class TransactionServicesImpl implements TransactionServices {
     @Override
     public UUID updateTransaction(UUID transactionId, TransactionsUpdateReqDto dto, List<MultipartFile> images) {
 
-        Transactions transactions = this.transactionsRepository.findById(transactionId)
-                .orElseThrow(() -> new TransactionNotFoundException("The transaction with id: " + transactionId + " not found"));
+        Supplier<TransactionNotFoundException> transactionNotFoundExceptionSupplier = () -> new TransactionNotFoundException("The transaction with id: " + transactionId + " not found");
 
-        if (!transactions.getTransactionStatus().equals(TransactionStatus.CREATED)) {
+        Transactions transactions = this.transactionsRepository
+                .findById(transactionId)
+                .orElseThrow(transactionNotFoundExceptionSupplier);
+
+        boolean isCreatedStatus = transactions.getTransactionStatus().equals(TransactionStatus.CREATED);
+
+        if (!isCreatedStatus) {
             throw new RuntimeException("Transaction with id: " + transactionId + "is not allowed to modified, because maybe it's not in pending status !!!");
         }
 
-        Account account = this.accountRepository.findById(dto.getCreator().getId())
-                .orElseThrow(() -> new EntityNotFoundException("The creator with: " + transactionId + " was not found"));
+        Supplier<EntityNotFoundException> entityNotFoundExceptionSupplier = () -> new EntityNotFoundException("The creator with: " + transactionId + " was not found");
+        Account account = this.accountRepository
+                .findById(dto.getCreator().getId())
+                .orElseThrow(entityNotFoundExceptionSupplier);
 
         if (!transactions.getTransactionCreator().equals(account)) {
             throw new RuntimeException("The creator is invalid!!!");

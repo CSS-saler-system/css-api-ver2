@@ -56,23 +56,6 @@ public class EnterpriseResDto implements Serializable {
         this.idCard = idCard;
     }
 
-//    @Data
-//    public static class AccountImageDto implements Serializable {
-//        private final UUID id;
-//        private final AccountImageType type;
-//        private final String path;
-//
-//        @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-//        public AccountImageDto(
-//                @JsonProperty("id") UUID id,
-//                @JsonProperty("account_type") AccountImageType type,
-//                @JsonProperty("path") String path) {
-//            this.id = id;
-//            this.type = type;
-//            this.path = path;
-//        }
-//    }
-
     @Override
     public String toString() {
         return "EnterpriseResponseDto{" +

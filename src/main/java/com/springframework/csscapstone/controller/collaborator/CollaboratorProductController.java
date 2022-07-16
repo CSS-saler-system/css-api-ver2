@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.security.auth.login.AccountNotFoundException;
+import java.util.List;
 import java.util.UUID;
 
 import static com.springframework.csscapstone.config.constant.ApiEndPoint.Product.*;
@@ -22,7 +24,14 @@ import static org.springframework.http.ResponseEntity.ok;
 @RequiredArgsConstructor
 @Tag(name = "Product (Collaborator)")
 public class CollaboratorProductController {
-    private final ProductService service;
+    private final ProductService productService;
+
+    @GetMapping(V3_LIST_PRODUCT + "/{enterpriseId}")
+    public ResponseEntity<?> getListProductByEnterprise(@PathVariable("enterpriseId") UUID enterpriseId) throws AccountNotFoundException {
+        List<ProductResDto> productByIdAccount = this.productService
+                .findProductByIdAccount(enterpriseId);
+        return ok(productByIdAccount);
+    }
 
     @GetMapping(V3_LIST_PRODUCT)
     public ResponseEntity<?> getListProductDto(
@@ -37,7 +46,7 @@ public class CollaboratorProductController {
             @RequestParam(value = "pageSize", required = false) Integer pageSize
     ) {
 
-        PageImplResDto<ProductResDto> result = service.findAllProductByCollaborator(
+        PageImplResDto<ProductResDto> result = productService.findAllProductByCollaborator(
                 name, brand, inStock, minPrice, maxPrice,
                 minPointSale, maxPointSale,
                 pageNumber, pageSize);
@@ -45,6 +54,6 @@ public class CollaboratorProductController {
     }
     @GetMapping(V3_GET_PRODUCT + "/{productId}")
     public ResponseEntity<?> getProductById(@PathVariable("productId") UUID id) throws ProductNotFoundException {
-        return ok(service.findById(id));
+        return ok(productService.findById(id));
     }
 }
