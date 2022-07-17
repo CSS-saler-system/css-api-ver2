@@ -67,7 +67,7 @@
                         "AND p NOT IN (SELECT r.product " +
                         "                 FROM RequestSellingProduct r " +
                         "                 WHERE r.account.id = :collaboratorId " +
-                        "                 AND NOT r.requestStatus = 'REGISTERED')")
+                        "                 AND r.requestStatus = 'REGISTERED')")
         Page<Product> getAllProductNotRegister(
                 @Param("collaboratorId") UUID collaboratorId,
                 @Param("enterpriseId") UUID enterpriseId,
