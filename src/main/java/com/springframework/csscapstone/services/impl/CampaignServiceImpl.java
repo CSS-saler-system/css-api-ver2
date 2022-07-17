@@ -28,7 +28,6 @@ import com.springframework.csscapstone.utils.exception_utils.account_exception.N
 import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignNotFoundException;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.CampaignMapper;
-import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;

@@ -37,7 +37,8 @@ public class ApiEndPoint {
 
         public static final String V3_LIST_PRODUCT = v3_handler + "/list";
         public static final String V3_PRODUCT_List_BY_ENTERPRISE = v3_handler + "/list";
-        public static final String V3_PRODUCT_List_BY_ENTERPRISE_NOT_REGISTERED = v3_handler + "/list-not-registered";
+        public static final String V3_PRODUCT_List_BY_ENTERPRISE_NOT_REGISTERED = v3_handler + "/list-not-registered-by";
+        public static final String V3_PRODUCT_List_BY_ENTERPRISE_REGISTERED = v3_handler + "/list-registered-by";
         public static final String V3_GET_PRODUCT = v3_handler + "/get";
         public static final String V3_CREATE_PRODUCT = v3_handler + "/new";
         public static final String V3_DELETE_PRODUCT = v3_handler + "/delete";

@@ -290,6 +290,22 @@ public class ProductServiceImpl implements ProductService {
                 page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
     }
 
+    @Override
+    public PageImplResDto<ProductForCollaboratorResDto> pageProductWithRegisteredByEnterpriseAndCollaborator(
+            UUID collaboratorId, UUID enterpriseId, Integer pageNumber, Integer pageSize) {
+        pageNumber = Objects.isNull(pageNumber) || pageNumber < 1  ? 1 : pageNumber;
+        pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
+        Page<Product> page = this.productRepository.getAllProductRegister(
+                collaboratorId, enterpriseId, PageRequest.of(pageNumber - 1, pageSize));
+        List<ProductForCollaboratorResDto> result = page.getContent()
+                .stream()
+                .sorted(Comparator.comparing(Product::getPointSale).reversed())
+                .map(ProductMapper.INSTANCE::productToProductForCollaboratorResDto)
+                .collect(toList());
+        return new PageImplResDto<>(result, page.getNumber() + 1, result.size(),
+                page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
+    }
+
     private Product imageHandler(List<MultipartFile> normalType, List<MultipartFile> certificationType, Product entity) {
         if (Objects.nonNull(normalType) && !normalType.isEmpty()) {
             saveProductImage(normalType, entity.getId(), ProductImageType.NORMAL)

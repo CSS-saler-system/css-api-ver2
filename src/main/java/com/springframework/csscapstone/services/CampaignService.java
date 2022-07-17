@@ -41,7 +41,7 @@ public interface CampaignService {
 
     UUID createCampaign(CampaignCreatorReqDto dto, List<MultipartFile> images) throws CampaignInvalidException;
 
-    UUID updateCampaign(UUID camapaignId, CampaignUpdaterReqDto dto, List<MultipartFile> images) throws EntityNotFoundException;
+    UUID updateCampaign(UUID campaignId, CampaignUpdaterReqDto dto, List<MultipartFile> images) throws EntityNotFoundException;
 
     void deleteCampaign(UUID id) throws EntityNotFoundException;
 

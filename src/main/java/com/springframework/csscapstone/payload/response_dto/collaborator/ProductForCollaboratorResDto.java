@@ -26,7 +26,7 @@ public class ProductForCollaboratorResDto implements Serializable {
     private final ProductStatus productStatus;
     private final List<ProductImageBasicDto> image;
     private final CategoryBasicDto category;
-    private final RequestSellingProductInnerResDto request;
+//    private final RequestSellingProductInnerResDto request;
     public ProductForCollaboratorResDto(
             @JsonProperty("id") UUID id,
             @JsonProperty("name") String name,
@@ -37,8 +37,8 @@ public class ProductForCollaboratorResDto implements Serializable {
             @JsonProperty("pointSale") Double pointSale,
             @JsonProperty("productStatus") ProductStatus productStatus,
             @JsonProperty("image") List<ProductImageBasicDto> image,
-            @JsonProperty("category") CategoryBasicDto category,
-            @JsonProperty("request") RequestSellingProductInnerResDto request) {
+            @JsonProperty("category") CategoryBasicDto category
+    ) {
         this.id = id;
         this.name = name;
         this.brand = brand;
@@ -49,7 +49,6 @@ public class ProductForCollaboratorResDto implements Serializable {
         this.productStatus = productStatus;
         this.image = image;
         this.category = category;
-        this.request = request;
     }
 
     @Data

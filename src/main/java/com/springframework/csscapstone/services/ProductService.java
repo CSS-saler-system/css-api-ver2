@@ -71,5 +71,7 @@ public interface ProductService {
 
     PageImplResDto<ProductForCollaboratorResDto> pageProductWithNoRegisteredByEnterpriseAndCollaborator(
             UUID collaboratorId, UUID enterpriseId, Integer pageNumber, Integer pageSize);
+    PageImplResDto<ProductForCollaboratorResDto> pageProductWithRegisteredByEnterpriseAndCollaborator(
+            UUID collaboratorId, UUID enterpriseId, Integer pageNumber, Integer pageSize);
 
 }

@@ -26,6 +26,7 @@ public class CollaboratorProductController {
 
     /**
      * todo Controller get list Product by enterprise id
+     *
      * @param enterpriseId
      * @param name
      * @param brand
@@ -79,10 +80,23 @@ public class CollaboratorProductController {
         return ok(result);
     }
 
-    @GetMapping(V3_PRODUCT_List_BY_ENTERPRISE_NOT_REGISTERED + "/{enterpriseId}")
-    public ResponseEntity<?> getProductById(
-            @PathVariable("enterpriseId") UUID id) throws ProductNotFoundException {
-//        this.productService.
-        return ok(productService.findById(id));
+    @GetMapping(V3_PRODUCT_List_BY_ENTERPRISE_NOT_REGISTERED + "/{collaboratorId}/product-of/{enterpriseId}")
+    public ResponseEntity<?> getProductsNotRegisterByCollaborator(
+            @PathVariable("collaboratorId") UUID collaboratorId,
+            @PathVariable("enterpriseId") UUID enterpriseId,
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize) throws ProductNotFoundException {
+        return ok(productService.pageProductWithNoRegisteredByEnterpriseAndCollaborator(
+                collaboratorId, enterpriseId, pageNumber, pageSize));
+    }
+
+    @GetMapping(V3_PRODUCT_List_BY_ENTERPRISE_REGISTERED + "/{collaboratorId}/product-of/{enterpriseId}")
+    public ResponseEntity<?> getProductRegisterByCollaborator(
+            @PathVariable("collaboratorId") UUID collaboratorId,
+            @PathVariable("enterpriseId") UUID enterpriseId,
+            @RequestParam(name = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(name = "pageSize", required = false) Integer pageSize) throws ProductNotFoundException {
+        return ok(productService.pageProductWithRegisteredByEnterpriseAndCollaborator(
+                        collaboratorId, enterpriseId, pageNumber, pageSize));
     }
 }
