@@ -4,6 +4,7 @@ import com.springframework.csscapstone.data.status.ProductStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.ProductUpdaterReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
+import com.springframework.csscapstone.payload.response_dto.collaborator.ProductForCollaboratorResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductCountOrderResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductDetailEnterpriseDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResDto;
@@ -31,7 +32,7 @@ public interface ProductService {
             Integer pageNumber,
             Integer pageSize);
 
-    PageImplResDto<ProductResDto> findAllProductByCollaborator(
+    PageImplResDto<ProductResDto> findAllProductForCollaborator(
 //            UUID enterpriseId,
             String name,
             String brand,
@@ -67,5 +68,8 @@ public interface ProductService {
     PageImplResDto<ProductCountOrderResDto> getListProductWithCountOrder(
             UUID id, LocalDate startDate, LocalDate endDate, Integer pageNumber, Integer pageSize)
             throws AccountNotFoundException;
+
+    PageImplResDto<ProductForCollaboratorResDto> pageProductWithNoRegisteredByEnterpriseAndCollaborator(
+            UUID collaboratorId, UUID enterpriseId, Integer pageNumber, Integer pageSize);
 
 }

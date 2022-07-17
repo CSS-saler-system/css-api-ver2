@@ -2,10 +2,7 @@ package com.springframework.csscapstone.services.impl;
 
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.dao.specifications.ProductSpecifications;
-import com.springframework.csscapstone.data.domain.Account;
-import com.springframework.csscapstone.data.domain.Category;
-import com.springframework.csscapstone.data.domain.Product;
-import com.springframework.csscapstone.data.domain.ProductImage;
+import com.springframework.csscapstone.data.domain.*;
 import com.springframework.csscapstone.data.repositories.*;
 import com.springframework.csscapstone.data.status.OrderStatus;
 import com.springframework.csscapstone.data.status.ProductImageType;
@@ -14,6 +11,7 @@ import com.springframework.csscapstone.payload.queries.NumberProductOrderedQuery
 import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.ProductUpdaterReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
+import com.springframework.csscapstone.payload.response_dto.collaborator.ProductForCollaboratorResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductCountOrderResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductDetailEnterpriseDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResDto;
@@ -105,15 +103,14 @@ public class ProductServiceImpl implements ProductService {
 
         return getProductResDtoPageImplResDto(pageNumber, pageSize, search);
     }
-
+    //TODO For Collaborator get all product
     @Override
-    public PageImplResDto<ProductResDto> findAllProductByCollaborator(
+    public PageImplResDto<ProductResDto> findAllProductForCollaborator(
             String name, String brand, Long inStock, Double minPrice, Double maxPrice,
             Double minPoint, Double maxPoint,
             Integer pageNumber, Integer pageSize) {
 
         Specification<Product> search = Specification
-//                .where(ProductSpecifications.enterpriseId(enterpriseId))
                 .where(StringUtils.isBlank(name) ? null : ProductSpecifications.nameContains(name))
                 .and(StringUtils.isBlank(brand) ? null : ProductSpecifications.brandContains(brand))
                 .and(Objects.isNull(minPrice) ? null : ProductSpecifications.priceGreaterThan(minPrice))
@@ -272,6 +269,25 @@ public class ProductServiceImpl implements ProductService {
 
         return new PageImplResDto<>(content, page.getNumber(), content.size(), page.getTotalElements(),
                 page.getTotalPages(), page.isLast(), page.isFirst());
+    }
+
+    @Override
+    public PageImplResDto<ProductForCollaboratorResDto> pageProductWithNoRegisteredByEnterpriseAndCollaborator(
+            UUID collaboratorId, UUID enterpriseId, Integer pageNumber, Integer pageSize) {
+        pageNumber = Objects.isNull(pageNumber) || pageNumber < 1  ? 1 : pageNumber;
+        pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
+
+        Page<Product> page = this.productRepository.getAllProductNotRegister(
+                collaboratorId, enterpriseId, PageRequest.of(pageNumber - 1, pageSize));
+
+        List<ProductForCollaboratorResDto> result = page.getContent()
+                .stream()
+                .sorted(Comparator.comparing(Product::getPointSale).reversed())
+                .map(ProductMapper.INSTANCE::productToProductForCollaboratorResDto)
+                .collect(toList());
+
+        return new PageImplResDto<>(result, page.getNumber() + 1, result.size(),
+                page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
     }
 
     private Product imageHandler(List<MultipartFile> normalType, List<MultipartFile> certificationType, Product entity) {

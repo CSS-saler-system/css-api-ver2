@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.security.auth.login.AccountNotFoundException;
@@ -24,9 +25,11 @@ public class CollaboratorEnterpriseController {
     private final AccountService accountService;
 
     @GetMapping(V3_LIST_ACCOUNT)
-    public ResponseEntity<?> getListAccountEnterprise() {
-//        return ok(accountService.getAllHavingEnterpriseRole());
-        return null;
+    public ResponseEntity<?> getListAccountEnterprise(
+            @RequestParam(value = "pageNumber", required = false) Integer  pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize
+    ) {
+        return ok(accountService.getAllHavingEnterpriseRole(pageNumber, pageSize));
     }
 
     @GetMapping(V3_ENTERPRISE_ID + "/{enterpriseId}")

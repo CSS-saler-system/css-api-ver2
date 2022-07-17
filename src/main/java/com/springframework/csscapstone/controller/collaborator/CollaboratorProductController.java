@@ -1,7 +1,6 @@
 package com.springframework.csscapstone.controller.collaborator;
 
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
-import com.springframework.csscapstone.payload.response_dto.enterprise.ProductCountOrderResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResDto;
 import com.springframework.csscapstone.services.ProductService;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
@@ -14,12 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.security.auth.login.AccountNotFoundException;
-import javax.validation.Valid;
-import javax.validation.constraints.Pattern;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.UUID;
 
 import static com.springframework.csscapstone.config.constant.ApiEndPoint.Product.*;
@@ -46,7 +39,7 @@ public class CollaboratorProductController {
      */
 
     @SneakyThrows
-    @GetMapping(V3_PRODUCT_List_By_ENTERPRISE + "/{enterpriseId}")
+    @GetMapping(V3_PRODUCT_List_BY_ENTERPRISE + "/{enterpriseId}")
     public ResponseEntity<?> getListProductDto(
             @PathVariable("enterpriseId") UUID enterpriseId,
             @RequestParam(value = "productName", required = false) String name,
@@ -79,14 +72,17 @@ public class CollaboratorProductController {
             @RequestParam(value = "pageSize", required = false) Integer pageSize
     ) {
 
-        PageImplResDto<ProductResDto> result = productService.findAllProductByCollaborator(
+        PageImplResDto<ProductResDto> result = productService.findAllProductForCollaborator(
                 name, brand, inStock, minPrice, maxPrice,
                 minPointSale, maxPointSale,
                 pageNumber, pageSize);
         return ok(result);
     }
-    @GetMapping(V3_GET_PRODUCT + "/{productId}")
-    public ResponseEntity<?> getProductById(@PathVariable("productId") UUID id) throws ProductNotFoundException {
+
+    @GetMapping(V3_PRODUCT_List_BY_ENTERPRISE_NOT_REGISTERED + "/{enterpriseId}")
+    public ResponseEntity<?> getProductById(
+            @PathVariable("enterpriseId") UUID id) throws ProductNotFoundException {
+//        this.productService.
         return ok(productService.findById(id));
     }
 }

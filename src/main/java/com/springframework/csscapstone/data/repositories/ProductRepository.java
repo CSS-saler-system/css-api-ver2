@@ -4,6 +4,8 @@ import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.Category;
 import com.springframework.csscapstone.data.domain.Product;
 import org.hibernate.annotations.Parameter;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -16,28 +18,44 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Transactional(readOnly = true)
 public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpecificationExecutor<Product> {
     String CATEGORY_NAME = "tuple_categories";
     String PRODUCT_LIST = "tuple_products";
-    @Transactional(readOnly = true)
+
     List<Product> findProductByCategory(Category category);
-    @Transactional(readOnly = true)
+
+
     @Query("SELECT p FROM Product p WHERE p.name LIKE CONCAT('%',:name,'%')")
     List<Product> findProductByNameLike(@Param("name") String name);
 
-    @Transactional(readOnly = true)
+
     @Query("SELECT DISTINCT p " +
             "FROM Product p " +
             "LEFT JOIN FETCH p.image " +
             "WHERE p.id = :id")
     Optional<Product> findProductFetchJoinImageAndCategoryAccountById(@Param("id") UUID id);
 
-    @Query("SELECT p.category.categoryName AS "+ CATEGORY_NAME + ", " +
+    @Query("SELECT p.category.categoryName AS " + CATEGORY_NAME + ", " +
             "p AS " + PRODUCT_LIST + " " +
             "FROM Product p " +
             "WHERE p.account.id = :enterpriseId " +
             "GROUP BY p.category, p")
     List<Tuple> getProductByCategoryAndEnterprise(UUID enterpriseId);
+
+
+    /**
+     UUID.fromString("5a741a45-664c-b140-873b-3e3b7cc4d04f"),
+     UUID.fromString("8b37872e-b974-4e04-a485-cedfee79a511"),
+     */
+    @Query(value = "SELECT DISTINCT r.product FROM RequestSellingProduct r " +
+            "WHERE r.account.id = :collaboratorId " +
+            "AND r.product.account.id = :enterpriseId " +
+            "AND r.requestStatus = 'REGISTERED'")
+    Page<Product> getAllProductNotRegister(
+            @Param("collaboratorId") UUID collaboratorId,
+            @Param("enterpriseId") UUID enterpriseId,
+            Pageable pageable);
 
 
 }

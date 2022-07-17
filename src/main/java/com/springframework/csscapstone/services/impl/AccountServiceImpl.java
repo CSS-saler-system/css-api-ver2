@@ -68,7 +68,7 @@ import static java.util.stream.Collectors.toList;
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
     private static final String prefixPhoneNumber = "+84";
-    private static final String enterpriseRole = "Enterprise";
+    private static final String ENTERPRISE_ROLE = "Enterprise";
     public static final int DEFAULT_PAGE_NUMBER = 1;
     public static final int DEFAULT_PAGE_SIZE = 10;
     public static final int SHIFT_TO_ACTUAL_PAGE = 1;
@@ -300,7 +300,7 @@ public class AccountServiceImpl implements AccountService {
 
 
         Page<Account> page = this.accountRepository
-                .findAccountByRole(enterpriseRole, PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize));
+                .findAccountByRole(ENTERPRISE_ROLE, PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize));
 
         List<EnterpriseResDto> data = page.getContent().stream()
                 .map(MapperDTO.INSTANCE::toEnterpriseResDto).collect(toList());
