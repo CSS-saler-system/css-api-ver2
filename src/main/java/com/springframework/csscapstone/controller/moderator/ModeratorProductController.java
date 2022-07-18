@@ -2,6 +2,7 @@ package com.springframework.csscapstone.controller.moderator;
 
 import com.springframework.csscapstone.data.status.ProductStatus;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
+import com.springframework.csscapstone.payload.response_dto.admin.ProductForModeratorResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResDto;
 import com.springframework.csscapstone.services.ProductService;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductInvalidException;
@@ -56,6 +57,19 @@ public class ModeratorProductController {
     public ResponseEntity<?> disableProduct(@PathVariable("productId") UUID productId) {
         productService.changeStatusProduct(productId, ProductStatus.DISABLE);
         return ok("If product id exists in our database,status of product will changed");
+    }
+
+    @GetMapping(V4_LIST_PRODUCT)
+    public ResponseEntity<?> getAllProduct(
+            @RequestParam(value = "productName", required = false) String name,
+            @RequestParam(value = "enterpriseName", required = false) String enterpriseName,
+            @RequestParam(value = "brand", required = false) String brand,
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize
+    ) {
+        PageImplResDto<ProductForModeratorResDto> result = this.productService
+                .pageAllForProductForModerator(name, enterpriseName, brand, pageNumber, pageSize);
+        return ok(result);
     }
 
 }

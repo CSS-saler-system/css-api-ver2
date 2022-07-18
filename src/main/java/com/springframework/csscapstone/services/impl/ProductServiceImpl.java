@@ -11,6 +11,7 @@ import com.springframework.csscapstone.payload.queries.NumberProductOrderedQuery
 import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.ProductUpdaterReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
+import com.springframework.csscapstone.payload.response_dto.admin.ProductForModeratorResDto;
 import com.springframework.csscapstone.payload.response_dto.collaborator.ProductForCollaboratorResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductCountOrderResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductDetailEnterpriseDto;
@@ -24,6 +25,7 @@ import com.springframework.csscapstone.utils.exception_utils.product_exception.P
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperQueriesDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -103,6 +105,7 @@ public class ProductServiceImpl implements ProductService {
 
         return getProductResDtoPageImplResDto(pageNumber, pageSize, search);
     }
+
     //TODO For Collaborator get all product
     @Override
     public PageImplResDto<ProductResDto> findAllProductForCollaborator(
@@ -274,7 +277,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public PageImplResDto<ProductForCollaboratorResDto> pageProductWithNoRegisteredByEnterpriseAndCollaborator(
             UUID collaboratorId, UUID enterpriseId, Integer pageNumber, Integer pageSize) {
-        pageNumber = Objects.isNull(pageNumber) || pageNumber < 1  ? 1 : pageNumber;
+        pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
 
         Page<Product> page = this.productRepository.getAllProductNotRegister(
@@ -293,7 +296,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public PageImplResDto<ProductForCollaboratorResDto> pageProductWithRegisteredByEnterpriseAndCollaborator(
             UUID collaboratorId, UUID enterpriseId, Integer pageNumber, Integer pageSize) {
-        pageNumber = Objects.isNull(pageNumber) || pageNumber < 1  ? 1 : pageNumber;
+        pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
         Page<Product> page = this.productRepository.getAllProductRegister(
                 collaboratorId, enterpriseId, PageRequest.of(pageNumber - 1, pageSize));
@@ -304,6 +307,27 @@ public class ProductServiceImpl implements ProductService {
                 .collect(toList());
         return new PageImplResDto<>(result, page.getNumber() + 1, result.size(),
                 page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
+    }
+
+    @Override
+    public PageImplResDto<ProductForModeratorResDto> pageAllForProductForModerator(
+            String name, String nameEnterprise, String brand,
+            Integer pageNumber, Integer pageSize) {
+
+        pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
+        pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
+
+        Specification<Product> search = Specification
+                .where(StringUtils.isBlank(name) ? null : ProductSpecifications.nameContains(name))
+                .and(StringUtils.isBlank(brand) ? null : ProductSpecifications.brandContains(brand))
+                .and(StringUtils.isBlank(nameEnterprise) ? null : ProductSpecifications.enterpriseName(nameEnterprise));
+        Page<Product> page = this.productRepository.findAll(search, PageRequest.of(pageNumber - 1, pageSize));
+        List<ProductForModeratorResDto> result = page.getContent()
+                .stream()
+                .map(ProductMapper.INSTANCE::productToProductForModeratorResDto)
+                .collect(toList());
+        return new PageImplResDto<>(result, page.getNumber() + 1, result.size(),
+                page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isFirst());
     }
 
     private Product imageHandler(List<MultipartFile> normalType, List<MultipartFile> certificationType, Product entity) {

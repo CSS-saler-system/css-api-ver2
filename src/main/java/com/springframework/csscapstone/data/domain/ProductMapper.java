@@ -1,5 +1,6 @@
 package com.springframework.csscapstone.data.domain;
 
+import com.springframework.csscapstone.payload.response_dto.admin.ProductForModeratorResDto;
 import com.springframework.csscapstone.payload.response_dto.collaborator.ProductForCollaboratorResDto;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
@@ -27,4 +28,11 @@ public interface ProductMapper {
     default void linkRequestSellingProducts(@MappingTarget Product product) {
         product.getRequestSellingProducts().forEach(requestSellingProduct -> requestSellingProduct.setProduct(product));
     }
+
+    Product productForModeratorResDtoToProduct(ProductForModeratorResDto productForModeratorResDto);
+
+    ProductForModeratorResDto productToProductForModeratorResDto(Product product);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    Product updateProductFromProductForModeratorResDto(ProductForModeratorResDto productForModeratorResDto, @MappingTarget Product product);
 }

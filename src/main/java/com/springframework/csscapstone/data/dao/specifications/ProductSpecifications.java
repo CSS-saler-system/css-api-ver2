@@ -1,9 +1,6 @@
 package com.springframework.csscapstone.data.dao.specifications;
 
-import com.springframework.csscapstone.data.domain.Account;
-import com.springframework.csscapstone.data.domain.Category_;
-import com.springframework.csscapstone.data.domain.Product;
-import com.springframework.csscapstone.data.domain.Product_;
+import com.springframework.csscapstone.data.domain.*;
 import com.springframework.csscapstone.data.status.ProductStatus;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -25,6 +22,9 @@ public final class ProductSpecifications {
 
     public static Specification<Product> enterpriseId(Account account) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Product_.ACCOUNT), account);
+    }
+    public static Specification<Product> enterpriseName(String enterpriseName) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.like(root.get(Product_.ACCOUNT).get(Account_.NAME), contains(enterpriseName));
     }
 
     public static Specification<Product> nameContains(String searchName) {

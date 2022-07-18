@@ -56,7 +56,7 @@ public class ApiEndPoint {
     public static class Account {
         public static final String v1_handler = ADMIN + "/account";
         public static final String v2_handler = ENTERPRISE + "/collaborator";
-        public static final String v3_handler = COLLABORATOR + "/customer";
+        public static final String v3_handler = COLLABORATOR;
         public static final String v4_handler = MODERATOR + "/enterprise";
 
 

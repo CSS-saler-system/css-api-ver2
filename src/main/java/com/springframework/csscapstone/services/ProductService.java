@@ -4,6 +4,7 @@ import com.springframework.csscapstone.data.status.ProductStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.ProductUpdaterReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
+import com.springframework.csscapstone.payload.response_dto.admin.ProductForModeratorResDto;
 import com.springframework.csscapstone.payload.response_dto.collaborator.ProductForCollaboratorResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductCountOrderResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductDetailEnterpriseDto;
@@ -73,5 +74,8 @@ public interface ProductService {
             UUID collaboratorId, UUID enterpriseId, Integer pageNumber, Integer pageSize);
     PageImplResDto<ProductForCollaboratorResDto> pageProductWithRegisteredByEnterpriseAndCollaborator(
             UUID collaboratorId, UUID enterpriseId, Integer pageNumber, Integer pageSize);
+
+    PageImplResDto<ProductForModeratorResDto> pageAllForProductForModerator(
+            String name, String nameEnterprise, String brand, Integer pageNumber, Integer pageSize);
 
 }
