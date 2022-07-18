@@ -18,6 +18,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 public class WebScheduler {
     private final CampaignService campaignService;
 
+//    @Scheduled(cron = "*/10 * * * * *") // 0 0 0 * * *
     @Scheduled(cron = "${cron_time}") // 0 0 0 * * *
     public void finishCampaignConfiguration() {
         campaignService.scheduleCloseCampaign();

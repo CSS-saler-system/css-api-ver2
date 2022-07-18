@@ -43,9 +43,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static com.springframework.csscapstone.utils.exception_catch_utils.ExceptionCatchHandler.completeSchedule;
 
 
 @Service
@@ -81,11 +84,19 @@ public class CampaignServiceImpl implements CampaignService {
             () -> new EntityNotFoundException(MessagesUtils.getMessage(MessageConstant.Campaign.NOT_FOUND));
 
 
+    private final Function<UUID,Supplier<EntityNotFoundException>> entityNotFoundExceptionSupplier =
+            (id) -> () -> new EntityNotFoundException("The enterprise with id: " + id + " was not found!!!");
+
+
+    private final Supplier<RuntimeException> weirdError = () -> new RuntimeException("Some thing went wrong in handler image");
+
+
+    Supplier<EntityNotFoundException> notFoundException = () -> new EntityNotFoundException("The campaign was not found");
+
     @Override
     public PageImplResDto<CampaignResDto> findCampaignWithoutEnterpriseId(
             String name, LocalDateTime date, Long kpi,
             CampaignStatus status, Integer pageNumber, Integer pageSize) {
-
 
 
         Specification<Campaign> condition = Specification
@@ -131,14 +142,14 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
-    public PageImplResDto<CampaignResDto>  findCampaign(
+    public PageImplResDto<CampaignResDto> findCampaign(
             UUID enterpriseId, String name, LocalDateTime startDate,
             LocalDateTime endDate, Long minKpi, Long maxKpi, CampaignStatus status,
             Integer pageNumber, Integer pageSize) {
 
         Account enterprise = this.accountRepository.findById(enterpriseId)
                 .filter(acc -> acc.getRole().getName().equals("Enterprise"))
-                .orElseThrow(() -> new EntityNotFoundException("The Enterprise with id: " + enterpriseId + " was not found"));
+                .orElseThrow(entityNotFoundExceptionSupplier.apply(enterpriseId));
 
         Specification<Campaign> condition = Specification
                 .where(CampaignSpecifications.equalsEnterpriseId(enterprise))
@@ -154,7 +165,8 @@ public class CampaignServiceImpl implements CampaignService {
     @Override
     public CampaignDetailDto findById(UUID id) throws EntityNotFoundException {
         return campaignRepository
-                .findById(id).map(CampaignMapper.INSTANCE::toCampaignDetailDto)
+                .findById(id)
+                .map(CampaignMapper.INSTANCE::toCampaignDetailDto)
                 .orElseThrow(campaignNotFoundException);
     }
 
@@ -167,9 +179,7 @@ public class CampaignServiceImpl implements CampaignService {
                 .findById(dto.getEnterprise().getEnterpriseId())
                 .filter(acc -> acc.getRole().getName().equals("Enterprise"))
                 .filter(Account::getIsActive)
-                .orElseThrow(() ->
-                        new EntityNotFoundException("The enterprise with id: " +
-                                dto.getEnterprise().getEnterpriseId() + " was not found!!!"));
+                .orElseThrow(entityNotFoundExceptionSupplier.apply(dto.getEnterprise().getEnterpriseId()));
 
         List<Product> productList = this.productRepository
                 .findAllById(dto.getProducts().stream()
@@ -217,13 +227,12 @@ public class CampaignServiceImpl implements CampaignService {
 //        }
 
         entity.setName(dto.getName())
-//                .setImage(dto.getImage())
                 .setStartDate(dto.getStartDate())
                 .setEndDate(dto.getEndDate())
                 .setCampaignShortDescription(dto.getCampaignShortDescription())
                 .setCampaignDescription(dto.getCampaignDescription())
                 .setKpiSaleProduct(dto.getKpiSaleProduct());
-//                .setCampaignStatus(dto.getCampaignStatus());
+
         //todo image handler:
         Campaign campaign = handlerImage(images, entity);
         this.campaignRepository.save(campaign);
@@ -242,20 +251,19 @@ public class CampaignServiceImpl implements CampaignService {
     @Transactional
     @Override
     public void scheduleCloseCampaign() {
-        System.out.println("I'm running");
         this.campaignRepository
                 .findAll().stream()
-//                .filter(campaign -> campaign.getStartDate().isBefore(LocalDateTime.now()))
                 .filter(campaign -> campaign.getEndDate().isBefore(LocalDateTime.now()))
                 .filter(campaign -> campaign.getCampaignStatus().equals(CampaignStatus.CREATED))
                 .map(Campaign::getId)
-                .forEach(uuid -> {
-                    try {
-                        this.completeCampaign(uuid);
-                    } catch (JsonProcessingException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
+                .forEach(completeSchedule(this::completeCampaign));
+//                .forEach(uuid -> {
+//                    try {
+//                        this.completeCampaign(uuid);
+//                    } catch (JsonProcessingException e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                });
     }
 
     /**
@@ -316,8 +324,8 @@ public class CampaignServiceImpl implements CampaignService {
 
                 .flatMap(entry -> this.accountRepository
                         .findById(entry.getKey())
-                        .map(Stream::of).orElseGet(Stream::empty))
-
+                        .map(Stream::of)
+                        .orElseGet(Stream::empty))
                 .collect(Collectors.toList());
 
         if (accounts.isEmpty()) throw handlerNotEnoughKPIException.get();
@@ -333,6 +341,7 @@ public class CampaignServiceImpl implements CampaignService {
 
         this.campaignRepository.save(campaign.setCampaignStatus(CampaignStatus.FINISHED));
     }
+
     @Transactional
     @Override
     public void rejectCampaignInDate() {
@@ -351,6 +360,7 @@ public class CampaignServiceImpl implements CampaignService {
                 .map(this.campaignRepository::save)
                 .orElseThrow(campaignNotFoundException);
     }
+
     @Transactional
     @Override
     public void sentCampaign(UUID campaignId) {
@@ -358,7 +368,7 @@ public class CampaignServiceImpl implements CampaignService {
                 .findById(campaignId)
                 .map(camp -> camp.setCampaignStatus(CampaignStatus.SENT))
                 .map(this.campaignRepository::save)
-                .orElseThrow(() -> new EntityNotFoundException("The campaign was not found"));
+                .orElseThrow(notFoundException);
     }
 
     private PageImplResDto<CampaignResDto> getCampaignResDtoPageImplResDto(
@@ -388,7 +398,7 @@ public class CampaignServiceImpl implements CampaignService {
                             .orElseGet(Stream::empty))
                     .filter(Objects::nonNull)
                     .map(campaign::addImage)
-                    .findFirst().orElseThrow(() -> new RuntimeException("Some thing went wrong in handler image"));
+                    .findFirst().orElseThrow(weirdError);
         }
         return campaign;
     }

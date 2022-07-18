@@ -55,4 +55,14 @@ public class ExceptionCatchHandler {
             return x;
         };
     }
+
+    public static <T> Consumer<T> completeSchedule(JsonProcessingExceptionUtils<T> utils) {
+        return x -> {
+            try {
+                utils.consume(x);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        };
+    }
 }
