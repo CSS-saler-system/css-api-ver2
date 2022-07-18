@@ -56,10 +56,11 @@ public interface MapperDTO {
     //TODO [ROLE] - Collaborator
     CustomerResDto toCustomerResDto(Customer entity);
 
-    @Mapping(target = "avatar", source = "avatar")
-    @Mapping(target = "license", source = "license")
-    @Mapping(target = "idCard", source = "idCard")
-    EnterpriseResDto toEnterpriseResDto(Account entity);
+    @Mapping(target = "avatar", source = "entity.avatar")
+    @Mapping(target = "license", source = "entity.license")
+    @Mapping(target = "idCard", source = "entity.idCard")
+    @Mapping(target = "quantityCollaborator", source = "quantityCollab")
+    EnterpriseResDto toEnterpriseResDto(Account entity, Long quantityCollab);
 
     //todo mapper entity to <ENTERPRISE_DTO>
     @Mapping(target = "avatar", source = "avatar")

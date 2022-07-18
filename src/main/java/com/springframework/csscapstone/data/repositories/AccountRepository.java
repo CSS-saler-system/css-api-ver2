@@ -1,9 +1,7 @@
 package com.springframework.csscapstone.data.repositories;
 
 import com.springframework.csscapstone.data.domain.Account;
-import com.springframework.csscapstone.data.status.RequestStatus;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -11,12 +9,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Tuple;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 @Transactional(readOnly = true)
 public interface AccountRepository extends JpaRepository<Account, UUID>, JpaSpecificationExecutor<Account> {
-//    Optional<Account> findAccountByUsername(String username);
+    String QUERY_ACCOUNT = "tuple_account";
+    String QUERY_COUNT_REQ = "tuple_count_req";
 
     Optional<Account> findAccountByEmail(String email);
     Optional<Account> findAccountByPhone(String phone);
@@ -29,12 +29,15 @@ public interface AccountRepository extends JpaRepository<Account, UUID>, JpaSpec
 
     Optional<List<Account>> findAccountByEmailOrPhone(String email, String phone);
 
-    @Query(value = "SELECT a " +
+    @Query(value = "SELECT a.id AS " + QUERY_ACCOUNT + ", COUNT(req) AS " + QUERY_COUNT_REQ + " " +
             "FROM Account a " +
-            "LEFT JOIN FETCH a.images " +
-            "WHERE a.role.name = :role",
-    countQuery = "SELECT count(a) FROM Account a WHERE a.role.name =: role")
-    Page<Account> findAccountByRole(@Param("role") String role, Pageable pageable);
+            "JOIN a.products p " +
+            "JOIN p.requestSellingProducts req " +
+            "WHERE a.role.name = 'Enterprise' " +
+            "AND req.requestStatus = 'REGISTERED' " +
+            "GROUP BY a.id",
+    countQuery = "SELECT count(a) FROM Account a WHERE a.role.name = 'Enterprise'")
+    Page<Tuple> findAccountEnterpriseForCollaborator(Pageable pageable);
 
     @Query("SELECT a FROM Account a WHERE a.role.name =: role")
     List<Account> findAllFetchJoinRole(@Param("role") String roleName);

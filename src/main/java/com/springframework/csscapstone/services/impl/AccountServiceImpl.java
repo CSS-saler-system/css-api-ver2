@@ -299,15 +299,19 @@ public class AccountServiceImpl implements AccountService {
         pageSize = Objects.isNull(pageSize) || pageSize <= DEFAULT_PAGE_SIZE ? DEFAULT_PAGE_SIZE : pageSize;
 
 
-        Page<Account> page = this.accountRepository
-                .findAccountByRole(ENTERPRISE_ROLE, PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize));
+        Page<Tuple> page = this.accountRepository
+                .findAccountEnterpriseForCollaborator(PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize));
 
-        List<EnterpriseResDto> data = page.getContent().stream()
-                .map(MapperDTO.INSTANCE::toEnterpriseResDto).collect(toList());
+//        List<EnterpriseResDto> data = page
+//                .getContent()
+//                .stream()
+//                .map(MapperDTO.INSTANCE::toEnterpriseResDto)
+//                .collect(toList());
 
-        return new PageEnterpriseResDto(
-                data, page.getNumber() + SHIFT_TO_ACTUAL_PAGE, page.getSize(),
-                page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
+//        return new PageEnterpriseResDto(
+//                data, page.getNumber() + SHIFT_TO_ACTUAL_PAGE, page.getSize(),
+//                page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
+        return null;
     }
 
     /**

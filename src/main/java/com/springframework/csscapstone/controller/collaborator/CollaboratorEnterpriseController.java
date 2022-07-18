@@ -23,7 +23,7 @@ import static org.springframework.http.ResponseEntity.ok;
 @RequiredArgsConstructor
 public class CollaboratorEnterpriseController {
     private final AccountService accountService;
-
+    
     @GetMapping(V3_LIST_ACCOUNT)
     public ResponseEntity<?> getListAccountEnterprise(
             @RequestParam(value = "pageNumber", required = false) Integer  pageNumber,
@@ -38,7 +38,5 @@ public class CollaboratorEnterpriseController {
         AccountResDto result = this.accountService.getById(enterpriseId);
         return ok(result);
     }
-
-//    @GetMapping()
 
 }

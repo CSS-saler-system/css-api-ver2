@@ -1,13 +1,11 @@
 package com.springframework.csscapstone.payload.response_dto.collaborator;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import com.springframework.csscapstone.data.status.AccountImageType;
 import com.springframework.csscapstone.payload.basic.AccountImageBasicDto;
 import lombok.Data;
 
@@ -23,6 +21,7 @@ public class EnterpriseResDto implements Serializable {
     private final String email;
     private final String address;
     private final String description;
+    private final Long quantityCollaborator;
 
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
@@ -40,6 +39,7 @@ public class EnterpriseResDto implements Serializable {
             @JsonProperty("email") String email,
             @JsonProperty("address") String address,
             @JsonProperty("description") String description,
+            @JsonProperty("quantityCollaborator") Long quantityCollaborator,
             @JsonProperty("dob") LocalDate dob,
             @JsonProperty("avatars") AccountImageBasicDto avatar,
             @JsonProperty("licenses") AccountImageBasicDto license,
@@ -50,6 +50,7 @@ public class EnterpriseResDto implements Serializable {
         this.email = email;
         this.address = address;
         this.description = description;
+        this.quantityCollaborator = quantityCollaborator;
         this.dob = dob;
         this.avatar = avatar;
         this.license = license;

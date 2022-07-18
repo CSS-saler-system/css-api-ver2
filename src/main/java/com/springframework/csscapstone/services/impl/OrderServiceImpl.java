@@ -18,15 +18,14 @@ import com.springframework.csscapstone.utils.exception_utils.order_exception.Ord
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -41,11 +40,28 @@ public class OrderServiceImpl implements OrderService {
     private final AccountRepository accountRepository;
     private final OrderDetailRepository orderDetailRepository;
     private final CustomerRepository customerRepository;
-
     private final ProductRepository productRepository;
-
-//    private final FirebaseMe
-
+    private final int INVALID_PAGE = 1;
+    private final int DEFAULT_PAGE_NUMBER = 1;
+    private final int SHIFT_TO_ACTUAL_PAGE = 1;
+    private final int DEFAULT_PAGE_SIZE = 10;
+    private final Supplier<RuntimeException> notFoundOrderException =
+            () -> new RuntimeException("The Order not found or in processing so not allow to modified");
+    private final Function<UUID, Supplier<RuntimeException>> notFoundOrderWithIdException =
+            (id) -> () -> new RuntimeException("No have order by id: " + id + " or order in pending process");
+    private final Supplier<LackPointException> handlerLackPoint =
+            () -> new LackPointException(MessagesUtils.getMessage(MessageConstant.Point.LACK_POINT));
+    private final Supplier<OrderNotFoundException> handlerOrderNotFound =
+            () -> new OrderNotFoundException(MessagesUtils.getMessage(MessageConstant.Order.NOT_FOUND));
+    private final Supplier<EntityNotFoundException> handlerNotFoundException =
+            () -> new EntityNotFoundException("The product in order detail was not found");
+    private final Supplier<RuntimeException> notSameEnterpriseException =
+            () -> new RuntimeException("Product not have same id enterprise!!!");
+    private final Supplier<RuntimeException> customerNotFoundException =
+            () -> new RuntimeException("The Customer Not Found!!!");
+    private final Function<UUID, Supplier<EntityNotFoundException>> collaboratorNotFoundException =
+            (id) -> () -> new EntityNotFoundException("The collaborator with id: " + id + " not found");
+    private final Function<UUID, Predicate<UUID>> isSameEnterpriseId = (id) -> (enterpriseId) -> !enterpriseId.equals(id);
     @Override
     public OrderResDto getOrderResDtoById(UUID id) {
         return this.orderRepository.findById(id)
@@ -59,17 +75,18 @@ public class OrderServiceImpl implements OrderService {
             UUID idCollaborator, OrderStatus orderStatus, Integer pageNumber, Integer pageSize) {
 
         Account account = this.accountRepository.findById(idCollaborator)
-                .orElseThrow(() -> new EntityNotFoundException("The collaborator with id: " + idCollaborator + " not found"));
+                .orElseThrow(collaboratorNotFoundException.apply(idCollaborator));
 
-        pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
-        pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 1 : pageSize;
+        pageNumber = Objects.isNull(pageNumber) || pageNumber < INVALID_PAGE ? DEFAULT_PAGE_NUMBER : pageNumber;
+        pageSize = Objects.isNull(pageSize) || pageSize < INVALID_PAGE ? DEFAULT_PAGE_SIZE : pageSize;
 
         Specification<Order> conditions = Specification
                 .where(Objects.isNull(orderStatus) ? null : OrdersSpecification.equalsStatus(orderStatus))
-                .and(OrdersSpecification.equalsCollaborator(account));
+                .and(OrdersSpecification.equalsCollaborator(account))
+                .and(OrdersSpecification.excludeDisableAndCancelStatus());
 
         Page<Order> orders = this.orderRepository
-                .findAll(conditions, PageRequest.of(pageNumber - 1, pageSize));
+                .findAll(conditions, PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize));
 
         List<OrderResDto> content = orders
                 .getContent()
@@ -77,46 +94,35 @@ public class OrderServiceImpl implements OrderService {
                 .map(MapperDTO.INSTANCE::toOrderResDto)
                 .collect(Collectors.toList());
 
-        return new PageImplResDto<>(content, orders.getNumber() + 1, content.size(),
+        return new PageImplResDto<>(content, orders.getNumber() + SHIFT_TO_ACTUAL_PAGE, content.size(),
                 orders.getTotalElements(), orders.getTotalPages(), orders.isFirst(), orders.isLast());
     }
 
     @Transactional
     @Override
     public UUID createOrder(OrderCreatorReqDto orderCreatorDto) {
-
-        Supplier<EntityNotFoundException> entityNotFoundException =
-                () -> new EntityNotFoundException("The collaborator with id: " + orderCreatorDto.getAccount().getAccountId() + " not found");
-
-        Supplier<RuntimeException> notSameEnterpriseException = () -> new RuntimeException("Product not have same id enterprise!!!");
-
-
         Account account = this.accountRepository
                 .findById(orderCreatorDto.getAccount().getAccountId())
-                .orElseThrow(entityNotFoundException);
-
-        Predicate<UUID> isSameEnterpriseId = enterpriseId -> !enterpriseId.equals(account.getId());
+                .orElseThrow(notFoundOrderWithIdException.apply(orderCreatorDto.getAccount().getAccountId()));
 
         Customer customer = this.customerRepository
                 .findById(orderCreatorDto.getCustomer().getCustomerId())
-                .orElseThrow(entityNotFoundException);
+                .orElseThrow(customerNotFoundException);
 
         //check field
         orderCreatorDto.getOrderDetails()
                 .stream()
                 .map(OrderCreatorReqDto.OrderDetailInnerCreatorDto::getProduct)
                 .map(OrderCreatorReqDto.OrderDetailInnerCreatorDto.ProductDto::getProductId)
-                .filter(isSameEnterpriseId)
+                .filter(isSameEnterpriseId.apply(account.getId()))
                 .findAny()
                 .orElseThrow(notSameEnterpriseException);
 
-
         //todo map<Product, quantity>
         Map<Product, Long> quantityProducts = orderCreatorDto.getOrderDetails().stream()
-                .collect(toMap(
-                        od -> this.productRepository
+                .collect(toMap(od -> this.productRepository
                                 .findById(od.getProduct().getProductId())
-                                .orElseThrow(handlerNotFoundException()),
+                                .orElseThrow(handlerNotFoundException),
                         OrderCreatorReqDto.OrderDetailInnerCreatorDto::getQuantity));
 
         List<OrderDetail> oderDetails = quantityProducts.entrySet()
@@ -160,11 +166,12 @@ public class OrderServiceImpl implements OrderService {
         Order waiting = this.orderRepository
                 .findById(dto.idCollaborator)
                 .filter(order -> order.getStatus().equals(OrderStatus.WAITING))
-                .orElseThrow(() -> new RuntimeException("The Order not found or in processing so not allow to modified"));
+                .orElseThrow(notFoundOrderException);
 
         Customer customer = this.customerRepository
                 .findById(dto.getCustomer().getCustomerId())
-                .orElseThrow(() -> new RuntimeException("The customer not found"));
+                .orElseThrow(customerNotFoundException);
+
 //        todo switch to order details to update quantity;
 //        this.orderDetailRepository
 //                        .findById(dto.getOrderDetails().get)
@@ -184,20 +191,18 @@ public class OrderServiceImpl implements OrderService {
         Order order = this.orderRepository
                 .findById(id)
                 .filter(_order -> _order.getStatus().equals(OrderStatus.WAITING))
-                .orElseThrow(() -> new RuntimeException("No have order by id: " + id + " or order in pending process"));
-
+                .orElseThrow(notFoundOrderWithIdException.apply(id));
         this.orderRepository.save(order.setStatus(OrderStatus.DISABLE));
 
     }
 
     @Override
     public Optional<UUID> updateStatusOrder(UUID id, OrderStatus status) {
-        Order order = orderRepository.findById(id).orElseThrow(() -> handlerOrderNotFound().get());
+        Order order = orderRepository.findById(id).orElseThrow(handlerOrderNotFound);
         order.setStatus(status);
         this.orderRepository.save(order);
         return Optional.of(order.getId());
     }
-
 
     //todo close order to convert point to collaborators:
 
@@ -213,7 +218,7 @@ public class OrderServiceImpl implements OrderService {
         //check order valid
         Order order = this.orderRepository.findById(orderId)
                 .filter(_order -> _order.getStatus() != OrderStatus.FINISH)
-                .orElseThrow(() -> handlerOrderNotFound().get());
+                .orElseThrow(handlerOrderNotFound);
         //get collaborator who create order
         Account collaborator = order.getAccount();
 
@@ -242,7 +247,7 @@ public class OrderServiceImpl implements OrderService {
 
         //todo point of enterprise must be large enough
         Optional.of(enterprises.get(0)).ifPresent(_enterprise -> {
-            if (_enterprise.getPoint() < totalPoint) throw handlerLackPoint().get();
+            if (_enterprise.getPoint() < totalPoint) throw handlerLackPoint.get();
 
             _enterprise.setPoint(_enterprise.getPoint() - totalPoint);
             collaborator.setPoint(collaborator.getPoint() + totalPoint);
@@ -255,11 +260,11 @@ public class OrderServiceImpl implements OrderService {
     public PageImplResDto<OrderEnterpriseManageResDto> getOrderResDtoByEnterprise(
             UUID enterpriseId, Integer pageNumber, Integer pageSize) {
 
-        pageNumber = Objects.isNull(pageNumber) || pageNumber == 0 ? 1 : pageNumber;
-        pageSize = Objects.isNull(pageSize) || pageSize == 0 ? 10 : pageSize;
+        pageNumber = Objects.isNull(pageNumber) || pageNumber < INVALID_PAGE ? DEFAULT_PAGE_NUMBER : pageNumber;
+        pageSize = Objects.isNull(pageSize) || pageSize < INVALID_PAGE ? DEFAULT_PAGE_SIZE : pageSize;
 
         Page<Order> page = this.orderRepository
-                .getOrderByEnterprise(enterpriseId, PageRequest.of(pageNumber - 1, pageSize));
+                .getOrderByEnterprise(enterpriseId, PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize));
 
         List<OrderEnterpriseManageResDto> content = page.getContent()
                 .stream()
@@ -267,7 +272,7 @@ public class OrderServiceImpl implements OrderService {
                 .collect(Collectors.toList());
 
 
-        return new PageImplResDto<>(content, page.getNumber() + 1, content.size(),
+        return new PageImplResDto<>(content, page.getNumber() + SHIFT_TO_ACTUAL_PAGE, content.size(),
                 page.getTotalElements(), page.getTotalPages(),
                 page.isFirst(), page.isLast());
     }
@@ -279,25 +284,11 @@ public class OrderServiceImpl implements OrderService {
                 .stream()
                 .collect(
                         toMap(tuple -> tuple.get(OrderRepository.ORDER_DATE, Integer.class),
-                              tuple -> tuple.get(OrderRepository.ORDER_REVENUE, Double.class)))
+                                tuple -> tuple.get(OrderRepository.ORDER_REVENUE, Double.class)))
                 .entrySet()
                 .stream()
                 .map(entry -> new EnterpriseRevenueDto(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
         return Optional.of(revenueDtos);
     }
-
-    private Supplier<LackPointException> handlerLackPoint() {
-        return () -> new LackPointException(MessagesUtils.getMessage(MessageConstant.Point.LACK_POINT));
-    }
-
-    private Supplier<OrderNotFoundException> handlerOrderNotFound() {
-        return () -> new OrderNotFoundException(
-                MessagesUtils.getMessage(MessageConstant.Order.NOT_FOUND));
-    }
-
-    private Supplier<EntityNotFoundException> handlerNotFoundException() {
-        return () -> new EntityNotFoundException("The product in order detail was not found");
-    }
-
 }
