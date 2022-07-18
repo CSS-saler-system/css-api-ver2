@@ -216,7 +216,8 @@ public class CampaignServiceImpl implements CampaignService {
 
     @Transactional
     @Override
-    public UUID updateCampaign(UUID campaignId, CampaignUpdaterReqDto dto, List<MultipartFile> images) throws EntityNotFoundException {
+    public UUID updateCampaign(UUID campaignId, CampaignUpdaterReqDto dto, List<MultipartFile> images)
+            throws EntityNotFoundException {
 
         Campaign entity = this.campaignRepository.findById(campaignId)
                 .filter(camp -> camp.getCampaignStatus().equals(CampaignStatus.CREATED))
@@ -273,7 +274,7 @@ public class CampaignServiceImpl implements CampaignService {
      */
     @Transactional
     @Override
-    public void completeCampaign(UUID id) throws JsonProcessingException {
+    public void completeCampaign(UUID id) {
         //find campaign and status not finish
         Campaign campaign = this.campaignRepository.loadFetchOnProducts(id)
                 .filter(_campaign -> Objects.nonNull(_campaign.getPrizes()))
@@ -329,7 +330,6 @@ public class CampaignServiceImpl implements CampaignService {
                 .collect(Collectors.toList());
 
         if (accounts.isEmpty()) throw handlerNotEnoughKPIException.get();
-//
 //        mapping prize by using campaign prize with greater than KPI on campaign KPI
         int count = 0;
         for (Account account : accounts) {

@@ -56,7 +56,6 @@ public class BlobUploadImages {
         CompletableFuture.runAsync(wrapVoid(() -> blobClient.upload(value.getInputStream(), value.getSize(), true)));
     }
 
-//    @SneakyThrows
     @Async("threadPoolTaskExecutor")
     public void azureProductStorageHandler(String key, MultipartFile value) {
         LOGGER.info("Thread: {}", Thread.currentThread().getName());
