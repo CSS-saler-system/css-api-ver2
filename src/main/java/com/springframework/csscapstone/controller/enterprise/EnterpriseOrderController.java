@@ -27,7 +27,7 @@ public class EnterpriseOrderController {
     @PutMapping(V2_ORDER_UPDATE_STATUS + "/{orderId}")
     public ResponseEntity<?> updateStatusOrder(
             @PathVariable("orderId") UUID id,
-            @RequestParam(value = "status", defaultValue = "CREATED") OrderStatus status) {
+            @RequestParam(value = "status", defaultValue = "PROCESSING") OrderStatus status) {
         Optional<UUID> uuid = this.orderService.updateStatusOrder(id, status);
         return ok(uuid);
     }
