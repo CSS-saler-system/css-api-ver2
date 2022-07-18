@@ -18,4 +18,11 @@ public class OrdersSpecification {
                 criteriaBuilder.equal(root.get(Order_.ACCOUNT), collaborator);
     }
 
+    public static Specification<Order> excludeDisableAndCancelStatus() {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.and(
+                        criteriaBuilder.notEqual(root.get(Order_.STATUS), OrderStatus.DISABLE),
+                        criteriaBuilder.notEqual(root.get(Order_.STATUS), OrderStatus.CANCEL));
+    }
+
 }

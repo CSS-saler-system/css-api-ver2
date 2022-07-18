@@ -361,7 +361,6 @@ public class ProductServiceImpl implements ProductService {
 
         return Optional.of(collect.keySet()
                         .stream()
-//                 .map(x -> endpoint + productContainer + "/" + x)
                         .map(name -> new ProductImage(type, endpoint + this.productContainer + "/" + name))
                         .peek(this.imageRepository::save)
                         .toArray(ProductImage[]::new)
