@@ -68,6 +68,7 @@ public class Order {
         this.customerName = customerName;
         this.deliveryPhone = deliveryPhone;
         this.deliveryAddress = deliveryAddress;
+        this.status = OrderStatus.WAITING;
     }
 
     @Override
