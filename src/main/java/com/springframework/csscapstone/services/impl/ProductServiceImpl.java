@@ -12,6 +12,7 @@ import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorR
 import com.springframework.csscapstone.payload.request_dto.enterprise.ProductUpdaterReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.admin.ProductForModeratorResDto;
+import com.springframework.csscapstone.payload.response_dto.collaborator.ProductForCollabGetDetailResDto;
 import com.springframework.csscapstone.payload.response_dto.collaborator.ProductForCollaboratorResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductCountOrderResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductDetailEnterpriseDto;
@@ -25,7 +26,6 @@ import com.springframework.csscapstone.utils.exception_utils.product_exception.P
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperQueriesDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
-import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -41,7 +41,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.Tuple;
 import javax.security.auth.login.AccountNotFoundException;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -328,6 +327,12 @@ public class ProductServiceImpl implements ProductService {
                 .collect(toList());
         return new PageImplResDto<>(result, page.getNumber() + 1, result.size(),
                 page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isFirst());
+    }
+
+    @Override
+    public Optional<ProductForCollabGetDetailResDto> findByIdForCollaborator(UUID productId) {
+        return this.productRepository.findById(productId)
+                .map(ProductMapper.INSTANCE::productToProductFoeCollabResDto);
     }
 
     private Product imageHandler(List<MultipartFile> normalType, List<MultipartFile> certificationType, Product entity) {

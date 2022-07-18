@@ -1,8 +1,10 @@
 package com.springframework.csscapstone.controller.collaborator;
 
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
+import com.springframework.csscapstone.payload.response_dto.collaborator.ProductForCollabGetDetailResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResDto;
 import com.springframework.csscapstone.services.ProductService;
+import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +28,6 @@ public class CollaboratorProductController {
 
     /**
      * todo Controller get list Product by enterprise id
-     *
      * @param enterpriseId
      * @param name
      * @param brand
@@ -38,7 +39,6 @@ public class CollaboratorProductController {
      * @param pageSize
      * @return
      */
-
     @SneakyThrows
     @GetMapping(V3_PRODUCT_List_BY_ENTERPRISE + "/{enterpriseId}")
     public ResponseEntity<?> getListProductDto(
@@ -98,5 +98,14 @@ public class CollaboratorProductController {
             @RequestParam(name = "pageSize", required = false) Integer pageSize) throws ProductNotFoundException {
         return ok(productService.pageProductWithRegisteredByEnterpriseAndCollaborator(
                         collaboratorId, enterpriseId, pageNumber, pageSize));
+    }
+
+    @GetMapping(V3_GET_PRODUCT + "/{productId}")
+    public ResponseEntity<?> getSpecificedProduct(
+            @PathVariable("productId") UUID productId
+    ) {
+        ProductForCollabGetDetailResDto res = this.productService.findByIdForCollaborator(productId)
+                .orElseThrow(() -> new EntityNotFoundException("The product with id: " + productId + " was not found!!!"));
+        return ok(res);
     }
 }

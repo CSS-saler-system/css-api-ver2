@@ -5,6 +5,7 @@ import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorR
 import com.springframework.csscapstone.payload.request_dto.enterprise.ProductUpdaterReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.admin.ProductForModeratorResDto;
+import com.springframework.csscapstone.payload.response_dto.collaborator.ProductForCollabGetDetailResDto;
 import com.springframework.csscapstone.payload.response_dto.collaborator.ProductForCollaboratorResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductCountOrderResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductDetailEnterpriseDto;
@@ -17,6 +18,7 @@ import javax.security.auth.login.AccountNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -78,4 +80,5 @@ public interface ProductService {
     PageImplResDto<ProductForModeratorResDto> pageAllForProductForModerator(
             String name, String nameEnterprise, String brand, Integer pageNumber, Integer pageSize);
 
+    Optional<ProductForCollabGetDetailResDto> findByIdForCollaborator(UUID productId);
 }
