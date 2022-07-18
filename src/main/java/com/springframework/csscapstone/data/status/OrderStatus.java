@@ -7,5 +7,6 @@ public enum OrderStatus {
     CREATED,
     //collaborator
     CANCEL,
-    WAITING//delete
+    WAITING,//delete
+    PROCESSING
 }
