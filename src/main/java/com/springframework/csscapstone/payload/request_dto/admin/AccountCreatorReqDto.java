@@ -23,7 +23,7 @@ public class AccountCreatorReqDto {
 
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonFormat(pattern = "yyyy/MM/dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private final LocalDate dayOfBirth;
 
     @NotEmpty(message = "The phone must be not empty")

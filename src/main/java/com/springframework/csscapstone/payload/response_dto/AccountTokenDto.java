@@ -18,7 +18,7 @@ public class AccountTokenDto implements Serializable {
 
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonFormat(pattern = "yyyy/MM/dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private final LocalDateTime updateTokenDate;
     private final AccountDto account;
 

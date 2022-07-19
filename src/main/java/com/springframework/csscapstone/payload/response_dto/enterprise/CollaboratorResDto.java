@@ -24,7 +24,7 @@ public class CollaboratorResDto implements Serializable {
 
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonFormat(pattern = "yyyy/MM/dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private final LocalDate dob;
     private final String phone;
     private final String address;

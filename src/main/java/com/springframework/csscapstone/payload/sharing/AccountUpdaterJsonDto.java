@@ -27,7 +27,7 @@ public class AccountUpdaterJsonDto {
     @NotNull(message = "The id must not be empty")
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonFormat(pattern = "yyyy/MM/dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private final LocalDate dob;
 
     @NotEmpty(message = "The email must be not empty")

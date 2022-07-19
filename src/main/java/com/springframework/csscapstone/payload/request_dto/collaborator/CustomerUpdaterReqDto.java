@@ -33,7 +33,7 @@ public class CustomerUpdaterReqDto implements Serializable {
     @NotNull(message = "The day_of_birth must not be null")
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonFormat(pattern = "yyyy/MM/dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private final LocalDate dob;
     @NotNull(message = "The account_updater must not be null")
     private final AccountInnerCustomerUpdaterDto accountUpdater;

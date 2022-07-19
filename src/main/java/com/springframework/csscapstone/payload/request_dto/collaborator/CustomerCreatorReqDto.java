@@ -27,7 +27,7 @@ public class CustomerCreatorReqDto implements Serializable {
     private final String address;
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonFormat(pattern = "yyyy/MM/dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private final LocalDate dob;
 
 

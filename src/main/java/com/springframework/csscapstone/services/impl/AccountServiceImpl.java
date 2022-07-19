@@ -300,7 +300,6 @@ public class AccountServiceImpl implements AccountService {
         pageNumber = Objects.isNull(pageNumber) || pageNumber <= DEFAULT_PAGE_NUMBER ? DEFAULT_PAGE_NUMBER : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize <= DEFAULT_PAGE_SIZE ? DEFAULT_PAGE_SIZE : pageSize;
 
-
         Page<Tuple> page = this.accountRepository
                 .findAccountEnterpriseForCollaborator(PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize));
 
@@ -314,7 +313,7 @@ public class AccountServiceImpl implements AccountService {
                 .stream()
                 .map(entry -> AccountMapper.INSTANCE.toEnterpriseResDto(entry.getKey(), entry.getValue()))
                 .collect(toList());
-//
+
         return new PageEnterpriseResDto(
                 data, page.getNumber() + SHIFT_TO_ACTUAL_PAGE, data.size(),
                 page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());

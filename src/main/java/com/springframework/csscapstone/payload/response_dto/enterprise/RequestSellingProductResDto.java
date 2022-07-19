@@ -22,12 +22,12 @@ public class RequestSellingProductResDto implements Serializable {
     private final UUID id;
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private final LocalDateTime dateTimeRequest;
 
 //    @JsonSerialize(using = LocalDateTimeSerializer.class)
 //    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-//    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
+//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 //    private final LocalDateTime modifiedDate;
     private final RequestStatus requestStatus;
     private final ProductDto product;
