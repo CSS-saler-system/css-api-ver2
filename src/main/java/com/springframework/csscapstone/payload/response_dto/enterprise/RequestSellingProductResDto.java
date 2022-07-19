@@ -30,7 +30,6 @@ public class RequestSellingProductResDto implements Serializable {
 //    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
 //    private final LocalDateTime modifiedDate;
     private final RequestStatus requestStatus;
-    private final Long quantityProduct;
     private final ProductDto product;
 
     @JsonCreator(mode = PROPERTIES)
@@ -39,13 +38,11 @@ public class RequestSellingProductResDto implements Serializable {
             @JsonProperty("dateTimeRequest") LocalDateTime dateTimeRequest,
 //            LocalDateTime modifiedDate,
             @JsonProperty("requestStatus") RequestStatus requestStatus,
-            @JsonProperty("quantityProduct") Long quantityProduct,
             @JsonProperty("product") ProductDto product) {
         this.id = id;
         this.dateTimeRequest = dateTimeRequest;
 //        this.modifiedDate = modifiedDate;
         this.requestStatus = requestStatus;
-        this.quantityProduct = quantityProduct;
         this.product = product;
     }
 

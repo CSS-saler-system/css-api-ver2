@@ -25,6 +25,7 @@ import com.springframework.csscapstone.utils.exception_utils.product_exception.P
 import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperQueriesDTO;
+import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.ProductMapper;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
