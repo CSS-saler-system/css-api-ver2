@@ -1,12 +1,13 @@
-package com.springframework.csscapstone.data.domain;
+package com.springframework.csscapstone.utils.mapper_utils.dto_mapper;
 
+import com.springframework.csscapstone.data.domain.Product;
 import com.springframework.csscapstone.payload.response_dto.admin.ProductForModeratorResDto;
 import com.springframework.csscapstone.payload.response_dto.collaborator.ProductForCollabGetDetailResDto;
 import com.springframework.csscapstone.payload.response_dto.collaborator.ProductForCollaboratorResDto;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = "spring")
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ProductMapper {
     ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);
 
