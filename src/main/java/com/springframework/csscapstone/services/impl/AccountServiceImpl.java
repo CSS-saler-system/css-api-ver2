@@ -62,6 +62,7 @@ import static com.springframework.csscapstone.data.status.AccountImageType.ID_CA
 import static com.springframework.csscapstone.data.status.AccountImageType.LICENSE;
 import static com.springframework.csscapstone.utils.exception_catch_utils.ExceptionCatchHandler.peek;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 @Service
 @PropertySource(value = "classpath:application-storage.properties")
@@ -123,13 +124,14 @@ public class AccountServiceImpl implements AccountService {
 
     private final Supplier<EntityNotFoundException> handlerAccountNotFound =
             () -> new EntityNotFoundException(MessagesUtils.getMessage(MessageConstant.Account.NOT_FOUND));
-//    private final Supplier<Role> getDefaultRoleSupplier = () -> new Role("ROLE_3", "Collaborator");
+    //    private final Supplier<Role> getDefaultRoleSupplier = () -> new Role("ROLE_3", "Collaborator");
     private final Function<String, Consumer<Account>> duplicationEmailException = email -> {
         throw new RuntimeException("The email: " + email + " was existed!!!");
     };
     private final Function<String, Consumer<Account>> duplicationPhoneException = email -> {
         throw new RuntimeException("The email: " + email + " was existed!!!");
     };
+
     /**
      * todo Get Collaborator With performance skill selling
      *
@@ -302,16 +304,20 @@ public class AccountServiceImpl implements AccountService {
         Page<Tuple> page = this.accountRepository
                 .findAccountEnterpriseForCollaborator(PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize));
 
-//        List<EnterpriseResDto> data = page
-//                .getContent()
-//                .stream()
-//                .map(MapperDTO.INSTANCE::toEnterpriseResDto)
-//                .collect(toList());
-
-//        return new PageEnterpriseResDto(
-//                data, page.getNumber() + SHIFT_TO_ACTUAL_PAGE, page.getSize(),
-//                page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
-        return null;
+        List<EnterpriseResDto> data = page
+                .getContent()
+                .stream()
+                .collect(toMap(
+                        tuple -> this.accountRepository.findById(tuple.get(AccountRepository.QUERY_ACCOUNT, UUID.class)).get(),
+                        tuple -> tuple.get(AccountRepository.QUERY_COUNT_REQ, Long.class)))
+                .entrySet()
+                .stream()
+                .map(entry -> AccountMapper.INSTANCE.toEnterpriseResDto(entry.getKey(), entry.getValue()))
+                .collect(toList());
+//
+        return new PageEnterpriseResDto(
+                data, page.getNumber() + SHIFT_TO_ACTUAL_PAGE, data.size(),
+                page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
     }
 
     /**
@@ -437,7 +443,8 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * create account<BR>
-     *     </>
+     * </>
+     *
      * @param enterprise
      * @return
      */

@@ -4,6 +4,7 @@ import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.EnterpriseSignUpDto;
 import com.springframework.csscapstone.payload.response_dto.admin.AccountResDto;
+import com.springframework.csscapstone.payload.response_dto.collaborator.EnterpriseResDto;
 import com.springframework.csscapstone.payload.sharing.AccountUpdaterJsonDto;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
@@ -37,6 +38,12 @@ public interface AccountMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Account updateAccountFromEnterpriseSignUpDto(EnterpriseSignUpDto enterpriseSignUpDto, @MappingTarget Account account);
+
+    @Mapping(target = "avatar", source = "entity.avatar")
+    @Mapping(target = "license", source = "entity.license")
+    @Mapping(target = "idCard", source = "entity.idCard")
+    @Mapping(target = "quantityCollaborator", source = "quantityCollab")
+    EnterpriseResDto toEnterpriseResDto(Account entity, Long quantityCollab);
 
     @AfterMapping
     default void linkImages(@MappingTarget Account account) {
