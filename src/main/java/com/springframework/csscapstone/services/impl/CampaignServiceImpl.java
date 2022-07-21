@@ -196,8 +196,8 @@ public class CampaignServiceImpl implements CampaignService {
                 .setName(dto.getName())
                 .setCampaignShortDescription(dto.getCampaignShortDescription())
                 .setCampaignDescription(dto.getCampaignDescription())
-                .setStartDate(dto.getStartDate())
-                .setEndDate(dto.getEndDate())
+                .setStartDate(dto.getStartDate().atStartOfDay())
+                .setEndDate(dto.getEndDate().atStartOfDay())
                 .setKpiSaleProduct(dto.getKpi())
                 .setCampaignStatus(CampaignStatus.CREATED);
 

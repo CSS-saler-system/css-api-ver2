@@ -5,12 +5,15 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.Data;
 
 import javax.validation.constraints.Min;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -22,15 +25,15 @@ import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 public class CampaignCreatorReqDto {
     private String name;
 
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime startDate;
+    private LocalDate startDate;
 
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime endDate;
+    private LocalDate endDate;
     private String campaignShortDescription;
     private String campaignDescription;
 
@@ -76,8 +79,8 @@ public class CampaignCreatorReqDto {
     @JsonCreator(mode = PROPERTIES)
     public CampaignCreatorReqDto(
             @JsonProperty("name") String name,
-            @JsonProperty("startDate") LocalDateTime startDate,
-            @JsonProperty("endDate") LocalDateTime endDate,
+            @JsonProperty("startDate") LocalDate startDate,
+            @JsonProperty("endDate") LocalDate endDate,
             @JsonProperty("campaignShortDescription") String campaignShortDescription,
             @JsonProperty("campaignDescription") String campaignDescription,
             @JsonProperty("kpi") Long kpi,
