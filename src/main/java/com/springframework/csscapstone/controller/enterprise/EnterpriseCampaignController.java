@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -49,7 +50,7 @@ public class EnterpriseCampaignController {
 
         if (dto.getKpi() < 0) throw new RuntimeException("The KPI must be greater than 0");
 
-        if (dto.getStartDate().isBefore(LocalDateTime.now().plusDays(3)))
+        if (dto.getStartDate().atStartOfDay().isBefore(LocalDateTime.now().plusDays(3)))
             throw new RuntimeException("The start day must be after 3 days from now");
 
         if (dto.getStartDate().isAfter(dto.getEndDate()))
@@ -72,7 +73,7 @@ public class EnterpriseCampaignController {
             @RequestParam(value = "maxSize", required = false) Integer pageSize
     ) {
         PageImplResDto<CampaignResDto> campaign = campaignService.findCampaign(
-                enterpriseId, campaignName, startDate, endDate, minKpi, maxKpi,status, pageNumber, pageSize);
+                enterpriseId, campaignName, startDate , endDate, minKpi, maxKpi,status, pageNumber, pageSize);
         return ResponseEntity.ok(campaign);
     }
 
