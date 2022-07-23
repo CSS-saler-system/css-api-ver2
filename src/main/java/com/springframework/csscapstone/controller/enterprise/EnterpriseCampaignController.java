@@ -69,8 +69,8 @@ public class EnterpriseCampaignController {
             @RequestParam(value = "minKpi", required = false) Long minKpi,
             @RequestParam(value = "maxKpi", required = false) Long maxKpi,
             @RequestParam(value = "status", required = false) CampaignStatus status,
-            @RequestParam(value = "maxKpi", required = false) Integer pageNumber,
-            @RequestParam(value = "maxSize", required = false) Integer pageSize
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize
     ) {
         PageImplResDto<CampaignResDto> campaign = campaignService.findCampaign(
                 enterpriseId, campaignName, startDate , endDate, minKpi, maxKpi,status, pageNumber, pageSize);
