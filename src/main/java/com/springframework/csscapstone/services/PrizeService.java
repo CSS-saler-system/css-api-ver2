@@ -1,6 +1,7 @@
 package com.springframework.csscapstone.services;
 
 import com.springframework.csscapstone.payload.request_dto.enterprise.PrizeCreatorReqDto;
+import com.springframework.csscapstone.payload.request_dto.enterprise.PrizeCreatorVer2ReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.PrizeUpdaterReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.PrizeResDto;
@@ -16,7 +17,7 @@ public interface PrizeService {
 
     UUID updatePrize(PrizeUpdaterReqDto prizeUpdater);
 
-    UUID createPrize(PrizeCreatorReqDto prizeCreatorReqDto);
+    UUID createPrize(PrizeCreatorVer2ReqDto prizeCreatorReqDto);
 
     Optional<PrizeResDto> getPrizeByPrize(UUID uuid);
 

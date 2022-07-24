@@ -8,6 +8,7 @@ import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.data.repositories.PrizeRepository;
 import com.springframework.csscapstone.data.status.PrizeStatus;
 import com.springframework.csscapstone.payload.request_dto.enterprise.PrizeCreatorReqDto;
+import com.springframework.csscapstone.payload.request_dto.enterprise.PrizeCreatorVer2ReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.PrizeUpdaterReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.PrizeResDto;
@@ -17,6 +18,7 @@ import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundExcep
 import com.springframework.csscapstone.utils.exception_utils.prize_exception.PrizeJsonBadException;
 import com.springframework.csscapstone.utils.exception_utils.prize_exception.PrizeNotFoundException;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
+import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.PrizeMapper;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -56,11 +58,12 @@ public class PrizeServiceImpl implements PrizeService {
         pageNumber = Objects.nonNull(pageNumber) && pageNumber > 1 ? pageSize : 1;
         pageSize = Objects.nonNull(pageSize) && pageSize > 1 ? pageSize : 10;
 
-        Page<Prize> result = this.prizeRepository.findAll(prizeSpecifications, PageRequest.of(pageNumber - 1, pageSize));
+        Page<Prize> result = this.prizeRepository
+                .findAll(prizeSpecifications, PageRequest.of(pageNumber - 1, pageSize));
         LOGGER.info("This is logger {}", result.getContent().size()); //0
         List<PrizeResDto> prizes = result.getContent()
                 .stream()
-                .map(MapperDTO.INSTANCE::toPrizeResDto)
+                .map(PrizeMapper.INSTANCE::toPrizeResDto)
                 .collect(Collectors.toList());
 
 
@@ -76,7 +79,7 @@ public class PrizeServiceImpl implements PrizeService {
     @Override
     public Optional<PrizeResDto> getPrizeByPrize(UUID uuid) {
         return this.prizeRepository.findById(uuid)
-                .map(MapperDTO.INSTANCE::toPrizeResDto);
+                .map(PrizeMapper.INSTANCE::toPrizeResDto);
     }
 
     @Transactional
@@ -92,12 +95,17 @@ public class PrizeServiceImpl implements PrizeService {
 
     @Transactional
     @Override
-    public UUID createPrize(PrizeCreatorReqDto prizeCreatorReqDto) {
+    public UUID  createPrize(PrizeCreatorVer2ReqDto prizeCreatorReqDto) {
+        Account account = this.accountRepository.findById(prizeCreatorReqDto.getCreator().getId())
+                .orElseThrow(() -> new EntityNotFoundException("The enterprise creates prize not found"));
 
         Prize prize = new Prize()
                 .setName(prizeCreatorReqDto.getName())
                 .setPrizeStatus(PrizeStatus.ACTIVE)
                 .setPrice(prizeCreatorReqDto.getPrice());
+
+        account.addCreatorPrize(prize);
+
         return this.prizeRepository.save(prize).getId();
     }
 

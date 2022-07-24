@@ -37,16 +37,9 @@ public class EnterprisePrizeController {
 
     @PostMapping(value = V2_PRIZE_CREATE)
     public ResponseEntity<?> createPrize(
-//            @RequestParam("name") @Valid @NotNull String prizeName,
-//            @RequestParam("price") @Valid @NotNull Double price,
-//            @RequestParam("enterpriseId") @Valid @NotNull UUID accountId) {
             @RequestBody PrizeCreatorVer2ReqDto prizeDto
     ){
-
-        UUID prize = this.prizeService.createPrize(
-                new PrizeCreatorReqDto(prizeDto.getName(), prizeDto.getPrice(),
-                        new PrizeCreatorReqDto.AccountDto(prizeDto.getCreator().getId())));
-
+        UUID prize = this.prizeService.createPrize(prizeDto);
         return ok(prize);
     }
 

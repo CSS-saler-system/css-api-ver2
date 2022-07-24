@@ -251,4 +251,10 @@ public class Account {
         return this;
     }
 
+    public Account addCreatorPrize(Prize prize) {
+        this.getPrizes().add(prize);
+        prize.setCreator(this);
+        return this;
+    }
+
 }

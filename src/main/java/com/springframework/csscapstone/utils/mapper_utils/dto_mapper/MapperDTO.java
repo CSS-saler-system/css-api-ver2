@@ -40,10 +40,6 @@ public interface MapperDTO {
 
     OrderResDto toOrderResDto(Order entity);
 
-    PrizeResDto toPrizeDto(Prize entity);
-
-    PrizeResDto toPrizeResDto(Prize entity);
-
     OrderDetailResDto toOrderDetailResDto(OrderDetail entity);
 
     ProductResDto toProductDto(Product entity);
