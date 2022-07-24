@@ -114,15 +114,13 @@ public class EnterpriseProductController {
 
     @PostMapping(value = V2_PRODUCT_CREATE, consumes = {"multipart/form-data"})
     public ResponseEntity<?> addNewProduct(
-            @RequestPart(value = "typeImage") @Valid MultipartFile[] typeImages,
-            @RequestPart(value = "certificationImage") @Valid MultipartFile[] certificationImages,
+            @RequestPart(value = "typeImage") @Valid List<MultipartFile> typeImages,
+            @RequestPart(value = "certificationImage") @Valid List<MultipartFile> certificationImages,
             @RequestPart(value = "product") String dto
     ) throws ProductInvalidException, AccountNotFoundException, IOException, ExecutionException, InterruptedException {
-        List<MultipartFile> types = Stream.of(typeImages).collect(Collectors.toList());
-        List<MultipartFile> certifications = Stream.of(certificationImages).collect(Collectors.toList());
         ProductCreatorReqDto productCreatorReqDto = new ObjectMapper()
                 .readValue(dto, ProductCreatorReqDto.class);
-        return ok(this.productService.createProduct(productCreatorReqDto, types, certifications));
+        return ok(this.productService.createProduct(productCreatorReqDto, typeImages, certificationImages));
     }
 
     @PutMapping(
