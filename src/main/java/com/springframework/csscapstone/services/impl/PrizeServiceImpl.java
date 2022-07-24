@@ -45,6 +45,12 @@ public class PrizeServiceImpl implements PrizeService {
     private final AccountRepository accountRepository;
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
+    private final Supplier<PrizeNotFoundException> handlerPrizeNotFound =
+            () -> new PrizeNotFoundException(MessagesUtils.getMessage(MessageConstant.Prize.NOT_FOUND));
+
+
+    private final Supplier<PrizeJsonBadException> handlerBadRequestException = () -> new PrizeJsonBadException(MessagesUtils.getMessage(MessageConstant.Prize.BAD_JSON));
+
     @Override
     public PageImplResDto<PrizeResDto> getAll(UUID enterpriseId, String name, Integer pageNumber, Integer pageSize) {
 
@@ -85,17 +91,20 @@ public class PrizeServiceImpl implements PrizeService {
     @Transactional
     @Override
     public UUID updatePrize(PrizeUpdaterReqDto prizeUpdater) {
-        if (Objects.isNull(prizeUpdater.getId())) throw handlerBadRequestException().get();
-        Prize prize = this.prizeRepository.findById(prizeUpdater.getId()).orElseThrow(handlerPrizeNotFound());
 
-        prize.setName(prizeUpdater.getName())
+        if (Objects.isNull(prizeUpdater.getId())) throw handlerBadRequestException.get();
+
+        Prize prize = this.prizeRepository.findById(prizeUpdater.getId()).orElseThrow(handlerPrizeNotFound);
+
+        prize
+                .setName(prizeUpdater.getName())
                 .setPrice(prizeUpdater.getPrice());
         return this.prizeRepository.save(prize).getId();
     }
 
     @Transactional
     @Override
-    public UUID  createPrize(PrizeCreatorVer2ReqDto prizeCreatorReqDto) {
+    public UUID createPrize(PrizeCreatorVer2ReqDto prizeCreatorReqDto) {
         Account account = this.accountRepository.findById(prizeCreatorReqDto.getCreator().getId())
                 .orElseThrow(() -> new EntityNotFoundException("The enterprise creates prize not found"));
 
@@ -108,13 +117,4 @@ public class PrizeServiceImpl implements PrizeService {
 
         return this.prizeRepository.save(prize).getId();
     }
-
-    private Supplier<PrizeNotFoundException> handlerPrizeNotFound() {
-        return () -> new PrizeNotFoundException(MessagesUtils.getMessage(MessageConstant.Prize.NOT_FOUND));
-    }
-
-    private Supplier<PrizeJsonBadException> handlerBadRequestException() {
-        return () -> new PrizeJsonBadException(MessagesUtils.getMessage(MessageConstant.Prize.BAD_JSON));
-    }
-
 }
