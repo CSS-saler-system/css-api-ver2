@@ -1,6 +1,7 @@
 package com.springframework.csscapstone.controller.enterprise;
 
 import com.springframework.csscapstone.payload.request_dto.enterprise.PrizeCreatorReqDto;
+import com.springframework.csscapstone.payload.request_dto.enterprise.PrizeCreatorVer2ReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.PrizeUpdaterReqDto;
 import com.springframework.csscapstone.services.PrizeService;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
@@ -34,18 +35,17 @@ public class EnterprisePrizeController {
         return ok(this.prizeService.getAll(enterpriseId, namePrize, pageNumber, pageSize));
     }
 
-    @PostMapping(value = V2_PRIZE_CREATE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = V2_PRIZE_CREATE)
     public ResponseEntity<?> createPrize(
-            @RequestParam("name") @Valid @NotNull String prizeName,
-            @RequestParam("price") @Valid @NotNull Double price,
-            @RequestParam("price") @Valid @NotNull UUID accountId) {
-
-        if (price == null || price < 1.0)
-            throw new RuntimeException("The price of prize is not null");
+//            @RequestParam("name") @Valid @NotNull String prizeName,
+//            @RequestParam("price") @Valid @NotNull Double price,
+//            @RequestParam("enterpriseId") @Valid @NotNull UUID accountId) {
+            @RequestBody PrizeCreatorVer2ReqDto prizeDto
+    ){
 
         UUID prize = this.prizeService.createPrize(
-                new PrizeCreatorReqDto(prizeName, price,
-                        new PrizeCreatorReqDto.AccountDto(accountId)));
+                new PrizeCreatorReqDto(prizeDto.getName(), prizeDto.getPrice(),
+                        new PrizeCreatorReqDto.AccountDto(prizeDto.getCreator().getId())));
 
         return ok(prize);
     }
