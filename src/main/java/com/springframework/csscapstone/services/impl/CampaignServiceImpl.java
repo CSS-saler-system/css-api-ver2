@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -84,7 +85,7 @@ public class CampaignServiceImpl implements CampaignService {
             () -> new EntityNotFoundException(MessagesUtils.getMessage(MessageConstant.Campaign.NOT_FOUND));
 
 
-    private final Function<UUID,Supplier<EntityNotFoundException>> entityNotFoundExceptionSupplier =
+    private final Function<UUID, Supplier<EntityNotFoundException>> entityNotFoundExceptionSupplier =
             (id) -> () -> new EntityNotFoundException("The enterprise with id: " + id + " was not found!!!");
 
 
@@ -96,6 +97,7 @@ public class CampaignServiceImpl implements CampaignService {
     private static final int DEFAULT_PAGE_NUMBER = 1;
     private static final int DEFAULT_PAGE_SIZE = 10;
     private static final int SHIFT_TO_ACTUAL_PAGE = 1;
+
     @Override
     public PageImplResDto<CampaignResDto> findCampaignWithoutEnterpriseId(
             String name, LocalDateTime date, Long kpi,
@@ -230,6 +232,27 @@ public class CampaignServiceImpl implements CampaignService {
 //        if (!entity.getCampaignStatus().equals(CampaignStatus.SENT)) {
 //            throw new RuntimeException("The campaign is not pending status so cant be updated!!!");
 //        }
+        Set<CampaignUpdaterReqDto.PrizeInnerCampaignDto> prizes = dto.getPrizes();
+        Set<CampaignUpdaterReqDto.ProductInnerCampaignDto> products = dto.getProducts();
+
+//        handlerAddPrize(entity, prizes);
+//        handlerAddProduct(entity, products);
+
+        prizes
+                .stream()
+                .map(CampaignUpdaterReqDto.PrizeInnerCampaignDto::getId)
+                .map(this.prizeRepository::findById)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .forEach(entity::addPrize);
+
+        products
+                .stream()
+                .map(CampaignUpdaterReqDto.ProductInnerCampaignDto::getId)
+                .map(this.productRepository::findById)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .forEach(entity::addProducts);
 
         entity.setName(dto.getName())
                 .setStartDate(dto.getStartDate())
@@ -244,6 +267,28 @@ public class CampaignServiceImpl implements CampaignService {
         return entity.getId();
     }
 
+    //
+//    private final Function<UUID, Supplier<RuntimeException>> notFoundPrizeRuntimeException =
+//            (id) -> () -> new RuntimeException("The prizes with id: " + id + " was not found!!!");
+//
+//    private final Function<UUID, Supplier<RuntimeException>> notFoundProductRuntimeException =
+//            (id) -> () -> new RuntimeException("The prizes with id: " + id + " was not found!!!");
+//    @Async("threadPoolTaskExecutor")
+//    public void handlerAddPrize(Campaign entity, Set<CampaignUpdaterReqDto.PrizeInnerCampaignDto> prizes) {
+//        prizes
+//                .stream()
+//                .map(CampaignUpdaterReqDto.PrizeInnerCampaignDto::getId)
+//                .map(this.prizeRepository::findById)
+//                .filter(Optional::isPresent)
+//                .map(Optional::get)
+//                .map(entity::addPrize)
+//                .forEach(this.campaignRepository::save);
+//    }
+//
+//    @Async("threadPoolTaskExecutor")
+//    public void handlerAddProduct(Campaign entity, Set<CampaignUpdaterReqDto.ProductInnerCampaignDto> products) {
+//
+//    }
     @Transactional
     @Override
     public void deleteCampaign(UUID id) throws EntityNotFoundException {

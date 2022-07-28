@@ -7,12 +7,15 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.springframework.csscapstone.data.domain.CampaignDto;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
+
+import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 
 @Data
 public class CampaignUpdaterReqDto {
@@ -28,25 +31,36 @@ public class CampaignUpdaterReqDto {
     private final String campaignShortDescription;
     private final String campaignDescription;
     private final Long kpiSaleProduct;
-    private final AccountDto account;
-    private final Set<ProductDto> products;
+    private final Set<PrizeInnerCampaignDto> prizes;
+    private final AccountInnerCampaignDto account;
+    private final Set<ProductInnerCampaignDto> products;
 
     @Data
-    public static class AccountDto implements Serializable {
+    public static class PrizeInnerCampaignDto implements Serializable {
         private final UUID id;
 
-        @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-        public AccountDto(@JsonProperty("id") UUID id) {
+        @JsonCreator(mode = PROPERTIES)
+        public PrizeInnerCampaignDto(@JsonProperty("id") UUID id) {
             this.id = id;
         }
     }
 
     @Data
-    public static class ProductDto implements Serializable {
+    public static class AccountInnerCampaignDto implements Serializable {
         private final UUID id;
 
-        @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-        public ProductDto(@JsonProperty("id") UUID id) {
+        @JsonCreator(mode = PROPERTIES)
+        public AccountInnerCampaignDto(@JsonProperty("id") UUID id) {
+            this.id = id;
+        }
+    }
+
+    @Data
+    public static class ProductInnerCampaignDto implements Serializable {
+        private final UUID id;
+
+        @JsonCreator(mode = PROPERTIES)
+        public ProductInnerCampaignDto(@JsonProperty("id") UUID id) {
             this.id = id;
         }
     }
@@ -58,14 +72,16 @@ public class CampaignUpdaterReqDto {
             @JsonProperty("campaignShortDescription") String campaignShortDescription,
             @JsonProperty("campaignDescription") String campaignDescription,
             @JsonProperty("kpiSaleProduct") Long kpiSaleProduct,
-            @JsonProperty("account") AccountDto account,
-            @JsonProperty("products") Set<ProductDto> products) {
+            @JsonProperty("prizes") Set<PrizeInnerCampaignDto> prizes,
+            @JsonProperty("account") AccountInnerCampaignDto account,
+            @JsonProperty("products") Set<ProductInnerCampaignDto> products) {
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
         this.campaignShortDescription = campaignShortDescription;
         this.campaignDescription = campaignDescription;
         this.kpiSaleProduct = kpiSaleProduct;
+        this.prizes = prizes;
         this.account = account;
         this.products = products;
     }
