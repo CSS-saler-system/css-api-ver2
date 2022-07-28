@@ -6,6 +6,7 @@ import com.springframework.csscapstone.data.status.PrizeStatus;
 import lombok.Data;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.UUID;
@@ -14,8 +15,7 @@ import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 
 @Data
 public class PrizeUpdaterReqDto {
-    @NotNull(message = "The id must be not empty")
-    private final UUID id;
+    @NotEmpty(message = "The name must not be null")
     private final String name;
     @NotNull(message = "The price must be not null")
     @Min(value = 1, message = "The quantity must be greater than 1.0")
@@ -23,10 +23,8 @@ public class PrizeUpdaterReqDto {
 
     @JsonCreator(mode = PROPERTIES)
     public PrizeUpdaterReqDto(
-            @JsonProperty("id") UUID id,
             @JsonProperty("name") String name,
             @JsonProperty("price") Double price) {
-        this.id = id;
         this.name = name;
         this.price = price;
     }

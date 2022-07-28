@@ -50,15 +50,9 @@ public class EnterprisePrizeController {
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updatePrize(
             @PathVariable("prizeId") UUID prizeId,
-            @RequestParam("prizeName") String prizeName,
-            @RequestParam("price") Double price
+            @RequestBody PrizeUpdaterReqDto dto
     ) {
-
-        if (price == null || price < 1.0)
-            throw new RuntimeException("The price of prize is not null");
-
-        UUID prize = this.prizeService.updatePrize(new PrizeUpdaterReqDto(prizeId, prizeName, price));
-
+        UUID prize = this.prizeService.updatePrize(prizeId, dto);
         return ok(prize);
     }
 

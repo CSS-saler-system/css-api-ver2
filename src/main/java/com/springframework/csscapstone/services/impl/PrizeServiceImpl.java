@@ -98,11 +98,11 @@ public class PrizeServiceImpl implements PrizeService {
 
     @Transactional
     @Override
-    public UUID updatePrize(PrizeUpdaterReqDto prizeUpdater) {
+    public UUID updatePrize(UUID prizeId, PrizeUpdaterReqDto prizeUpdater) {
 
-        if (Objects.isNull(prizeUpdater.getId())) throw handlerBadRequestException.get();
+        if (Objects.isNull(prizeId)) throw handlerBadRequestException.get();
 
-        Prize prize = this.prizeRepository.findById(prizeUpdater.getId()).orElseThrow(handlerPrizeNotFound);
+        Prize prize = this.prizeRepository.findById(prizeId).orElseThrow(handlerPrizeNotFound);
 
         prize
                 .setName(prizeUpdater.getName())

@@ -15,7 +15,7 @@ public interface PrizeService {
 
     PageImplResDto<PrizeResDto> getAll(UUID enterpriseId, String name, Integer pageNumber, Integer pageSize);
 
-    UUID updatePrize(PrizeUpdaterReqDto prizeUpdater);
+    UUID updatePrize(UUID prizeId, PrizeUpdaterReqDto prizeUpdater);
 
     UUID createPrize(PrizeCreatorVer2ReqDto prizeCreatorReqDto);
 
