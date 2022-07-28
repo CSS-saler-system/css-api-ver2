@@ -86,6 +86,8 @@ public class EnterpriseCampaignController {
             throws EntityNotFoundException, JsonProcessingException {
         CampaignUpdaterReqDto dto = objectMapper
                 .readValue(campaign, CampaignUpdaterReqDto.class);
+
+        //campaignNotFoundException
         if (dto.getKpiSaleProduct() < 0) throw new RuntimeException("The KPI must be greater than 0");
 
         if (dto.getStartDate().isBefore(LocalDateTime.now().plusDays(3)))

@@ -15,8 +15,7 @@ public class FeedBack {
 
     @Id
     @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(nullable = false, columnDefinition = "uniqueIdentifier")
     private UUID id;
 

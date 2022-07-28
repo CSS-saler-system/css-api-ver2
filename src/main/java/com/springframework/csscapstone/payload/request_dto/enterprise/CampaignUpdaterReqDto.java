@@ -1,12 +1,12 @@
 package com.springframework.csscapstone.payload.request_dto.enterprise;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import com.springframework.csscapstone.data.status.CampaignStatus;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -28,19 +28,27 @@ public class CampaignUpdaterReqDto {
     private final String campaignShortDescription;
     private final String campaignDescription;
     private final Long kpiSaleProduct;
-    private final CampaignCreatorReqDto.AccountDto account;
-    private final Set<CampaignCreatorReqDto.ProductDto> products;
-
-    private final CampaignStatus status;
+    private final AccountDto account;
+    private final Set<ProductDto> products;
 
     @Data
     public static class AccountDto implements Serializable {
         private final UUID id;
+
+        @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+        public AccountDto(@JsonProperty("id") UUID id) {
+            this.id = id;
+        }
     }
 
     @Data
     public static class ProductDto implements Serializable {
         private final UUID id;
+
+        @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+        public ProductDto(@JsonProperty("id") UUID id) {
+            this.id = id;
+        }
     }
 
     public CampaignUpdaterReqDto(
@@ -50,9 +58,8 @@ public class CampaignUpdaterReqDto {
             @JsonProperty("campaignShortDescription") String campaignShortDescription,
             @JsonProperty("campaignDescription") String campaignDescription,
             @JsonProperty("kpiSaleProduct") Long kpiSaleProduct,
-            @JsonProperty("account") CampaignCreatorReqDto.AccountDto account,
-            @JsonProperty("products") Set<CampaignCreatorReqDto.ProductDto> products,
-            @JsonProperty("status") CampaignStatus status) {
+            @JsonProperty("account") AccountDto account,
+            @JsonProperty("products") Set<ProductDto> products) {
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -61,6 +68,5 @@ public class CampaignUpdaterReqDto {
         this.kpiSaleProduct = kpiSaleProduct;
         this.account = account;
         this.products = products;
-        this.status = status;
     }
 }

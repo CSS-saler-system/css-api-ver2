@@ -44,7 +44,10 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
     private final FirebaseMessageService firebaseMessageService;
 
     private final AccountTokenRepository accountTokenRepository;
-
+    private static final int INVALID_PAGE_NUMBER = 1;
+    private static final int INVALID_PAGE_SIZE = 1;
+    private static final int DEFAULT_PAGE_NUMBER = 1;
+    private static final int DEFAULT_PAGE_SIZE = 1;
     @Override
     public List<RequestSellingProductResDto> getAllRequest() {
         return requestSellingProductRepository.findAll()
@@ -56,8 +59,9 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
     @Override
     public PageImplResDto<RequestSellingProductResDto> getAllRequestByIdCreatorByCollaborator(
             UUID idCollaborator, RequestStatus status, Integer pageNumber, Integer pageSize) {
-        pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
-        pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 1 : pageSize;
+
+        pageNumber = Objects.isNull(pageNumber) || pageNumber < INVALID_PAGE_NUMBER ? DEFAULT_PAGE_NUMBER : pageNumber;
+        pageSize = Objects.isNull(pageSize) || pageSize < INVALID_PAGE_SIZE ? DEFAULT_PAGE_SIZE : pageSize;
 
         Page<RequestSellingProduct> page = this.requestSellingProductRepository
                 .findRequestSellingProductByCollaborator(idCollaborator, status, PageRequest.of(pageNumber - 1, pageSize));

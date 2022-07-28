@@ -1,0 +1,35 @@
+-- create table request_selling_product
+-- (
+--     id                uniqueidentifier default newid() not null
+--         primary key,
+--     date_time_request datetime2,
+--     request_status    varchar(255)     default 'PENDING',
+--     product_id        uniqueidentifier
+--         constraint FK9c2n86299lqnb6001g8ohbgcs
+--             references products,
+--     account_id        uniqueidentifier
+--         constraint FKe87x9qcs6mgjvbcsafmlcgd1b
+--             references account,
+--     modified_date     datetime2
+-- )
+-- go
+
+INSERT INTO [css-database].dbo.request_selling_product (id, date_time_request, request_status, product_id, account_id, modified_date) VALUES (N'95F866F8-FBAF-11EC-B939-0242AC120002', N'2022-07-04 08:57:03.3429656', N'REGISTERED', N'39ED1D57-82A1-4B3B-B2AE-D379ACB81D25', N'CDBCCE52-2393-FD48-A223-96E6C226AB02', N'2022-07-26 08:57:03.3429656');
+INSERT INTO [css-database].dbo.request_selling_product (id, date_time_request, request_status, product_id, account_id, modified_date) VALUES (N'CED1841C-FBB1-11EC-B939-0242AC120002', N'2022-07-06 10:57:03.3429656', N'REGISTERED', N'39ED1D57-82A1-4B3B-B2AE-D379ACB81D25', N'CDBCCE52-2393-FD48-A223-96E6C226AB02', N'2022-07-24 13:08:16.0860000');
+INSERT INTO [css-database].dbo.request_selling_product (id, date_time_request, request_status, product_id, account_id, modified_date) VALUES (N'3A4F1F2A-FBB1-11EC-B939-0242AC120002', N'2022-07-05 09:57:03.3429656', N'CREATED', N'39ED1D57-82A1-4B3B-B2AE-D379ACB81D25', N'CDBCCE52-2393-FD48-A223-96E6C226AB02', N'2022-07-11 08:57:03.3429656');
+INSERT INTO [css-database].dbo.request_selling_product (id, date_time_request, request_status, product_id, account_id, modified_date) VALUES (N'FD06C3C4-FBB1-11EC-B939-0242AC120002', N'2022-07-06 10:57:03.3429656', N'CREATED', N'39ED1D57-82A1-4B3B-B2AE-D379ACB81D25', N'CDBCCE52-2393-FD48-A223-96E6C226AB02', N'2022-07-11 08:57:03.3429656');
+INSERT INTO [css-database].dbo.request_selling_product (id, date_time_request, request_status, product_id, account_id, modified_date) VALUES (N'B03DB2DC-FBB1-11EC-B939-0242AC120002', N'2022-07-06 10:57:03.3429656', N'CREATED', N'39ED1D57-82A1-4B3B-B2AE-D379ACB81D25', N'CDBCCE52-2393-FD48-A223-96E6C226AB02', N'2022-07-11 08:57:03.3429656');
+INSERT INTO [css-database].dbo.request_selling_product (id, date_time_request, request_status, product_id, account_id, modified_date) VALUES (N'F15340E8-FBB1-11EC-B939-0242AC120002', N'2022-07-06 10:57:03.3429656', N'CREATED', N'39ED1D57-82A1-4B3B-B2AE-D379ACB81D25', N'CDBCCE52-2393-FD48-A223-96E6C226AB02', N'2022-07-11 08:57:03.3429656');
+INSERT INTO [css-database].dbo.request_selling_product (id, date_time_request, request_status, product_id, account_id, modified_date) VALUES (N'0757AA00-FBB2-11EC-B939-0242AC120002', N'2022-07-06 10:57:03.3429656', N'CREATED', N'39ED1D57-82A1-4B3B-B2AE-D379ACB81D25', N'CDBCCE52-2393-FD48-A223-96E6C226AB02', N'2022-07-11 08:57:03.3429656');
+INSERT INTO [css-database].dbo.request_selling_product (id, date_time_request, request_status, product_id, account_id, modified_date) VALUES (N'1825C40C-FBB2-11EC-B939-0242AC120002', N'2022-07-06 10:57:03.3429656', N'CREATED', N'39ED1D57-82A1-4B3B-B2AE-D379ACB81D25', N'CDBCCE52-2393-FD48-A223-96E6C226AB02', N'2022-07-11 08:57:03.3429656');
+INSERT INTO [css-database].dbo.request_selling_product (id, date_time_request, request_status, product_id, account_id, modified_date) VALUES (N'11EE778C-FBB2-11EC-B939-0242AC120002', N'2022-07-06 10:57:03.3429656', N'CREATED', N'39ED1D57-82A1-4B3B-B2AE-D379ACB81D25', N'CDBCCE52-2393-FD48-A223-96E6C226AB02', N'2022-07-11 08:57:03.3429656');
+INSERT INTO [css-database].dbo.request_selling_product (id, date_time_request, request_status, product_id, account_id, modified_date) VALUES (N'79042296-FBB2-11EC-B939-0242AC120002', N'2022-07-06 10:57:03.3429656', N'CREATED', N'39ED1D57-82A1-4B3B-B2AE-D379ACB81D25', N'CDBCCE52-2393-FD48-A223-96E6C226AB02', N'2022-07-11 08:57:03.3429656');
+INSERT INTO [css-database].dbo.request_selling_product (id, date_time_request, request_status, product_id, account_id, modified_date) VALUES (N'0BAE999C-FBB2-11EC-B939-0242AC120002', N'2022-07-06 10:57:03.3429656', N'CREATED', N'39ED1D57-82A1-4B3B-B2AE-D379ACB81D25', N'CDBCCE52-2393-FD48-A223-96E6C226AB02', N'2022-07-11 08:57:03.3429656');
+INSERT INTO [css-database].dbo.request_selling_product (id, date_time_request, request_status, product_id, account_id, modified_date) VALUES (N'6A3703E6-FBB2-11EC-B939-0242AC120002', N'2022-07-06 10:57:03.3429656', N'CREATED', N'39ED1D57-82A1-4B3B-B2AE-D379ACB81D25', N'CDBCCE52-2393-FD48-A223-96E6C226AB02', N'2022-07-11 08:57:03.3429656');
+INSERT INTO [css-database].dbo.request_selling_product (id, date_time_request, request_status, product_id, account_id, modified_date) VALUES (N'C58563E6-5DE1-490C-8F66-06FDEAE6A78C', N'2022-06-07 09:17:11.0000000', N'REGISTERED', N'A905340E-5751-804B-9284-D6108593B1EC', N'CDBCCE52-2393-FD48-A223-96E6C226AB02', N'2022-07-11 08:57:03.3429656');
+INSERT INTO [css-database].dbo.request_selling_product (id, date_time_request, request_status, product_id, account_id, modified_date) VALUES (N'DBBDE840-AA39-354F-A430-0BDA8CB70D68', N'2022-06-26 09:01:23.4653673', N'REGISTERED', N'AF5C0CD0-FA91-5F4C-BA6A-EA1A8AB37EA4', N'CDBCCE52-2393-FD48-A223-96E6C226AB02', N'2022-06-26 09:10:15.2475925');
+INSERT INTO [css-database].dbo.request_selling_product (id, date_time_request, request_status, product_id, account_id, modified_date) VALUES (N'538E8E92-2616-1946-95E3-1EE87D4E6CAF', N'2022-06-27 15:43:21.9250000', N'CREATED', N'344D34B5-9BCE-214A-ACF9-BD8450CCC4B6', N'6D7DFCF3-C819-EE49-A2C3-A72D4A2B01A6', N'2022-06-27 15:43:21.9250000');
+INSERT INTO [css-database].dbo.request_selling_product (id, date_time_request, request_status, product_id, account_id, modified_date) VALUES (N'CB991988-76E5-8D4E-94D9-85F0C5E99D65', N'2022-07-11 13:46:04.7340000', N'CREATED', N'8C886DC7-1B63-454B-BD83-00129ED125CF', N'DE361154-29B4-CD49-8DF1-A7D8CCB0778D', N'2022-07-11 13:46:04.7340000');
+INSERT INTO [css-database].dbo.request_selling_product (id, date_time_request, request_status, product_id, account_id, modified_date) VALUES (N'6FBC79D6-A35E-054A-AD6E-942B5CD02C66', N'2022-06-27 15:52:10.0900000', N'CREATED', N'81F5398A-92F8-DD4A-882E-76531D3E142A', N'6D7DFCF3-C819-EE49-A2C3-A72D4A2B01A6', N'2022-06-27 15:52:10.0900000');
+INSERT INTO [css-database].dbo.request_selling_product (id, date_time_request, request_status, product_id, account_id, modified_date) VALUES (N'EDA6AE80-62E3-4744-A56F-B1AA65F0AE75', N'2022-06-25 09:24:46.6901654', N'REGISTERED', N'344D34B5-9BCE-214A-ACF9-BD8450CCC4B6', N'DE361154-29B4-CD49-8DF1-A7D8CCB0778D', N'2022-06-25 09:31:53.7967704');
+INSERT INTO [css-database].dbo.request_selling_product (id, date_time_request, request_status, product_id, account_id, modified_date) VALUES (N'5F1A0777-0973-7B45-9774-CC2453CD1A91', N'2022-06-26 08:57:03.3429656', N'CREATED', N'1FFAFBB7-A32A-1E48-A484-FB996A9A482A', N'FA375463-D4CB-441C-A946-5D523B22564B', N'2022-06-26 08:57:03.3429656');

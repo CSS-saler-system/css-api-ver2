@@ -29,6 +29,14 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
     private final AccountRepository accountRepository;
 
+
+    private final Supplier<EntityNotFoundException> getAccountNotFoundExceptionSupplier =
+            () -> new EntityNotFoundException(MessagesUtils.getMessage(MessageConstant.Account.NOT_FOUND));
+
+    private final Supplier<CustomerNotFoundException> getCustomerNotFoundExceptionSupplier =
+            () -> new CustomerNotFoundException(MessagesUtils.getMessage(MessageConstant.Customer.NOT_FOUND));
+
+
     @Override
     public List<CustomerResDto> getAllCustomer() {
         return this.customerRepository.findAll()
@@ -42,7 +50,7 @@ public class CustomerServiceImpl implements CustomerService {
         return this.customerRepository
                 .getCustomerByPhone(phone)
                 .map(MapperDTO.INSTANCE::toCustomerResDto)
-                .orElseThrow(getCustomerNotFoundExceptionSupplier());
+                .orElseThrow(getCustomerNotFoundExceptionSupplier);
     }
 
     //TODO create customer <Completed></>
@@ -55,7 +63,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         Account accountCreator = this.accountRepository
                 .findById(dto.getAccountCreator().getId())
-                .orElseThrow(getAccountNotFoundExceptionSupplier());
+                .orElseThrow(getAccountNotFoundExceptionSupplier);
 
         Customer customer = new Customer()
                 .setAddress(dto.getAddress())
@@ -71,13 +79,13 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public UUID updateCustomer(CustomerUpdaterReqDto dto) {
         Account accountUpdator = this.accountRepository.findById(dto.getAccountUpdater().getAccountId())
-                .orElseThrow(getAccountNotFoundExceptionSupplier());
+                .orElseThrow(getAccountNotFoundExceptionSupplier);
 
 
 
         Customer customer = this.customerRepository
                 .findById(dto.getCustomerId())
-                .orElseThrow(getCustomerNotFoundExceptionSupplier());
+                .orElseThrow(getCustomerNotFoundExceptionSupplier);
 
         this.customerRepository.getCustomerByPhone(dto.getPhone())
                 .ifPresent(x -> {
@@ -99,15 +107,7 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerResDto getCustomerById(UUID id) throws CustomerNotFoundException {
         return this.customerRepository.findById(id)
                 .map(MapperDTO.INSTANCE::toCustomerResDto)
-                .orElseThrow(this.getCustomerNotFoundExceptionSupplier());
-    }
-
-    private Supplier<EntityNotFoundException> getAccountNotFoundExceptionSupplier() {
-        return () -> new EntityNotFoundException(MessagesUtils.getMessage(MessageConstant.Account.NOT_FOUND));
-    }
-
-    private Supplier<CustomerNotFoundException> getCustomerNotFoundExceptionSupplier() {
-        return () -> new CustomerNotFoundException(MessagesUtils.getMessage(MessageConstant.Customer.NOT_FOUND));
+                .orElseThrow(this.getCustomerNotFoundExceptionSupplier);
     }
 
 }

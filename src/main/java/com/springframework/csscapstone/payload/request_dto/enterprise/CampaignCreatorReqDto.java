@@ -1,5 +1,6 @@
 package com.springframework.csscapstone.payload.request_dto.enterprise;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
@@ -30,7 +31,12 @@ public class CampaignCreatorReqDto implements Serializable {
 
     @Data
     public static class ProductDto implements Serializable {
+
         private final UUID id;
+        @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+        public ProductDto(UUID id) {
+            this.id = id;
+        }
     }
 
     public CampaignCreatorReqDto(

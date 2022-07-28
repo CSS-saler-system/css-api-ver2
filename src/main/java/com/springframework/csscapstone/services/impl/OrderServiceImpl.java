@@ -62,12 +62,14 @@ public class OrderServiceImpl implements OrderService {
     private final Function<UUID, Supplier<EntityNotFoundException>> collaboratorNotFoundException =
             (id) -> () -> new EntityNotFoundException("The collaborator with id: " + id + " not found");
     private final Function<UUID, Predicate<UUID>> isSameEnterpriseId = (id) -> (enterpriseId) -> !enterpriseId.equals(id);
+    private final Function<UUID, Supplier<RuntimeException>> orderNotFound = (id) -> () -> new RuntimeException("No have Order With id: " + id);
+
     @Override
     public OrderResDto getOrderResDtoById(UUID id) {
         return this.orderRepository.findById(id)
                 .filter(order -> !order.getStatus().equals(OrderStatus.DISABLE))
                 .map(MapperDTO.INSTANCE::toOrderResDto)
-                .orElseThrow(() -> new RuntimeException("No have Order With id: " + id));
+                .orElseThrow(orderNotFound.apply(id));
     }
 
     @Override
@@ -120,7 +122,8 @@ public class OrderServiceImpl implements OrderService {
 
         //todo map<Product, quantity>
         Map<Product, Long> quantityProducts = orderCreatorDto.getOrderDetails().stream()
-                .collect(toMap(od -> this.productRepository
+                .collect(toMap(
+                        od -> this.productRepository
                                 .findById(od.getProduct().getProductId())
                                 .orElseThrow(handlerNotFoundException),
                         OrderCreatorReqDto.OrderDetailInnerCreatorDto::getQuantity));

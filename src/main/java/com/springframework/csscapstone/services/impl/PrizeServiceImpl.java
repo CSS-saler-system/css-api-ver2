@@ -37,6 +37,8 @@ import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.nonNull;
+
 @Service
 @PropertySource(value = "classpath:application-storage.properties")
 @RequiredArgsConstructor
@@ -61,12 +63,12 @@ public class PrizeServiceImpl implements PrizeService {
                 .where(StringUtils.isEmpty(name) ? null : PrizeSpecifications.containsName(name))
                 .and(PrizeSpecifications.belongEnterpriseId(enterprise));
 
-        pageNumber = Objects.nonNull(pageNumber) && pageNumber > 1 ? pageSize : 1;
-        pageSize = Objects.nonNull(pageSize) && pageSize > 1 ? pageSize : 10;
+        pageNumber = nonNull(pageNumber) && pageNumber > 1 ? pageNumber : 1;
+        pageSize = nonNull(pageSize) && pageSize > 1 ? pageSize : 10;
 
         Page<Prize> result = this.prizeRepository
                 .findAll(prizeSpecifications, PageRequest.of(pageNumber - 1, pageSize));
-        LOGGER.info("This is logger {}", result.getContent().size()); //0
+        LOGGER.info("This is logger {}", result.getContent().size());
         List<PrizeResDto> prizes = result.getContent()
                 .stream()
                 .map(PrizeMapper.INSTANCE::toPrizeResDto)
@@ -76,7 +78,7 @@ public class PrizeServiceImpl implements PrizeService {
         LOGGER.info("This is logger of prize size {}", prizes.size());
         prizes.forEach(System.out::println);
 
-        return new PageImplResDto<>(prizes, result.getNumber(), prizes.size(),
+        return new PageImplResDto<>(prizes, result.getNumber() + 1, prizes.size(),
                 result.getTotalElements(), result.getTotalPages(),
                 result.isFirst(), result.isLast());
     }

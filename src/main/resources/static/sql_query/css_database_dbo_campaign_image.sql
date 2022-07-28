@@ -1,0 +1,27 @@
+-- create table campaign_image
+-- (
+--     id          uniqueidentifier not null
+--         primary key,
+--     path        varchar(255),
+--     campaign_id uniqueidentifier
+--         constraint FKkvdx7m09omk6oypnk531gq1mf
+--             references campaign
+-- )
+-- go
+
+INSERT INTO [css-database].dbo.campaign_image (id, path, campaign_id) VALUES (N'4263F1A2-CEE8-6C4C-88CF-09D2D510FC80', N'https://csssalersystem.blob.core.windows.net/css-campaign-image/1feb0de6-1586-4048-a2b0-e828fdfa27d6/cloud-plant-sky-ecoregion-nature-vegetation-2080031-wallhere.com.jpg', N'E60DEB1F-8615-4840-A2B0-E828FDFA27D6');
+INSERT INTO [css-database].dbo.campaign_image (id, path, campaign_id) VALUES (N'006AD0B9-0A94-AF45-80C4-1169B2ABBDBE', N'https://csssalersystem.blob.core.windows.net/css-campaign-image/8a00380f-f395-46c9-899d-1011ce5fbb38/cloud-plant-sky-ecoregion-nature-vegetation-2080031-wallhere.com.jpg', N'0F38008A-95F3-C946-899D-1011CE5FBB38');
+INSERT INTO [css-database].dbo.campaign_image (id, path, campaign_id) VALUES (N'56B444FC-E354-E640-9182-2CE8C7A08E6D', N'https://csssalersystem.blob.core.windows.net/css-campaign-image/47734b51-1616-4939-9224-bbe16b960c71/203-2032027_solution-solution-icon-png-free-transparent-png.png', N'514B7347-1616-3949-9224-BBE16B960C71');
+INSERT INTO [css-database].dbo.campaign_image (id, path, campaign_id) VALUES (N'B83D0668-D116-4442-8B06-451DB1B277EA', N'https://csssalersystem.blob.core.windows.net/css-campaign-image/80fa3a8f-37d3-45b8-91d6-4d7c69610e9e/cloud-plant-sky-ecoregion-nature-vegetation-2080031-wallhere.com.jpg', N'8F3AFA80-D337-B845-91D6-4D7C69610E9E');
+INSERT INTO [css-database].dbo.campaign_image (id, path, campaign_id) VALUES (N'861E9415-878B-584C-914E-4829F886FD8A', N'https://csssalersystem.blob.core.windows.net/css-campaign-image/ebedb74b-237e-4c49-be0f-3069febe9725/cloud-plant-sky-ecoregion-nature-vegetation-2080031-wallhere.com.jpg', N'4BB7EDEB-7E23-494C-BE0F-3069FEBE9725');
+INSERT INTO [css-database].dbo.campaign_image (id, path, campaign_id) VALUES (N'1CC6CB56-DAAE-1F4B-A7FE-5C5B18D06E77', N'https://csssalersystem.blob.core.windows.net/css-campaign-image/57c5dc2b-0bcc-42c4-bea3-1bf178c34cf7/cam16323816580012.jpg', N'2BDCC557-CC0B-C442-BEA3-1BF178C34CF7');
+INSERT INTO [css-database].dbo.campaign_image (id, path, campaign_id) VALUES (N'8482FB0E-D4B8-D54E-9CB5-5F462BC1A4FE', N'https://csssalersystem.blob.core.windows.net/css-campaign-image/9ce594bc-0904-4db8-8864-62556748c720/cloud-plant-sky-ecoregion-nature-vegetation-2080031-wallhere.com.jpg', N'BC94E59C-0409-B84D-8864-62556748C720');
+INSERT INTO [css-database].dbo.campaign_image (id, path, campaign_id) VALUES (N'571E727E-5AF9-664F-8089-60D54AAE0344', N'https://csssalersystem.blob.core.windows.net/css-campaign-image/f79f4689-6fe9-41ad-b135-c809ca4f787a/cloud-plant-sky-ecoregion-nature-vegetation-2080031-wallhere.com.jpg', N'89469FF7-E96F-AD41-B135-C809CA4F787A');
+INSERT INTO [css-database].dbo.campaign_image (id, path, campaign_id) VALUES (N'C3545933-A13D-5A40-8415-6D7BD651E22E', N'https://csssalersystem.blob.core.windows.net/css-campaign-image/82a733b8-6b14-4bbe-8bd5-354deb461e07/cloud-plant-sky-ecoregion-nature-vegetation-2080031-wallhere.com.jpg', N'B833A782-146B-BE4B-8BD5-354DEB461E07');
+INSERT INTO [css-database].dbo.campaign_image (id, path, campaign_id) VALUES (N'DBBE65CF-2979-3441-AB0B-78B8392CB2B7', N'https://csssalersystem.blob.core.windows.net/css-campaign-image/8be1f124-e065-4176-8e31-5bc558be7198/cloud-plant-sky-ecoregion-nature-vegetation-2080031-wallhere.com.jpg', N'24F1E18B-65E0-7641-8E31-5BC558BE7198');
+INSERT INTO [css-database].dbo.campaign_image (id, path, campaign_id) VALUES (N'BD000F4F-78E7-164A-A0C3-84B4BDD30D53', N'https://csssalersystem.blob.core.windows.net/css-campaign-image/f9697bae-9190-4331-893a-dcc39a11ea46/plant-green-vertebrate-cartoon-world-botany-2071793-wallhere.com.jpg', N'AE7B69F9-9091-3143-893A-DCC39A11EA46');
+INSERT INTO [css-database].dbo.campaign_image (id, path, campaign_id) VALUES (N'CFF3FBF3-1107-4045-8EE0-8EF1518E603A', N'https://csssalersystem.blob.core.windows.net/css-campaign-image/a4badabe-b2c3-4b5e-a87e-9cb940e4f6dc/plant-green-vertebrate-cartoon-world-botany-2071793-wallhere.com.jpg', N'BEDABAA4-C3B2-5E4B-A87E-9CB940E4F6DC');
+INSERT INTO [css-database].dbo.campaign_image (id, path, campaign_id) VALUES (N'B8CEE869-C1C8-AA48-A78A-9F983AEE3D9E', N'https://csssalersystem.blob.core.windows.net/css-campaign-image/cd9fd06f-90d2-49c4-be13-fe6e00d50f5d/cloud-plant-sky-ecoregion-nature-vegetation-2080031-wallhere.com.jpg', N'6FD09FCD-D290-C449-BE13-FE6E00D50F5D');
+INSERT INTO [css-database].dbo.campaign_image (id, path, campaign_id) VALUES (N'F0F68969-EB27-D74E-AEF0-AC953B5B417B', N'https://csssalersystem.blob.core.windows.net/css-campaign-image/b5856209-e710-4b0f-a102-3b4829962c01/aaa.png', N'096285B5-10E7-0F4B-A102-3B4829962C01');
+INSERT INTO [css-database].dbo.campaign_image (id, path, campaign_id) VALUES (N'F8D697B7-60C7-9A49-AD86-C582EAB6B855', N'https://csssalersystem.blob.core.windows.net/css-campaign-image/c6e61b8f-f0a2-4c42-a360-deb6df27fcc7/11800136_1679705445595987_6944938600683680689_n (2).jpg', N'8F1BE6C6-A2F0-424C-A360-DEB6DF27FCC7');
+INSERT INTO [css-database].dbo.campaign_image (id, path, campaign_id) VALUES (N'9D97FD7E-2CDA-CF46-8C40-FC2B43690042', N'https://csssalersystem.blob.core.windows.net/css-campaign-image/b3bc9892-8e64-4a90-8093-a5374336c9d6/cloud-plant-sky-ecoregion-nature-vegetation-2080031-wallhere.com.jpg', N'9298BCB3-648E-904A-8093-A5374336C9D6');

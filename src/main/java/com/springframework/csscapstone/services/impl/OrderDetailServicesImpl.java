@@ -45,12 +45,13 @@ public class OrderDetailServicesImpl implements OrderDetailService {
     @Transactional
     @Override
     public UUID createOrderDetail(OrderDetailCreatorReqDto dto) throws ProductNotFoundException, OrderNotFoundException, ProductCanCreateException, OrderDetailException {
-        Product product = this.productRepository.findById(dto.getIdProduct()).orElseThrow(productException());
+        Product product = this.productRepository.findById(dto.getIdProduct()).orElseThrow(productException);
 
-        Order order = this.orderRepository.findById(dto.getOrder().getId()).orElseThrow(orderDetailNotFoundException());
+        Order order = this.orderRepository.findById(dto.getOrder().getId()).orElseThrow(orderDetailNotFoundException);
 
 
-        OrderDetail orderDetail = Optional.of(new OrderDetail()).map(x -> creatorUtils(dto, order, product, x))
+        OrderDetail orderDetail = Optional
+                .of(new OrderDetail()).map(x -> creatorUtils(dto, order, product, x))
                 .orElseThrow(() -> new ProductCanCreateException(MessagesUtils.getMessage(MessageConstant.OrderDetail.CANT_CREATE)));
 
         OrderDetail savedOrderDetail = this.orderDetailRepository.save(orderDetail);
@@ -70,14 +71,12 @@ public class OrderDetailServicesImpl implements OrderDetailService {
         return detail;
     }
 
-    private Supplier<OrderDetailException> orderDetailNotFoundException() {
-        return () -> new OrderDetailException(MessagesUtils.getMessage(MessageConstant.Order.NOT_FOUND));
-    }
+    private final Supplier<OrderDetailException> orderDetailNotFoundException =
+            () -> new OrderDetailException(MessagesUtils.getMessage(MessageConstant.Order.NOT_FOUND));
 
     //============================Method Utils ==========================
-    private Supplier<ProductNotFoundException> productException() {
-        return () -> new ProductNotFoundException(MessagesUtils.getMessage(MessageConstant.Product.NOT_FOUND));
-    }
+    private final Supplier<ProductNotFoundException> productException =
+            () -> new ProductNotFoundException(MessagesUtils.getMessage(MessageConstant.Product.NOT_FOUND));
 
     @Transactional
     @Override
@@ -85,7 +84,7 @@ public class OrderDetailServicesImpl implements OrderDetailService {
         OrderDetail orderDetail = this.orderDetailRepository.findById(id)
                 .filter(x -> x.getId().equals(id))
                 .orElseThrow(() -> new OrderDetailException(MessagesUtils.getMessage(MessageConstant.OrderDetail.NOT_FOUND)));
-        Product product = this.productRepository.findById(dto.getIdProduct()).orElseThrow(productException());
+        Product product = this.productRepository.findById(dto.getIdProduct()).orElseThrow(productException);
         orderDetail.setNameProduct(product.getName())
                 .setQuantity(dto.getQuantity())
                 .setProductPrice(product.getPrice() * dto.getQuantity());
@@ -98,7 +97,7 @@ public class OrderDetailServicesImpl implements OrderDetailService {
     public void delete(UUID id) throws OrderDetailException {
         //detach order detail with order;
         OrderDetail orderDetail = orderDetailRepository.findById(id)
-                .orElseThrow(orderDetailNotFoundException());
+                .orElseThrow(orderDetailNotFoundException);
         OrderDetail _remove = orderDetail.removeOrderDetailsFromOrder();
 
         this.orderDetailRepository.delete(_remove);

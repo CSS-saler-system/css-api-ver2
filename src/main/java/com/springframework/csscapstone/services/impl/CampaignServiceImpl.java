@@ -91,8 +91,11 @@ public class CampaignServiceImpl implements CampaignService {
     private final Supplier<RuntimeException> weirdError = () -> new RuntimeException("Some thing went wrong in handler image");
 
 
-    Supplier<EntityNotFoundException> notFoundException = () -> new EntityNotFoundException("The campaign was not found");
-
+    private final Supplier<EntityNotFoundException> notFoundException = () -> new EntityNotFoundException("The campaign was not found");
+    private static final int INVALID_VALUE = 0;
+    private static final int DEFAULT_PAGE_NUMBER = 1;
+    private static final int DEFAULT_PAGE_SIZE = 10;
+    private static final int SHIFT_TO_ACTUAL_PAGE = 1;
     @Override
     public PageImplResDto<CampaignResDto> findCampaignWithoutEnterpriseId(
             String name, LocalDateTime date, Long kpi,
@@ -119,24 +122,25 @@ public class CampaignServiceImpl implements CampaignService {
             String name, LocalDateTime date, Long kpi, CampaignStatus status, Integer pageNumber, Integer pageSize) {
 
         //condition:
+
         Specification<Campaign> condition = Specification
                 .where(StringUtils.isEmpty(name) ? null : CampaignSpecifications.containsName(name))
                 .and(date == null ? null : CampaignSpecifications.beforeEndDate(date))
-                .and(kpi == null || kpi == 0 ? null : CampaignSpecifications.smallerKpi(kpi))
+                .and(kpi == null || kpi == INVALID_VALUE ? null : CampaignSpecifications.smallerKpi(kpi))
                 .and(status == null ? null : CampaignSpecifications.equalsStatus(status))
                 .and(CampaignSpecifications.equalsStatus(CampaignStatus.APPROVAL));
 
-        pageNumber = Objects.isNull(pageNumber) || pageNumber == 0 ? 1 : pageNumber;
-        pageSize = Objects.isNull(pageSize) || pageSize == 0 ? 10 : pageSize;
+        pageNumber = Objects.isNull(pageNumber) || pageNumber == INVALID_VALUE ? DEFAULT_PAGE_NUMBER : pageNumber;
+        pageSize = Objects.isNull(pageSize) || pageSize == INVALID_VALUE ? DEFAULT_PAGE_SIZE : pageSize;
 
         Page<Campaign> page = this.campaignRepository
-                .findAll(condition, PageRequest.of(pageNumber - 1, pageSize));
+                .findAll(condition, PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize));
 
         List<CampaignForCollaboratorResDto> result = page.getContent().stream()
                 .sorted(Comparator.comparing(Campaign::getStartDate).reversed())
                 .map(CampaignMapper.INSTANCE::campaignToCampaignForCollaboratorResDto)
                 .collect(Collectors.toList());
-        return new PageImplResDto<>(result, page.getNumber() + 1,
+        return new PageImplResDto<>(result, page.getNumber() + SHIFT_TO_ACTUAL_PAGE,
                 result.size(), page.getTotalElements(), page.getTotalPages(),
                 page.isFirst(), page.isLast());
     }
@@ -373,18 +377,18 @@ public class CampaignServiceImpl implements CampaignService {
 
     private PageImplResDto<CampaignResDto> getCampaignResDtoPageImplResDto(
             Integer pageNumber, Integer pageSize, Specification<Campaign> condition) {
-        pageNumber = Objects.isNull(pageNumber) || pageNumber == 0 ? 1 : pageNumber;
-        pageSize = Objects.isNull(pageSize) || pageSize == 0 ? 10 : pageSize;
+        pageNumber = Objects.isNull(pageNumber) || pageNumber == INVALID_VALUE ? DEFAULT_PAGE_NUMBER : pageNumber;
+        pageSize = Objects.isNull(pageSize) || pageSize == INVALID_VALUE ? DEFAULT_PAGE_SIZE : pageSize;
 
         Page<Campaign> page = this.campaignRepository.findAll(condition,
-                PageRequest.of(pageNumber - 1, pageSize));
+                PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize));
 
         List<CampaignResDto> content = page.getContent()
                 .stream()
                 .map(CampaignMapper.INSTANCE::toCampaignResDto)
                 .collect(Collectors.toList());
         return new PageImplResDto<>(
-                content, page.getNumber() + 1, content.size(), page.getTotalElements(),
+                content, page.getNumber() + SHIFT_TO_ACTUAL_PAGE, content.size(), page.getTotalElements(),
                 page.getTotalPages(), page.isFirst(), page.isLast());
     }
 
