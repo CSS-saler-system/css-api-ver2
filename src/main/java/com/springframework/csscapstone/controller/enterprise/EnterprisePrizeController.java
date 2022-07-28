@@ -1,10 +1,12 @@
 package com.springframework.csscapstone.controller.enterprise;
 
+import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.payload.request_dto.enterprise.PrizeCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.PrizeCreatorVer2ReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.PrizeUpdaterReqDto;
 import com.springframework.csscapstone.services.PrizeService;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
+import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -64,6 +66,12 @@ public class EnterprisePrizeController {
     public ResponseEntity<?> retrievePrizeById(@PathVariable("prizeId") UUID id) {
         return ok(this.prizeService.getPrizeByPrize(id)
                 .orElseThrow(handlerEntityNotFoundException(id)));
+    }
+
+    @DeleteMapping(V2_PRIZE_DELETE + "/{prizeId}")
+    public ResponseEntity<?> deletePrizeById(@PathVariable("prizeId") UUID prizeId) {
+        this.prizeService.deletePrizeById(prizeId);
+        return ok(MessagesUtils.getMessage(MessageConstant.REQUEST_SUCCESS));
     }
 
     private Supplier<EntityNotFoundException> handlerEntityNotFoundException(UUID id) {

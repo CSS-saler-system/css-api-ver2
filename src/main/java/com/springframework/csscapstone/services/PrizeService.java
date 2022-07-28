@@ -21,4 +21,5 @@ public interface PrizeService {
 
     Optional<PrizeResDto> getPrizeByPrize(UUID uuid);
 
+    void deletePrizeById(UUID prizeId);
 }

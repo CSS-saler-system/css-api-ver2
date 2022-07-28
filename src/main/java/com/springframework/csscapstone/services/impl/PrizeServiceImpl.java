@@ -34,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -50,8 +51,11 @@ public class PrizeServiceImpl implements PrizeService {
     private final Supplier<PrizeNotFoundException> handlerPrizeNotFound =
             () -> new PrizeNotFoundException(MessagesUtils.getMessage(MessageConstant.Prize.NOT_FOUND));
 
-
     private final Supplier<PrizeJsonBadException> handlerBadRequestException = () -> new PrizeJsonBadException(MessagesUtils.getMessage(MessageConstant.Prize.BAD_JSON));
+
+
+    private final Function<UUID, Supplier<RuntimeException>> runtimeExceptionSupplier =
+            (id) -> () -> new RuntimeException("The Prize with id: " + id + " not found");
 
     @Override
     public PageImplResDto<PrizeResDto> getAll(UUID enterpriseId, String name, Integer pageNumber, Integer pageSize) {
@@ -61,7 +65,8 @@ public class PrizeServiceImpl implements PrizeService {
 
         Specification<Prize> prizeSpecifications = Specification
                 .where(StringUtils.isEmpty(name) ? null : PrizeSpecifications.containsName(name))
-                .and(PrizeSpecifications.belongEnterpriseId(enterprise));
+                .and(PrizeSpecifications.belongEnterpriseId(enterprise))
+                .and(PrizeSpecifications.excludeDisableStatus());
 
         pageNumber = nonNull(pageNumber) && pageNumber > 1 ? pageNumber : 1;
         pageSize = nonNull(pageSize) && pageSize > 1 ? pageSize : 10;
@@ -89,6 +94,7 @@ public class PrizeServiceImpl implements PrizeService {
         return this.prizeRepository.findById(uuid)
                 .map(PrizeMapper.INSTANCE::toPrizeResDto);
     }
+
 
     @Transactional
     @Override
@@ -118,5 +124,13 @@ public class PrizeServiceImpl implements PrizeService {
         account.addCreatorPrize(prize);
 
         return this.prizeRepository.save(prize).getId();
+    }
+
+    @Transactional
+    @Override
+    public void deletePrizeById(UUID prizeId) {
+        prizeRepository.findById(prizeId)
+                .map(prize -> prize.setPrizeStatus(PrizeStatus.DISABLE))
+                .orElseThrow(runtimeExceptionSupplier.apply(prizeId));
     }
 }
