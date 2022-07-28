@@ -46,8 +46,7 @@ public class EnterprisePrizeController {
     }
 
     @PutMapping(
-            value = V2_PRIZE_UPDATE + "/{prizeId}",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+            value = V2_PRIZE_UPDATE + "/{prizeId}")
     public ResponseEntity<?> updatePrize(
             @PathVariable("prizeId") UUID prizeId,
             @RequestBody PrizeUpdaterReqDto dto
