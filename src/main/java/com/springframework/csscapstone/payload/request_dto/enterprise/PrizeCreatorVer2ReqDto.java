@@ -14,9 +14,9 @@ import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 public class PrizeCreatorVer2ReqDto implements Serializable {
     @NotEmpty
     private final String name;
-    @NotNull
+    @NotNull(message = "The price must be not null")
     private final Double price;
-    @NotNull
+    @NotNull(message = "The price must be not null")
     private final AccountInnerPrizeCreatorReqDto creator;
 
 

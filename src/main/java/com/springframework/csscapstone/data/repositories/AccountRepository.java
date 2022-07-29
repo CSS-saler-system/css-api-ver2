@@ -42,4 +42,8 @@ public interface AccountRepository extends JpaRepository<Account, UUID>, JpaSpec
     @Query("SELECT a FROM Account a WHERE a.role.name =: role")
     List<Account> findAllFetchJoinRole(@Param("role") String roleName);
 
+    @Query("SELECT a FROM Account a WHERE a.role = 'ROLE_2'")
+    Page<Account> findAllEnterprise(Pageable pageable);
+
+
 }

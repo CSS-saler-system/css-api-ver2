@@ -43,7 +43,7 @@ public interface AccountService {
 
     void disableAccount(UUID id);
 
-    PageEnterpriseResDto getAllHavingEnterpriseRole(Integer pageNumber, Integer pageSize);
+    PageImplResDto<AccountResDto> getAllHavingEnterpriseRole(Integer pageNumber, Integer pageSize);
 
     PageImplResDto<AccountResDto> getAllCollaboratorsOfEnterprise(
             UUID idEnterprise, Integer pageNumber, Integer pageSize);

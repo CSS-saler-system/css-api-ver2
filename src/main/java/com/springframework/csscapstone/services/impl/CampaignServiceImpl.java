@@ -254,7 +254,8 @@ public class CampaignServiceImpl implements CampaignService {
                 .map(Optional::get)
                 .forEach(entity::addProducts);
 
-        entity.setName(dto.getName())
+        entity
+                .setName(dto.getName())
                 .setStartDate(dto.getStartDate())
                 .setEndDate(dto.getEndDate())
                 .setCampaignShortDescription(dto.getCampaignShortDescription())

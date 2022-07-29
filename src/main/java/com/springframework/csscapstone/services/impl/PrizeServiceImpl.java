@@ -92,6 +92,7 @@ public class PrizeServiceImpl implements PrizeService {
     @Override
     public Optional<PrizeResDto> getPrizeByPrize(UUID uuid) {
         return this.prizeRepository.findById(uuid)
+                .filter(prize -> !prize.getPrizeStatus().equals(PrizeStatus.DISABLE))
                 .map(PrizeMapper.INSTANCE::toPrizeResDto);
     }
 

@@ -296,25 +296,20 @@ public class AccountServiceImpl implements AccountService {
 
     //todo for collaborator
     @Override
-    public PageEnterpriseResDto getAllHavingEnterpriseRole(Integer pageNumber, Integer pageSize) {
+    public PageImplResDto<AccountResDto> getAllHavingEnterpriseRole(Integer pageNumber, Integer pageSize) {
         pageNumber = Objects.isNull(pageNumber) || pageNumber <= DEFAULT_PAGE_NUMBER ? DEFAULT_PAGE_NUMBER : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize <= DEFAULT_PAGE_SIZE ? DEFAULT_PAGE_SIZE : pageSize;
 
-        Page<Tuple> page = this.accountRepository
-                .findAccountEnterpriseForCollaborator(PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize));
-
-        List<EnterpriseResDto> data = page
+        Page<Account> page = this.accountRepository
+                .findAllEnterprise(PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize));
+//
+        List<AccountResDto> data = page
                 .getContent()
                 .stream()
-                .collect(toMap(
-                        tuple -> this.accountRepository.findById(tuple.get(AccountRepository.QUERY_ACCOUNT, UUID.class)).get(),
-                        tuple -> tuple.get(AccountRepository.QUERY_COUNT_REQ, Long.class)))
-                .entrySet()
-                .stream()
-                .map(entry -> AccountMapper.INSTANCE.toEnterpriseResDto(entry.getKey(), entry.getValue()))
+                .map(AccountMapper.INSTANCE::toAccountResDto)
                 .collect(toList());
 
-        return new PageEnterpriseResDto(
+        return new PageImplResDto<>(
                 data, page.getNumber() + SHIFT_TO_ACTUAL_PAGE, data.size(),
                 page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
     }
