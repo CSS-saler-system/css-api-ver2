@@ -6,18 +6,14 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import com.springframework.csscapstone.payload.basic.AccountImageBasicDto;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.util.UUID;
 
 @Data
 public class AccountUpdaterJsonDto {
-    @NotNull(message = "The id must not be empty")
-    private final UUID id;
 
     @NotEmpty(message = "The phone must not be empty")
     private final String name;
@@ -42,7 +38,6 @@ public class AccountUpdaterJsonDto {
     private final Boolean gender;
 
     public AccountUpdaterJsonDto(
-            @JsonProperty("id") UUID id,
             @JsonProperty("name") String name,
             @JsonProperty("dob") LocalDate dob,
             @JsonProperty("phone") String phone,
@@ -50,7 +45,6 @@ public class AccountUpdaterJsonDto {
             @JsonProperty("address") String address,
             @JsonProperty("description") String description,
             @JsonProperty("gender") Boolean gender) {
-        this.id = id;
         this.name = name;
         this.dob = dob;
         this.email = email;
@@ -63,7 +57,6 @@ public class AccountUpdaterJsonDto {
     @Override
     public String toString() {
         return "AccountUpdaterDto{" +
-                "id=" + id +
                 ", name='" + name + '\'' +
                 ", dob=" + dob +
                 ", email='" + email + '\'' +

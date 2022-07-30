@@ -25,9 +25,9 @@ import static com.springframework.csscapstone.config.constant.ApiEndPoint.Accoun
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 import static org.springframework.http.ResponseEntity.ok;
 
+@Tag(name = "Account (Admin)")
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "Account (Admin)")
 public class AdminAccountController {
     private final AccountService service;
 
@@ -52,23 +52,30 @@ public class AdminAccountController {
 
     /**
      * todo update account by admin
+     *
      * @return
      * @throws AccountInvalidException
      */
-    @PutMapping(value = V1_UPDATE_ACCOUNT, consumes = {MULTIPART_FORM_DATA_VALUE})
+    @PutMapping(
+            value = V1_UPDATE_ACCOUNT + "/{accountId}",
+            consumes = {MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<UUID> updateAccount(
-            @RequestPart("account") String dto,
-            @RequestPart(value = "avatar", required = false)  MultipartFile avatars,
-            @RequestPart(value = "license", required = false) MultipartFile licenses,
-            @RequestPart(value = "idCard", required = false) MultipartFile idCards
+            @PathVariable(value = "accountId") UUID accountId,
+            @RequestPart(value = "accountDto") String accountDto,
+            @RequestPart(value = "avatars", required = false) MultipartFile avatars,
+            @RequestPart(value = "licenses", required = false) MultipartFile licenses,
+            @RequestPart(value = "idCards", required = false) MultipartFile idCards
 
     ) throws AccountInvalidException, JsonProcessingException {
-        AccountUpdaterJsonDto accountUpdaterJsonDto = new ObjectMapper().readValue(dto, AccountUpdaterJsonDto.class);
-        return ok(this.service.updateAccount(accountUpdaterJsonDto, avatars, licenses, idCards));
+//        System.out.println("Im inside");
+        AccountUpdaterJsonDto accountUpdaterJsonDto = new ObjectMapper().readValue(accountDto, AccountUpdaterJsonDto.class);
+        return ok(this.service.updateAccount(accountId, accountUpdaterJsonDto, avatars, licenses, idCards));
+//        return null;
     }
 
     /**
      * TODO Multipart transfer images avatars
+     *
      * @param dto
      * @return
      * @throws AccountExistException
@@ -76,10 +83,10 @@ public class AdminAccountController {
      */
     @PostMapping(value = V1_CREATE_ACCOUNT, consumes = {MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<UUID> addNewAccount(
-            @RequestPart("account") String dto,
-            @RequestPart(value = "avatar", required = false)  MultipartFile avatars,
+            @RequestPart(value = "avatar", required = false) MultipartFile avatars,
             @RequestPart(value = "license", required = false) MultipartFile licenses,
-            @RequestPart(value = "idCard", required = false) MultipartFile idCards)
+            @RequestPart(value = "idCard", required = false) MultipartFile idCards,
+            @RequestPart(value = "account") String dto)
             throws AccountExistException, AccountNotFoundException, JsonProcessingException, FirebaseAuthException {
         AccountCreatorReqDto accountCreatorReqDto = new ObjectMapper().readValue(dto, AccountCreatorReqDto.class);
         UUID account = service.createEnterpriseAccount(accountCreatorReqDto, avatars, licenses, idCards);
@@ -88,6 +95,7 @@ public class AdminAccountController {
 
     /**
      * TODO Admin disable account entity
+     *
      * @param id
      * @return
      */

@@ -36,8 +36,9 @@ public class ModeratorAccountController {
      * @return
      * @throws AccountInvalidException
      */
-    @PutMapping(value = V4_ACCOUNT_UPDATE, consumes = {MULTIPART_FORM_DATA_VALUE})
+    @PutMapping(value = V4_ACCOUNT_UPDATE + "/{accountId}", consumes = {MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<UUID> updateAccount(
+            @PathVariable("accountId") UUID accountId,
             @RequestPart("account") String dto,
             @RequestPart(value = "avatar", required = false) MultipartFile avatars,
             @RequestPart(value = "license", required = false) MultipartFile licenses,
@@ -45,7 +46,7 @@ public class ModeratorAccountController {
 
     ) throws AccountInvalidException, JsonProcessingException {
         AccountUpdaterJsonDto accountUpdaterJsonDto = new ObjectMapper().readValue(dto, AccountUpdaterJsonDto.class);
-        return ok(this.accountService.updateAccount(accountUpdaterJsonDto, avatars, licenses, idCards));
+        return ok(this.accountService.updateAccount(accountId, accountUpdaterJsonDto, avatars, licenses, idCards));
     }
 
     /**

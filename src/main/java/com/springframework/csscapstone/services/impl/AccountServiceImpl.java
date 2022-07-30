@@ -9,10 +9,8 @@ import com.springframework.csscapstone.data.status.AccountImageType;
 import com.springframework.csscapstone.data.status.RequestStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.EnterpriseSignUpDto;
-import com.springframework.csscapstone.payload.response_dto.PageEnterpriseResDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.admin.AccountResDto;
-import com.springframework.csscapstone.payload.response_dto.collaborator.EnterpriseResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.CollaboratorResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.CollaboratorWithQuantitySoldByCategoryDto;
 import com.springframework.csscapstone.payload.sharing.AccountUpdaterJsonDto;
@@ -43,13 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.Tuple;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -57,12 +49,9 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.springframework.csscapstone.data.status.AccountImageType.AVATAR;
-import static com.springframework.csscapstone.data.status.AccountImageType.ID_CARD;
-import static com.springframework.csscapstone.data.status.AccountImageType.LICENSE;
+import static com.springframework.csscapstone.data.status.AccountImageType.*;
 import static com.springframework.csscapstone.utils.exception_catch_utils.ExceptionCatchHandler.peek;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 @Service
 @PropertySource(value = "classpath:application-storage.properties")
@@ -261,14 +250,14 @@ public class AccountServiceImpl implements AccountService {
      */
     @Transactional
     @Override
-    public UUID updateAccount(AccountUpdaterJsonDto reqUpdateDto,
+    public UUID updateAccount(UUID accountId, AccountUpdaterJsonDto reqUpdateDto,
                               MultipartFile avatars,
                               MultipartFile licenses,
                               MultipartFile idCards) throws AccountInvalidException {
 
         //check exist entity
         Account entity = accountRepository
-                .findById(reqUpdateDto.getId())
+                .findById(accountId)
                 .orElseThrow(handlerAccountInvalid);
 
         AccountMapper.INSTANCE.updateAccountFromAccountUpdaterJsonDto(reqUpdateDto, entity);

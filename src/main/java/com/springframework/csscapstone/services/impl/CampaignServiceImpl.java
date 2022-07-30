@@ -238,6 +238,7 @@ public class CampaignServiceImpl implements CampaignService {
 //        handlerAddPrize(entity, prizes);
 //        handlerAddProduct(entity, products);
 
+        //todo 1 Thread
         prizes
                 .stream()
                 .map(CampaignUpdaterReqDto.PrizeInnerCampaignDto::getId)

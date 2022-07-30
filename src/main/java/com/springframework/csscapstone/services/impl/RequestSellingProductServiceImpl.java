@@ -27,6 +27,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -125,6 +126,7 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
 
         List<RequestSellingProductEnterpriseManagerDto> data = page
                 .getContent().stream()
+                .sorted(Comparator.comparing(RequestSellingProduct::getDateTimeRequest).reversed())
                 .map(MapperDTO.INSTANCE::toRequestSellingProductEnterpriseManagerDto)
                 .collect(Collectors.toList());
 

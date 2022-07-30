@@ -7,7 +7,6 @@ import com.springframework.csscapstone.payload.sharing.AccountUpdaterJsonDto;
 import com.springframework.csscapstone.services.AccountService;
 import com.springframework.csscapstone.services.LoginService;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountInvalidException;
-import com.springframework.csscapstone.utils.security_provider_utils.JwtTokenProvider;
 import com.springframework.csscapstone.utils.security_provider_utils.TokenProvider;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
-import static com.springframework.csscapstone.config.constant.ApiEndPoint.Account.V1_UPDATE_ACCOUNT;
 import static com.springframework.csscapstone.config.constant.ApiEndPoint.Account.V3_UPDATE_ACCOUNT;
 import static com.springframework.csscapstone.config.constant.ApiEndPoint.COLLABORATOR_LOGIN;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
@@ -60,8 +56,9 @@ public class CollaboratorLoginController {
      * @return
      * @throws AccountInvalidException
      */
-    @PutMapping(value = V3_UPDATE_ACCOUNT, consumes = {MULTIPART_FORM_DATA_VALUE})
+    @PutMapping(value = V3_UPDATE_ACCOUNT + "/{accountId}", consumes = {MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<UUID> updateAccount(
+            @PathVariable("accountId") UUID accountId,
             @RequestPart("account") String dto,
             @RequestPart(value = "avatar", required = false) MultipartFile avatars,
             @RequestPart(value = "license", required = false) MultipartFile licenses,
@@ -69,6 +66,6 @@ public class CollaboratorLoginController {
 
     ) throws AccountInvalidException, JsonProcessingException {
         AccountUpdaterJsonDto accountUpdaterJsonDto = new ObjectMapper().readValue(dto, AccountUpdaterJsonDto.class);
-        return ok(this.accountService.updateAccount(accountUpdaterJsonDto, avatars, licenses, idCards));
+        return ok(this.accountService.updateAccount(accountId, accountUpdaterJsonDto, avatars, licenses, idCards));
     }
 }
