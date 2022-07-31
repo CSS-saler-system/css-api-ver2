@@ -1,20 +1,20 @@
 package com.springframework.csscapstone.data.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @Entity
@@ -22,8 +22,7 @@ import java.util.UUID;
 public class AccountToken {
     @Id
     @GeneratedValue(generator = "hibernate_generator")
-    @GenericGenerator(name = "hibernate_generator",
-            strategy = "org.hibernate.id.UUIDGenerator")
+    @GenericGenerator(name = "hibernate_generator", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(nullable = false, columnDefinition = "uniqueIdentifier")
     private UUID id;
 
@@ -41,5 +40,16 @@ public class AccountToken {
         this.registrationToken = registrationToken;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        AccountToken that = (AccountToken) o;
+        return id != null && Objects.equals(id, that.id);
+    }
 
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

@@ -43,16 +43,80 @@ public class FirebaseMessageService {
             throws JsonProcessingException, ExecutionException, InterruptedException {
         //get message from preconfigured with data
         Message message = getPreconfiguredMessageWithData(data, request);
-
+        System.out.println("before:  " + message);
         objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         String jsonOutput = objectMapper
                 .writerWithDefaultPrettyPrinter()
                 .writeValueAsString(message);
+        System.out.println("after:  " + jsonOutput);
 
         String res = sendAndGetResponse(message);
         LOGGER.info("Sent message with data. Topic: " + request.getTopic()
                 + ", " + res + " msg " + jsonOutput);
     }
+
+    /**
+     * todo assign map data into message
+     * @param data
+     * @param request
+     * @return
+     */
+    private Message getPreconfiguredMessageWithData(Map<String, String> data, PushNotificationRequest request) {
+        return getPreconfiguredMessageBuilder(request)
+                .putAllData(data)
+                .setToken(request.getToken())
+                .build();
+    }
+
+    /**
+     * todo config for android and apple device receive message
+     * @param request
+     * @return
+     */
+    private Message.Builder getPreconfiguredMessageBuilder(PushNotificationRequest request) {
+
+        //android-specific service
+        AndroidConfig androidConfig = getAndroidConfig(request.getTopic());
+
+        //apple push notification service
+        ApnsConfig apnsConfig = getApnsConfig(request.getTopic());
+
+        return Message.builder()
+                .setAndroidConfig(androidConfig)
+                .setApnsConfig(apnsConfig)
+
+                //request.getTitle(), request.getMessage()
+                .setNotification(Notification.builder()
+                        .setTitle(request.getTitle())
+                        .setBody(request.getMessage())
+                        .build());
+    }
+
+    private Message getPreconfiguredMessageToToken(PushNotificationRequest request) {
+        return getPreconfiguredMessageBuilder(request)
+                .setToken(request.getToken())
+                .build();
+    }
+
+    private ApnsConfig getApnsConfig(String topic) {
+        return ApnsConfig.builder()
+                .setAps(Aps.builder().setCategory(topic).setThreadId(topic).build()).build();
+    }
+
+    private AndroidConfig getAndroidConfig(String topic) {
+        return AndroidConfig.builder()
+                .setTtl(Duration.ofMinutes(2).toMillis())
+                .setCollapseKey(topic)
+                .setPriority(AndroidConfig.Priority.HIGH)
+                .setNotification(AndroidNotification.builder().setSound(NotificationParameter.SOUND.getValue())
+                        .setColor(NotificationParameter.COLOR.getValue()).setTag(topic).build()).build();
+    }
+
+    //rarely using
+    private Message getPreconfiguredMessageWithoutData(PushNotificationRequest request) {
+        return null;
+    }
+
 
     public void sendMessageWithoutData(PushNotificationRequest request) throws ExecutionException, InterruptedException {
         Message message = getPreconfiguredMessageWithoutData(
@@ -73,63 +137,6 @@ public class FirebaseMessageService {
     private String sendAndGetResponse(Message message)
             throws ExecutionException, InterruptedException {
         return FirebaseMessaging.getInstance().sendAsync(message).get();
-    }
-
-    private Message getPreconfiguredMessageToToken(PushNotificationRequest request) {
-        return getPreconfiguredMessageBuilder(request)
-                .setToken(request.getToken())
-                .build();
-    }
-
-    /**
-     * todo assign map data into message
-     * @param data
-     * @param request
-     * @return
-     */
-    private Message getPreconfiguredMessageWithData(Map<String, String> data, PushNotificationRequest request) {
-        return getPreconfiguredMessageBuilder(request)
-                .putAllData(data)
-                .setToken(request.getToken())
-                .build();
-    }
-
-    //Utils
-    private Message.Builder getPreconfiguredMessageBuilder(PushNotificationRequest request) {
-
-        //android-specific service
-        AndroidConfig androidConfig = getAndroidConfig(request.getTopic());
-
-        //apple push notification service
-        ApnsConfig apnsConfig = getApnsConfig(request.getTopic());
-
-        return Message.builder()
-                .setAndroidConfig(androidConfig)
-                .setApnsConfig(apnsConfig)
-                //request.getTitle(), request.getMessage()
-                .setNotification(Notification.builder()
-                                .setTitle(request.getTitle())
-                                .setBody(request.getMessage())
-                                .build());
-    }
-
-    private ApnsConfig getApnsConfig(String topic) {
-        return ApnsConfig.builder()
-                .setAps(Aps.builder().setCategory(topic).setThreadId(topic).build()).build();
-    }
-
-    private AndroidConfig getAndroidConfig(String topic) {
-        return AndroidConfig.builder()
-                .setTtl(Duration.ofMinutes(2).toMillis())
-                .setCollapseKey(topic)
-                .setPriority(AndroidConfig.Priority.HIGH)
-                .setNotification(AndroidNotification.builder().setSound(NotificationParameter.SOUND.getValue())
-                        .setColor(NotificationParameter.COLOR.getValue()).setTag(topic).build()).build();
-    }
-
-    //rarely using
-    private Message getPreconfiguredMessageWithoutData(PushNotificationRequest request) {
-        return null;
     }
 
 

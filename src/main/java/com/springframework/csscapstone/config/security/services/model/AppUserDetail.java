@@ -17,6 +17,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+
 @RequiredArgsConstructor
 public class AppUserDetail implements UserDetails, Serializable {
     private final Account entity;

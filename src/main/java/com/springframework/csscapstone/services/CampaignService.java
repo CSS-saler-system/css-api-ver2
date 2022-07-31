@@ -18,7 +18,7 @@ import java.util.UUID;
 
 public interface CampaignService {
 
-    //todo for enterprise
+    //for enterprise
     PageImplResDto<CampaignResDto> findCampaign(
             UUID enterpriseId,
             String name,
@@ -27,12 +27,12 @@ public interface CampaignService {
             Long minKpi, Long maxKpi, CampaignStatus status,
             Integer pageNumber, Integer pageSize);
 
-    //todo for moderator
+    //for moderator
     PageImplResDto<CampaignResDto> findCampaignWithoutEnterpriseId(
             String name, LocalDateTime date, Long kpi,
             CampaignStatus status, Integer pageNumber, Integer pageSize);
 
-    //todo for Collaborator:
+    //for Collaborator:
     PageImplResDto<CampaignForCollaboratorResDto> listCampaignWithoutEnterpriseIdForCollaborator(
             String name, LocalDateTime date, Long kpi,
             CampaignStatus status, Integer pageNumber, Integer pageSize);
@@ -45,13 +45,16 @@ public interface CampaignService {
 
     void deleteCampaign(UUID id) throws EntityNotFoundException;
 
+    //todo notification
     void scheduleCloseCampaign();
 
-    //todo close campaign
+    //todo close campaign | notification
     void completeCampaign(UUID id) throws JsonProcessingException;
 
+    //todo notification
     void rejectCampaignInDate();
 
+    //todo notification
     void updateStatusCampaignForModerator(
             UUID campaignId, CampaignStatus status);
 

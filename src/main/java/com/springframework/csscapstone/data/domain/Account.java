@@ -117,7 +117,6 @@ public class Account {
     @JoinColumn(name = "role_id")
     private Role role;
 
-
     @ManyToMany
     @JoinTable(name = "account_prize",
             joinColumns = @JoinColumn(name = "account_id"),
