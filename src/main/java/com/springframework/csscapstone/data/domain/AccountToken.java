@@ -15,7 +15,6 @@ import java.util.UUID;
 @Setter
 @ToString
 @RequiredArgsConstructor
-@NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @Entity
 @Table(name = "account_token")
