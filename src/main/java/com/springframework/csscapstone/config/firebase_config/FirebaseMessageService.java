@@ -16,6 +16,7 @@ import com.springframework.csscapstone.config.firebase_config.model.PushNotifica
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
@@ -39,6 +40,7 @@ public class FirebaseMessageService {
      * @throws ExecutionException
      * @throws InterruptedException
      */
+    @Async("threadPoolTaskExecutor")
     public void sendMessage(Map<String, String> data, PushNotificationRequest request)
             throws JsonProcessingException, ExecutionException, InterruptedException {
         //get message from preconfigured with data

@@ -1,6 +1,10 @@
 package com.springframework.csscapstone.services.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.springframework.csscapstone.config.constant.MessageConstant;
+import com.springframework.csscapstone.config.constant.MobileScreen;
+import com.springframework.csscapstone.config.firebase_config.FirebaseMessageService;
+import com.springframework.csscapstone.config.firebase_config.model.PushNotificationRequest;
 import com.springframework.csscapstone.data.dao.specifications.CampaignSpecifications;
 import com.springframework.csscapstone.data.domain.*;
 import com.springframework.csscapstone.data.repositories.*;
@@ -33,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -46,17 +51,13 @@ import static com.springframework.csscapstone.utils.exception_catch_utils.Except
 public class CampaignServiceImpl implements CampaignService {
     private final CampaignRepository campaignRepository;
     private final OrderRepository orderRepository;
-
     private final AccountRepository accountRepository;
-
     private final ProductRepository productRepository;
-
     private final BlobUploadImages blobUploadImages;
-
     private final CampaignImageRepository campaignImageRepository;
-
     private final PrizeRepository prizeRepository;
-
+    private final AccountTokenRepository accountTokenRepository;
+    private final FirebaseMessageService firebaseMessageService;
     @Value("${endpoint}")
     private String endpoint;
 
@@ -77,11 +78,12 @@ public class CampaignServiceImpl implements CampaignService {
     private final Function<UUID, Supplier<EntityNotFoundException>> entityNotFoundExceptionSupplier =
             (id) -> () -> new EntityNotFoundException("The enterprise with id: " + id + " was not found!!!");
 
-
     private final Supplier<RuntimeException> weirdError = () -> new RuntimeException("Some thing went wrong in handler image");
 
-
     private final Supplier<EntityNotFoundException> notFoundException = () -> new EntityNotFoundException("The campaign was not found");
+
+    private final Supplier<RuntimeException> noTokenException = () -> new RuntimeException("No have token belong to this account");
+
     private static final int INVALID_VALUE = 0;
     private static final int DEFAULT_PAGE_NUMBER = 1;
     private static final int DEFAULT_PAGE_SIZE = 10;
@@ -391,14 +393,47 @@ public class CampaignServiceImpl implements CampaignService {
                 .forEach(this.campaignRepository::save);
     }
 
+    /**
+     * Todo create notification firebase
+     * @param campaignId
+     * @param status
+     */
     @Transactional
     @Override
-    public void updateStatusCampaignForModerator(UUID campaignId, CampaignStatus status) {
-        this.campaignRepository
+    public void updateStatusCampaignForModerator(UUID campaignId, CampaignStatus status) throws ExecutionException, JsonProcessingException, InterruptedException {
+        Campaign campaign = this.campaignRepository
                 .findById(campaignId)
                 .map(camp -> camp.setCampaignStatus(status))
                 .map(this.campaignRepository::save)
                 .orElseThrow(campaignNotFoundException);
+
+        AccountToken token = this.accountTokenRepository
+                .getAccountTokenByAccountOptional(campaign.getAccount().getId())
+//                .filter(Objects::nonNull)
+                .map(Collection::stream)
+                .orElseGet(Stream::empty)
+                .findFirst()
+                .orElseThrow(noTokenException);
+        System.out.println(token);
+
+        sendNotification(campaign, status, token.getRegistrationToken());
+
+    }
+
+    private void sendNotification(Campaign campaign, CampaignStatus status, String token)
+            throws ExecutionException, JsonProcessingException, InterruptedException {
+        PushNotificationRequest notification = new PushNotificationRequest(
+                "Campaign Approval Result",
+                "The campaign was " + (status.equals(CampaignStatus.REJECTED) ? "reject" : "approval"),
+                "The Campaign",
+                token);
+
+        Map<String, String> data = new HashMap<>();
+
+        data.put(MobileScreen.CAMPAIGN.getScreen(), campaign.getId().toString());
+
+        this.firebaseMessageService.sendMessage(data, notification);
+
     }
 
     @Transactional

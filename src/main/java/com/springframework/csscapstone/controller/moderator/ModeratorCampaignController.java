@@ -1,5 +1,6 @@
 package com.springframework.csscapstone.controller.moderator;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 import static com.springframework.csscapstone.config.constant.ApiEndPoint.Campaign.*;
 import static org.springframework.http.ResponseEntity.ok;
@@ -48,13 +50,13 @@ public class ModeratorCampaignController {
 
     //todo send notification.
     @PutMapping(V4_REJECT_CAMPAIGN + "/{campaignId}")
-    public ResponseEntity<?> rejectCampaign(@PathVariable("campaignId") UUID campaignID) {
+    public ResponseEntity<?> rejectCampaign(@PathVariable("campaignId") UUID campaignID) throws ExecutionException, JsonProcessingException, InterruptedException {
         this.campaignService.updateStatusCampaignForModerator(campaignID, CampaignStatus.REJECTED);
         return ok(MessagesUtils.getMessage(MessageConstant.REQUEST_SUCCESS));
     }
-
+    //todo send notification.
     @PutMapping(V4_APPROVAL_CAMPAIGN + "/{campaignId}")
-    public ResponseEntity<?> approvalCampaign(@PathVariable("campaignId") UUID campaignID) {
+    public ResponseEntity<?> approvalCampaign(@PathVariable("campaignId") UUID campaignID) throws ExecutionException, JsonProcessingException, InterruptedException {
         this.campaignService.updateStatusCampaignForModerator(campaignID, CampaignStatus.APPROVAL);
         return ok(MessagesUtils.getMessage(MessageConstant.REQUEST_SUCCESS));
     }

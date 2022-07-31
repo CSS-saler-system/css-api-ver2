@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 public interface CampaignService {
 
@@ -56,7 +57,7 @@ public interface CampaignService {
 
     //todo notification
     void updateStatusCampaignForModerator(
-            UUID campaignId, CampaignStatus status);
+            UUID campaignId, CampaignStatus status) throws ExecutionException, JsonProcessingException, InterruptedException;
 
     void sentCampaign(UUID campaignId);
 }
