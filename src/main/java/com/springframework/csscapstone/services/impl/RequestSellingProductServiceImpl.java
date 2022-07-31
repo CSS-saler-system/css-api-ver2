@@ -1,16 +1,17 @@
 package com.springframework.csscapstone.services.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.springframework.csscapstone.config.constant.MessageConstant;
+import com.springframework.csscapstone.config.constant.MobileScreen;
 import com.springframework.csscapstone.config.firebase_config.FirebaseMessageService;
+import com.springframework.csscapstone.config.firebase_config.model.PushNotificationRequest;
 import com.springframework.csscapstone.data.dao.specifications.RequestSellingProductSpecifications;
-import com.springframework.csscapstone.data.domain.Account;
-import com.springframework.csscapstone.data.domain.Product;
-import com.springframework.csscapstone.data.domain.RequestSellingProduct;
-import com.springframework.csscapstone.data.domain.RequestSellingProductEnterpriseManagerDto;
+import com.springframework.csscapstone.data.domain.*;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.data.repositories.AccountTokenRepository;
 import com.springframework.csscapstone.data.repositories.ProductRepository;
 import com.springframework.csscapstone.data.repositories.RequestSellingProductRepository;
+import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.data.status.RequestStatus;
 import com.springframework.csscapstone.payload.request_dto.collaborator.RequestSellingProductCreatorDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
@@ -27,13 +28,11 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +48,9 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
     private static final int INVALID_PAGE_SIZE = 1;
     private static final int DEFAULT_PAGE_NUMBER = 1;
     private static final int DEFAULT_PAGE_SIZE = 1;
+
+    private final Supplier<RuntimeException> noTokenException = () -> new RuntimeException("No have token belong to this account");
+
     @Override
     public List<RequestSellingProductResDto> getAllRequest() {
         return requestSellingProductRepository.findAll()
@@ -137,13 +139,37 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
 
     @Transactional
     @Override
-    public Optional<UUID> updateProduct(UUID idRequest, RequestStatus status) {
+    public Optional<UUID> updateProduct(UUID idRequest, RequestStatus status) throws ExecutionException, JsonProcessingException, InterruptedException {
         RequestSellingProduct request = this.requestSellingProductRepository
                 .findById(idRequest)
+                .filter(reqeust -> reqeust.getRequestStatus().equals(RequestStatus.CREATED))
                 .orElseThrow(() -> handlerRequestNotFound().get());
         request.setRequestStatus(status);
         RequestSellingProduct save = this.requestSellingProductRepository.save(request);
+        AccountToken accountToken = this.accountTokenRepository.getAccountTokenByAccountOptional(request.getAccount().getId())
+                .map(Collection::stream)
+                .orElseGet(Stream::empty)
+                .findFirst()
+                .orElseThrow(noTokenException);
+
+        sendNotification(save, status, accountToken.getRegistrationToken());
+
         return Optional.of(save.getId());
+    }
+
+    private void sendNotification(RequestSellingProduct request, RequestStatus status, String token) throws ExecutionException, JsonProcessingException, InterruptedException {
+        PushNotificationRequest notification = new PushNotificationRequest(
+                "Campaign Approval Result",
+                "The campaign was " + (status.equals(RequestStatus.REJECT) ? "rejected" : "registered"),
+                "The Campaign",
+                token);
+
+        Map<String, String> data = new HashMap<>();
+
+        data.put(MobileScreen.REQUEST.getScreen(), request.getId().toString());
+
+        this.firebaseMessageService.sendMessage(data, notification);
+
     }
 
     @Override

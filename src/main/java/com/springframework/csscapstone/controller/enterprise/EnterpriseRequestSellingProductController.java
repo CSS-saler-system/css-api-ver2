@@ -1,5 +1,6 @@
 package com.springframework.csscapstone.controller.enterprise;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.springframework.csscapstone.data.status.RequestStatus;
 import com.springframework.csscapstone.payload.response_dto.enterprise.RequestSellingProductResDto;
 import com.springframework.csscapstone.services.RequestSellingProductService;
@@ -10,6 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static com.springframework.csscapstone.config.constant.ApiEndPoint.RequestSellingProduct.*;
 import static org.springframework.http.ResponseEntity.ok;
@@ -20,6 +24,8 @@ import static org.springframework.http.ResponseEntity.ok;
 public class EnterpriseRequestSellingProductController {
 
     private final RequestSellingProductService requestSellingProductService;
+    private final Function<UUID, Supplier<EntityNotFoundException>> entityNotFoundExceptionSupplier =
+            (idRequest) -> () -> new EntityNotFoundException("The request selling with id: " + idRequest + "not found ");
 
     @GetMapping(V2_REQUEST_LIST + "/{enterpriseId}")
     public ResponseEntity<?> getListRequestSellingProduct(
@@ -43,10 +49,11 @@ public class EnterpriseRequestSellingProductController {
     @PutMapping(V2_REQUEST_UPDATE + "/{requestId}")
     public ResponseEntity<?> updateStatusRequest(
             @PathVariable("requestId") UUID idRequest,
-            @RequestParam(value = "status") RequestStatus status) {
+            @RequestParam(value = "status") RequestStatus status)
+            throws ExecutionException, JsonProcessingException, InterruptedException {
         UUID id = this.requestSellingProductService
                 .updateProduct(idRequest, status)
-                .orElseThrow(() -> new EntityNotFoundException("The request selling with id: " + idRequest + "not found "));
+                .orElseThrow(entityNotFoundExceptionSupplier.apply(idRequest));
         return ok(id);
     }
 
