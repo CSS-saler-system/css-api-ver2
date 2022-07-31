@@ -146,7 +146,8 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
                 .orElseThrow(() -> handlerRequestNotFound().get());
         request.setRequestStatus(status);
         RequestSellingProduct save = this.requestSellingProductRepository.save(request);
-        AccountToken accountToken = this.accountTokenRepository.getAccountTokenByAccountOptional(request.getAccount().getId())
+        AccountToken accountToken = this.accountTokenRepository
+                .getAccountTokenByAccountOptional(request.getAccount().getId())
                 .map(Collection::stream)
                 .orElseGet(Stream::empty)
                 .findFirst()
@@ -159,9 +160,9 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
 
     private void sendNotification(RequestSellingProduct request, RequestStatus status, String token) throws ExecutionException, JsonProcessingException, InterruptedException {
         PushNotificationRequest notification = new PushNotificationRequest(
-                "Campaign Approval Result",
-                "The campaign was " + (status.equals(RequestStatus.REJECT) ? "rejected" : "registered"),
-                "The Campaign",
+                "Request Approval Result",
+                "The Request was " + (status.equals(RequestStatus.REJECT) ? "rejected" : "registered"),
+                "The Request",
                 token);
 
         Map<String, String> data = new HashMap<>();
