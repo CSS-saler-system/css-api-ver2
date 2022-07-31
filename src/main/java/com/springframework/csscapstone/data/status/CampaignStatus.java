@@ -9,7 +9,7 @@ public enum CampaignStatus {
     // enterprise, load reject approve finish,
     // <exclude> sent
     CREATED, DISABLED, //load !SENT,
-    SENT, //not load
+    SENT, //load
 
     // moderator load sent
     REJECTED, APPROVAL,

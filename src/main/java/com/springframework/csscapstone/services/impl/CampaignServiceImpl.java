@@ -1,19 +1,9 @@
 package com.springframework.csscapstone.services.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.springframework.csscapstone.config.constant.MessageConstant;
 import com.springframework.csscapstone.data.dao.specifications.CampaignSpecifications;
-import com.springframework.csscapstone.data.domain.Account;
-import com.springframework.csscapstone.data.domain.Campaign;
-import com.springframework.csscapstone.data.domain.CampaignImage;
-import com.springframework.csscapstone.data.domain.Prize;
-import com.springframework.csscapstone.data.domain.Product;
-import com.springframework.csscapstone.data.repositories.AccountRepository;
-import com.springframework.csscapstone.data.repositories.CampaignImageRepository;
-import com.springframework.csscapstone.data.repositories.CampaignRepository;
-import com.springframework.csscapstone.data.repositories.OrderRepository;
-import com.springframework.csscapstone.data.repositories.PrizeRepository;
-import com.springframework.csscapstone.data.repositories.ProductRepository;
+import com.springframework.csscapstone.data.domain.*;
+import com.springframework.csscapstone.data.repositories.*;
 import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.CampaignUpdaterReqDto;
@@ -37,7 +27,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -108,12 +97,12 @@ public class CampaignServiceImpl implements CampaignService {
                 .where(StringUtils.isEmpty(name) ? null : CampaignSpecifications.containsName(name))
                 .and(date == null ? null : CampaignSpecifications.beforeEndDate(date))
                 .and(kpi == null || kpi == 0 ? null : CampaignSpecifications.smallerKpi(kpi))
-                .and(status == null
-                        ? null : CampaignSpecifications.equalsStatus(status))
+                .and(status == null ? null : CampaignSpecifications.equalsStatus(status))
                 .and(CampaignSpecifications.excludeStatus(
                         CampaignStatus.CREATED,
                         CampaignStatus.DISABLED,
                         CampaignStatus.FINISHED));
+
         return getCampaignResDtoPageImplResDto(pageNumber, pageSize, condition);
     }
 
@@ -163,7 +152,7 @@ public class CampaignServiceImpl implements CampaignService {
                 .and(startDate == null ? null : CampaignSpecifications.afterStartDate(startDate))
                 .and(maxKpi == null || maxKpi == 0 ? null : CampaignSpecifications.smallerKpi(maxKpi))
                 .and(status == null ? null : CampaignSpecifications.equalsStatus(status))
-                .and(CampaignSpecifications.excludeStatus(CampaignStatus.SENT, CampaignStatus.DISABLED));
+                .and(CampaignSpecifications.excludeStatus(CampaignStatus.DISABLED));
 
         return getCampaignResDtoPageImplResDto(pageNumber, pageSize, condition);
     }

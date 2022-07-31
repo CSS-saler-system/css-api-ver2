@@ -8,14 +8,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.springframework.csscapstone.data.status.CampaignStatus;
-import com.springframework.csscapstone.data.status.ProductStatus;
-import com.springframework.csscapstone.payload.basic.CampaignImageBasicDto;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
@@ -34,18 +30,24 @@ public class CampaignResDto implements Serializable {
     private final LocalDateTime endDate;
     private final CampaignStatus campaignStatus;
 
+    private String campaignShortDescription;
+
+    private String campaignDescription;
+
     @JsonCreator(mode = PROPERTIES)
     public CampaignResDto(
             @JsonProperty("campaignId") UUID campaignId,
             @JsonProperty("name") String name,
             @JsonProperty("startDate") LocalDateTime startDate,
             @JsonProperty("endDate") LocalDateTime endDate,
-            @JsonProperty("campaignStatus") CampaignStatus campaignStatus) {
+            @JsonProperty("campaignStatus") CampaignStatus campaignStatus, String campaignDescription, String campaignShortDescription) {
         this.campaignId = campaignId;
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
         this.campaignStatus = campaignStatus;
+        this.campaignDescription = campaignDescription;
+        this.campaignShortDescription = campaignShortDescription;
     }
 
 }
