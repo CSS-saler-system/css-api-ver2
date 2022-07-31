@@ -1,5 +1,6 @@
 package com.springframework.csscapstone.data.status;
 
 public enum ProductStatus {
-    ACTIVE, DISABLE,
+    ACTIVE, DISABLED,
+    DELETED // enterprise self-delete
 }

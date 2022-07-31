@@ -149,7 +149,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void deleteCategory(UUID id) throws EntityNotFoundException {
         this.categoryRepository.findById(id)
-                .map(x -> x.setStatus(CategoryStatus.DISABLE))
+                .map(x -> x.setStatus(CategoryStatus.DISABLED))
                 .orElseThrow(categoryErrorNotFound());
     }
 

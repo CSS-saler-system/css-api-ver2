@@ -7,31 +7,26 @@ import com.springframework.csscapstone.data.domain.Prize;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.data.repositories.PrizeRepository;
 import com.springframework.csscapstone.data.status.PrizeStatus;
-import com.springframework.csscapstone.payload.request_dto.enterprise.PrizeCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.PrizeCreatorVer2ReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.PrizeUpdaterReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.PrizeResDto;
 import com.springframework.csscapstone.services.PrizeService;
-import com.springframework.csscapstone.utils.blob_utils.BlobUploadImages;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.prize_exception.PrizeJsonBadException;
 import com.springframework.csscapstone.utils.exception_utils.prize_exception.PrizeNotFoundException;
-import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.PrizeMapper;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 import java.util.function.Function;
@@ -92,7 +87,7 @@ public class PrizeServiceImpl implements PrizeService {
     @Override
     public Optional<PrizeResDto> getPrizeByPrize(UUID uuid) {
         return this.prizeRepository.findById(uuid)
-                .filter(prize -> !prize.getPrizeStatus().equals(PrizeStatus.DISABLE))
+                .filter(prize -> !prize.getPrizeStatus().equals(PrizeStatus.DISABLED))
                 .map(PrizeMapper.INSTANCE::toPrizeResDto);
     }
 
@@ -131,7 +126,7 @@ public class PrizeServiceImpl implements PrizeService {
     @Override
     public void deletePrizeById(UUID prizeId) {
         prizeRepository.findById(prizeId)
-                .map(prize -> prize.setPrizeStatus(PrizeStatus.DISABLE))
+                .map(prize -> prize.setPrizeStatus(PrizeStatus.DISABLED))
                 .orElseThrow(runtimeExceptionSupplier.apply(prizeId));
     }
 }

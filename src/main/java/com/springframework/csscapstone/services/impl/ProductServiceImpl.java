@@ -101,7 +101,7 @@ public class ProductServiceImpl implements ProductService {
                 .and(Objects.isNull(maxPrice) ? null : ProductSpecifications.priceLessThan(maxPrice))
                 .and(Objects.isNull(minPoint) ? null : ProductSpecifications.pointGreaterThan(minPoint))
                 .and(Objects.isNull(maxPoint) ? null : ProductSpecifications.pointLessThan(maxPoint))
-                .and(ProductSpecifications.excludeDisableStatus());
+                .and(ProductSpecifications.excludeDeleteStatus());
 
         return getProductResDtoPageImplResDto(pageNumber, pageSize, search);
     }
@@ -120,7 +120,7 @@ public class ProductServiceImpl implements ProductService {
                 .and(Objects.isNull(maxPrice) ? null : ProductSpecifications.priceLessThan(maxPrice))
                 .and(Objects.isNull(minPoint) ? null : ProductSpecifications.pointGreaterThan(minPoint))
                 .and(Objects.isNull(maxPoint) ? null : ProductSpecifications.pointLessThan(maxPoint))
-                .and(ProductSpecifications.excludeDisableStatus());
+                .and(ProductSpecifications.excludeDeleteStatus());
         return getProductResDtoPageImplResDto(pageNumber, pageSize, search);
     }
 
@@ -131,14 +131,14 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductResDto> findProductByIdEnterprise(UUID accountId) throws AccountNotFoundException {
         Account account = this.accountRepository.findById(accountId).orElseThrow(handlerAccountNotFound());
         return account.getProducts().stream()
-                .filter(product -> !product.getProductStatus().equals(ProductStatus.DISABLE))
+                .filter(product -> !product.getProductStatus().equals(ProductStatus.DISABLED))
                 .map(MapperDTO.INSTANCE::toProductResDto).collect(toList());
     }
 
     @Override
     public ProductDetailEnterpriseDto findById(UUID id) throws ProductNotFoundException {
         return productRepository.findById(id)
-                .filter(product -> !product.getProductStatus().equals(ProductStatus.DISABLE))
+                .filter(product -> !product.getProductStatus().equals(ProductStatus.DISABLED))
                 .map(MapperDTO.INSTANCE::toProductDetailEnterpriseDto)
                 .orElseThrow(handlerProductNotFound());
     }
@@ -205,7 +205,7 @@ public class ProductServiceImpl implements ProductService {
 
         Product entity = this.productRepository
                 .findById(productId)
-                .filter(product -> !product.getProductStatus().equals(ProductStatus.DISABLE))
+                .filter(product -> !product.getProductStatus().equals(ProductStatus.DISABLED))
                 .orElseThrow(handlerProductNotFound());
 
         entity.setName(dto.getName())
@@ -221,6 +221,7 @@ public class ProductServiceImpl implements ProductService {
         return entity.getId();
     }
 
+    //todo Notification
     @Transactional
     @Override
     public void changeStatusProduct(UUID id, ProductStatus status) {
@@ -237,7 +238,8 @@ public class ProductServiceImpl implements ProductService {
     public void disableProduct(UUID id) {
         this.productRepository.findById(id)
                 .ifPresent(x -> {
-                    x.setProductStatus(ProductStatus.DISABLE);
+//                    x.setProductStatus(ProductStatus.DISABLE);
+                    x.setProductStatus(ProductStatus.DELETED);
                     this.productRepository.save(x);
                 });
     }
@@ -254,7 +256,7 @@ public class ProductServiceImpl implements ProductService {
         //get sum number in order-detail of order in during start date and end date
         Page<Tuple> page = this.orderDetailRepository.findAllSumInOrderDetailGroupingByProduct(
                 id, startDate.atStartOfDay(), endDate.atStartOfDay(),
-                OrderStatus.FINISH, PageRequest.of(pageNumber - 1, pageSize));
+                OrderStatus.FINISHED, PageRequest.of(pageNumber - 1, pageSize));
 
         //create numberProductOrderedQueryDto
         Map<Product, Long> collect = page.getContent()

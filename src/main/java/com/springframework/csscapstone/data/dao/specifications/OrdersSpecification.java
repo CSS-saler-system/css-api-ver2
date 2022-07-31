@@ -1,7 +1,6 @@
 package com.springframework.csscapstone.data.dao.specifications;
 
 import com.springframework.csscapstone.data.domain.Account;
-import com.springframework.csscapstone.data.domain.Account_;
 import com.springframework.csscapstone.data.domain.Order;
 import com.springframework.csscapstone.data.domain.Order_;
 import com.springframework.csscapstone.data.status.OrderStatus;
@@ -21,8 +20,8 @@ public class OrdersSpecification {
     public static Specification<Order> excludeDisableAndCancelStatus() {
         return (root, query, criteriaBuilder) ->
                 criteriaBuilder.and(
-                        criteriaBuilder.notEqual(root.get(Order_.STATUS), OrderStatus.DISABLE),
-                        criteriaBuilder.notEqual(root.get(Order_.STATUS), OrderStatus.CANCEL));
+                        criteriaBuilder.notEqual(root.get(Order_.STATUS), OrderStatus.DISABLED),
+                        criteriaBuilder.notEqual(root.get(Order_.STATUS), OrderStatus.CANCELED));
     }
 
 }

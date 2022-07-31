@@ -67,7 +67,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderResDto getOrderResDtoById(UUID id) {
         return this.orderRepository.findById(id)
-                .filter(order -> !order.getStatus().equals(OrderStatus.DISABLE))
+                .filter(order -> !order.getStatus().equals(OrderStatus.DISABLED))
                 .map(MapperDTO.INSTANCE::toOrderResDto)
                 .orElseThrow(orderNotFound.apply(id));
     }
@@ -195,7 +195,7 @@ public class OrderServiceImpl implements OrderService {
                 .findById(id)
                 .filter(_order -> _order.getStatus().equals(OrderStatus.WAITING))
                 .orElseThrow(notFoundOrderWithIdException.apply(id));
-        this.orderRepository.save(order.setStatus(OrderStatus.DISABLE));
+        this.orderRepository.save(order.setStatus(OrderStatus.DISABLED));
 
     }
 
@@ -220,7 +220,7 @@ public class OrderServiceImpl implements OrderService {
 
         //check order valid
         Order order = this.orderRepository.findById(orderId)
-                .filter(_order -> _order.getStatus() != OrderStatus.FINISH)
+                .filter(_order -> _order.getStatus() != OrderStatus.FINISHED)
                 .orElseThrow(handlerOrderNotFound);
         //get collaborator who create order
         Account collaborator = order.getAccount();

@@ -11,7 +11,6 @@ import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.data.repositories.AccountTokenRepository;
 import com.springframework.csscapstone.data.repositories.ProductRepository;
 import com.springframework.csscapstone.data.repositories.RequestSellingProductRepository;
-import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.data.status.RequestStatus;
 import com.springframework.csscapstone.payload.request_dto.collaborator.RequestSellingProductCreatorDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
@@ -161,7 +160,7 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
     private void sendNotification(RequestSellingProduct request, RequestStatus status, String token) throws ExecutionException, JsonProcessingException, InterruptedException {
         PushNotificationRequest notification = new PushNotificationRequest(
                 "Request Approval Result",
-                "The Request was " + (status.equals(RequestStatus.REJECT) ? "rejected" : "registered"),
+                "The Request was " + (status.equals(RequestStatus.REJECTED) ? "rejected" : "registered"),
                 "The Request",
                 token);
 

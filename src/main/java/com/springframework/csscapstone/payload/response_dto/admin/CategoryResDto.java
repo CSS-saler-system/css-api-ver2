@@ -2,7 +2,6 @@ package com.springframework.csscapstone.payload.response_dto.admin;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.springframework.csscapstone.config.constant.ApiEndPoint;
 import com.springframework.csscapstone.data.domain.Category;
 import com.springframework.csscapstone.data.status.CategoryStatus;
 import com.springframework.csscapstone.data.status.ProductStatus;
@@ -26,7 +25,7 @@ public class CategoryResDto implements Serializable {
         this.id = null;
         this.categoryName = "";
         this.products = Collections.emptyList();
-        this.status = CategoryStatus.DISABLE;
+        this.status = CategoryStatus.DISABLED;
     }
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)

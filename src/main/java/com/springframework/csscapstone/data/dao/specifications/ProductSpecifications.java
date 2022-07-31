@@ -65,9 +65,9 @@ public final class ProductSpecifications {
                 .equal(root.get(Product_.PRODUCT_STATUS), status);
     }
 
-    public static Specification<Product> excludeDisableStatus() {
+    public static Specification<Product> excludeDeleteStatus() {
         return (root, query, criteriaBuilder) ->
-                criteriaBuilder.notEqual(root.get(Product_.PRODUCT_STATUS), ProductStatus.DISABLE);
+                criteriaBuilder.notEqual(root.get(Product_.PRODUCT_STATUS), ProductStatus.DELETED);
 
     }
 }

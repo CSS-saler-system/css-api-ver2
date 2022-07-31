@@ -55,7 +55,7 @@ public class ModeratorProductController {
 
     @PutMapping(V4_DISABLE_PRODUCT +"/{productId}")
     public ResponseEntity<?> disableProduct(@PathVariable("productId") UUID productId) {
-        productService.changeStatusProduct(productId, ProductStatus.DISABLE);
+        productService.changeStatusProduct(productId, ProductStatus.DISABLED);
         return ok("If product id exists in our database,status of product will changed");
     }
 

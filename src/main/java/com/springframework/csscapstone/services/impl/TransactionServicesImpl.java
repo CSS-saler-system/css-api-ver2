@@ -201,7 +201,7 @@ public class TransactionServicesImpl implements TransactionServices {
 
         enterprise.setPoint(enterprise.getPoint() + transactions.getPoint());
 
-        transactions.setTransactionStatus(TransactionStatus.ACCEPT);
+        transactions.setTransactionStatus(TransactionStatus.ACCEPTED);
 
         this.accountRepository.save(enterprise);
         accountRepository.save(approver.addApproverTransaction(transactions));
@@ -217,7 +217,7 @@ public class TransactionServicesImpl implements TransactionServices {
                 .orElseThrow(() -> new TransactionNotFoundException("The transaction with id: " + id + " not found"));
 
         return this.transactionsRepository
-                .save(transactions.setTransactionStatus(TransactionStatus.REJECT)).getId();
+                .save(transactions.setTransactionStatus(TransactionStatus.REJECTED)).getId();
     }
 
     @Transactional
