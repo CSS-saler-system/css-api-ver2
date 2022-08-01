@@ -67,7 +67,7 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
         pageSize = Objects.isNull(pageSize) || pageSize < INVALID_PAGE_SIZE ? DEFAULT_PAGE_SIZE : pageSize;
 
         Page<RequestSellingProduct> page = this.requestSellingProductRepository
-                .findRequestSellingProductByCollaborator(idCollaborator, status, PageRequest.of(pageNumber - 1, pageSize));
+                .findRequestSellingProductByCollaborator(idCollaborator, PageRequest.of(pageNumber - 1, pageSize));
 
         List<RequestSellingProductResDto> content = page.getContent()
                 .stream().map(MapperDTO.INSTANCE::toRequestSellingProductResDto).collect(Collectors.toList());
