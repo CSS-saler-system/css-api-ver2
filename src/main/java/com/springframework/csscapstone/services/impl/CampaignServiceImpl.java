@@ -1,13 +1,24 @@
 package com.springframework.csscapstone.services.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.springframework.csscapstone.config.message.constant.MessageConstant;
-import com.springframework.csscapstone.config.message.constant.MobileScreen;
 import com.springframework.csscapstone.config.firebase_config.FirebaseMessageService;
 import com.springframework.csscapstone.config.firebase_config.model.PushNotificationRequest;
+import com.springframework.csscapstone.config.message.constant.MessageConstant;
+import com.springframework.csscapstone.config.message.constant.MobileScreen;
 import com.springframework.csscapstone.data.dao.specifications.CampaignSpecifications;
-import com.springframework.csscapstone.data.domain.*;
-import com.springframework.csscapstone.data.repositories.*;
+import com.springframework.csscapstone.data.domain.Account;
+import com.springframework.csscapstone.data.domain.AccountToken;
+import com.springframework.csscapstone.data.domain.Campaign;
+import com.springframework.csscapstone.data.domain.CampaignImage;
+import com.springframework.csscapstone.data.domain.Prize;
+import com.springframework.csscapstone.data.domain.Product;
+import com.springframework.csscapstone.data.repositories.AccountRepository;
+import com.springframework.csscapstone.data.repositories.AccountTokenRepository;
+import com.springframework.csscapstone.data.repositories.CampaignImageRepository;
+import com.springframework.csscapstone.data.repositories.CampaignRepository;
+import com.springframework.csscapstone.data.repositories.OrderRepository;
+import com.springframework.csscapstone.data.repositories.PrizeRepository;
+import com.springframework.csscapstone.data.repositories.ProductRepository;
 import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.CampaignUpdaterReqDto;
@@ -320,13 +331,16 @@ public class CampaignServiceImpl implements CampaignService {
                 .filter(camp -> Objects.nonNull(camp.getProducts()))
                 .filter(camp -> camp.getCampaignStatus().equals(APPROVAL))
                 .orElseThrow(handlerCampaignNotFoundException);
+
+
+
         closingCampaign(campaign);
     }
 
     private void closingCampaign(Campaign campaign) {
         //get sort collaborator and Long by OrderRepository
         Map<UUID, Long> collaboratorSelling = new HashMap<>();
-
+        Account enterprise = campaign.getAccount();
         //get product in campaign
         List<UUID> productIds = campaign.getProducts().stream()
                 .map(Product::getId)
@@ -361,10 +375,14 @@ public class CampaignServiceImpl implements CampaignService {
                         .orElseGet(Stream::empty))
                 .collect(Collectors.toList());
 
+        //todo send notification:
+        long quantity = collaboratorSelling.values().stream().mapToLong(Long::longValue).sum();
+
         if (accounts.isEmpty()) {
-            //todo send message no have enough kpi
             this.campaignRepository.save(campaign.setCampaignStatus(CampaignStatus.FINISHED));
-            throw handlerNotEnoughKPIException.get();
+            //todo send message no have enough kpi
+            sendNotificationEnterprise(campaign, enterprise, quantity);
+            return;
         }
 //        mapping prize by using campaign prize with greater than KPI on campaign KPI
         int count = 0;
@@ -380,9 +398,6 @@ public class CampaignServiceImpl implements CampaignService {
 
         this.campaignRepository.save(campaign.setCampaignStatus(CampaignStatus.FINISHED));
 
-        //todo send notification:
-        long quantity = collaboratorSelling.values().stream().mapToLong(Long::longValue).sum();
-        Account enterprise = campaign.getAccount();
         sendNotificationEnterprise(campaign, enterprise, quantity);
     }
 
