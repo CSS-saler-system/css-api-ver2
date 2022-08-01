@@ -300,15 +300,7 @@ public class CampaignServiceImpl implements CampaignService {
                 .findAll().stream()
                 .filter(campaign -> campaign.getEndDate().isBefore(LocalDateTime.now()))
                 .filter(campaign -> campaign.getCampaignStatus().equals(CampaignStatus.CREATED))
-                .map(Campaign::getId)
-                .forEach(completeSchedule(this::completeCampaign));
-//                .forEach(uuid -> {
-//                    try {
-//                        this.completeCampaign(uuid);
-//                    } catch (JsonProcessingException e) {
-//                        throw new RuntimeException(e);
-//                    }
-//                });
+                .forEach(completeSchedule(this::closingCampaign));
     }
 
     /**
@@ -328,8 +320,10 @@ public class CampaignServiceImpl implements CampaignService {
                 .filter(camp -> Objects.nonNull(camp.getProducts()))
                 .filter(camp -> camp.getCampaignStatus().equals(APPROVAL))
                 .orElseThrow(handlerCampaignNotFoundException);
+        closingCampaign(campaign);
+    }
 
-
+    private void closingCampaign(Campaign campaign) {
         //get sort collaborator and Long by OrderRepository
         Map<UUID, Long> collaboratorSelling = new HashMap<>();
 
