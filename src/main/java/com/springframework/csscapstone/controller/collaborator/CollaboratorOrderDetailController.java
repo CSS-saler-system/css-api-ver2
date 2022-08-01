@@ -1,22 +1,10 @@
 package com.springframework.csscapstone.controller.collaborator;
 
 import com.springframework.csscapstone.services.OrderDetailService;
-import com.springframework.csscapstone.payload.request_dto.admin.OrderDetailCreatorReqDto;
-import com.springframework.csscapstone.payload.request_dto.admin.OrderDetailUpdaterReqDto;
-import com.springframework.csscapstone.utils.exception_utils.order_detail_exception.OrderDetailException;
-import com.springframework.csscapstone.utils.exception_utils.order_detail_exception.ProductCanCreateException;
-import com.springframework.csscapstone.utils.exception_utils.order_exception.OrderNotFoundException;
-import com.springframework.csscapstone.utils.exception_utils.product_exception.ProductNotFoundException;
-import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
-import static com.springframework.csscapstone.config.constant.ApiEndPoint.OrderDetail.*;
-import static com.springframework.csscapstone.config.constant.MessageConstant.REQUEST_SUCCESS;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController

@@ -18,9 +18,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.security.auth.login.AccountNotFoundException;
 import java.util.UUID;
 
-import static com.springframework.csscapstone.config.constant.ApiEndPoint.Account.*;
-import static com.springframework.csscapstone.config.constant.RegexConstant.EMAIL_REGEX;
-import static com.springframework.csscapstone.config.constant.RegexConstant.PHONE_REGEX;
+import static com.springframework.csscapstone.config.message.constant.ApiEndPoint.Account.*;
+import static com.springframework.csscapstone.config.message.constant.RegexConstant.EMAIL_REGEX;
+import static com.springframework.csscapstone.config.message.constant.RegexConstant.PHONE_REGEX;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 import static org.springframework.http.ResponseEntity.ok;
 

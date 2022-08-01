@@ -1,4 +1,4 @@
-package com.springframework.csscapstone.config.constant;
+package com.springframework.csscapstone.config.message.constant;
 
 public class ApiEndPoint {
     public static final String ADMIN = "/api/v1.0/admin";

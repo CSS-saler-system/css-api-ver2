@@ -1,6 +1,5 @@
 package com.springframework.csscapstone.data.dao.specifications;
 
-import com.springframework.csscapstone.config.constant.ApiEndPoint;
 import com.springframework.csscapstone.data.domain.Transactions;
 import com.springframework.csscapstone.data.domain.Transactions_;
 import org.springframework.data.jpa.domain.Specification;

@@ -1,4 +1,4 @@
-package com.springframework.csscapstone.config.constant;
+package com.springframework.csscapstone.config.message.constant;
 
 public class RegexConstant {
     public static final String ROLE_REGEX = "^Role\\_[1-3]$";

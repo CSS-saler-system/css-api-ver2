@@ -1,4 +1,4 @@
-package com.springframework.csscapstone.config.constant;
+package com.springframework.csscapstone.config.message.constant;
 
 public class MessageConstant {
 

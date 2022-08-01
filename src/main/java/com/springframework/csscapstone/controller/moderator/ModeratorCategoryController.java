@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import static com.springframework.csscapstone.config.constant.ApiEndPoint.Category.*;
+import static com.springframework.csscapstone.config.message.constant.ApiEndPoint.Category.*;
 import static org.springframework.http.ResponseEntity.ok;
 
 @Tag(name = "Category (Moderator)")

@@ -2,7 +2,7 @@ package com.springframework.csscapstone.controller.enterprise;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springframework.csscapstone.config.constant.MessageConstant;
+import com.springframework.csscapstone.config.message.constant.MessageConstant;
 import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.CampaignUpdaterReqDto;
@@ -21,12 +21,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import static com.springframework.csscapstone.config.constant.ApiEndPoint.Campaign.*;
+import static com.springframework.csscapstone.config.message.constant.ApiEndPoint.Campaign.*;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController

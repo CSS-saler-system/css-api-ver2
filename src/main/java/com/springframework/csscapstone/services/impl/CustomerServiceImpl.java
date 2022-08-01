@@ -1,6 +1,6 @@
 package com.springframework.csscapstone.services.impl;
 
-import com.springframework.csscapstone.config.constant.MessageConstant;
+import com.springframework.csscapstone.config.message.constant.MessageConstant;
 import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.Customer;
 import com.springframework.csscapstone.data.repositories.AccountRepository;

@@ -21,8 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
-import static com.springframework.csscapstone.config.constant.ApiEndPoint.Account.V3_UPDATE_ACCOUNT;
-import static com.springframework.csscapstone.config.constant.ApiEndPoint.COLLABORATOR_LOGIN;
+import static com.springframework.csscapstone.config.message.constant.ApiEndPoint.Account.V3_UPDATE_ACCOUNT;
+import static com.springframework.csscapstone.config.message.constant.ApiEndPoint.COLLABORATOR_LOGIN;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 import static org.springframework.http.ResponseEntity.ok;
 

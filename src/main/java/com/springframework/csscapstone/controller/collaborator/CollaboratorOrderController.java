@@ -1,6 +1,6 @@
 package com.springframework.csscapstone.controller.collaborator;
 
-import com.springframework.csscapstone.config.constant.MessageConstant;
+import com.springframework.csscapstone.config.message.constant.MessageConstant;
 import com.springframework.csscapstone.data.status.OrderStatus;
 import com.springframework.csscapstone.payload.request_dto.collaborator.OrderCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.collaborator.OrderUpdaterDto;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-import static com.springframework.csscapstone.config.constant.ApiEndPoint.Order.*;
+import static com.springframework.csscapstone.config.message.constant.ApiEndPoint.Order.*;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController

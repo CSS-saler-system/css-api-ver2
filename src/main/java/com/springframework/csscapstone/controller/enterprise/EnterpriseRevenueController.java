@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.springframework.csscapstone.config.constant.ApiEndPoint.Order.V2_REVENUE_DASHBOARD;
+import static com.springframework.csscapstone.config.message.constant.ApiEndPoint.Order.V2_REVENUE_DASHBOARD;
 
 @RestController
 @RequiredArgsConstructor

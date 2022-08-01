@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-import static com.springframework.csscapstone.config.constant.ApiEndPoint.Account.*;
+import static com.springframework.csscapstone.config.message.constant.ApiEndPoint.Account.*;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController

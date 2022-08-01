@@ -1,8 +1,8 @@
 package com.springframework.csscapstone.services.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.springframework.csscapstone.config.constant.MessageConstant;
-import com.springframework.csscapstone.config.constant.MobileScreen;
+import com.springframework.csscapstone.config.message.constant.MessageConstant;
+import com.springframework.csscapstone.config.message.constant.MobileScreen;
 import com.springframework.csscapstone.config.firebase_config.FirebaseMessageService;
 import com.springframework.csscapstone.config.firebase_config.model.PushNotificationRequest;
 import com.springframework.csscapstone.data.dao.specifications.CampaignSpecifications;
@@ -361,7 +361,11 @@ public class CampaignServiceImpl implements CampaignService {
                         .orElseGet(Stream::empty))
                 .collect(Collectors.toList());
 
-        if (accounts.isEmpty()) throw handlerNotEnoughKPIException.get();
+        if (accounts.isEmpty()) {
+            //todo send message no have enough kpi
+            this.campaignRepository.save(campaign.setCampaignStatus(CampaignStatus.FINISHED));
+            throw handlerNotEnoughKPIException.get();
+        }
 //        mapping prize by using campaign prize with greater than KPI on campaign KPI
         int count = 0;
         for (Account account : accounts) {
@@ -513,7 +517,7 @@ public class CampaignServiceImpl implements CampaignService {
                         "The award prize",
                         token.getRegistrationToken()))
                 .ifPresent(fcmException(notification -> this.firebaseMessageService.sendMessage(Collections
-                                .singletonMap(MobileScreen.CAMPAIGN.getScreen(), campaignId.toString()), notification)));
+                        .singletonMap(MobileScreen.CAMPAIGN.getScreen(), campaignId.toString()), notification)));
     }
 
     private void sendNotificationEnterprise(Campaign campaign, Account enterprise, long quantity) {

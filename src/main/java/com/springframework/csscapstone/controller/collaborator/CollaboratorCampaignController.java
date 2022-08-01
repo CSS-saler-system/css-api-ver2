@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static com.springframework.csscapstone.config.constant.ApiEndPoint.Campaign.V3_GET_CAMPAIGN;
-import static com.springframework.csscapstone.config.constant.ApiEndPoint.Campaign.V3_LIST_CAMPAIGN;
+import static com.springframework.csscapstone.config.message.constant.ApiEndPoint.Campaign.V3_GET_CAMPAIGN;
+import static com.springframework.csscapstone.config.message.constant.ApiEndPoint.Campaign.V3_LIST_CAMPAIGN;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController

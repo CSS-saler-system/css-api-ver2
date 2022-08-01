@@ -23,7 +23,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-import static com.springframework.csscapstone.config.constant.ApiEndPoint.*;
+import static com.springframework.csscapstone.config.message.constant.ApiEndPoint.*;
 import static org.springframework.http.ResponseEntity.ok;
 
 @Tag(name = "Login - (Enterprise)")

@@ -13,7 +13,11 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.Arrays;
 
-import static com.springframework.csscapstone.config.constant.ApiEndPoint.*;
+import static com.springframework.csscapstone.config.message.constant.ApiEndPoint.ADMIN;
+import static com.springframework.csscapstone.config.message.constant.ApiEndPoint.COLLABORATOR;
+import static com.springframework.csscapstone.config.message.constant.ApiEndPoint.ENTERPRISE;
+import static com.springframework.csscapstone.config.message.constant.ApiEndPoint.MODERATOR;
+import static com.springframework.csscapstone.config.message.constant.ApiEndPoint.USER;
 
 @Configuration
 public class Swagger3Config {

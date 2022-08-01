@@ -1,6 +1,5 @@
 package com.springframework.csscapstone.controller.collaborator;
 
-import com.azure.core.annotation.Get;
 import com.springframework.csscapstone.payload.response_dto.admin.AccountResDto;
 import com.springframework.csscapstone.services.AccountService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.security.auth.login.AccountNotFoundException;
 import java.util.UUID;
 
-import static com.springframework.csscapstone.config.constant.ApiEndPoint.Account.V3_ENTERPRISE_ID;
-import static com.springframework.csscapstone.config.constant.ApiEndPoint.Account.V3_LIST_ACCOUNT;
+import static com.springframework.csscapstone.config.message.constant.ApiEndPoint.Account.V3_ENTERPRISE_ID;
+import static com.springframework.csscapstone.config.message.constant.ApiEndPoint.Account.V3_LIST_ACCOUNT;
 import static org.springframework.http.ResponseEntity.ok;
 
 @Tag(name = "Enterprise (Collaborator)")

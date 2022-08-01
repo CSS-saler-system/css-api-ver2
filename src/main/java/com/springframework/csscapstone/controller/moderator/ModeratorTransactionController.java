@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.springframework.csscapstone.config.constant.ApiEndPoint.Transaction.*;
+import static com.springframework.csscapstone.config.message.constant.ApiEndPoint.Transaction.*;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController

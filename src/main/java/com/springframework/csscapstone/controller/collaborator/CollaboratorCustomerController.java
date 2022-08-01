@@ -1,6 +1,6 @@
 package com.springframework.csscapstone.controller.collaborator;
 
-import com.springframework.csscapstone.config.constant.RegexConstant;
+import com.springframework.csscapstone.config.message.constant.RegexConstant;
 import com.springframework.csscapstone.payload.request_dto.collaborator.CustomerCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.collaborator.CustomerUpdaterReqDto;
 import com.springframework.csscapstone.services.CustomerService;
@@ -14,7 +14,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 import java.util.UUID;
 
-import static com.springframework.csscapstone.config.constant.ApiEndPoint.Customer.*;
+import static com.springframework.csscapstone.config.message.constant.ApiEndPoint.Customer.*;
 import static org.springframework.http.ResponseEntity.ok;
 
 

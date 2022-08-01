@@ -1,7 +1,7 @@
 package com.springframework.csscapstone.controller.moderator;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.springframework.csscapstone.config.constant.MessageConstant;
+import com.springframework.csscapstone.config.message.constant.MessageConstant;
 import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.CampaignResDto;
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
-import static com.springframework.csscapstone.config.constant.ApiEndPoint.Campaign.*;
+import static com.springframework.csscapstone.config.message.constant.ApiEndPoint.Campaign.*;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController

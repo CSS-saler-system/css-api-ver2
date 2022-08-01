@@ -1,6 +1,6 @@
 package com.springframework.csscapstone.services.impl;
 
-import com.springframework.csscapstone.config.constant.MessageConstant;
+import com.springframework.csscapstone.config.message.constant.MessageConstant;
 import com.springframework.csscapstone.data.domain.Order;
 import com.springframework.csscapstone.data.domain.OrderDetail;
 import com.springframework.csscapstone.data.domain.Product;

@@ -15,7 +15,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static com.springframework.csscapstone.config.constant.ApiEndPoint.RequestSellingProduct.*;
+import static com.springframework.csscapstone.config.message.constant.ApiEndPoint.RequestSellingProduct.*;
 import static org.springframework.http.ResponseEntity.ok;
 
 @Tag(name = "Request_Selling (Enterprise)")

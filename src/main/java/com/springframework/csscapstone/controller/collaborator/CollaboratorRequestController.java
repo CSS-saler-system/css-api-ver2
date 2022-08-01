@@ -17,7 +17,7 @@ import javax.security.auth.login.AccountNotFoundException;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
-import static com.springframework.csscapstone.config.constant.ApiEndPoint.RequestSellingProduct.*;
+import static com.springframework.csscapstone.config.message.constant.ApiEndPoint.RequestSellingProduct.*;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController

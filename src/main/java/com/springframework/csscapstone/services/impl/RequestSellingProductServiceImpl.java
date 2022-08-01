@@ -1,8 +1,8 @@
 package com.springframework.csscapstone.services.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.springframework.csscapstone.config.constant.MessageConstant;
-import com.springframework.csscapstone.config.constant.MobileScreen;
+import com.springframework.csscapstone.config.message.constant.MessageConstant;
+import com.springframework.csscapstone.config.message.constant.MobileScreen;
 import com.springframework.csscapstone.config.firebase_config.FirebaseMessageService;
 import com.springframework.csscapstone.config.firebase_config.model.PushNotificationRequest;
 import com.springframework.csscapstone.data.dao.specifications.RequestSellingProductSpecifications;
