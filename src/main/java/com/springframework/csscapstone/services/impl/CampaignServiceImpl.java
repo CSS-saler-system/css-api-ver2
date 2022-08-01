@@ -299,7 +299,7 @@ public class CampaignServiceImpl implements CampaignService {
         this.campaignRepository
                 .findAll().stream()
                 .filter(campaign -> campaign.getEndDate().isBefore(LocalDateTime.now()))
-                .filter(campaign -> campaign.getCampaignStatus().equals(CampaignStatus.CREATED))
+                .filter(campaign -> campaign.getCampaignStatus().equals(APPROVAL))
                 .forEach(completeSchedule(this::closingCampaign));
     }
 
@@ -399,6 +399,7 @@ public class CampaignServiceImpl implements CampaignService {
                         token.getRegistrationToken())));
 
         this.campaignRepository
+                //query sent filter
                 .getAllCampaignInDate().stream()
                 .map(camp -> camp.setCampaignStatus(CampaignStatus.REJECTED))
                 .peek(sendNotification)
