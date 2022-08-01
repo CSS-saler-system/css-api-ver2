@@ -56,8 +56,8 @@ public interface CampaignService {
     void rejectCampaignInDate();
 
     //todo notification
-    void updateStatusCampaignForModerator(
-            UUID campaignId, CampaignStatus status) throws ExecutionException, JsonProcessingException, InterruptedException;
+    void updateStatusCampaignForModerator(UUID campaignId, CampaignStatus status)
+            throws ExecutionException, JsonProcessingException, InterruptedException;
 
     void sentCampaign(UUID campaignId);
 }

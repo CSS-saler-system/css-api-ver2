@@ -110,8 +110,10 @@ public class FirebaseMessageService {
                 .setTtl(Duration.ofMinutes(2).toMillis())
                 .setCollapseKey(topic)
                 .setPriority(AndroidConfig.Priority.HIGH)
-                .setNotification(AndroidNotification.builder().setSound(NotificationParameter.SOUND.getValue())
-                        .setColor(NotificationParameter.COLOR.getValue()).setTag(topic).build()).build();
+                .setNotification(AndroidNotification.builder()
+                        .setSound(NotificationParameter.SOUND.getValue())
+                        .setColor(NotificationParameter.COLOR.getValue())
+                        .setTag(topic).build()).build();
     }
 
     //rarely using

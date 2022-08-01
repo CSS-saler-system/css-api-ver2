@@ -46,22 +46,21 @@ public class CategoryResDto implements Serializable {
         private final String brand;
         private final String shortDescription;
         private final String description;
-//        private final Long quantityInStock;
         private final Double price;
         private final Double pointSale;
         private final ProductStatus productStatus;
         private final List<ProductImageReqDto> image;
 
-        public ProductInnerCategoryResDto(@JsonProperty("id") UUID id,
-                           @JsonProperty("name") String name,
-                           @JsonProperty("brand") String brand,
-                           @JsonProperty("shortDescription") String shortDescription,
-                           @JsonProperty("description") String description,
-//                           @JsonProperty("quantity") Long quantityInStock,
-                           @JsonProperty("price") Double price,
-                           @JsonProperty("pointSale") Double pointSale,
-                           @JsonProperty("productStatus") ProductStatus productStatus,
-                           @JsonProperty("image") List<ProductImageReqDto> image) {
+        public ProductInnerCategoryResDto(
+                @JsonProperty("id") UUID id,
+                @JsonProperty("name") String name,
+                @JsonProperty("brand") String brand,
+                @JsonProperty("shortDescription") String shortDescription,
+                @JsonProperty("description") String description,
+                @JsonProperty("price") Double price,
+                @JsonProperty("pointSale") Double pointSale,
+                @JsonProperty("productStatus") ProductStatus productStatus,
+                @JsonProperty("image") List<ProductImageReqDto> image) {
             this.id = id;
             this.name = name;
             this.brand = brand;

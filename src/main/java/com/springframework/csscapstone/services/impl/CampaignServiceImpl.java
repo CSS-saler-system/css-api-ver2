@@ -38,12 +38,15 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.springframework.csscapstone.data.status.CampaignStatus.APPROVAL;
 import static com.springframework.csscapstone.utils.exception_catch_utils.ExceptionCatchHandler.completeSchedule;
+import static com.springframework.csscapstone.utils.exception_catch_utils.ExceptionFCMHandler.fcmException;
 
 
 @Service
@@ -121,7 +124,7 @@ public class CampaignServiceImpl implements CampaignService {
                 .and(date == null ? null : CampaignSpecifications.beforeEndDate(date))
                 .and(kpi == null || kpi == INVALID_VALUE ? null : CampaignSpecifications.smallerKpi(kpi))
                 .and(status == null ? null : CampaignSpecifications.equalsStatus(status))
-                .and(CampaignSpecifications.equalsStatus(CampaignStatus.APPROVAL));
+                .and(CampaignSpecifications.equalsStatus(APPROVAL));
 
         pageNumber = Objects.isNull(pageNumber) || pageNumber == INVALID_VALUE ? DEFAULT_PAGE_NUMBER : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize == INVALID_VALUE ? DEFAULT_PAGE_SIZE : pageSize;
@@ -229,7 +232,6 @@ public class CampaignServiceImpl implements CampaignService {
 //        handlerAddPrize(entity, prizes);
 //        handlerAddProduct(entity, products);
 
-        //todo 1 Thread
         prizes
                 .stream()
                 .map(CampaignUpdaterReqDto.PrizeInnerCampaignDto::getId)
@@ -311,6 +313,9 @@ public class CampaignServiceImpl implements CampaignService {
 
     /**
      * todo complete campaign t o mapping collaborator into prize
+     * todo send notification with account: <BR>
+     *     enterprise: list collaborator:
+     *     collaborator: prize + campaign
      *
      * @param id
      */
@@ -319,52 +324,43 @@ public class CampaignServiceImpl implements CampaignService {
     public void completeCampaign(UUID id) {
         //find campaign and status not finish
         Campaign campaign = this.campaignRepository.loadFetchOnProducts(id)
-                .filter(_campaign -> Objects.nonNull(_campaign.getPrizes()))
-                .filter(_campaign -> Objects.nonNull(_campaign.getProducts()))
+                .filter(camp -> Objects.nonNull(camp.getPrizes()))
+                .filter(camp -> Objects.nonNull(camp.getProducts()))
+                .filter(camp -> camp.getCampaignStatus().equals(APPROVAL))
                 .orElseThrow(handlerCampaignNotFoundException);
 
+
         //get sort collaborator and Long by OrderRepository
-        Map<UUID, Long> collaborator = new HashMap<>();
+        Map<UUID, Long> collaboratorSelling = new HashMap<>();
 
         //get product in campaign
         List<UUID> productIds = campaign.getProducts().stream()
                 .map(Product::getId)
                 .collect(Collectors.toList());
 
-//        if (productIds.isEmpty())
-//            throw new RuntimeException("The campaign has no product!!!");
+        //get all [prize] with desc price:
+        List<Prize> prizes = campaign.getPrizes().stream()
+                .sorted(Comparator.comparing(Prize::getPrice).reversed())
+                .collect(Collectors.toList());
 
-//        productIds.forEach(System.out::println);
         for (UUID productId : productIds) {
-
             Map<UUID, Long> _tmp = this.orderRepository
                     .getCollaboratorAndTotalQuantitySold(productId).stream()
                     .collect(Collectors.toMap(
                             tuple -> tuple.get(OrderRepository.COLLABORATOR_IDS, UUID.class),
                             tuple -> tuple.get(OrderRepository.TOTAL_QUANTITY, Long.class)));
-            _tmp.forEach((key, value) -> collaborator.compute(key, (k, v) -> Objects.isNull(v) ? value : v + value));
+
+            _tmp.forEach((key, value) -> collaboratorSelling
+                    .compute(key, (k, v) -> Objects.isNull(v) ? value : v + value));
         }
 
-        //get all [prize] -> sort campaign prize:
-        List<Prize> campaignPrizes = campaign.getPrizes().stream()
-
-                //todo sort by comparing price of prize
-                .sorted(Comparator.comparing(Prize::getPrice).reversed())
-
-                .collect(Collectors.toList());
-//        if (campaignPrizes.isEmpty())
-//            throw new RuntimeException("The campaign has no prize!!!");
-
         //filter collaborators have enough standard: ASC
-        List<Account> accounts = collaborator.entrySet().stream()
+        List<Account> accounts = collaboratorSelling.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-
-                //todo test so in active unlock this code
                 .filter(_entry -> _entry.getValue() >= campaign.getKpiSaleProduct())
-
-                //todo get number of element by campaign Prize size
-                .limit(campaignPrizes.size())
-
+                //todo grt list collaborator by prizes size
+                .limit(prizes.size())
+                //find account by the key in collaborator map
                 .flatMap(entry -> this.accountRepository
                         .findById(entry.getKey())
                         .map(Stream::of)
@@ -375,26 +371,45 @@ public class CampaignServiceImpl implements CampaignService {
 //        mapping prize by using campaign prize with greater than KPI on campaign KPI
         int count = 0;
         for (Account account : accounts) {
-            if (count < campaignPrizes.size()) {
-                Account accountMapping = account.awardPrize(campaignPrizes.get(count));
+            LOGGER.info("count prize: {}", count);
+            if (count < prizes.size()) {
+                Prize prize = prizes.get(count++);
+                Account accountMapping = account.awardPrize(prize);
                 this.accountRepository.save(accountMapping);
+                sendNotificationFinishCampaign(campaign.getId(), account, prize, collaboratorSelling.get(account.getId()));
             }
         }
 
         this.campaignRepository.save(campaign.setCampaignStatus(CampaignStatus.FINISHED));
+
+        //todo send notification:
+        long quantity = collaboratorSelling.values().stream().mapToLong(Long::longValue).sum();
+        Account enterprise = campaign.getAccount();
+        sendNotificationEnterprise(campaign, enterprise, quantity);
     }
 
     @Transactional
     @Override
     public void rejectCampaignInDate() {
+
+        Consumer<Campaign> sendNotification = camp -> this.accountTokenRepository
+                .getAccountTokenByAccountOptional(camp.getAccount().getId())
+                .map(Collection::stream)
+                .orElseGet(Stream::empty)
+                .findFirst()
+                .ifPresent(fcmException(token -> sendNotificationSentCampaign(camp, CampaignStatus.REJECTED,
+                        token.getRegistrationToken())));
+
         this.campaignRepository
                 .getAllCampaignInDate().stream()
                 .map(camp -> camp.setCampaignStatus(CampaignStatus.REJECTED))
+                .peek(sendNotification)
                 .forEach(this.campaignRepository::save);
     }
 
     /**
      * Todo create notification firebase
+     *
      * @param campaignId
      * @param status
      */
@@ -409,30 +424,13 @@ public class CampaignServiceImpl implements CampaignService {
 
         AccountToken token = this.accountTokenRepository
                 .getAccountTokenByAccountOptional(campaign.getAccount().getId())
-//                .filter(Objects::nonNull)
                 .map(Collection::stream)
                 .orElseGet(Stream::empty)
                 .findFirst()
                 .orElseThrow(noTokenException);
         System.out.println(token);
 
-        sendNotification(campaign, status, token.getRegistrationToken());
-
-    }
-
-    private void sendNotification(Campaign campaign, CampaignStatus status, String token)
-            throws ExecutionException, JsonProcessingException, InterruptedException {
-        PushNotificationRequest notification = new PushNotificationRequest(
-                "Campaign Approval Result",
-                "The campaign was " + (status.equals(CampaignStatus.REJECTED) ? "reject" : "approval"),
-                "The Campaign",
-                token);
-
-        Map<String, String> data = new HashMap<>();
-
-        data.put(MobileScreen.CAMPAIGN.getScreen(), campaign.getId().toString());
-
-        this.firebaseMessageService.sendMessage(data, notification);
+        sendNotificationSentCampaign(campaign, status, token.getRegistrationToken());
 
     }
 
@@ -495,5 +493,50 @@ public class CampaignServiceImpl implements CampaignService {
                 .findFirst();
     }
 
+    private void sendNotificationSentCampaign(Campaign campaign, CampaignStatus status, String token)
+            throws ExecutionException, JsonProcessingException, InterruptedException {
+        PushNotificationRequest notification = new PushNotificationRequest(
+                "Campaign Approval Result",
+                "The campaign was " + (status.equals(CampaignStatus.REJECTED) ? "reject" : "approval"),
+                "The Campaign",
+                token);
 
+        Map<String, String> data = new HashMap<>();
+
+        data.put(MobileScreen.CAMPAIGN.getScreen(), campaign.getId().toString());
+
+        this.firebaseMessageService.sendMessage(data, notification);
+    }
+
+    private void sendNotificationFinishCampaign(UUID campaignId, Account account, Prize prize, Long kpi) {
+        this.accountTokenRepository.getAccountTokenByAccountOptional(account.getId())
+                .map(Collection::stream)
+                .orElseGet(Stream::empty)
+                .findFirst()
+                .map(token -> new PushNotificationRequest(
+                        "The Finished Campaign",
+                        "You receive the prize: " + prize.getName() + ",price: " + prize.getPrice(),
+                        "The award prize",
+                        token.getRegistrationToken()))
+                .ifPresent(fcmException(notification -> this.firebaseMessageService.sendMessage(Collections
+                                .singletonMap(MobileScreen.CAMPAIGN.getScreen(), campaignId.toString()), notification)));
+    }
+
+    private void sendNotificationEnterprise(Campaign campaign, Account enterprise, long quantity) {
+        this.accountTokenRepository
+                .getAccountTokenByAccountOptional(enterprise.getId())
+                .map(List::stream)
+                .orElseGet(Stream::empty)
+                .findFirst()
+                .map(token -> new PushNotificationRequest(
+                        "The Finished Campaign",
+                        "The Campaign name: " + campaign.getName() + ",with quantity sold: " + quantity,
+                        "The Finished Campaign",
+                        token.getRegistrationToken()))
+                .ifPresent(fcmException(notification -> firebaseMessageService.sendMessage(
+                        Collections.singletonMap(MobileScreen.CAMPAIGN.getScreen(), campaign.getId().toString()),
+                        notification
+                )));
+
+    }
 }
