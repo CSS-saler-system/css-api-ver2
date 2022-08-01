@@ -38,7 +38,7 @@ public class CollaboratorRequestController {
     @GetMapping(V3_REQUEST_GET_OWNER + "/{collaboratorId}")
     public ResponseEntity<?> getOwnerRequestSellingProduct(
             @PathVariable("collaboratorId") UUID idCollaborator,
-            @RequestParam(value = "requestStatus", defaultValue = "CREATED") RequestStatus status,
+            @RequestParam(value = "requestStatus") RequestStatus status,
             @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
             @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         PageImplResDto<RequestSellingProductResDto> allRequestByIdCreator =

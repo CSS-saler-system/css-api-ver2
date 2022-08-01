@@ -48,7 +48,8 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
     private static final int DEFAULT_PAGE_NUMBER = 1;
     private static final int DEFAULT_PAGE_SIZE = 1;
 
-    private final Supplier<RuntimeException> noTokenException = () -> new RuntimeException("No have token belong to this account");
+    private final Supplier<RuntimeException> noTokenException =
+            () -> new RuntimeException("No have token belong to this account");
 
     @Override
     public List<RequestSellingProductResDto> getAllRequest() {
