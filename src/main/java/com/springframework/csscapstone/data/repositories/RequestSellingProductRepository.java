@@ -20,7 +20,8 @@ public interface RequestSellingProductRepository extends JpaRepository<RequestSe
     @Query(value = "" +
             "SELECT r FROM RequestSellingProduct r " +
             "WHERE r.account.id = :idCollaborator " +
-            "AND r.requestStatus = :status")
+            "AND r.requestStatus = :status " +
+            "ORDER BY r.dateTimeRequest DESC ")
     Page<RequestSellingProduct> findRequestSellingProductByCollaborator(
             @Param("idCollaborator") UUID idCollaborator,
             @Param("status") RequestStatus status,
