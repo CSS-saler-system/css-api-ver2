@@ -101,8 +101,7 @@ public class FirebaseMessageService {
     }
 
     private ApnsConfig getApnsConfig(String topic) {
-        return ApnsConfig.builder()
-                .setAps(Aps.builder().setCategory(topic).setThreadId(topic).build()).build();
+        return ApnsConfig.builder().setAps(Aps.builder().setCategory(topic).setThreadId(topic).build()).build();
     }
 
     private AndroidConfig getAndroidConfig(String topic) {

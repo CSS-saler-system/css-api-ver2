@@ -14,12 +14,12 @@ public class WebScheduler {
     private final CampaignService campaignService;
 
 //    @Scheduled(cron = "${cron_time}") // 0 0 0 * * *
-    @Scheduled(cron = "*/10 * * * * *") // 0 0 0 * * *
+    @Scheduled(cron = "*/60 * * * * *") // 0 0 0 * * *
     public void finishCampaignConfiguration() {
         campaignService.scheduleCloseCampaign();
     }
 //    @Scheduled(cron = "${cron_time}")
-    @Scheduled(cron = "*/10 * * * * *") // 0 0 0 * * *
+    @Scheduled(cron = "*/60 * * * * *") // 0 0 0 * * *
     public void rejectCampaignConfiguration() {
         campaignService.rejectCampaignInDate();
     }
