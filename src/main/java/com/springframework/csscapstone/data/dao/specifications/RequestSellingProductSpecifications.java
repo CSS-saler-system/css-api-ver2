@@ -11,16 +11,17 @@ import java.util.UUID;
 
 public class RequestSellingProductSpecifications {
     public static Specification<RequestSellingProduct> containsEnterpriseId(UUID enterpriseId) {
-        return (root, query, criteriaBuilder) ->
-                criteriaBuilder.equal(root.get(RequestSellingProduct_.product)
-                        .get(Product_.ACCOUNT)
-                        .get(Account_.ID), enterpriseId);
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(RequestSellingProduct_.product)
+                .get(Product_.ACCOUNT)
+                .get(Account_.ID), enterpriseId);
+    }
+
+    public static Specification<RequestSellingProduct> belongToCollaborator(UUID collaboratorId) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder
+                .equal(root.get(RequestSellingProduct_.ACCOUNT).get(Account_.ID), collaboratorId);
     }
 
     public static Specification<RequestSellingProduct> equalsStatus(RequestStatus status) {
-        return (root, query, criteriaBuilder) ->
-                criteriaBuilder.equal(root.get(RequestSellingProduct_.REQUEST_STATUS), status);
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(RequestSellingProduct_.REQUEST_STATUS), status);
     }
-
-
 }

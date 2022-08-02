@@ -20,6 +20,7 @@ import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,6 +80,7 @@ public class OrderServiceImpl implements OrderService {
         Account account = this.accountRepository.findById(idCollaborator)
                 .orElseThrow(collaboratorNotFoundException.apply(idCollaborator));
 
+
         pageNumber = Objects.isNull(pageNumber) || pageNumber < INVALID_PAGE ? DEFAULT_PAGE_NUMBER : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize < INVALID_PAGE ? DEFAULT_PAGE_SIZE : pageSize;
 
@@ -88,7 +90,9 @@ public class OrderServiceImpl implements OrderService {
                 .and(OrdersSpecification.excludeDisableAndCancelStatus());
 
         Page<Order> orders = this.orderRepository
-                .findAll(conditions, PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize));
+                .findAll(conditions,
+                        PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize,
+                                Sort.by(Order_.CREATE_DATE).descending()));
 
         List<OrderResDto> content = orders
                 .getContent()
@@ -266,8 +270,9 @@ public class OrderServiceImpl implements OrderService {
         pageNumber = Objects.isNull(pageNumber) || pageNumber < INVALID_PAGE ? DEFAULT_PAGE_NUMBER : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize < INVALID_PAGE ? DEFAULT_PAGE_SIZE : pageSize;
 
-        Page<Order> page = this.orderRepository
-                .getOrderByEnterprise(enterpriseId, PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize));
+        Page<Order> page = this.orderRepository.getOrderByEnterprise(enterpriseId, PageRequest.of(
+                pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize,
+                Sort.by(Order_.CREATE_DATE).descending()));
 
         List<OrderEnterpriseManageResDto> content = page.getContent()
                 .stream()

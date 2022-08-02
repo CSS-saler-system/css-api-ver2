@@ -4,6 +4,7 @@ import com.springframework.csscapstone.config.message.constant.MessageConstant;
 import com.springframework.csscapstone.data.dao.specifications.PrizeSpecifications;
 import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.Prize;
+import com.springframework.csscapstone.data.domain.Prize_;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.data.repositories.PrizeRepository;
 import com.springframework.csscapstone.data.status.PrizeStatus;
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,7 +69,7 @@ public class PrizeServiceImpl implements PrizeService {
         pageSize = nonNull(pageSize) && pageSize > 1 ? pageSize : 10;
 
         Page<Prize> result = this.prizeRepository
-                .findAll(prizeSpecifications, PageRequest.of(pageNumber - 1, pageSize));
+                .findAll(prizeSpecifications, PageRequest.of(pageNumber - 1, pageSize, Sort.by(Prize_.NAME).ascending()));
         LOGGER.info("This is logger {}", result.getContent().size());
         List<PrizeResDto> prizes = result.getContent()
                 .stream()

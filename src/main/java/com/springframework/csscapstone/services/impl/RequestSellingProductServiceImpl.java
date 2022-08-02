@@ -1,10 +1,10 @@
 package com.springframework.csscapstone.services.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.springframework.csscapstone.config.message.constant.MessageConstant;
-import com.springframework.csscapstone.config.message.constant.MobileScreen;
 import com.springframework.csscapstone.config.firebase_config.FirebaseMessageService;
 import com.springframework.csscapstone.config.firebase_config.model.PushNotificationRequest;
+import com.springframework.csscapstone.config.message.constant.MessageConstant;
+import com.springframework.csscapstone.config.message.constant.MobileScreen;
 import com.springframework.csscapstone.data.dao.specifications.RequestSellingProductSpecifications;
 import com.springframework.csscapstone.data.domain.*;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
@@ -21,8 +21,11 @@ import com.springframework.csscapstone.utils.exception_utils.RequestNotFoundExce
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +35,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.Objects.isNull;
 
 @Service
 @RequiredArgsConstructor
@@ -43,13 +48,14 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
     private final FirebaseMessageService firebaseMessageService;
 
     private final AccountTokenRepository accountTokenRepository;
+
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
     private static final int INVALID_PAGE_NUMBER = 1;
     private static final int INVALID_PAGE_SIZE = 1;
     private static final int DEFAULT_PAGE_NUMBER = 1;
-    private static final int DEFAULT_PAGE_SIZE = 1;
+    private static final int DEFAULT_PAGE_SIZE = 10;
 
-    private final Supplier<RuntimeException> noTokenException =
-            () -> new RuntimeException("No have token belong to this account");
+    private final Supplier<RuntimeException> noTokenException = () -> new RuntimeException("No have token belong to this account");
 
     @Override
     public List<RequestSellingProductResDto> getAllRequest() {
@@ -63,11 +69,15 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
     public PageImplResDto<RequestSellingProductResDto> getAllRequestByIdCreatorByCollaborator(
             UUID idCollaborator, RequestStatus status, Integer pageNumber, Integer pageSize) {
 
-        pageNumber = Objects.isNull(pageNumber) || pageNumber < INVALID_PAGE_NUMBER ? DEFAULT_PAGE_NUMBER : pageNumber;
-        pageSize = Objects.isNull(pageSize) || pageSize < INVALID_PAGE_SIZE ? DEFAULT_PAGE_SIZE : pageSize;
+        pageNumber = isNull(pageNumber) || pageNumber < INVALID_PAGE_NUMBER ? DEFAULT_PAGE_NUMBER : pageNumber;
+        pageSize = isNull(pageSize) || pageSize < INVALID_PAGE_SIZE ? DEFAULT_PAGE_SIZE : pageSize;
 
-        Page<RequestSellingProduct> page = this.requestSellingProductRepository
-                .findRequestSellingProductByCollaborator(idCollaborator, PageRequest.of(pageNumber - 1, pageSize));
+        Specification<RequestSellingProduct> condition = Specification
+                .where(RequestSellingProductSpecifications.belongToCollaborator(idCollaborator))
+                .and(isNull(status) ? null : RequestSellingProductSpecifications.equalsStatus(status));
+
+        Page<RequestSellingProduct> page = this.requestSellingProductRepository.findAll(condition,
+                PageRequest.of(pageNumber - 1, pageSize, Sort.by(RequestSellingProduct_.DATE_TIME_REQUEST).descending()));
 
         List<RequestSellingProductResDto> content = page.getContent()
                 .stream().map(MapperDTO.INSTANCE::toRequestSellingProductResDto).collect(Collectors.toList());
@@ -117,14 +127,17 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
             UUID enterpriseId, RequestStatus status, Integer pageNumber, Integer pageSize) {
 
         Specification<RequestSellingProduct> conditions = Specification
-                .where(Objects.isNull(status) ? null : RequestSellingProductSpecifications.equalsStatus(status))
+                .where(isNull(status) ? null : RequestSellingProductSpecifications.equalsStatus(status))
                 .and(RequestSellingProductSpecifications.containsEnterpriseId(enterpriseId));
 
-        pageSize = Objects.nonNull(pageSize) && pageSize > 1 ? pageSize : 10;
-        pageNumber = Objects.nonNull(pageNumber) && pageNumber > 1 ? pageNumber : 1;
+        pageNumber = Objects.nonNull(pageNumber) && (pageNumber >= 1) ? pageNumber : 1;
+        pageSize = Objects.nonNull(pageSize) && (pageSize >= 1) ? pageSize : 10;
+
+        LOGGER.info("the number: {} - the size: {}", pageNumber, pageSize);
+
 
         Page<RequestSellingProduct> page = this.requestSellingProductRepository
-                .findAll(conditions, PageRequest.of(pageNumber - 1, pageSize));
+                .findAll(conditions, PageRequest.of(pageNumber - 1, pageSize, Sort.by(RequestSellingProduct_.DATE_TIME_REQUEST).descending()));
 
         List<RequestSellingProductEnterpriseManagerDto> data = page
                 .getContent().stream()
@@ -142,7 +155,7 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
     public Optional<UUID> updateProduct(UUID idRequest, RequestStatus status) throws ExecutionException, JsonProcessingException, InterruptedException {
         RequestSellingProduct request = this.requestSellingProductRepository
                 .findById(idRequest)
-                .filter(reqeust -> reqeust.getRequestStatus().equals(RequestStatus.CREATED))
+                .filter(req -> req.getRequestStatus().equals(RequestStatus.CREATED))
                 .orElseThrow(() -> handlerRequestNotFound().get());
         request.setRequestStatus(status);
         RequestSellingProduct save = this.requestSellingProductRepository.save(request);

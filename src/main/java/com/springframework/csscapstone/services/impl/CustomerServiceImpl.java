@@ -17,6 +17,7 @@ import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -41,6 +42,7 @@ public class CustomerServiceImpl implements CustomerService {
     public List<CustomerResDto> getAllCustomer() {
         return this.customerRepository.findAll()
                 .stream()
+                .sorted(Comparator.comparing(Customer::getName).reversed())
                 .map(MapperDTO.INSTANCE::toCustomerResDto)
                 .collect(toList());
     }

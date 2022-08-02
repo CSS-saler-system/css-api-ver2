@@ -3,6 +3,7 @@ package com.springframework.csscapstone.services.impl;
 import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.BillImage;
 import com.springframework.csscapstone.data.domain.Transactions;
+import com.springframework.csscapstone.data.domain.Transactions_;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.data.repositories.BillImageRepository;
 import com.springframework.csscapstone.data.repositories.TransactionsRepository;
@@ -23,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -71,7 +73,8 @@ public class TransactionServicesImpl implements TransactionServices {
         pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
 
         Page<Transactions> page = this.transactionsRepository
-                .findAllByDate(enterpriseId, createDate, modifiedDate, PageRequest.of(pageNumber - 1, pageSize));
+                .findAllByDate(enterpriseId, createDate, modifiedDate, PageRequest.of(pageNumber - 1, pageSize,
+                        Sort.by(Transactions_.CREATE_TRANSACTION_DATE).descending()));
 
         page.getContent().forEach(System.out::println);
         List<TransactionsDto> collect = page.getContent()
@@ -237,7 +240,7 @@ public class TransactionServicesImpl implements TransactionServices {
         pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
 
         Page<Transactions> page = this.transactionsRepository
-                .findAllByPendingStatus(PageRequest.of(pageNumber - 1, pageSize));
+                .findAllByPendingStatus(PageRequest.of(pageNumber - 1, pageSize,  Sort.by(Transactions_.CREATE_TRANSACTION_DATE).descending()));
         List<TransactionsDto> pageRes = page.getContent()
                 .stream().map(MapperDTO.INSTANCE::toTransactionsResDto)
                 .collect(Collectors.toList());
