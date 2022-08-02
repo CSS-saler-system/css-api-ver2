@@ -7,11 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Where;
 import org.mapstruct.Named;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 

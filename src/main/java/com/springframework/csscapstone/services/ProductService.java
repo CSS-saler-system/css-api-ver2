@@ -25,27 +25,31 @@ import java.util.concurrent.ExecutionException;
 public interface ProductService {
 
     PageImplResDto<ProductResDto> findAllProductByIdEnterprise(
-            UUID idEnterprise,
-            String name,
-            String brand,
-            Double minPrice,
-            Double maxPrice,
-            Double minPoint,
-            Double maxPoint,
-            Integer pageNumber,
-            Integer pageSize);
+            UUID idEnterprise, String name, String brand,
+            Double minPrice, Double maxPrice,
+            Double minPoint, Double maxPoint,
+            Integer pageNumber, Integer pageSize);
 
     PageImplResDto<ProductResDto> findAllProductForCollaborator(
 //            UUID enterpriseId,
-            String name,
-            String brand,
-            Long inStock,
-            Double minPrice,
-            Double maxPrice,
-            Double minPoint,
-            Double maxPoint,
-            Integer pageNumber,
-            Integer pageSize);
+            String name, String brand, Long inStock,
+            Double minPrice, Double maxPrice, Double minPoint,
+            Double maxPoint, Integer pageNumber, Integer pageSize);
+
+    PageImplResDto<ProductCountOrderResDto> getListProductWithCountOrder(
+            UUID id, LocalDate startDate, LocalDate endDate, Integer pageNumber, Integer pageSize)
+            throws AccountNotFoundException;
+
+    PageImplResDto<ProductForCollaboratorResDto> pageProductWithNoRegisteredByEnterpriseAndCollaborator(
+            UUID collaboratorId, UUID enterpriseId, Integer pageNumber, Integer pageSize);
+
+    PageImplResDto<ProductForCollaboratorResDto> pageProductWithRegisteredByEnterpriseAndCollaborator(
+            UUID collaboratorId, UUID enterpriseId, Integer pageNumber, Integer pageSize);
+
+    PageImplResDto<ProductForModeratorResDto> pageAllForProductForModerator(
+            String name, String nameEnterprise, String brand, Integer pageNumber, Integer pageSize);
+
+    Optional<ProductForCollabGetDetailResDto> findByIdForCollaborator(UUID productId);
 
     List<ProductResDto> findProductByIdEnterprise(UUID accountId) throws AccountNotFoundException;
 
@@ -67,18 +71,4 @@ public interface ProductService {
     void changeStatusProduct(UUID id, ProductStatus status);
 
     void disableProduct(UUID id);
-
-    PageImplResDto<ProductCountOrderResDto> getListProductWithCountOrder(
-            UUID id, LocalDate startDate, LocalDate endDate, Integer pageNumber, Integer pageSize)
-            throws AccountNotFoundException;
-
-    PageImplResDto<ProductForCollaboratorResDto> pageProductWithNoRegisteredByEnterpriseAndCollaborator(
-            UUID collaboratorId, UUID enterpriseId, Integer pageNumber, Integer pageSize);
-    PageImplResDto<ProductForCollaboratorResDto> pageProductWithRegisteredByEnterpriseAndCollaborator(
-            UUID collaboratorId, UUID enterpriseId, Integer pageNumber, Integer pageSize);
-
-    PageImplResDto<ProductForModeratorResDto> pageAllForProductForModerator(
-            String name, String nameEnterprise, String brand, Integer pageNumber, Integer pageSize);
-
-    Optional<ProductForCollabGetDetailResDto> findByIdForCollaborator(UUID productId);
 }

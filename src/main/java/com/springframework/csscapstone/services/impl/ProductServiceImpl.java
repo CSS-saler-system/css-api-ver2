@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -256,7 +257,7 @@ public class ProductServiceImpl implements ProductService {
         //get sum number in order-detail of order in during start date and end date
         Page<Tuple> page = this.orderDetailRepository.findAllSumInOrderDetailGroupingByProduct(
                 id, startDate.atStartOfDay(), endDate.atStartOfDay(),
-                OrderStatus.FINISHED, PageRequest.of(pageNumber - 1, pageSize));
+                OrderStatus.FINISHED, PageRequest.of(pageNumber - 1, pageSize, Sort.by(Product_.NAME)));
 
         //create numberProductOrderedQueryDto
         Map<Product, Long> collect = page.getContent()
@@ -283,7 +284,7 @@ public class ProductServiceImpl implements ProductService {
         pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
 
         Page<Product> page = this.productRepository.getAllProductNotRegister(
-                collaboratorId, enterpriseId, PageRequest.of(pageNumber - 1, pageSize));
+                collaboratorId, enterpriseId, PageRequest.of(pageNumber - 1, pageSize, Sort.by(Product_.NAME)));
 
         List<ProductForCollaboratorResDto> result = page.getContent()
                 .stream()
@@ -301,7 +302,7 @@ public class ProductServiceImpl implements ProductService {
         pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
         Page<Product> page = this.productRepository.getAllProductRegister(
-                collaboratorId, enterpriseId, PageRequest.of(pageNumber - 1, pageSize));
+                collaboratorId, enterpriseId, PageRequest.of(pageNumber - 1, pageSize, Sort.by(Product_.NAME)));
         List<ProductForCollaboratorResDto> result = page.getContent()
                 .stream()
                 .sorted(Comparator.comparing(Product::getPointSale).reversed())
@@ -323,7 +324,7 @@ public class ProductServiceImpl implements ProductService {
                 .where(StringUtils.isBlank(name) ? null : ProductSpecifications.nameContains(name))
                 .and(StringUtils.isBlank(brand) ? null : ProductSpecifications.brandContains(brand))
                 .and(StringUtils.isBlank(nameEnterprise) ? null : ProductSpecifications.enterpriseName(nameEnterprise));
-        Page<Product> page = this.productRepository.findAll(search, PageRequest.of(pageNumber - 1, pageSize));
+        Page<Product> page = this.productRepository.findAll(search, PageRequest.of(pageNumber - 1, pageSize, Sort.by(Product_.NAME)));
         List<ProductForModeratorResDto> result = page.getContent()
                 .stream()
                 .map(ProductMapper.INSTANCE::productToProductForModeratorResDto)
@@ -363,10 +364,10 @@ public class ProductServiceImpl implements ProductService {
         collect.forEach(blobUploadImages::azureProductStorageHandler);
 
         return Optional.of(collect.keySet()
-                        .stream()
-                        .map(name -> new ProductImage(type, endpoint + this.productContainer + "/" + name))
-                        .peek(this.imageRepository::save)
-                        .toArray(ProductImage[]::new)
+                .stream()
+                .map(name -> new ProductImage(type, endpoint + this.productContainer + "/" + name))
+                .peek(this.imageRepository::save)
+                .toArray(ProductImage[]::new)
         );
 
     }
@@ -398,7 +399,7 @@ public class ProductServiceImpl implements ProductService {
         pageNumber = Objects.isNull(pageNumber) || (pageNumber <= 1) ? 1 : pageNumber;
 
         Page<Product> page = this.productRepository
-                .findAll(search, PageRequest.of(pageNumber - 1, pageSize));
+                .findAll(search, PageRequest.of(pageNumber - 1, pageSize, Sort.by(Product_.NAME)));
 
         List<ProductResDto> data = page.stream()
                 .map(MapperDTO.INSTANCE::toProductResDto).collect(toList());

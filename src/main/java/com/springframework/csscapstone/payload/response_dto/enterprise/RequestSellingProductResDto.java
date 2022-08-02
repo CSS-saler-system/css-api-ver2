@@ -51,7 +51,6 @@ public class RequestSellingProductResDto implements Serializable {
         private final UUID id;
         private final String name;
         private final String description;
-        private final Long quantityInStock;
         private final Double price;
         private final Double pointSale;
 
@@ -59,13 +58,11 @@ public class RequestSellingProductResDto implements Serializable {
         public ProductDto(@JsonProperty("id") UUID id,
                           @JsonProperty("name") String name,
                           @JsonProperty("description") String description,
-                          @JsonProperty("quantityInStock") Long quantityInStock,
                           @JsonProperty("price") Double price,
                           @JsonProperty("pointSale") Double pointSale) {
             this.id = id;
             this.name = name;
             this.description = description;
-            this.quantityInStock = quantityInStock;
             this.price = price;
             this.pointSale = pointSale;
         }

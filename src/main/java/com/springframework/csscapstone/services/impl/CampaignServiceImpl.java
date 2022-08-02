@@ -6,19 +6,8 @@ import com.springframework.csscapstone.config.firebase_config.model.PushNotifica
 import com.springframework.csscapstone.config.message.constant.MessageConstant;
 import com.springframework.csscapstone.config.message.constant.MobileScreen;
 import com.springframework.csscapstone.data.dao.specifications.CampaignSpecifications;
-import com.springframework.csscapstone.data.domain.Account;
-import com.springframework.csscapstone.data.domain.AccountToken;
-import com.springframework.csscapstone.data.domain.Campaign;
-import com.springframework.csscapstone.data.domain.CampaignImage;
-import com.springframework.csscapstone.data.domain.Prize;
-import com.springframework.csscapstone.data.domain.Product;
-import com.springframework.csscapstone.data.repositories.AccountRepository;
-import com.springframework.csscapstone.data.repositories.AccountTokenRepository;
-import com.springframework.csscapstone.data.repositories.CampaignImageRepository;
-import com.springframework.csscapstone.data.repositories.CampaignRepository;
-import com.springframework.csscapstone.data.repositories.OrderRepository;
-import com.springframework.csscapstone.data.repositories.PrizeRepository;
-import com.springframework.csscapstone.data.repositories.ProductRepository;
+import com.springframework.csscapstone.data.domain.*;
+import com.springframework.csscapstone.data.repositories.*;
 import com.springframework.csscapstone.data.status.CampaignStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.CampaignUpdaterReqDto;
@@ -41,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -141,7 +131,7 @@ public class CampaignServiceImpl implements CampaignService {
         pageSize = Objects.isNull(pageSize) || pageSize == INVALID_VALUE ? DEFAULT_PAGE_SIZE : pageSize;
 
         Page<Campaign> page = this.campaignRepository
-                .findAll(condition, PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize));
+                .findAll(condition, PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize, Sort.by(Campaign_.CREATE_DATE).descending()));
 
         List<CampaignForCollaboratorResDto> result = page.getContent().stream()
                 .sorted(Comparator.comparing(Campaign::getStartDate).reversed())
@@ -333,7 +323,6 @@ public class CampaignServiceImpl implements CampaignService {
                 .orElseThrow(handlerCampaignNotFoundException);
 
 
-
         closingCampaign(campaign);
     }
 
@@ -410,8 +399,10 @@ public class CampaignServiceImpl implements CampaignService {
                 .map(Collection::stream)
                 .orElseGet(Stream::empty)
                 .findFirst()
-                .ifPresent(fcmException(token -> sendNotificationSentCampaign(camp, CampaignStatus.REJECTED,
-                        token.getRegistrationToken())));
+                .ifPresent(
+                        fcmException(token -> sendNotificationSentCampaign(
+                                camp, CampaignStatus.REJECTED,
+                                token.getRegistrationToken())));
 
         this.campaignRepository
                 //query sent filter
@@ -464,7 +455,7 @@ public class CampaignServiceImpl implements CampaignService {
         pageSize = Objects.isNull(pageSize) || pageSize == INVALID_VALUE ? DEFAULT_PAGE_SIZE : pageSize;
 
         Page<Campaign> page = this.campaignRepository.findAll(condition,
-                PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize));
+                PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize, Sort.by(Campaign_.CREATE_DATE).descending()));
 
         List<CampaignResDto> content = page.getContent()
                 .stream()
