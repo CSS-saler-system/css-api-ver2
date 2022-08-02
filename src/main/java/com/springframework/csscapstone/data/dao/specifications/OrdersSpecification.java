@@ -19,9 +19,8 @@ public class OrdersSpecification {
 
     public static Specification<Order> excludeDisableAndCancelStatus() {
         return (root, query, criteriaBuilder) ->
-                criteriaBuilder.and(
-                        criteriaBuilder.notEqual(root.get(Order_.STATUS), OrderStatus.DISABLED),
-                        criteriaBuilder.notEqual(root.get(Order_.STATUS), OrderStatus.CANCELED));
+                        criteriaBuilder.notEqual(root.get(Order_.STATUS), OrderStatus.DISABLED);
+//                        criteriaBuilder.notEqual(root.get(Order_.STATUS), OrderStatus.CANCELED);
     }
 
 }
