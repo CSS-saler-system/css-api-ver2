@@ -54,4 +54,6 @@ public interface AccountService {
     List<CollaboratorResDto> awardCollaboratorByCampaign(UUID campaign);
 
     Optional<UUID> singUpEnterprise(EnterpriseSignUpDto enterprise);
+
+    Optional<AccountResDto> getProfile(UUID accountId);
 }

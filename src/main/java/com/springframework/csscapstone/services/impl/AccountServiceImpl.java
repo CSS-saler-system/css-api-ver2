@@ -447,6 +447,14 @@ public class AccountServiceImpl implements AccountService {
         return Optional.of(savedAccount.getId());
     }
 
+    @Override
+    public Optional<AccountResDto> getProfile(UUID accountId) {
+        Optional<AccountResDto> result = this.accountRepository
+                .findById(accountId)
+                .map(AccountMapper.INSTANCE::toAccountResDto);
+        return result;
+    }
+
     /**
      * todo create AccountImage
      *
