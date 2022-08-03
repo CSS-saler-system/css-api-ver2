@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.Tuple;
 import java.util.List;
 import java.util.UUID;
+
 @Transactional(readOnly = true)
 public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecificationExecutor<Order> {
     String COLLABORATOR_IDS = "col_id";
@@ -26,15 +27,16 @@ public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecific
     @Query("SELECT o FROM Order o " +
             "WHERE o.account = :idCollaborator " +
             "AND o.status = :status")
-    Page<Order> pageOrderCollaboratorCreate(Account idCollaborator, OrderStatus status , Pageable pageable);
+    Page<Order> pageOrderCollaboratorCreate(Account idCollaborator, OrderStatus status, Pageable pageable);
 
     @Query("SELECT o FROM Order o " +
             "WHERE o.account.id = :idCollaborator " +
             "AND o.status = :status")
-    Page<Order> pageOrderCollaboratorCreateForTest(UUID idCollaborator, OrderStatus status , Pageable pageable);
+    Page<Order> pageOrderCollaboratorCreateForTest(UUID idCollaborator, OrderStatus status, Pageable pageable);
 
     /**
      * todo The method get list collaborator and quantity sold product sort desc
+     *
      * @param enterpriseId
      * @return
      */
@@ -66,6 +68,7 @@ public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecific
 
     /**
      * todo list query separate| need more test
+     *
      * @param collaboratorId
      * @return
      */
@@ -81,6 +84,7 @@ public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecific
     /**
      * todo list query separate
      * WORK
+     *
      * @param collaboratorId
      * @return
      */
@@ -101,19 +105,21 @@ public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecific
             "JOIN p.account enterprise " +
             "WHERE enterprise.id = :enterpriseId " +
             "AND NOT o.status = 'DISABLE'",
-    countQuery = "SELECT count( distinct o) " +
-            "FROM Order  o " +
-            "JOIN o.orderDetails od " +
-            "JOIN od.product p " +
-            "JOIN p.account enterprise " +
-            "WHERE enterprise.id = :enterpriseId " +
-            "AND NOT o.status = 'DISABLE'")
-    Page<Order> getOrderByEnterprise(@Param("enterpriseId") UUID enterpriseId, Pageable pageable);
+            countQuery = "SELECT count( distinct o) " +
+                    "FROM Order  o " +
+                    "JOIN o.orderDetails od " +
+                    "JOIN od.product p " +
+                    "JOIN p.account enterprise " +
+                    "WHERE enterprise.id = :enterpriseId " +
+                    "AND NOT o.status = :status")
+    Page<Order> getOrderByEnterprise(@Param("enterpriseId") UUID enterpriseId, @Param("status") OrderStatus status, Pageable pageable);
+
 
     /**
      * SELECT MONTH(o.create_date) AS ORDER_MONTH,
-     *        sum(o.total_price) AS ORDER_REVENUE
+     * sum(o.total_price) AS ORDER_REVENUE
      * FROM orders o GROUP BY MONTH(o.create_date)
+     *
      * @param id
      * @return
      */

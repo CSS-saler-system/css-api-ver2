@@ -87,7 +87,7 @@ public class OrderServiceImpl implements OrderService {
         Specification<Order> conditions = Specification
                 .where(Objects.isNull(orderStatus) ? null : OrdersSpecification.equalsStatus(orderStatus))
                 .and(OrdersSpecification.equalsCollaborator(account))
-                .and(OrdersSpecification.excludeDisableAndCancelStatus());
+                .and(OrdersSpecification.excludeDisableStatus());
 
         Page<Order> orders = this.orderRepository
                 .findAll(conditions,
@@ -274,7 +274,7 @@ public class OrderServiceImpl implements OrderService {
         pageNumber = Objects.isNull(pageNumber) || pageNumber < INVALID_PAGE ? DEFAULT_PAGE_NUMBER : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize < INVALID_PAGE ? DEFAULT_PAGE_SIZE : pageSize;
 
-        Page<Order> page = this.orderRepository.getOrderByEnterprise(enterpriseId, PageRequest.of(
+        Page<Order> page = this.orderRepository.getOrderByEnterprise(enterpriseId, OrderStatus.DISABLED, PageRequest.of(
                 pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize,
                 Sort.by(Order_.CREATE_DATE).descending()));
 
