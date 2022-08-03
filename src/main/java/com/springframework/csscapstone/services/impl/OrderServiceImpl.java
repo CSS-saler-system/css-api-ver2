@@ -148,14 +148,14 @@ public class OrderServiceImpl implements OrderService {
         //todo get total price by map double with orderDetails
         double totalPrice = oderDetails
                 .stream()
-                .mapToDouble(OrderDetail::getTotalPointProduct)
+                .mapToDouble(OrderDetail::getTotalPriceProduct)
                 .sum();
 
         //todo get total point by map double with orderDetails
 
         double totalPointSale = oderDetails
                 .stream()
-                .map(OrderDetail::getTotalPriceProduct)
+                .map(OrderDetail::getTotalPointProduct)
                 .reduce(priceLatch, Double::sum);
 
         Order order = new Order(totalPrice, totalPointSale, customer.getName(),
