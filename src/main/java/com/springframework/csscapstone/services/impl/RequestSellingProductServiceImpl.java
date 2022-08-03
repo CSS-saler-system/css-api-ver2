@@ -155,7 +155,7 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
     public Optional<UUID> updateProduct(UUID idRequest, RequestStatus status) throws ExecutionException, JsonProcessingException, InterruptedException {
         RequestSellingProduct request = this.requestSellingProductRepository
                 .findById(idRequest)
-                .filter(req -> req.getRequestStatus().equals(RequestStatus.CREATED))
+//                .filter(req -> req.getRequestStatus().equals(RequestStatus.CREATED))
                 .orElseThrow(() -> handlerRequestNotFound().get());
         request.setRequestStatus(status);
         RequestSellingProduct save = this.requestSellingProductRepository.save(request);
