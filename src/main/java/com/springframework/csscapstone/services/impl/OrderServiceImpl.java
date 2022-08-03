@@ -226,6 +226,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = this.orderRepository.findById(orderId)
                 .filter(_order -> _order.getStatus() != OrderStatus.FINISHED)
                 .orElseThrow(handlerOrderNotFound);
+
         //get collaborator who create order
         Account collaborator = order.getAccount();
 
@@ -263,7 +264,7 @@ public class OrderServiceImpl implements OrderService {
         });
 
         //todo send notification
-
+        this.orderRepository.save(order.setStatus(OrderStatus.FINISHED));
 
     }
 
