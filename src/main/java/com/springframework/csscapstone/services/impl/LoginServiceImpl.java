@@ -148,6 +148,14 @@ public class LoginServiceImpl implements LoginService {
 
         Account savedAccount = accountRepository.save(account);
 
+        //todo save registration token
+        if (StringUtils.isNotEmpty(registrationToken) &&
+                !registrationToken.equals(TEST_STRING)) {
+            AccountToken token = new AccountToken(registrationToken);
+            account.addRegistration(token);
+            this.accountTokenRepository.save(token);
+        }
+
         //write account onto firebase database
         return new AppUserDetail(savedAccount, getToken(savedAccount, savedAccount.getPhone()));
     }
