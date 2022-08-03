@@ -261,6 +261,10 @@ public class OrderServiceImpl implements OrderService {
             this.accountRepository.save(collaborator);
             this.accountRepository.save(_enterprise);
         });
+
+        //todo send notification
+
+
     }
 
     @Override

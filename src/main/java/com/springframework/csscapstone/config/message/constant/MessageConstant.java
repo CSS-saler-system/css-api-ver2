@@ -81,6 +81,8 @@ public class MessageConstant {
 
     public static class RequestSellingProduct {
         public static final String NOT_FOUND = "request_selling_product.error.not_found";
+        public static final String NOT_CREATE_STATUS = "request_selling_product.error.not_create";
     }
+
 
 }

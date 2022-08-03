@@ -1,8 +1,10 @@
 package com.springframework.csscapstone.config.message.constant;
 
 public enum MobileScreen {
-
-    CAMPAIGN("Campaign"), REQUEST("RequestSelling");
+    PRODUCT_DETAIL("/product_detail"),
+    ORDER_DETAIL("/order_detail"),
+    CAMPAIGN("/campagin_detail"),
+    REQUEST("/request_screen");
 
     private final String screen;
 

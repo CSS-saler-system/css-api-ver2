@@ -194,6 +194,6 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
     }
 
     private Supplier<RequestNotFoundException> handlerRequestNotFound() {
-        return () -> new RequestNotFoundException(MessagesUtils.getMessage(MessageConstant.RequestSellingProduct.NOT_FOUND));
+        return () -> new RequestNotFoundException(MessagesUtils.getMessage(MessageConstant.RequestSellingProduct.NOT_CREATE_STATUS));
     }
 }

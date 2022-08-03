@@ -15,6 +15,7 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 import static com.springframework.csscapstone.config.message.constant.ApiEndPoint.Prize.*;
+import static java.util.Objects.isNull;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
@@ -37,6 +38,8 @@ public class EnterprisePrizeController {
     public ResponseEntity<?> createPrize(
             @RequestBody PrizeCreatorVer2ReqDto prizeDto
     ){
+        if (isNull(prizeDto.getPrice()))
+            throw new RuntimeException("The price of prize must be not null");
         UUID prize = this.prizeService.createPrize(prizeDto);
         return ok(prize);
     }

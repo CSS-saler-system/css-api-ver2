@@ -59,9 +59,11 @@ public class ModeratorTransactionController {
         return ok(page);
     }
 
-    @PutMapping(V4_TRANSACTION_ACCEPT)
+    @PutMapping(V4_TRANSACTION_ACCEPT + "/{transactionId}" + "/by/{moderatorId}")
     public ResponseEntity<?> handledTransaction(
-            @RequestBody @Valid TransactionHandler transactionHandler) {
+            @PathVariable("transactionId") UUID transactionId,
+            @PathVariable("moderatorId") UUID moderatorId) {
+        TransactionHandler transactionHandler = new TransactionHandler(transactionId, moderatorId);
         UUID uuid = this.transactionServices.acceptedTransaction(transactionHandler);
         return ok(uuid);
     }
