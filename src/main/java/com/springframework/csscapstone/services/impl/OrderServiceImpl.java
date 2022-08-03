@@ -197,7 +197,7 @@ public class OrderServiceImpl implements OrderService {
     public void deleteOrder(UUID id) {
         Order order = this.orderRepository
                 .findById(id)
-                .filter(_order -> _order.getStatus().equals(OrderStatus.WAITING))
+//                .filter(_order -> _order.getStatus().equals(OrderStatus.WAITING))
                 .orElseThrow(notFoundOrderWithIdException.apply(id));
         this.orderRepository.save(order.setStatus(OrderStatus.DISABLED));
 
