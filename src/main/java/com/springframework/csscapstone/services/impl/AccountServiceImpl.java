@@ -8,6 +8,7 @@ import com.springframework.csscapstone.data.repositories.*;
 import com.springframework.csscapstone.data.status.AccountImageType;
 import com.springframework.csscapstone.data.status.RequestStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorReqDto;
+import com.springframework.csscapstone.payload.request_dto.collaborator.AccountCollaboratorUpdaterDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.EnterpriseSignUpDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.admin.AccountResDto;
@@ -51,6 +52,7 @@ import java.util.stream.Stream;
 
 import static com.springframework.csscapstone.data.status.AccountImageType.*;
 import static com.springframework.csscapstone.utils.exception_catch_utils.ExceptionCatchHandler.peek;
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 
 @Service
@@ -166,13 +168,13 @@ public class AccountServiceImpl implements AccountService {
             Integer pageSize, Integer pageNumber) {
 
         Specification<Account> specifications = Specification
-                .where(Objects.nonNull(name) ? AccountSpecifications.nameContains(name) : null)
+                .where(nonNull(name) ? AccountSpecifications.nameContains(name) : null)
                 .and(StringUtils.isNotBlank(phone) ? AccountSpecifications.phoneEquals(phone) : null)
                 .and(StringUtils.isNotBlank(email) ? AccountSpecifications.emailEquals(email) : null);
 
 
-        pageNumber = Objects.nonNull(pageNumber) && (pageNumber >= DEFAULT_PAGE_NUMBER) ? pageNumber : DEFAULT_PAGE_NUMBER;
-        pageSize = Objects.nonNull(pageSize) && (pageSize >= DEFAULT_PAGE_SIZE) ? pageSize : DEFAULT_PAGE_SIZE;
+        pageNumber = nonNull(pageNumber) && (pageNumber >= DEFAULT_PAGE_NUMBER) ? pageNumber : DEFAULT_PAGE_NUMBER;
+        pageSize = nonNull(pageSize) && (pageSize >= DEFAULT_PAGE_SIZE) ? pageSize : DEFAULT_PAGE_SIZE;
 
 
         Page<Account> page = this.accountRepository.findAll(specifications,
@@ -493,7 +495,7 @@ public class AccountServiceImpl implements AccountService {
     private Optional<AccountImage> updateImage(MultipartFile image, Account entity, AccountImageType type) {
         String imageOriginalPath = entity.getId() + "/";
 
-        if (Objects.nonNull(image)) {
+        if (nonNull(image)) {
             AccountImage accountImage = this.accountImageRepository
                     .findByAccountAndType(entity.getId(), type)
                     .orElse(new AccountImage());
@@ -529,15 +531,15 @@ public class AccountServiceImpl implements AccountService {
             MultipartFile avatar, MultipartFile licenses,
             MultipartFile idCards, Account account) {
 
-        if (Objects.nonNull(avatar)) {
+        if (nonNull(avatar)) {
             saveAccountImageEntity(avatar, account.getId(), AccountImageType.AVATAR)
                     .ifPresent(account::addImage);
         }
-        if (Objects.nonNull(licenses)) {
+        if (nonNull(licenses)) {
             saveAccountImageEntity(idCards, account.getId(), AccountImageType.ID_CARD)
                     .ifPresent(account::addImage);
         }
-        if (Objects.nonNull(idCards)) {
+        if (nonNull(idCards)) {
             saveAccountImageEntity(licenses, account.getId(), AccountImageType.LICENSE)
                     .ifPresent(account::addImage);
         }
@@ -567,5 +569,20 @@ public class AccountServiceImpl implements AccountService {
                 .map(imageName -> new AccountImage(type, endpoint + accountContainer + "/" + imageName))
                 .peek(this.accountImageRepository::save)
                 .findFirst();
+    }
+
+    @Override
+    public UUID updateCollaboratorProfiles(UUID collaboratorId, AccountCollaboratorUpdaterDto accountUpdaterJsonDto, MultipartFile avatar) {
+        Account collaborator = this.accountRepository.findById(collaboratorId)
+                .filter(acc -> acc.getRole().getName().equals("Collaborator"))
+                .orElseThrow(() -> new RuntimeException("The collaborator with id: " + collaboratorId + " was not found"));
+
+        Account account = AccountMapper.INSTANCE.updateAccountFromAccountCollaboratorUpdaterDto(accountUpdaterJsonDto, collaborator);
+        if (nonNull(avatar)) {
+            Optional<AccountImage> accountImage = this.saveAccountImageEntity(avatar, collaboratorId, AVATAR);
+            accountImage.ifPresent(account::addImage);
+        }
+        return this.accountRepository.save(account).getId();
+
     }
 }

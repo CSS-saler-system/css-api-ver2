@@ -2,6 +2,7 @@ package com.springframework.csscapstone.utils.mapper_utils.dto_mapper;
 
 import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorReqDto;
+import com.springframework.csscapstone.payload.request_dto.collaborator.AccountCollaboratorUpdaterDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.EnterpriseSignUpDto;
 import com.springframework.csscapstone.payload.response_dto.admin.AccountResDto;
 import com.springframework.csscapstone.payload.response_dto.collaborator.EnterpriseResDto;
@@ -49,4 +50,11 @@ public interface AccountMapper {
     default void linkImages(@MappingTarget Account account) {
         account.getImages().forEach(image -> image.setAccount(account));
     }
+
+    Account accountCollaboratorUpdaterDtoToAccount(AccountCollaboratorUpdaterDto accountCollaboratorUpdaterDto);
+
+    AccountCollaboratorUpdaterDto accountToAccountCollaboratorUpdaterDto(Account account);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    Account updateAccountFromAccountCollaboratorUpdaterDto(AccountCollaboratorUpdaterDto accountCollaboratorUpdaterDto, @MappingTarget Account account);
 }

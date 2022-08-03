@@ -2,8 +2,8 @@ package com.springframework.csscapstone.controller.collaborator;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springframework.csscapstone.payload.request_dto.collaborator.AccountCollaboratorUpdaterDto;
 import com.springframework.csscapstone.payload.response_dto.admin.AccountResDto;
-import com.springframework.csscapstone.payload.sharing.AccountUpdaterJsonDto;
 import com.springframework.csscapstone.services.AccountService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -44,9 +44,9 @@ public class CollaboratorProfileController {
             @PathVariable("collaboratorId") UUID collaboratorId,
             @RequestPart("collaborator") String collaborator,
             @RequestPart("avatar") MultipartFile avatar) throws JsonProcessingException {
-        AccountUpdaterJsonDto accountUpdaterJsonDto = new ObjectMapper()
-                .readValue(collaborator, AccountUpdaterJsonDto.class);
-        UUID uuid = accountService.updateAccount(collaboratorId, accountUpdaterJsonDto, avatar, null, null);
+        AccountCollaboratorUpdaterDto accountUpdaterJsonDto = new ObjectMapper()
+                .readValue(collaborator, AccountCollaboratorUpdaterDto.class);
+        UUID uuid = accountService.updateCollaboratorProfiles(collaboratorId, accountUpdaterJsonDto, avatar);
         return ok(uuid);
     }
 

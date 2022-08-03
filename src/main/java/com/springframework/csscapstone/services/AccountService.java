@@ -3,6 +3,7 @@ package com.springframework.csscapstone.services;
 
 import com.google.firebase.auth.FirebaseAuthException;
 import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorReqDto;
+import com.springframework.csscapstone.payload.request_dto.collaborator.AccountCollaboratorUpdaterDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.EnterpriseSignUpDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.admin.AccountResDto;
@@ -56,4 +57,6 @@ public interface AccountService {
     Optional<UUID> singUpEnterprise(EnterpriseSignUpDto enterprise);
 
     Optional<AccountResDto> getProfile(UUID accountId);
+
+    UUID updateCollaboratorProfiles(UUID collaboratorId, AccountCollaboratorUpdaterDto accountUpdaterJsonDto, MultipartFile avatar);
 }
