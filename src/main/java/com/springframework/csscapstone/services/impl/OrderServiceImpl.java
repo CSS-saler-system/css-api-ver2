@@ -1,5 +1,6 @@
 package com.springframework.csscapstone.services.impl;
 
+import com.springframework.csscapstone.config.firebase_config.FirebaseMessageService;
 import com.springframework.csscapstone.config.message.constant.MessageConstant;
 import com.springframework.csscapstone.data.dao.specifications.OrdersSpecification;
 import com.springframework.csscapstone.data.domain.*;
@@ -42,6 +43,8 @@ public class OrderServiceImpl implements OrderService {
     private final OrderDetailRepository orderDetailRepository;
     private final CustomerRepository customerRepository;
     private final ProductRepository productRepository;
+
+    private final FirebaseMessageService firebaseMessageService;
     private final int INVALID_PAGE = 1;
     private final int DEFAULT_PAGE_NUMBER = 1;
     private final int SHIFT_TO_ACTUAL_PAGE = 1;
@@ -253,8 +256,30 @@ public class OrderServiceImpl implements OrderService {
             throw new RuntimeException("Order wrong with 2 enterprise!!!");
         }
 
+        Account enterprise = enterprises.get(0);
+        calculatePoint(collaborator, totalPoint, enterprise);
+
+        this.orderRepository.save(order.setStatus(OrderStatus.FINISHED));
+        //todo send notification
+        //enterprise
+        //point
+        //name customer
+
+        sendNotification(enterprise.getName(), order.getTotalPointSale(), order.getCustomer());
+
+    }
+
+    private void sendNotification(String name, Double totalPointSale, Customer customer) {
+//
+//        HashMap<String, String> data = new HashMap<>();
+//        data.put("screen", MobileScreen.ORDER_DETAIL.getScreen());
+//        data.put("screen", MobileScreen.ORDER_DETAIL.getScreen());
+//        this.firebaseMessageService.sendMessage();
+    }
+
+    private void calculatePoint(Account collaborator, Double totalPoint, Account enterprise) {
         //todo point of enterprise must be large enough
-        Optional.of(enterprises.get(0)).ifPresent(_enterprise -> {
+        Optional.of(enterprise).ifPresent(_enterprise -> {
             if (_enterprise.getPoint() < totalPoint) throw handlerLackPoint.get();
 
             _enterprise.setPoint(_enterprise.getPoint() - totalPoint);
@@ -262,10 +287,6 @@ public class OrderServiceImpl implements OrderService {
             this.accountRepository.save(collaborator);
             this.accountRepository.save(_enterprise);
         });
-
-        //todo send notification
-        this.orderRepository.save(order.setStatus(OrderStatus.FINISHED));
-
     }
 
     @Override

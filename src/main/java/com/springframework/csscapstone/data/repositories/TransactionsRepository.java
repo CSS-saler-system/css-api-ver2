@@ -1,13 +1,12 @@
 package com.springframework.csscapstone.data.repositories;
 
 import com.springframework.csscapstone.data.domain.Transactions;
+import com.springframework.csscapstone.data.status.TransactionStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,15 +28,15 @@ public interface TransactionsRepository
             countQuery =
                     "SELECT count(t) " +
                             "FROM Transactions t " +
-                            "WHERE t " +
-                            "NOT IN(SELECT tmp FROM Transactions tmp WHERE tmp.transactionStatus = 'DISABLE') " +
-                            "AND t.transactionCreator.id = :id " +
+                            "WHERE t.transactionCreator.id = :id " +
                             "AND t.LastModifiedDate >= :startDate " +
-                            "AND t.LastModifiedDate <= :endDate ")
+                            "AND t.LastModifiedDate <= :endDate " +
+                            "AND NOT t.transactionStatus = :status")
     Page<Transactions> findAllByDate(
             @Param("id") UUID id,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate,
+            @Param("status") TransactionStatus status,
             Pageable pageable);
 
     @Query("SELECT t FROM Transactions t where t.transactionStatus = 'CREATED'")

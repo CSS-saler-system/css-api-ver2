@@ -72,6 +72,7 @@ public class ApiEndPoint {
 
         public static final String V2_COLLABORATOR_CAMPAIGN_LIST = v2_handler + "/campaign-join/list";
 
+        public static final String V2_PROFILE_UPDATE_ACCOUNT = v2_handler + "/profile";
 
         public static final String V3_LIST_ACCOUNT = v3_handler + "/enterprise/list";
         public static final String V3_ENTERPRISE_ID = v3_handler + "/enterprise";

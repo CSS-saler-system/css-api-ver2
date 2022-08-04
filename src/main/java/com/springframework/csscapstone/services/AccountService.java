@@ -27,7 +27,7 @@ public interface AccountService {
             String email, String address,
             Integer pageSize, Integer pageNumber);
 
-    AccountResDto getById(UUID id) throws AccountInvalidException, AccountNotFoundException;
+    AccountResDto getById(UUID id);
 
     //todo for admin and moderator role create enterprise
     UUID createEnterpriseAccount(
@@ -59,4 +59,5 @@ public interface AccountService {
     Optional<AccountResDto> getProfile(UUID accountId);
 
     UUID updateCollaboratorProfiles(UUID collaboratorId, AccountCollaboratorUpdaterDto accountUpdaterJsonDto, MultipartFile avatar);
+
 }

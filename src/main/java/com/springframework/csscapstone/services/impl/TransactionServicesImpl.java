@@ -73,7 +73,8 @@ public class TransactionServicesImpl implements TransactionServices {
         pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
 
         Page<Transactions> page = this.transactionsRepository
-                .findAllByDate(enterpriseId, createDate, modifiedDate, PageRequest.of(pageNumber - 1, pageSize,
+                .findAllByDate(enterpriseId, createDate, modifiedDate, TransactionStatus.DISABLED,
+                        PageRequest.of(pageNumber - 1, pageSize,
                         Sort.by(Transactions_.CREATE_TRANSACTION_DATE).descending()));
 
         page.getContent().forEach(System.out::println);

@@ -198,7 +198,7 @@ public class AccountServiceImpl implements AccountService {
      * @throws AccountInvalidException
      */
     @Override
-    public AccountResDto getById(UUID id) throws AccountInvalidException {
+    public AccountResDto getById(UUID id) {
         return accountRepository
                 .findById(id)
                 .map(AccountMapper.INSTANCE::toAccountResDto)

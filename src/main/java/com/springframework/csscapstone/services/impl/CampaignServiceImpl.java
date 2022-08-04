@@ -381,7 +381,8 @@ public class CampaignServiceImpl implements CampaignService {
                 Prize prize = prizes.get(count++);
                 Account accountMapping = account.awardPrize(prize);
                 this.accountRepository.save(accountMapping);
-                sendNotificationFinishCampaign(campaign.getId(), account, prize, collaboratorSelling.get(account.getId()));
+                sendNotificationFinishCampaign(campaign.getId(), account, prize,
+                        collaboratorSelling.get(account.getId()));
             }
         }
 
