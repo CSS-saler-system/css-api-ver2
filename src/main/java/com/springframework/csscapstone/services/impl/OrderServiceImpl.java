@@ -1,6 +1,10 @@
 package com.springframework.csscapstone.services.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.springframework.csscapstone.config.firebase_config.FirebaseMessageService;
+import com.springframework.csscapstone.config.firebase_config.model.PushNotificationRequest;
 import com.springframework.csscapstone.config.message.constant.MessageConstant;
+import com.springframework.csscapstone.config.message.constant.MobileScreen;
 import com.springframework.csscapstone.data.dao.specifications.OrdersSpecification;
 import com.springframework.csscapstone.data.domain.*;
 import com.springframework.csscapstone.data.repositories.*;
@@ -25,12 +29,15 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static com.springframework.csscapstone.utils.exception_catch_utils.ExceptionFCMHandler.fcmException;
 import static java.util.stream.Collectors.toMap;
 
 @Service
@@ -42,6 +49,8 @@ public class OrderServiceImpl implements OrderService {
     private final OrderDetailRepository orderDetailRepository;
     private final CustomerRepository customerRepository;
     private final ProductRepository productRepository;
+    private final AccountTokenRepository accountTokenRepository;
+    private final FirebaseMessageService firebaseMessageService;
     private final int INVALID_PAGE = 1;
     private final int DEFAULT_PAGE_NUMBER = 1;
     private final int SHIFT_TO_ACTUAL_PAGE = 1;
@@ -254,7 +263,8 @@ public class OrderServiceImpl implements OrderService {
         }
 
         //todo point of enterprise must be large enough
-        Optional.of(enterprises.get(0)).ifPresent(_enterprise -> {
+        Account enterprise = enterprises.get(0);
+        Optional.of(enterprise).ifPresent(_enterprise -> {
             if (_enterprise.getPoint() < totalPoint) throw handlerLackPoint.get();
 
             _enterprise.setPoint(_enterprise.getPoint() - totalPoint);
@@ -265,6 +275,33 @@ public class OrderServiceImpl implements OrderService {
 
         //todo send notification
         this.orderRepository.save(order.setStatus(OrderStatus.FINISHED));
+
+        //send notification:
+        /**
+         * Customer name, enterprise, datetime order, total point inscrease
+         *
+         */
+        //todo get account token:
+        accountTokenRepository.getAccountTokenByAccountOptional(order.getAccount().getId())
+                .ifPresent(fcmException(token ->  sendNotificationToCollaborator(
+                        order.getCustomer().getName(), enterprise.getName(),
+                        enterprise.getAvatar().getPath(),
+                        order.getId(), order.getCreateDate(), order.getTotalPointSale(),
+                        token.get(0).getRegistrationToken())));
+
+    }
+
+    private void sendNotificationToCollaborator(
+            String customerName, String enterpriseName, String path, UUID orderId, LocalDateTime createDate, Double totalPointSale, String token) throws ExecutionException, JsonProcessingException, InterruptedException {
+        HashMap<String, String> data = new HashMap<>();
+        data.put(MobileScreen.SCREEN.getScreen(), MobileScreen.ORDER_DETAIL.getScreen());
+        data.put(MobileScreen.INFO.getScreen(), orderId.toString());
+
+        String title = "Your point increase " + totalPointSale + " by " + enterpriseName;
+        String message = "The order belong to " + customerName + " at time: " + createDate + " was completed";
+        String topic = "The point increase";
+
+        firebaseMessageService.sendMessage(data, new PushNotificationRequest(title, message, topic, token, path));
 
     }
 

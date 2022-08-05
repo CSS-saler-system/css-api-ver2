@@ -27,7 +27,7 @@ public interface RequestSellingProductService {
     PageImplResDto<RequestSellingProductEnterpriseManagerDto> getAllRequestByStatusAndEnterprise(
             UUID enterpriseId, RequestStatus status, Integer pageNumber, Integer pageSize);
 
-    Optional<UUID> updateProduct(UUID idRequest, RequestStatus status) throws ExecutionException, JsonProcessingException, InterruptedException;
+    Optional<UUID> updateReqeustSellingProduct(UUID idRequest, RequestStatus status) throws ExecutionException, JsonProcessingException, InterruptedException;
 
     Optional<RequestSellingProductResDto> getRequestById(UUID uuid);
 }

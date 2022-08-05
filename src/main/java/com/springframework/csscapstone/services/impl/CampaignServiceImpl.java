@@ -504,6 +504,7 @@ public class CampaignServiceImpl implements CampaignService {
                 "Campaign Approval Result",
                 "The campaign was " + (status.equals(CampaignStatus.REJECTED) ? "reject" : "approval"),
                 "The Campaign",
+                campaign.getImage().get(0).getPath(),
                 token);
 
         Map<String, String> data = new HashMap<>();
@@ -520,9 +521,11 @@ public class CampaignServiceImpl implements CampaignService {
                 .findFirst()
                 .map(token -> new PushNotificationRequest(
                         "The Finished Campaign",
-                        "You receive the prize: " + prize.getName() + ",price: " + prize.getPrice(),
+                        "You receive the prize: " + prize.getName() + ",price: " + prize.getPrice() +
+                                " when completed camapaign with kpi: " + kpi,
                         "The award prize",
-                        token.getRegistrationToken()))
+                        token.getRegistrationToken(),
+                        account.getAvatar().getPath()))
                 .ifPresent(fcmException(notification -> this.firebaseMessageService.sendMessage(Collections
                         .singletonMap(MobileScreen.CAMPAIGN.getScreen(), campaignId.toString()), notification)));
     }
@@ -537,7 +540,8 @@ public class CampaignServiceImpl implements CampaignService {
                         "The Finished Campaign",
                         "The Campaign name: " + campaign.getName() + ",with quantity sold: " + quantity,
                         "The Finished Campaign",
-                        token.getRegistrationToken()))
+                        token.getRegistrationToken(),
+                        campaign.getImage().get(0).getPath()))
                 .ifPresent(fcmException(notification -> firebaseMessageService.sendMessage(
                         Collections.singletonMap(MobileScreen.CAMPAIGN.getScreen(), campaign.getId().toString()),
                         notification

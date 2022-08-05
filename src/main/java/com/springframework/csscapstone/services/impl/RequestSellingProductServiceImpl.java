@@ -152,13 +152,16 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
 
     @Transactional
     @Override
-    public Optional<UUID> updateProduct(UUID idRequest, RequestStatus status) throws ExecutionException, JsonProcessingException, InterruptedException {
+    public Optional<UUID> updateReqeustSellingProduct(UUID idRequest, RequestStatus status) throws ExecutionException, JsonProcessingException, InterruptedException {
         RequestSellingProduct request = this.requestSellingProductRepository
                 .findById(idRequest)
 //                .filter(req -> req.getRequestStatus().equals(RequestStatus.CREATED))
-                .orElseThrow(() -> handlerRequestNotFound().get());
+                .orElseThrow(() -> handlerRequestNotFound.get());
         request.setRequestStatus(status);
         RequestSellingProduct save = this.requestSellingProductRepository.save(request);
+
+        String pathImage = request.getProduct().getAccount().getAvatar().getPath();
+
         AccountToken accountToken = this.accountTokenRepository
                 .getAccountTokenByAccountOptional(request.getAccount().getId())
                 .map(Collection::stream)
@@ -166,17 +169,25 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
                 .findFirst()
                 .orElseThrow(noTokenException);
 
-        sendNotification(save, status, accountToken.getRegistrationToken());
+        sendNotification(save, status, accountToken.getRegistrationToken(), pathImage);
 
         return Optional.of(save.getId());
     }
 
-    private void sendNotification(RequestSellingProduct request, RequestStatus status, String token) throws ExecutionException, JsonProcessingException, InterruptedException {
+
+    @Override
+    public Optional<RequestSellingProductResDto> getRequestById(UUID uuid) {
+        return this.requestSellingProductRepository
+                .findById(uuid)
+                .map(MapperDTO.INSTANCE::toRequestSellingProductResDto);
+    }
+
+    private void sendNotification(RequestSellingProduct request, RequestStatus status, String token, String enterpriseImage) throws ExecutionException, JsonProcessingException, InterruptedException {
         PushNotificationRequest notification = new PushNotificationRequest(
                 "Request Approval Result",
                 "The Request was " + (status.equals(RequestStatus.REJECTED) ? "rejected" : "registered"),
                 "The Request",
-                token);
+                token, enterpriseImage);
 
         Map<String, String> data = new HashMap<>();
 
@@ -186,14 +197,6 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
 
     }
 
-    @Override
-    public Optional<RequestSellingProductResDto> getRequestById(UUID uuid) {
-        return this.requestSellingProductRepository
-                .findById(uuid)
-                .map(MapperDTO.INSTANCE::toRequestSellingProductResDto);
-    }
-
-    private Supplier<RequestNotFoundException> handlerRequestNotFound() {
-        return () -> new RequestNotFoundException(MessagesUtils.getMessage(MessageConstant.RequestSellingProduct.NOT_CREATE_STATUS));
-    }
+    private Supplier<RequestNotFoundException> handlerRequestNotFound =
+            () -> new RequestNotFoundException(MessagesUtils.getMessage(MessageConstant.RequestSellingProduct.NOT_CREATE_STATUS));
 }
