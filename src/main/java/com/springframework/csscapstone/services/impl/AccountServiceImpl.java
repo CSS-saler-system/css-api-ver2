@@ -1,7 +1,7 @@
 package com.springframework.csscapstone.services.impl;
 
-import com.springframework.csscapstone.config.message.constant.MessageConstant;
 import com.springframework.csscapstone.config.firebase_config.FirebaseAuthService;
+import com.springframework.csscapstone.config.message.constant.MessageConstant;
 import com.springframework.csscapstone.data.dao.specifications.AccountSpecifications;
 import com.springframework.csscapstone.data.domain.*;
 import com.springframework.csscapstone.data.repositories.*;
@@ -33,6 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -287,6 +288,7 @@ public class AccountServiceImpl implements AccountService {
 
     //todo for collaborator
     @Override
+    @Cacheable(key = "{#p0, #p1}", value = "collaboratorEnterprise")
     public PageImplResDto<AccountResDto> getAllHavingEnterpriseRole(Integer pageNumber, Integer pageSize) {
         pageNumber = Objects.isNull(pageNumber) || pageNumber <= DEFAULT_PAGE_NUMBER ? DEFAULT_PAGE_NUMBER : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize <= DEFAULT_PAGE_SIZE ? DEFAULT_PAGE_SIZE : pageSize;
