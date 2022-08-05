@@ -136,9 +136,20 @@
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
         <!-- End Spring email-->
-        <!-- modelmapper -->
-        <!-- end modelmapper -->
-
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
+            <version>3.10.0</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.cache</groupId>
+            <artifactId>cache-api</artifactId>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 
     <build>
