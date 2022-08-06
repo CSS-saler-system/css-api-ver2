@@ -399,7 +399,7 @@ public class ProductServiceImpl implements ProductService {
         pageNumber = Objects.isNull(pageNumber) || (pageNumber <= 1) ? 1 : pageNumber;
 
         Page<Product> page = this.productRepository
-                .findAll(search, PageRequest.of(pageNumber - 1, pageSize, Sort.by(Product_.NAME)));
+                .findAll(search, PageRequest.of(pageNumber - 1, pageSize, Sort.by(Product_.CREATE_DATE).descending()));
 
         List<ProductResDto> data = page.stream()
                 .map(MapperDTO.INSTANCE::toProductResDto).collect(toList());
