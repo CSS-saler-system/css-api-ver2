@@ -52,7 +52,7 @@ public class EnterpriseRequestSellingProductController {
             @RequestParam(value = "status") RequestStatus status)
             throws ExecutionException, JsonProcessingException, InterruptedException {
         UUID id = this.requestSellingProductService
-                .updateReqeustSellingProduct(idRequest, status)
+                .updateRequestSellingProduct(idRequest, status)
                 .orElseThrow(entityNotFoundExceptionSupplier.apply(idRequest));
         return ok(id);
     }
