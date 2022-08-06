@@ -54,6 +54,7 @@ public class MessageConstant {
 
     public static class Account {
         public static final String NOT_FOUND = "account.error.not-found";
+        public static final String NOT_FOUND_TOKEN = "account.error.not-found-token";
         public static final String INVALID = "account.error.invalid";
         public static final String EXISTED = "account.error.existed";
         public static final String EMAIL_EXITED = "account.error.email_exited";
