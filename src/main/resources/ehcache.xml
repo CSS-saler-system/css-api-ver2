@@ -49,7 +49,7 @@
 
     <cache alias="getCollaboratorWithPerformance">
         <key-type>java.util.UUID</key-type>
-        <value-type>java.util.Optional</value-type>
+        <value-type>com.springframework.csscapstone.payload.response_dto.enterprise.CollaboratorWithQuantitySoldByCategoryDto</value-type>
         <expiry>
             <ttl>30</ttl>
         </expiry>
