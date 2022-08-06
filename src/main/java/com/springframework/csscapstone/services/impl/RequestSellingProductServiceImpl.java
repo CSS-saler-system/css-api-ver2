@@ -74,6 +74,13 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
     private static final String REQUEST_BY_COL = "requestByCollaborator";
     private static final String REQUEST_BY_STATUS_AND_ENTERPRISE = "requestByStatusAndEnterprise";
 
+    private void clearCache() {
+        Objects.requireNonNull(this.cacheManager.getCache(REQUEST_BY_ID)).clear();
+        Objects.requireNonNull(this.cacheManager.getCache(LIST_REQUEST)).clear();
+        Objects.requireNonNull(this.cacheManager.getCache(REQUEST_BY_COL)).clear();
+        Objects.requireNonNull(this.cacheManager.getCache(REQUEST_BY_STATUS_AND_ENTERPRISE)).clear();
+    }
+
     @Override
     @Cacheable(key = "'getAllRequest'", value = LIST_REQUEST)
     public List<RequestSellingProductResDto> getAllRequest() {
@@ -123,8 +130,7 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
                 .setAccount(collaborator)
                 .setRequestStatus(RequestStatus.CREATED);
 
-        Objects.requireNonNull(this.cacheManager.getCache(REQUEST_BY_COL)).clear();
-
+        clearCache();
         return this.requestSellingProductRepository.save(requestSellingProduct).getId();
     }
 
@@ -177,16 +183,14 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
                 .findFirst()
                 .orElseThrow(noTokenException);
 
-        Objects.requireNonNull(this.cacheManager.getCache(REQUEST_BY_COL)).clear();
-
         sendNotification(save, status, accountToken.getRegistrationToken(), pathImage);
-
+        clearCache();
         return Optional.of(save.getId());
     }
 
 
     @Override
-//    @Cacheable(key = "#p0", value = REQUEST_BY_ID)
+    @Cacheable(key = "#p0", value = REQUEST_BY_ID)
     public Optional<RequestSellingProductResDto> getRequestById(UUID uuid) {
         return this.requestSellingProductRepository
                 .findById(uuid)

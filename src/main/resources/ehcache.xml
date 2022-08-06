@@ -34,22 +34,11 @@
             <offheap unit="MB">10</offheap>
         </resources>
     </cache>
-
-    <cache alias="getAllRequest">
-        <key-type>java.lang.String</key-type>
-        <value-type>java.util.List</value-type>
-        <expiry>
-            <ttl>30</ttl>
-        </expiry>
-        <resources>
-            <heap>10</heap>
-            <offheap unit="MB">10</offheap>
-        </resources>
-    </cache>
-
     <cache alias="getCollaboratorWithPerformance">
         <key-type>java.util.UUID</key-type>
-        <value-type>com.springframework.csscapstone.payload.response_dto.enterprise.CollaboratorWithQuantitySoldByCategoryDto</value-type>
+        <value-type>
+            com.springframework.csscapstone.payload.response_dto.enterprise.CollaboratorWithQuantitySoldByCategoryDto
+        </value-type>
         <expiry>
             <ttl>30</ttl>
         </expiry>
@@ -80,7 +69,6 @@
             <offheap unit="MB">10</offheap>
         </resources>
     </cache>
-
     <cache alias="enterpriseForCollaborator">
         <key-type>java.util.ArrayList</key-type>
         <value-type>com.springframework.csscapstone.payload.response_dto.PageImplResDto</value-type>
@@ -128,6 +116,17 @@
     <cache alias="getProfile">
         <key-type>java.util.UUID</key-type>
         <value-type>java.util.Optional</value-type>
+        <expiry>
+            <ttl>30</ttl>
+        </expiry>
+        <resources>
+            <heap>10</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+    </cache>
+    <cache alias="getAllRequest">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.util.List</value-type>
         <expiry>
             <ttl>30</ttl>
         </expiry>
