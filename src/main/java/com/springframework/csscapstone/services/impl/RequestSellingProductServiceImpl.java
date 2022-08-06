@@ -186,7 +186,7 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
 
 
     @Override
-    @Cacheable(key = "#p0", value = REQUEST_BY_ID)
+//    @Cacheable(key = "#p0", value = REQUEST_BY_ID)
     public Optional<RequestSellingProductResDto> getRequestById(UUID uuid) {
         return this.requestSellingProductRepository
                 .findById(uuid)
