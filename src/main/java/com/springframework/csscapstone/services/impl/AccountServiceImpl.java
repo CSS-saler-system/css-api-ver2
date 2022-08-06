@@ -33,6 +33,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
@@ -66,23 +68,19 @@ public class AccountServiceImpl implements AccountService {
     public static final int DEFAULT_PAGE_SIZE = 10;
     public static final int SHIFT_TO_ACTUAL_PAGE = 1;
     private final AccountRepository accountRepository;
+
     private final AccountImageRepository accountImageRepository;
     private final BlobUploadImages blobUploadImages;
     private final OrderRepository orderRepository;
     private final CampaignRepository campaignRepository;
     private final ProductRepository productRepository;
-
     private final CategoryRepository categoryRepository;
-
     private final FirebaseAuthService firebaseAuthService;
-
     private final Logger LOGGER = LoggerFactory.getLogger(CategoryServiceImpl.class);
-
     private final RequestSellingProductRepository requestSellingProductRepository;
-
+    private final CacheManager cacheManager;
     @Value("${endpoint}")
     private String endpoint;
-
     @Value("${account_image_container}")
     private String accountContainer;
 
@@ -124,6 +122,28 @@ public class AccountServiceImpl implements AccountService {
         throw new RuntimeException("The email: " + email + " was existed!!!");
     };
 
+    private static final String COLLABORATOR_WITH_PERFORMANCE = "getCollaboratorWithPerformance";
+    private static final String GET_ACCOUNT = "getAccountDto";
+    private static final String GET_ACCOUNT_BY_ID = "getaAccountById";
+    private static final String ENTERPRISE_FOR_COLLABORATOR = "enterpriseForCollaborator";
+    private static final String GET_ALL_COLLABORATOR_OF_ENTERPRISE = "collaboratorForEnterprise";
+    private static final String COLLABORATOR_WITH_QUANTITY_SOLD = "collaboratorsByEnterpriseIncludeNumberOfQuantitySold";
+    private static final String COLLABORATOR_AWARD = "collaboratorAward";
+    private static final String GET_PROFILE = "getProfile";
+
+
+    private void clearCache() {
+        Objects.requireNonNull(this.cacheManager.getCache(COLLABORATOR_WITH_PERFORMANCE)).clear();
+        Objects.requireNonNull(this.cacheManager.getCache(GET_ACCOUNT)).clear();
+        Objects.requireNonNull(this.cacheManager.getCache(GET_ACCOUNT_BY_ID)).clear();
+        Objects.requireNonNull(this.cacheManager.getCache(ENTERPRISE_FOR_COLLABORATOR)).clear();
+        Objects.requireNonNull(this.cacheManager.getCache(GET_ALL_COLLABORATOR_OF_ENTERPRISE)).clear();
+        Objects.requireNonNull(this.cacheManager.getCache(COLLABORATOR_WITH_QUANTITY_SOLD)).clear();
+        Objects.requireNonNull(this.cacheManager.getCache(COLLABORATOR_AWARD)).clear();
+        Objects.requireNonNull(this.cacheManager.getCache(GET_PROFILE)).clear();
+    }
+
+
     /**
      * todo Get Collaborator With performance skill selling
      *
@@ -131,6 +151,7 @@ public class AccountServiceImpl implements AccountService {
      * @return
      */
     @Override
+    @Cacheable(key = "#p0", value = COLLABORATOR_WITH_PERFORMANCE)
     public Optional<CollaboratorWithQuantitySoldByCategoryDto> getCollaboratorWithPerformance(UUID uuid) {
 
         Account collaborator = this.accountRepository
@@ -164,6 +185,7 @@ public class AccountServiceImpl implements AccountService {
      * @return
      */
     @Override
+    @Cacheable(key = "{#p0, #p1, #p2, #p3, #p4, #p5}", value = GET_ACCOUNT)
     public PageImplResDto<AccountResDto> getAccountDto(
             String name, String phone, String email, String address,
             Integer pageSize, Integer pageNumber) {
@@ -190,105 +212,9 @@ public class AccountServiceImpl implements AccountService {
                 page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
     }
 
-
-    /**
-     * TODO Admin and user get Profiles
-     *
-     * @param id
-     * @return
-     * @throws AccountInvalidException
-     */
-    @Override
-    public AccountResDto getById(UUID id) throws AccountInvalidException {
-        return accountRepository
-                .findById(id)
-                .map(AccountMapper.INSTANCE::toAccountResDto)
-                .orElseThrow(handlerAccountNotFound);
-    }
-
-    /**
-     * TODO <BR>
-     *     Using By Admin creates Account
-     *     Upload information into firebase
-     *     Upload Image into Azure Storage
-     *
-     * @param reqDto
-     * @return
-     * @throws AccountExistException
-     */
-    @Transactional
-    @Override
-    public UUID createEnterpriseAccount(
-            AccountCreatorReqDto reqDto, MultipartFile avatar,
-            MultipartFile licenses, MultipartFile idCards)
-            throws AccountExistException {
-
-        if (Objects.isNull(reqDto.getEmail()) || Objects.isNull(reqDto.getPhone())) {
-            throw new RuntimeException("The email or phone was null!!!");
-        }
-
-        this.accountRepository
-                .findAccountByEmail(reqDto.getEmail())
-                .ifPresent(duplicateEmailExceptionConsumer);
-
-        Account account = AccountMapper.INSTANCE.accountReqDtoToAccount(reqDto);
-
-        String phone = formatPhone(reqDto);
-
-        firebaseAuthService.saveAccountOnFirebase(account.getEmail(), phone);
-//
-        Account saved = accountRepository.save(account);
-//
-        Account completedAccount = accountSaveImages(avatar, licenses, idCards, saved);
-
-        return this.accountRepository.save(completedAccount).getId();
-    }
-
-    /**
-     * TODO Update Account for Collaborator
-     *
-     * @param reqUpdateDto
-     * @return
-     * @throws AccountInvalidException
-     */
-    @Transactional
-    @Override
-    public UUID updateAccount(UUID accountId, AccountUpdaterJsonDto reqUpdateDto,
-                              MultipartFile avatars,
-                              MultipartFile licenses,
-                              MultipartFile idCards) throws AccountInvalidException {
-
-        //check exist entity
-        Account entity = accountRepository
-                .findById(accountId)
-                .orElseThrow(handlerAccountInvalid);
-
-        AccountMapper.INSTANCE.updateAccountFromAccountUpdaterJsonDto(reqUpdateDto, entity);
-
-        //override image in database
-        Account account = imageUpdateHandler(avatars, licenses, idCards, entity);
-
-        this.accountRepository.save(account);
-        return entity.getId();
-    }
-
-    /**
-     * todo for admin disable account
-     *
-     * @param id
-     */
-    @Transactional
-    @Override
-    public void disableAccount(UUID id) {
-        accountRepository.findById(id).ifPresent(x -> {
-            x.setIsActive(false);
-            accountRepository.save(x);
-        });
-    }
-
     //todo for collaborator
     @Override
-    @Cacheable(key = "{#p0, #p1}", value = "collaboratorEnterprise")
+    @Cacheable(key = "{#p0, #p1}", value = ENTERPRISE_FOR_COLLABORATOR)
     public PageImplResDto<AccountResDto> getAllHavingEnterpriseRole(Integer pageNumber, Integer pageSize) {
         pageNumber = Objects.isNull(pageNumber) || pageNumber <= DEFAULT_PAGE_NUMBER ? DEFAULT_PAGE_NUMBER : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize <= DEFAULT_PAGE_SIZE ? DEFAULT_PAGE_SIZE : pageSize;
@@ -308,6 +234,22 @@ public class AccountServiceImpl implements AccountService {
     }
 
     /**
+     * TODO Admin and user get Profiles
+     *
+     * @param id
+     * @return
+     * @throws AccountInvalidException
+     */
+    @Override
+    @Cacheable(key = "#p0", value = GET_ACCOUNT_BY_ID)
+    public AccountResDto getById(UUID id) throws AccountInvalidException {
+        return accountRepository
+                .findById(id)
+                .map(AccountMapper.INSTANCE::toAccountResDto)
+                .orElseThrow(handlerAccountNotFound);
+    }
+
+    /**
      * TODO Changing BUG
      * TODO Get Collaborator by join Request and Account
      *
@@ -315,6 +257,7 @@ public class AccountServiceImpl implements AccountService {
      * @return
      */
     @Override
+    @Cacheable(key = "{#p0, #p1, #p2}", value = GET_ALL_COLLABORATOR_OF_ENTERPRISE)
     public PageImplResDto<AccountResDto> getAllCollaboratorsOfEnterprise(
             UUID idEnterprise, Integer pageNumber, Integer pageSize) {
 
@@ -347,6 +290,7 @@ public class AccountServiceImpl implements AccountService {
      * @return
      */
     @Override
+    @Cacheable(key = "{#p0, #p1, #p2}", value = COLLABORATOR_WITH_QUANTITY_SOLD)
     public PageImplResDto<CollaboratorResDto> collaboratorsByEnterpriseIncludeNumberOfQuantitySold(
             UUID idEnterprise, Integer pageNumber, Integer pageSize) {
 
@@ -384,6 +328,7 @@ public class AccountServiceImpl implements AccountService {
      * @return
      */
     @Override
+    @Cacheable(key = "#p0", value = COLLABORATOR_AWARD)
     public List<CollaboratorResDto> awardCollaboratorByCampaign(UUID campaign) {
         Map<UUID, Long> collaboratorProduct = new HashMap<>();
 
@@ -428,6 +373,96 @@ public class AccountServiceImpl implements AccountService {
                 .collect(toList());
     }
 
+
+    @Override
+    @Cacheable(key = "#p0", value = GET_PROFILE)
+    public Optional<AccountResDto> getProfile(UUID accountId) {
+        return this.accountRepository
+                .findById(accountId)
+                .map(AccountMapper.INSTANCE::toAccountResDto);
+    }
+
+    /**
+     * TODO <BR>
+     *     Using By Admin creates Account
+     *     Upload information into firebase
+     *     Upload Image into Azure Storage
+     *
+     * @param reqDto
+     * @return
+     * @throws AccountExistException
+     */
+    @Transactional
+    @Override
+    public UUID createEnterpriseAccount(
+            AccountCreatorReqDto reqDto, MultipartFile avatar,
+            MultipartFile licenses, MultipartFile idCards)
+            throws AccountExistException {
+
+        if (Objects.isNull(reqDto.getEmail()) || Objects.isNull(reqDto.getPhone())) {
+            throw new RuntimeException("The email or phone was null!!!");
+        }
+
+        this.accountRepository
+                .findAccountByEmail(reqDto.getEmail())
+                .ifPresent(duplicateEmailExceptionConsumer);
+
+        Account account = AccountMapper.INSTANCE.accountReqDtoToAccount(reqDto);
+
+        String phone = formatPhone(reqDto);
+
+        firebaseAuthService.saveAccountOnFirebase(account.getEmail(), phone);
+//
+        Account saved = accountRepository.save(account);
+//
+        Account completedAccount = accountSaveImages(avatar, licenses, idCards, saved);
+
+        clearCache();
+
+        return this.accountRepository.save(completedAccount).getId();
+    }
+
+
+    /**
+     * TODO Update Account for Collaborator
+     *
+     * @param reqUpdateDto
+     * @return
+     * @throws AccountInvalidException
+     */
+    @Transactional
+    @Override
+    public UUID updateAccount(UUID accountId, AccountUpdaterJsonDto reqUpdateDto,
+                              MultipartFile avatars,
+                              MultipartFile licenses,
+                              MultipartFile idCards) throws AccountInvalidException {
+        //check exist entity
+        Account entity = accountRepository
+                .findById(accountId)
+                .orElseThrow(handlerAccountInvalid);
+        AccountMapper.INSTANCE.updateAccountFromAccountUpdaterJsonDto(reqUpdateDto, entity);
+        //override image in database
+        Account account = imageUpdateHandler(avatars, licenses, idCards, entity);
+        this.accountRepository.save(account);
+        clearCache();
+        return entity.getId();
+    }
+
+    /**
+     * todo for admin disable account
+     *
+     * @param id
+     */
+    @Transactional
+    @Override
+    public void disableAccount(UUID id) {
+        accountRepository.findById(id).ifPresent(x -> {
+            x.setIsActive(false);
+            accountRepository.save(x);
+            clearCache();
+        });
+    }
+
     /**
      * create account<BR>
      * </>
@@ -447,16 +482,25 @@ public class AccountServiceImpl implements AccountService {
                 .ifPresent(duplicationPhoneException.apply(account.getPhone()));
 
         Account savedAccount = this.accountRepository.save(account);
-
+        clearCache();
         return Optional.of(savedAccount.getId());
     }
 
+    @Transactional
     @Override
-    public Optional<AccountResDto> getProfile(UUID accountId) {
-        Optional<AccountResDto> result = this.accountRepository
-                .findById(accountId)
-                .map(AccountMapper.INSTANCE::toAccountResDto);
-        return result;
+    public UUID updateCollaboratorProfiles(UUID collaboratorId, AccountCollaboratorUpdaterDto accountUpdaterJsonDto, MultipartFile avatar) {
+        Account collaborator = this.accountRepository.findById(collaboratorId)
+                .filter(acc -> acc.getRole().getName().equals("Collaborator"))
+                .orElseThrow(() -> new RuntimeException("The collaborator with id: " + collaboratorId + " was not found"));
+
+        Account account = AccountMapper.INSTANCE.updateAccountFromAccountCollaboratorUpdaterDto(accountUpdaterJsonDto, collaborator);
+        if (nonNull(avatar)) {
+            Optional<AccountImage> accountImage = this.saveAccountImageEntity(avatar, collaboratorId, AVATAR);
+            accountImage.ifPresent(account::addImage);
+        }
+        clearCache();
+        return this.accountRepository.save(account).getId();
+
     }
 
     /**
@@ -573,18 +617,4 @@ public class AccountServiceImpl implements AccountService {
                 .findFirst();
     }
 
-    @Override
-    public UUID updateCollaboratorProfiles(UUID collaboratorId, AccountCollaboratorUpdaterDto accountUpdaterJsonDto, MultipartFile avatar) {
-        Account collaborator = this.accountRepository.findById(collaboratorId)
-                .filter(acc -> acc.getRole().getName().equals("Collaborator"))
-                .orElseThrow(() -> new RuntimeException("The collaborator with id: " + collaboratorId + " was not found"));
-
-        Account account = AccountMapper.INSTANCE.updateAccountFromAccountCollaboratorUpdaterDto(accountUpdaterJsonDto, collaborator);
-        if (nonNull(avatar)) {
-            Optional<AccountImage> accountImage = this.saveAccountImageEntity(avatar, collaboratorId, AVATAR);
-            accountImage.ifPresent(account::addImage);
-        }
-        return this.accountRepository.save(account).getId();
-
-    }
 }

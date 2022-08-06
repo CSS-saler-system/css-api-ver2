@@ -47,4 +47,94 @@
         </resources>
     </cache>
 
+    <cache alias="getCollaboratorWithPerformance">
+        <key-type>java.util.UUID</key-type>
+        <value-type>java.util.Optional</value-type>
+        <expiry>
+            <ttl>30</ttl>
+        </expiry>
+        <resources>
+            <heap>10</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+    </cache>
+    <cache alias="getAccountDto">
+        <key-type>java.util.ArrayList</key-type>
+        <value-type>com.springframework.csscapstone.payload.response_dto.PageImplResDto</value-type>
+        <expiry>
+            <ttl>30</ttl>
+        </expiry>
+        <resources>
+            <heap>10</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+    </cache>
+    <cache alias="getaAccountById">
+        <key-type>java.util.UUID</key-type>
+        <value-type>com.springframework.csscapstone.payload.response_dto.admin.AccountResDto</value-type>
+        <expiry>
+            <ttl>30</ttl>
+        </expiry>
+        <resources>
+            <heap>10</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+    </cache>
+
+    <cache alias="enterpriseForCollaborator">
+        <key-type>java.util.ArrayList</key-type>
+        <value-type>com.springframework.csscapstone.payload.response_dto.PageImplResDto</value-type>
+        <expiry>
+            <ttl>30</ttl>
+        </expiry>
+        <resources>
+            <heap>10</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+    </cache>
+    <cache alias="collaboratorForEnterprise">
+        <key-type>java.util.ArrayList</key-type>
+        <value-type>com.springframework.csscapstone.payload.response_dto.PageImplResDto</value-type>
+        <expiry>
+            <ttl>30</ttl>
+        </expiry>
+        <resources>
+            <heap>10</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+    </cache>
+    <cache alias="collaboratorsByEnterpriseIncludeNumberOfQuantitySold">
+        <key-type>java.util.ArrayList</key-type>
+        <value-type>com.springframework.csscapstone.payload.response_dto.PageImplResDto</value-type>
+        <expiry>
+            <ttl>30</ttl>
+        </expiry>
+        <resources>
+            <heap>10</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+    </cache>
+    <cache alias="collaboratorAward">
+        <key-type>java.util.UUID</key-type>
+        <value-type>java.util.List</value-type>
+        <expiry>
+            <ttl>30</ttl>
+        </expiry>
+        <resources>
+            <heap>10</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+    </cache>
+    <cache alias="getProfile">
+        <key-type>java.util.UUID</key-type>
+        <value-type>java.util.Optional</value-type>
+        <expiry>
+            <ttl>30</ttl>
+        </expiry>
+        <resources>
+            <heap>10</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+    </cache>
+
 </config>
