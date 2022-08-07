@@ -163,8 +163,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <source>15</source>
-                    <target>15</target>
+                    <source>8</source>
+                    <target>8</target>
                     <annotationProcessorPaths>
                         <path>
                             <!-- https://mvnrepository.com/artifact/org.mapstruct/mapstruct-processor -->

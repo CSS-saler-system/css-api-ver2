@@ -156,7 +156,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @Cacheable(key = "{#p0}", value = PRODUCT_BY_ID)
+    @Cacheable(key = "#p0", value = PRODUCT_BY_ID)
     public ProductDetailEnterpriseDto findById(UUID id) throws ProductNotFoundException {
         return productRepository.findById(id)
                 .filter(product -> !product.getProductStatus().equals(ProductStatus.DISABLED))
