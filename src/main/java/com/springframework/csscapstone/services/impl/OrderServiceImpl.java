@@ -22,6 +22,8 @@ import com.springframework.csscapstone.utils.exception_utils.order_exception.Ord
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.CacheManager;
 //import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -57,6 +59,7 @@ public class OrderServiceImpl implements OrderService {
     private final int DEFAULT_PAGE_NUMBER = 1;
     private final int SHIFT_TO_ACTUAL_PAGE = 1;
     private final int DEFAULT_PAGE_SIZE = 10;
+    private Logger LOGGER = LoggerFactory.getLogger(getClass());
     private final Supplier<RuntimeException> notFoundOrderException =
             () -> new RuntimeException("The Order not found or in processing so not allow to modified");
     private final Function<UUID, Supplier<RuntimeException>> notFoundOrderWithIdException =
@@ -244,10 +247,12 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public void completedOrder(UUID orderId) {
 
+        LOGGER.info("I'm here xxxxxxxxxxxxxxxxxxxxxxxx");
         //check order valid
         Order order = this.orderRepository.findById(orderId)
                 .filter(_order -> _order.getStatus() != OrderStatus.FINISHED)
                 .orElseThrow(handlerOrderNotFound);
+        LOGGER.info("I'm here xxxxxxxxxxxxxxxxxxxx");
 
         //get collaborator who create order
         Account collaborator = order.getAccount();
@@ -264,6 +269,7 @@ public class OrderServiceImpl implements OrderService {
                 .stream()
                 .map(OrderDetail::getTotalPointProduct)
                 .reduce(priceLatch, Double::sum);
+        LOGGER.info("I'm here xxxxxxxxxxxxxxxxxxxx");
 
         //todo find enterprise:
         List<Account> enterprises = order.getOrderDetails()
@@ -271,9 +277,11 @@ public class OrderServiceImpl implements OrderService {
                 .map(detail -> detail.getProduct().getAccount())
                 .distinct().collect(Collectors.toList());
 
+        LOGGER.info("I'm here xxxxxxxxxxxx");
         if (enterprises.size() > 1) {
             throw new RuntimeException("Order wrong with 2 enterprise!!!");
         }
+        LOGGER.info("I'm here xxxxxxx");
 
         //todo point of enterprise must be large enough
         Account enterprise = enterprises.get(0);
@@ -285,6 +293,7 @@ public class OrderServiceImpl implements OrderService {
             this.accountRepository.save(collaborator);
             this.accountRepository.save(_enterprise);
         });
+        LOGGER.info("I'm here");
 
         //todo send notification
         this.orderRepository.save(order.setStatus(OrderStatus.FINISHED));
@@ -294,6 +303,7 @@ public class OrderServiceImpl implements OrderService {
          * Customer name, enterprise, datetime order, total point inscrease
          *
          */
+        LOGGER.info("I'm here xxx");
         //todo get account token:
         accountTokenRepository.getAccountTokenByAccountOptional(order.getAccount().getId())
                 .ifPresent(fcmException(token ->  sendNotificationToCollaborator(
