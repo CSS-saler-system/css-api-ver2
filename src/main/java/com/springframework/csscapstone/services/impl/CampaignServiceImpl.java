@@ -28,6 +28,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -93,7 +95,17 @@ public class CampaignServiceImpl implements CampaignService {
     private static final int DEFAULT_PAGE_SIZE = 10;
     private static final int SHIFT_TO_ACTUAL_PAGE = 1;
 
+    private final CacheManager cacheManager;
+
+    private void clearCache() {
+        Objects.requireNonNull(cacheManager.getCache("findCampaignWithoutEnterpriseId")).clear();
+        Objects.requireNonNull(cacheManager.getCache("listCampaignWithoutEnterpriseIdForCollaborator")).clear();
+        Objects.requireNonNull(cacheManager.getCache("findCampaign")).clear();
+        Objects.requireNonNull(cacheManager.getCache("campaignFindById")).clear();
+    }
+
     @Override
+    @Cacheable(key = "{#p0, #p1, #p2, #p3, #p4, #p5}", value = "findCampaignWithoutEnterpriseId")
     public PageImplResDto<CampaignResDto> findCampaignWithoutEnterpriseId(
             String name, LocalDateTime date, Long kpi,
             CampaignStatus status, Integer pageNumber, Integer pageSize) {
@@ -115,8 +127,11 @@ public class CampaignServiceImpl implements CampaignService {
 
     //sort by start date
     @Override
+    @Cacheable(key = "{#p0, #p1, #p2, #p3, #p4, #p5}", value = "listCampaignWithoutEnterpriseIdForCollaborator")
     public PageImplResDto<CampaignForCollaboratorResDto> listCampaignWithoutEnterpriseIdForCollaborator(
-            String name, LocalDateTime date, Long kpi, CampaignStatus status, Integer pageNumber, Integer pageSize) {
+            String name, LocalDateTime date,
+            Long kpi, CampaignStatus status,
+            Integer pageNumber, Integer pageSize) {
 
         //condition:
 
@@ -143,6 +158,7 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
+    @Cacheable(key = "{#p0, #p1, #p2, #p3, #p4, #p5, #p6, #p7, #p8}", value = "findCampaign")
     public PageImplResDto<CampaignResDto> findCampaign(
             UUID enterpriseId, String name, LocalDateTime startDate,
             LocalDateTime endDate, Long minKpi, Long maxKpi, CampaignStatus status,
@@ -164,6 +180,7 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
+    @Cacheable(key = "#p0", value = "campaignFindById")
     public CampaignDetailDto findById(UUID id) throws EntityNotFoundException {
         return campaignRepository
                 .findById(id)
@@ -210,7 +227,7 @@ public class CampaignServiceImpl implements CampaignService {
 
         this.prizeRepository.saveAll(prize);
         this.productRepository.saveAll(productList);
-
+        clearCache();
         //todo save image
         return this.campaignRepository.save(handlerImage(images, saved)).getId();
     }
@@ -260,6 +277,7 @@ public class CampaignServiceImpl implements CampaignService {
         //todo image handler:
         Campaign campaign = handlerImage(images, entity);
         this.campaignRepository.save(campaign);
+        clearCache();
         return entity.getId();
     }
 
@@ -293,6 +311,7 @@ public class CampaignServiceImpl implements CampaignService {
                 .map(x -> x.setCampaignStatus(CampaignStatus.DISABLED))
                 .map(this.campaignRepository::save)
                 .orElseThrow(campaignNotFoundException);
+        clearCache();
     }
 
     @Transactional
@@ -303,6 +322,7 @@ public class CampaignServiceImpl implements CampaignService {
                 .filter(campaign -> campaign.getEndDate().isBefore(LocalDateTime.now()))
                 .filter(campaign -> campaign.getCampaignStatus().equals(APPROVAL))
                 .forEach(completeSchedule(this::closingCampaign));
+        clearCache();
     }
 
     /**
@@ -388,7 +408,7 @@ public class CampaignServiceImpl implements CampaignService {
         }
 
         this.campaignRepository.save(campaign.setCampaignStatus(CampaignStatus.FINISHED));
-
+        clearCache();
         sendNotificationEnterprise(campaign, enterprise, quantity);
     }
 
@@ -412,6 +432,7 @@ public class CampaignServiceImpl implements CampaignService {
                 .map(camp -> camp.setCampaignStatus(CampaignStatus.REJECTED))
                 .peek(sendNotification)
                 .forEach(this.campaignRepository::save);
+        clearCache();
     }
 
     /**
@@ -436,7 +457,7 @@ public class CampaignServiceImpl implements CampaignService {
                 .findFirst()
                 .orElseThrow(noTokenException);
         System.out.println(token);
-
+        clearCache();
         sendNotificationSentCampaign(campaign, status, token.getRegistrationToken());
 
     }
@@ -449,6 +470,7 @@ public class CampaignServiceImpl implements CampaignService {
                 .map(camp -> camp.setCampaignStatus(CampaignStatus.SENT))
                 .map(this.campaignRepository::save)
                 .orElseThrow(notFoundException);
+        clearCache();
     }
 
     private PageImplResDto<CampaignResDto> getCampaignResDtoPageImplResDto(

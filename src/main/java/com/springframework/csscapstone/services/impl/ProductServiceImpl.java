@@ -69,9 +69,7 @@ public class ProductServiceImpl implements ProductService {
     private static final String LIST_PRODUCT_REGISTERED_FOR_COLLABORATOR = "productWithRegisteredStatus";
     private static final String LIST_PRODUCT_FOR_COLLABORATOR = "listProductForCollaborator";
     private static final String PRODUCT_ID_FOR_COLLABORATOR = "productByIdForCollaborator";
-
     private final CacheManager cacheManager;
-
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
     @Value("${product_image_container}")
     private String productContainer;
@@ -222,7 +220,8 @@ public class ProductServiceImpl implements ProductService {
     public UUID updateProductDto(UUID productId,
                                  ProductUpdaterReqDto dto,
                                  List<MultipartFile> normalType,
-                                 List<MultipartFile> certificationType) throws ProductNotFoundException, ProductInvalidException {
+                                 List<MultipartFile> certificationType)
+            throws ProductNotFoundException, ProductInvalidException {
 
         Product entity = this.productRepository
                 .findById(productId)
