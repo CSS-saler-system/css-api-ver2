@@ -23,7 +23,7 @@ import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.Cacheable;
+//import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -84,7 +84,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Cacheable(key = "#p0", value = "getOrderResDtoById")
+//    @Cacheable(key = "#p0", value = "getOrderResDtoById")
     public OrderResDto getOrderResDtoById(UUID id) {
         return this.orderRepository.findById(id)
                 .filter(order -> !order.getStatus().equals(OrderStatus.DISABLED))
@@ -93,7 +93,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Cacheable(key = "{#p0, #p1, #p2, #p3}", value = "pageOrderOfCollaborator")
+//    @Cacheable(key = "{#p0, #p1, #p2, #p3}", value = "pageOrderOfCollaborator")
     public PageImplResDto<OrderResDto> pageOrderOfCollaborator(
             UUID idCollaborator, OrderStatus orderStatus, Integer pageNumber, Integer pageSize) {
 
@@ -225,7 +225,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-//    @Cacheable(key = "{#p0, #p1}", value = "updateStatusOrder")
+////    @Cacheable(key = "{#p0, #p1}", value = "updateStatusOrder")
     public Optional<UUID> updateStatusOrder(UUID id, OrderStatus status) {
         Order order = orderRepository.findById(id).orElseThrow(handlerOrderNotFound);
         order.setStatus(status);
@@ -319,7 +319,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Cacheable(key = "{#p0, #p1, #p2}", value = "getOrderResDtoByEnterprise")
+//    @Cacheable(key = "{#p0, #p1, #p2}", value = "getOrderResDtoByEnterprise")
     public PageImplResDto<OrderEnterpriseManageResDto> getOrderResDtoByEnterprise(
             UUID enterpriseId, Integer pageNumber, Integer pageSize) {
 
@@ -342,7 +342,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Cacheable(key = "#p0", value = "getRevenue")
+//    @Cacheable(key = "#p0", value = "getRevenue")
     public Optional<List<EnterpriseRevenueDto>> getRevenue(UUID enterpriseId) {
         List<EnterpriseRevenueDto> revenueDtos = this.orderRepository
                 .getRevenueByEnterprise(enterpriseId)

@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.Cacheable;
+//import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -105,7 +105,7 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
-    @Cacheable(key = "{#p0, #p1, #p2, #p3, #p4, #p5}", value = "findCampaignWithoutEnterpriseId")
+//    @Cacheable(key = "{#p0, #p1, #p2, #p3, #p4, #p5}", value = "findCampaignWithoutEnterpriseId")
     public PageImplResDto<CampaignResDto> findCampaignWithoutEnterpriseId(
             String name, LocalDateTime date, Long kpi,
             CampaignStatus status, Integer pageNumber, Integer pageSize) {
@@ -127,7 +127,7 @@ public class CampaignServiceImpl implements CampaignService {
 
     //sort by start date
     @Override
-    @Cacheable(key = "{#p0, #p1, #p2, #p3, #p4, #p5}", value = "listCampaignWithoutEnterpriseIdForCollaborator")
+//    @Cacheable(key = "{#p0, #p1, #p2, #p3, #p4, #p5}", value = "listCampaignWithoutEnterpriseIdForCollaborator")
     public PageImplResDto<CampaignForCollaboratorResDto> listCampaignWithoutEnterpriseIdForCollaborator(
             String name, LocalDateTime date,
             Long kpi, CampaignStatus status,
@@ -158,7 +158,7 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
-    @Cacheable(key = "{#p0, #p1, #p2, #p3, #p4, #p5, #p6, #p7, #p8}", value = "findCampaign")
+//    @Cacheable(key = "{#p0, #p1, #p2, #p3, #p4, #p5, #p6, #p7, #p8}", value = "findCampaign")
     public PageImplResDto<CampaignResDto> findCampaign(
             UUID enterpriseId, String name, LocalDateTime startDate,
             LocalDateTime endDate, Long minKpi, Long maxKpi, CampaignStatus status,
@@ -180,7 +180,7 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
-    @Cacheable(key = "#p0", value = "campaignFindById")
+//    @Cacheable(key = "#p0", value = "campaignFindById")
     public CampaignDetailDto findById(UUID id) throws EntityNotFoundException {
         return campaignRepository
                 .findById(id)
