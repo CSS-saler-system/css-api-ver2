@@ -422,10 +422,8 @@ public class AccountServiceImpl implements AccountService {
         return this.accountRepository.save(completedAccount).getId();
     }
 
-
     /**
      * TODO Update Account for Collaborator
-     *
      * @param reqUpdateDto
      * @return
      * @throws AccountInvalidException
@@ -450,7 +448,6 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * todo for admin disable account
-     *
      * @param id
      */
     @Transactional
@@ -514,7 +511,6 @@ public class AccountServiceImpl implements AccountService {
      */
     private Account imageUpdateHandler(MultipartFile avatars, MultipartFile licenses,
                                        MultipartFile idCards, Account entity) {
-
         /**
          * updateImage(avatars, entity, AVATAR)
          *                 .map(peek(entity::addImage))
@@ -562,7 +558,6 @@ public class AccountServiceImpl implements AccountService {
         return Optional.empty();
     }
 
-
     private String formatPhone(AccountCreatorReqDto dto) {
         String phone = "";
         //set phone number follow pattern +23453
@@ -595,7 +590,6 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * todo Create save Account-Image
-     *
      * @param images
      * @return
      */
