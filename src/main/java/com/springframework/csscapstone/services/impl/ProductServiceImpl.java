@@ -147,7 +147,7 @@ public class ProductServiceImpl implements ProductService {
      * todo find product by account <Completed></>
      */
     @Override
-    @Cacheable(key = "{#p0}", value = PRODUCT_BY_ID_FOR_ENTERPRISE)
+    @Cacheable(key = "#p0", value = PRODUCT_BY_ID_FOR_ENTERPRISE)
     public List<ProductResDto> findProductByIdEnterprise(UUID accountId) throws AccountNotFoundException {
         Account account = this.accountRepository.findById(accountId).orElseThrow(handlerAccountNotFound);
         return account.getProducts().stream()
@@ -362,7 +362,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @Cacheable(key = "{#p0}", value = PRODUCT_ID_FOR_COLLABORATOR)
+    @Cacheable(key = "#p0", value = PRODUCT_ID_FOR_COLLABORATOR)
     public Optional<ProductForCollabGetDetailResDto> findByIdForCollaborator(UUID productId) {
         return this.productRepository.findById(productId)
                 .map(ProductMapper.INSTANCE::productToProductFoeCollabResDto);
