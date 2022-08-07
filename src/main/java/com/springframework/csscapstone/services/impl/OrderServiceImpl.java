@@ -22,6 +22,7 @@ import com.springframework.csscapstone.utils.exception_utils.order_exception.Ord
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -74,9 +75,12 @@ public class OrderServiceImpl implements OrderService {
             (id) -> () -> new EntityNotFoundException("The collaborator with id: " + id + " not found");
     private final Function<UUID, Predicate<UUID>> isSameEnterpriseId = (id) -> (enterpriseId) -> !enterpriseId.equals(id);
     private final Function<UUID, Supplier<RuntimeException>> orderNotFound = (id) -> () -> new RuntimeException("No have Order With id: " + id);
-
+    private final CacheManager cacheManager;
     private void clearCache() {
-
+        Objects.requireNonNull(cacheManager.getCache("getOrderResDtoById")).clear();
+        Objects.requireNonNull(cacheManager.getCache("pageOrderOfCollaborator")).clear();
+        Objects.requireNonNull(cacheManager.getCache("getOrderResDtoByEnterprise")).clear();
+        Objects.requireNonNull(cacheManager.getCache("getRevenue")).clear();
     }
 
     @Override

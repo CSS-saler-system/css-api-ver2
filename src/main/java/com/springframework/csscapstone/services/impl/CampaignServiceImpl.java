@@ -458,7 +458,8 @@ public class CampaignServiceImpl implements CampaignService {
                 .orElseThrow(noTokenException);
         System.out.println(token);
         clearCache();
-        sendNotificationSentCampaign(campaign, status, token.getRegistrationToken());
+        //todo send notification
+//        sendNotificationSentCampaign(campaign, status, token.getRegistrationToken());
 
     }
 

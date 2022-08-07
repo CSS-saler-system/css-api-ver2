@@ -284,5 +284,51 @@
             <offheap unit="MB">10</offheap>
         </resources>
     </cache>
+    <cache alias="getOrderResDtoById">
+        <key-type>java.util.UUID</key-type>
+        <value-type>com.springframework.csscapstone.payload.response_dto.enterprise.OrderResDto</value-type>
+        <expiry>
+            <ttl>30</ttl>
+        </expiry>
+        <resources>
+            <heap>10</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+    </cache>
+    <cache alias="pageOrderOfCollaborator">
+        <key-type>java.util.ArrayList</key-type>
+        <value-type>com.springframework.csscapstone.payload.response_dto.enterprise.CampaignDetailDto
+        </value-type>
+        <expiry>
+            <ttl>30</ttl>
+        </expiry>
+        <resources>
+            <heap>10</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+    </cache>
+    <cache alias="getOrderResDtoByEnterprise">
+        <key-type>java.util.ArrayList</key-type>
+        <value-type>com.springframework.csscapstone.payload.response_dto.enterprise.CampaignDetailDto
+        </value-type>
+        <expiry>
+            <ttl>30</ttl>
+        </expiry>
+        <resources>
+            <heap>10</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+    </cache>
+  <cache alias="getRevenue">
+        <key-type>java.util.UUID</key-type>
+        <value-type>java.util.List</value-type>
+        <expiry>
+            <ttl>30</ttl>
+        </expiry>
+        <resources>
+            <heap>10</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+    </cache>
 
 </config>
