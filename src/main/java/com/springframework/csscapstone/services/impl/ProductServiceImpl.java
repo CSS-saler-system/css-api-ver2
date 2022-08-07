@@ -33,6 +33,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 //import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -50,6 +52,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
@@ -66,6 +69,9 @@ public class ProductServiceImpl implements ProductService {
     private static final String LIST_PRODUCT_REGISTERED_FOR_COLLABORATOR = "productWithRegisteredStatus";
     private static final String LIST_PRODUCT_FOR_COLLABORATOR = "listProductForCollaborator";
     private static final String PRODUCT_ID_FOR_COLLABORATOR = "productByIdForCollaborator";
+
+    private final CacheManager cacheManager;
+
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
     @Value("${product_image_container}")
     private String productContainer;
@@ -94,7 +100,7 @@ public class ProductServiceImpl implements ProductService {
      * @param pageSize
      * @return
      */
-//    @Cacheable(key = "{#p0, #p1, #p2, #p3, #p4, #p5, #p6}", value = ALL_PRODUCT_BY_ENTERPRISE)
+    @Cacheable(key = "{#p0, #p1, #p2, #p3, #p4, #p5, #p6}", value = ALL_PRODUCT_BY_ENTERPRISE)
     @Override
     public PageImplResDto<ProductResDto> findAllProductByIdEnterprise(
             UUID idEnterprise, String name,
@@ -120,7 +126,7 @@ public class ProductServiceImpl implements ProductService {
 
     //TODO For Collaborator get all product
     @Override
-//    @Cacheable(key = "{#p0, #p1, #p2, #p3, #p4, #p5, #p6, #p7}", value = PRODUCT_FOR_COLLABORATOR)
+    @Cacheable(key = "{#p0, #p1, #p2, #p3, #p4, #p5, #p6, #p7}", value = PRODUCT_FOR_COLLABORATOR)
     public PageImplResDto<ProductResDto> findAllProductForCollaborator(
             String name, String brand, Long inStock, Double minPrice, Double maxPrice,
             Double minPoint, Double maxPoint,
@@ -141,21 +147,21 @@ public class ProductServiceImpl implements ProductService {
      * todo find product by account <Completed></>
      */
     @Override
-//    @Cacheable(key = "{#p0}", value = PRODUCT_BY_ID_FOR_ENTERPRISE)
+    @Cacheable(key = "{#p0}", value = PRODUCT_BY_ID_FOR_ENTERPRISE)
     public List<ProductResDto> findProductByIdEnterprise(UUID accountId) throws AccountNotFoundException {
-        Account account = this.accountRepository.findById(accountId).orElseThrow(handlerAccountNotFound());
+        Account account = this.accountRepository.findById(accountId).orElseThrow(handlerAccountNotFound);
         return account.getProducts().stream()
                 .filter(product -> !product.getProductStatus().equals(ProductStatus.DISABLED))
                 .map(MapperDTO.INSTANCE::toProductResDto).collect(toList());
     }
 
     @Override
-//    @Cacheable(key = "{#p0}", value = PRODUCT_BY_ID)
+    @Cacheable(key = "{#p0}", value = PRODUCT_BY_ID)
     public ProductDetailEnterpriseDto findById(UUID id) throws ProductNotFoundException {
         return productRepository.findById(id)
                 .filter(product -> !product.getProductStatus().equals(ProductStatus.DISABLED))
                 .map(MapperDTO.INSTANCE::toProductDetailEnterpriseDto)
-                .orElseThrow(handlerProductNotFound());
+                .orElseThrow(handlerProductNotFound);
     }
 
     /**
@@ -174,20 +180,20 @@ public class ProductServiceImpl implements ProductService {
             throws ProductInvalidException, AccountNotFoundException {
 
         //check null category
-        if (Objects.isNull(dto.getCategoryId())) throw handlerCategoryNotFound().get();
+        if (Objects.isNull(dto.getCategoryId())) throw handlerCategoryNotFound.get();
 
         //check null account
-        if (Objects.isNull(dto.getCreatorAccountId())) throw handlerAccountCreatorNotFound().get();
+        if (Objects.isNull(dto.getCreatorAccountId())) throw handlerAccountCreatorNotFound.get();
 
         //check existed account
         Account account = accountRepository
                 .findById(dto.getCreatorAccountId())
-                .orElseThrow(handlerAccountCreatorNotFound());
+                .orElseThrow(handlerAccountCreatorNotFound);
 
         //check existed category
         Category category = categoryRepository
                 .findById(dto.getCategoryId())
-                .orElseThrow(handlerCategoryNotFound());
+                .orElseThrow(handlerCategoryNotFound);
 
         //create product
         Product newProduct = new Product()
@@ -206,7 +212,7 @@ public class ProductServiceImpl implements ProductService {
 
         //add image to product
         Product savedProduct = handleImage(typeImages, certificationImages, creatorProduct);
-
+        clearCache();
         return this.productRepository.save(savedProduct).getId();
     }
 
@@ -221,7 +227,7 @@ public class ProductServiceImpl implements ProductService {
         Product entity = this.productRepository
                 .findById(productId)
                 .filter(product -> !product.getProductStatus().equals(ProductStatus.DISABLED))
-                .orElseThrow(handlerProductNotFound());
+                .orElseThrow(handlerProductNotFound);
 
         entity.setName(dto.getName())
                 .setBrand(dto.getBrand())
@@ -233,6 +239,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = imageHandler(normalType, certificationType, entity);
 
         this.productRepository.save(product);
+        clearCache();
         return entity.getId();
     }
 
@@ -245,6 +252,7 @@ public class ProductServiceImpl implements ProductService {
                 .ifPresent(product -> {
                     product.setProductStatus(status);
                     this.productRepository.save(product);
+                    clearCache();
                 });
     }
 
@@ -256,15 +264,16 @@ public class ProductServiceImpl implements ProductService {
 //                    x.setProductStatus(ProductStatus.DISABLE);
                     x.setProductStatus(ProductStatus.DELETED);
                     this.productRepository.save(x);
+                    clearCache();
                 });
     }
 
     @Override
-//    @Cacheable(key = "{#p0, #p1, #p2, #p3, #p4}", value = LIST_PRODUCT_COUNTER_ORDER)
+    @Cacheable(key = "{#p0, #p1, #p2, #p3, #p4}", value = LIST_PRODUCT_COUNTER_ORDER)
     public PageImplResDto<ProductCountOrderResDto> getListProductWithCountOrder(
             UUID id, LocalDate startDate, LocalDate endDate, Integer pageNumber, Integer pageSize) throws AccountNotFoundException {
         //throws exception if id not found
-        if (Objects.isNull(id)) throw handlerAccountNotFound().get();
+        if (Objects.isNull(id)) throw handlerAccountNotFound.get();
 
         pageNumber = Objects.isNull(pageNumber) || pageNumber <= 1 ? 1 : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize <= 1 ? 1 : pageSize;
@@ -293,7 +302,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-//    @Cacheable(key = "{#p0, #p1, #p2, #p3}", value = LIST_PRODUCT_NO_REGISTERED_FOR_COLLABORATOR)
+    @Cacheable(key = "{#p0, #p1, #p2, #p3}", value = LIST_PRODUCT_NO_REGISTERED_FOR_COLLABORATOR)
     public PageImplResDto<ProductForCollaboratorResDto> pageProductWithNoRegisteredByEnterpriseAndCollaborator(
             UUID collaboratorId, UUID enterpriseId, Integer pageNumber, Integer pageSize) {
         pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
@@ -313,7 +322,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-//    @Cacheable(key = "{#p0, #p1, #p2, #p3}", value = LIST_PRODUCT_REGISTERED_FOR_COLLABORATOR)
+    @Cacheable(key = "{#p0, #p1, #p2, #p3}", value = LIST_PRODUCT_REGISTERED_FOR_COLLABORATOR)
     public PageImplResDto<ProductForCollaboratorResDto> pageProductWithRegisteredByEnterpriseAndCollaborator(
             UUID collaboratorId, UUID enterpriseId, Integer pageNumber, Integer pageSize) {
         pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
@@ -330,7 +339,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-//    @Cacheable(key = "{#p0, #p1, #p2, #p3, #p4}", value = LIST_PRODUCT_FOR_COLLABORATOR)
+    @Cacheable(key = "{#p0, #p1, #p2, #p3, #p4}", value = LIST_PRODUCT_FOR_COLLABORATOR)
     public PageImplResDto<ProductForModeratorResDto> pageAllForProductForModerator(
             String name, String nameEnterprise, String brand,
             Integer pageNumber, Integer pageSize) {
@@ -353,7 +362,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-//    @Cacheable(key = "{#p0}", value = PRODUCT_ID_FOR_COLLABORATOR)
+    @Cacheable(key = "{#p0}", value = PRODUCT_ID_FOR_COLLABORATOR)
     public Optional<ProductForCollabGetDetailResDto> findByIdForCollaborator(UUID productId) {
         return this.productRepository.findById(productId)
                 .map(ProductMapper.INSTANCE::productToProductFoeCollabResDto);
@@ -394,25 +403,17 @@ public class ProductServiceImpl implements ProductService {
 
     //===================Utils Methods====================
     //====================================================
-    private Supplier<ProductNotFoundException> handlerProductNotFound() {
-        return () -> new ProductNotFoundException(MessagesUtils.getMessage(MessageConstant.Product.NOT_FOUND));
-    }
+    private final Supplier<ProductNotFoundException> handlerProductNotFound =
+            () -> new ProductNotFoundException(MessagesUtils.getMessage(MessageConstant.Product.NOT_FOUND));
 
-    private Supplier<CategoryNotFoundException> handlerCategoryNotFound() {
-        return () -> new CategoryNotFoundException(MessagesUtils.getMessage(MessageConstant.Category.NOT_FOUND));
-    }
+    private final Supplier<CategoryNotFoundException> handlerCategoryNotFound =
+            () -> new CategoryNotFoundException(MessagesUtils.getMessage(MessageConstant.Category.NOT_FOUND));
 
-    private Supplier<AccountNotFoundException> handlerAccountCreatorNotFound() {
-        return () -> new AccountNotFoundException(MessagesUtils.getMessage(MessageConstant.Account.CREATOR_NOT_FOUND));
-    }
+    private final Supplier<AccountNotFoundException> handlerAccountCreatorNotFound = () -> new AccountNotFoundException(MessagesUtils.getMessage(MessageConstant.Account.CREATOR_NOT_FOUND));
 
-    private Supplier<AccountNotFoundException> handlerAccountNotFound() {
-        return () -> new AccountNotFoundException(MessagesUtils.getMessage(MessageConstant.Account.NOT_FOUND));
-    }
+    private final Supplier<AccountNotFoundException> handlerAccountNotFound = () -> new AccountNotFoundException(MessagesUtils.getMessage(MessageConstant.Account.NOT_FOUND));
 
-    private Supplier<ProductInvalidException> handlerProductInvalidException() {
-        return () -> new ProductInvalidException(MessagesUtils.getMessage(MessageConstant.Product.INVALID));
-    }
+    private final Supplier<ProductInvalidException> handlerProductInvalidException = () -> new ProductInvalidException(MessagesUtils.getMessage(MessageConstant.Product.INVALID));
 
     private PageImplResDto<ProductResDto> getProductResDtoPageImplResDto(Integer pageNumber, Integer pageSize, Specification<Product> search) {
         pageSize = Objects.isNull(pageSize) || (pageSize <= 1) ? 50 : pageSize;
@@ -467,5 +468,15 @@ public class ProductServiceImpl implements ProductService {
         return Optional.empty();
     }
 
-
+    private void clearCache() {
+        requireNonNull(cacheManager.getCache(ALL_PRODUCT_BY_ENTERPRISE)).clear();
+        requireNonNull(cacheManager.getCache(PRODUCT_FOR_COLLABORATOR)).clear();
+        requireNonNull(cacheManager.getCache(PRODUCT_BY_ID_FOR_ENTERPRISE)).clear();
+        requireNonNull(cacheManager.getCache(PRODUCT_BY_ID)).clear();
+        requireNonNull(cacheManager.getCache(LIST_PRODUCT_COUNTER_ORDER)).clear();
+        requireNonNull(cacheManager.getCache(LIST_PRODUCT_NO_REGISTERED_FOR_COLLABORATOR)).clear();
+        requireNonNull(cacheManager.getCache(LIST_PRODUCT_REGISTERED_FOR_COLLABORATOR)).clear();
+        requireNonNull(cacheManager.getCache(LIST_PRODUCT_FOR_COLLABORATOR)).clear();
+        requireNonNull(cacheManager.getCache(PRODUCT_ID_FOR_COLLABORATOR)).clear();
+    }
 }

@@ -270,7 +270,8 @@ public class CampaignServiceImpl implements CampaignService {
 //    private final Function<UUID, Supplier<RuntimeException>> notFoundProductRuntimeException =
 //            (id) -> () -> new RuntimeException("The prizes with id: " + id + " was not found!!!");
 //    @Async("threadPoolTaskExecutor")
-//    public void handlerAddPrize(Campaign entity, Set<CampaignUpdaterReqDto.PrizeInnerCampaignDto> prizes) {
+
+    //    public void handlerAddPrize(Campaign entity, Set<CampaignUpdaterReqDto.PrizeInnerCampaignDto> prizes) {
 //        prizes
 //                .stream()
 //                .map(CampaignUpdaterReqDto.PrizeInnerCampaignDto::getId)
@@ -381,7 +382,7 @@ public class CampaignServiceImpl implements CampaignService {
                 Prize prize = prizes.get(count++);
                 Account accountMapping = account.awardPrize(prize);
                 this.accountRepository.save(accountMapping);
-                sendNotificationFinishCampaign(campaign.getId(), account, prize,
+                sendNotificationFinishCampaign(campaign, account, prize,
                         collaboratorSelling.get(account.getId()));
             }
         }
@@ -505,8 +506,8 @@ public class CampaignServiceImpl implements CampaignService {
                 "Campaign Approval Result",
                 "The campaign was " + (status.equals(CampaignStatus.REJECTED) ? "reject" : "approval"),
                 "The Campaign",
-                campaign.getImage().get(0).getPath(),
-                token);
+                token,
+                campaign.getImage().get(0).getPath());
 
         Map<String, String> data = new HashMap<>();
 
@@ -515,20 +516,20 @@ public class CampaignServiceImpl implements CampaignService {
         this.firebaseMessageService.sendMessage(data, notification);
     }
 
-    private void sendNotificationFinishCampaign(UUID campaignId, Account account, Prize prize, Long kpi) {
+    private void sendNotificationFinishCampaign(Campaign campaign, Account account, Prize prize, Long kpi) {
         this.accountTokenRepository.getAccountTokenByAccountOptional(account.getId())
                 .map(Collection::stream)
                 .orElseGet(Stream::empty)
                 .findFirst()
                 .map(token -> new PushNotificationRequest(
                         "The Finished Campaign",
-                        "You receive the prize: " + prize.getName() + ",price: " + prize.getPrice() +
-                                " when completed camapaign with kpi: " + kpi,
+                        "You receive the prize: " + prize.getName() + ",price: " + prize.getPrice(),
                         "The award prize",
                         token.getRegistrationToken(),
-                        account.getAvatar().getPath()))
-                .ifPresent(fcmException(notification -> this.firebaseMessageService.sendMessage(Collections
-                        .singletonMap(MobileScreen.CAMPAIGN.getScreen(), campaignId.toString()), notification)));
+                        campaign.getImage().get(0).getPath()))
+                .ifPresent(fcmException(notification -> this.firebaseMessageService.sendMessage(
+                        Collections.singletonMap(MobileScreen.CAMPAIGN.getScreen(), campaign.getId().toString()),
+                        notification)));
     }
 
     private void sendNotificationEnterprise(Campaign campaign, Account enterprise, long quantity) {

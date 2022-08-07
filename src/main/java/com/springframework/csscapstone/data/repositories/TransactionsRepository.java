@@ -20,11 +20,10 @@ public interface TransactionsRepository
     @Query(value =
             "SELECT t " +
                     "FROM Transactions t " +
-                    "WHERE t " +
-                    "NOT IN(SELECT tmp FROM Transactions tmp WHERE tmp.transactionStatus = 'DISABLE') " +
-                    "AND t.transactionCreator.id = :id " +
+                    "WHERE t.transactionCreator.id = :id " +
                     "AND t.LastModifiedDate >= :startDate " +
-                    "AND t.LastModifiedDate <= :endDate ",
+                    "AND t.LastModifiedDate <= :endDate " +
+                    "AND NOT t.transactionStatus = :status",
             countQuery =
                     "SELECT count(t) " +
                             "FROM Transactions t " +

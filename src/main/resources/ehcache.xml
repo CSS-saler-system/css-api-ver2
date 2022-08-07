@@ -135,5 +135,105 @@
             <offheap unit="MB">10</offheap>
         </resources>
     </cache>
+    <cache alias="findAllProductByIdEnterprise">
+        <key-type>java.util.ArrayList</key-type>
+        <value-type>com.springframework.csscapstone.payload.response_dto.PageImplResDto</value-type>
+        <expiry>
+            <ttl>30</ttl>
+        </expiry>
+        <resources>
+            <heap>10</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+    </cache>
+    <cache alias="findAllProductForCollaborator">
+        <key-type>java.util.ArrayList</key-type>
+        <value-type>com.springframework.csscapstone.payload.response_dto.PageImplResDto</value-type>
+        <expiry>
+            <ttl>30</ttl>
+        </expiry>
+        <resources>
+            <heap>10</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+    </cache>
+    <cache alias="productByIdForEnterprise">
+        <key-type>java.util.UUID</key-type>
+        <value-type>java.util.List</value-type>
+        <expiry>
+            <ttl>30</ttl>
+        </expiry>
+        <resources>
+            <heap>10</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+    </cache>
+    <cache alias="productById">
+        <key-type>java.util.UUID</key-type>
+        <value-type>com.springframework.csscapstone.payload.response_dto.enterprise.ProductDetailEnterpriseDto
+        </value-type>
+        <expiry>
+            <ttl>30</ttl>
+        </expiry>
+        <resources>
+            <heap>10</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+    </cache>
+    <cache alias="getListProductWithCountOrder">
+        <key-type>java.util.ArrayList</key-type>
+        <value-type>com.springframework.csscapstone.payload.response_dto.PageImplResDto</value-type>
+        <expiry>
+            <ttl>30</ttl>
+        </expiry>
+        <resources>
+            <heap>10</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+    </cache>
+    <cache alias="productWithoutRegisteredStatus">
+        <key-type>java.util.ArrayList</key-type>
+        <value-type>com.springframework.csscapstone.payload.response_dto.PageImplResDto</value-type>
+        <expiry>
+            <ttl>30</ttl>
+        </expiry>
+        <resources>
+            <heap>10</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+    </cache>
+    <cache alias="productWithRegisteredStatus">
+        <key-type>java.util.ArrayList</key-type>
+        <value-type>com.springframework.csscapstone.payload.response_dto.PageImplResDto</value-type>
+        <expiry>
+            <ttl>30</ttl>
+        </expiry>
+        <resources>
+            <heap>10</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+    </cache>
+    <cache alias="listProductForCollaborator">
+        <key-type>java.util.ArrayList</key-type>
+        <value-type>com.springframework.csscapstone.payload.response_dto.PageImplResDto</value-type>
+        <expiry>
+            <ttl>30</ttl>
+        </expiry>
+        <resources>
+            <heap>10</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+    </cache>
+    <cache alias="productByIdForCollaborator">
+        <key-type>java.util.UUID</key-type>
+        <value-type>com.springframework.csscapstone.payload.response_dto.collaborator.ProductForCollabGetDetailResDto</value-type>
+        <expiry>
+            <ttl>30</ttl>
+        </expiry>
+        <resources>
+            <heap>10</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+    </cache>
 
 </config>
