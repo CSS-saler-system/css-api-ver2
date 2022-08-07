@@ -32,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+//import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -56,6 +57,15 @@ import static java.util.stream.Collectors.toMap;
 @RequiredArgsConstructor
 @PropertySource(value = "classpath:application-storage.properties")
 public class ProductServiceImpl implements ProductService {
+    private static final String ALL_PRODUCT_BY_ENTERPRISE = "findAllProductByIdEnterprise";
+    private static final String PRODUCT_FOR_COLLABORATOR = "findAllProductForCollaborator";
+    private static final String PRODUCT_BY_ID_FOR_ENTERPRISE = "productByIdForEnterprise";
+    private static final String PRODUCT_BY_ID = "productById";
+    private static final String LIST_PRODUCT_COUNTER_ORDER = "getListProductWithCountOrder";
+    private static final String LIST_PRODUCT_NO_REGISTERED_FOR_COLLABORATOR = "productWithoutRegisteredStatus";
+    private static final String LIST_PRODUCT_REGISTERED_FOR_COLLABORATOR = "productWithRegisteredStatus";
+    private static final String LIST_PRODUCT_FOR_COLLABORATOR = "listProductForCollaborator";
+    private static final String PRODUCT_ID_FOR_COLLABORATOR = "productByIdForCollaborator";
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
     @Value("${product_image_container}")
     private String productContainer;
@@ -84,6 +94,7 @@ public class ProductServiceImpl implements ProductService {
      * @param pageSize
      * @return
      */
+//    @Cacheable(key = "{#p0, #p1, #p2, #p3, #p4, #p5, #p6}", value = ALL_PRODUCT_BY_ENTERPRISE)
     @Override
     public PageImplResDto<ProductResDto> findAllProductByIdEnterprise(
             UUID idEnterprise, String name,
@@ -109,6 +120,7 @@ public class ProductServiceImpl implements ProductService {
 
     //TODO For Collaborator get all product
     @Override
+//    @Cacheable(key = "{#p0, #p1, #p2, #p3, #p4, #p5, #p6, #p7}", value = PRODUCT_FOR_COLLABORATOR)
     public PageImplResDto<ProductResDto> findAllProductForCollaborator(
             String name, String brand, Long inStock, Double minPrice, Double maxPrice,
             Double minPoint, Double maxPoint,
@@ -129,6 +141,7 @@ public class ProductServiceImpl implements ProductService {
      * todo find product by account <Completed></>
      */
     @Override
+//    @Cacheable(key = "{#p0}", value = PRODUCT_BY_ID_FOR_ENTERPRISE)
     public List<ProductResDto> findProductByIdEnterprise(UUID accountId) throws AccountNotFoundException {
         Account account = this.accountRepository.findById(accountId).orElseThrow(handlerAccountNotFound());
         return account.getProducts().stream()
@@ -137,6 +150,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+//    @Cacheable(key = "{#p0}", value = PRODUCT_BY_ID)
     public ProductDetailEnterpriseDto findById(UUID id) throws ProductNotFoundException {
         return productRepository.findById(id)
                 .filter(product -> !product.getProductStatus().equals(ProductStatus.DISABLED))
@@ -246,6 +260,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+//    @Cacheable(key = "{#p0, #p1, #p2, #p3, #p4}", value = LIST_PRODUCT_COUNTER_ORDER)
     public PageImplResDto<ProductCountOrderResDto> getListProductWithCountOrder(
             UUID id, LocalDate startDate, LocalDate endDate, Integer pageNumber, Integer pageSize) throws AccountNotFoundException {
         //throws exception if id not found
@@ -278,6 +293,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+//    @Cacheable(key = "{#p0, #p1, #p2, #p3}", value = LIST_PRODUCT_NO_REGISTERED_FOR_COLLABORATOR)
     public PageImplResDto<ProductForCollaboratorResDto> pageProductWithNoRegisteredByEnterpriseAndCollaborator(
             UUID collaboratorId, UUID enterpriseId, Integer pageNumber, Integer pageSize) {
         pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
@@ -297,6 +313,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+//    @Cacheable(key = "{#p0, #p1, #p2, #p3}", value = LIST_PRODUCT_REGISTERED_FOR_COLLABORATOR)
     public PageImplResDto<ProductForCollaboratorResDto> pageProductWithRegisteredByEnterpriseAndCollaborator(
             UUID collaboratorId, UUID enterpriseId, Integer pageNumber, Integer pageSize) {
         pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
@@ -313,6 +330,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+//    @Cacheable(key = "{#p0, #p1, #p2, #p3, #p4}", value = LIST_PRODUCT_FOR_COLLABORATOR)
     public PageImplResDto<ProductForModeratorResDto> pageAllForProductForModerator(
             String name, String nameEnterprise, String brand,
             Integer pageNumber, Integer pageSize) {
@@ -324,7 +342,8 @@ public class ProductServiceImpl implements ProductService {
                 .where(StringUtils.isBlank(name) ? null : ProductSpecifications.nameContains(name))
                 .and(StringUtils.isBlank(brand) ? null : ProductSpecifications.brandContains(brand))
                 .and(StringUtils.isBlank(nameEnterprise) ? null : ProductSpecifications.enterpriseName(nameEnterprise));
-        Page<Product> page = this.productRepository.findAll(search, PageRequest.of(pageNumber - 1, pageSize, Sort.by(Product_.NAME)));
+        Page<Product> page = this.productRepository.findAll(search,
+                PageRequest.of(pageNumber - 1, pageSize, Sort.by(Product_.NAME)));
         List<ProductForModeratorResDto> result = page.getContent()
                 .stream()
                 .map(ProductMapper.INSTANCE::productToProductForModeratorResDto)
@@ -334,6 +353,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+//    @Cacheable(key = "{#p0}", value = PRODUCT_ID_FOR_COLLABORATOR)
     public Optional<ProductForCollabGetDetailResDto> findByIdForCollaborator(UUID productId) {
         return this.productRepository.findById(productId)
                 .map(ProductMapper.INSTANCE::productToProductFoeCollabResDto);
@@ -399,7 +419,7 @@ public class ProductServiceImpl implements ProductService {
         pageNumber = Objects.isNull(pageNumber) || (pageNumber <= 1) ? 1 : pageNumber;
 
         Page<Product> page = this.productRepository
-                .findAll(search, PageRequest.of(pageNumber - 1, pageSize, Sort.by(Product_.NAME)));
+                .findAll(search, PageRequest.of(pageNumber - 1, pageSize, Sort.by(Product_.CREATE_DATE).descending()));
 
         List<ProductResDto> data = page.stream()
                 .map(MapperDTO.INSTANCE::toProductResDto).collect(toList());

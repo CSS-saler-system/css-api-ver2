@@ -45,8 +45,11 @@ public class FirebaseMessageService {
             throws JsonProcessingException, ExecutionException, InterruptedException {
         //get message from preconfigured with data
         Message message = getPreconfiguredMessageWithData(data, request);
+
         System.out.println("before:  " + message);
+
         objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+
         String jsonOutput = objectMapper
                 .writerWithDefaultPrettyPrinter()
                 .writeValueAsString(message);
@@ -91,6 +94,7 @@ public class FirebaseMessageService {
                 .setNotification(Notification.builder()
                         .setTitle(request.getTitle())
                         .setBody(request.getMessage())
+                        .setImage(request.getPathImage())
                         .build());
     }
 

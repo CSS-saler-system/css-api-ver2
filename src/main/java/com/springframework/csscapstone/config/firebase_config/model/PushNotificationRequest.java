@@ -10,4 +10,7 @@ public class PushNotificationRequest {
 
     //token use for what registration token
     private final String token;
+
+    private final String pathImage;
+
 }

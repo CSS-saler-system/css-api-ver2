@@ -8,8 +8,11 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.GenericGenerator;
 import org.mapstruct.Named;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,6 +26,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @NoArgsConstructor
 @Entity
 @Table(name = "products")
+@EntityListeners(AuditingEntityListener.class)
 public class Product {
     @Id
     @GeneratedValue(strategy = IDENTITY, generator = "UUID")
@@ -63,6 +67,9 @@ public class Product {
 
     @ManyToMany(mappedBy = "products")
     private Set<Campaign> campaign = new HashSet<>();
+
+    @CreatedDate
+    private LocalDateTime createDate;
 
     public Product(String name, String brand,
                    String shortDescription,
