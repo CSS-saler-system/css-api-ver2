@@ -115,7 +115,7 @@
     </cache>
     <cache alias="getProfile">
         <key-type>java.util.UUID</key-type>
-        <value-type>java.util.Optional</value-type>
+        <value-type>com.springframework.csscapstone.payload.response_dto.admin.AccountResDto</value-type>
         <expiry>
             <ttl>30</ttl>
         </expiry>
@@ -316,7 +316,7 @@
             <offheap unit="MB">10</offheap>
         </resources>
     </cache>
-  <cache alias="getRevenue">
+    <cache alias="getRevenue">
         <key-type>java.util.UUID</key-type>
         <value-type>java.util.List</value-type>
         <expiry>
