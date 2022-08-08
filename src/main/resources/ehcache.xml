@@ -262,8 +262,7 @@
     </cache>
     <cache alias="findCampaign">
         <key-type>java.util.ArrayList</key-type>
-        <value-type>com.springframework.csscapstone.payload.response_dto.collaborator.ProductForCollabGetDetailResDto
-        </value-type>
+        <value-type>com.springframework.csscapstone.payload.response_dto.PageImplResDto</value-type>
         <expiry>
             <ttl>30</ttl>
         </expiry>
@@ -297,8 +296,7 @@
     </cache>
     <cache alias="pageOrderOfCollaborator">
         <key-type>java.util.ArrayList</key-type>
-        <value-type>com.springframework.csscapstone.payload.response_dto.enterprise.CampaignDetailDto
-        </value-type>
+        <value-type>com.springframework.csscapstone.payload.response_dto.PageImplResDto</value-type>
         <expiry>
             <ttl>30</ttl>
         </expiry>

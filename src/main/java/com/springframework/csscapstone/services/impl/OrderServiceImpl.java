@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.CacheManager;
 //import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -87,7 +88,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-//    @Cacheable(key = "#p0", value = "getOrderResDtoById")
+    @Cacheable(key = "#p0", value = "getOrderResDtoById")
     public OrderResDto getOrderResDtoById(UUID id) {
         return this.orderRepository.findById(id)
                 .filter(order -> !order.getStatus().equals(OrderStatus.DISABLED))
@@ -96,7 +97,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-//    @Cacheable(key = "{#p0, #p1, #p2, #p3}", value = "pageOrderOfCollaborator")
+    @Cacheable(key = "{#p0, #p1, #p2, #p3}", value = "pageOrderOfCollaborator")
     public PageImplResDto<OrderResDto> pageOrderOfCollaborator(
             UUID idCollaborator, OrderStatus orderStatus, Integer pageNumber, Integer pageSize) {
 
@@ -186,7 +187,7 @@ public class OrderServiceImpl implements OrderService {
                 .addOrderDetails(oderDetails)
                 .addAccount(account)
                 .addCustomer(customer);
-
+        clearCache();
         return this.orderRepository.save(order).getId();
     }
 
@@ -210,7 +211,7 @@ public class OrderServiceImpl implements OrderService {
                 .setDeliveryPhone(dto.getDeliveryPhone())
                 .setCustomer(customer);
         Order savedOrder = this.orderRepository.save(waiting);
-
+        clearCache();
         return savedOrder.getId();
     }
 
@@ -223,16 +224,19 @@ public class OrderServiceImpl implements OrderService {
 //                .filter(_order -> _order.getStatus().equals(OrderStatus.WAITING))
                 .orElseThrow(notFoundOrderWithIdException.apply(id));
         this.orderRepository.save(order.setStatus(OrderStatus.DISABLED));
-
+        clearCache();
     }
 
     @Override
     @Transactional
-////    @Cacheable(key = "{#p0, #p1}", value = "updateStatusOrder")
+//    @Cacheable(key = "{#p0, #p1}", value = "updateStatusOrder")
     public Optional<UUID> updateStatusOrder(UUID id, OrderStatus status) {
         Order order = orderRepository.findById(id).orElseThrow(handlerOrderNotFound);
         order.setStatus(status);
         this.orderRepository.save(order);
+
+        clearCache();
+
         return Optional.of(order.getId());
     }
 
@@ -247,12 +251,10 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public void completedOrder(UUID orderId) {
 
-        LOGGER.info("I'm here xxxxxxxxxxxxxxxxxxxxxxxx");
         //check order valid
         Order order = this.orderRepository.findById(orderId)
                 .filter(_order -> _order.getStatus() != OrderStatus.FINISHED)
                 .orElseThrow(handlerOrderNotFound);
-        LOGGER.info("I'm here xxxxxxxxxxxxxxxxxxxx");
 
         //get collaborator who create order
         Account collaborator = order.getAccount();
@@ -263,25 +265,21 @@ public class OrderServiceImpl implements OrderService {
 //                .map(OrderDetail::getTotalPointProduct)
 //                .mapToDouble(Double::doubleValue)
 //                .sum();
-
         //get total point in order details
+
         Double totalPoint = order.getOrderDetails()
                 .stream()
                 .map(OrderDetail::getTotalPointProduct)
                 .reduce(priceLatch, Double::sum);
-        LOGGER.info("I'm here xxxxxxxxxxxxxxxxxxxx");
 
         //todo find enterprise:
         List<Account> enterprises = order.getOrderDetails()
                 .stream()
                 .map(detail -> detail.getProduct().getAccount())
                 .distinct().collect(Collectors.toList());
-
-        LOGGER.info("I'm here xxxxxxxxxxxx");
         if (enterprises.size() > 1) {
             throw new RuntimeException("Order wrong with 2 enterprise!!!");
         }
-        LOGGER.info("I'm here xxxxxxx");
 
         //todo point of enterprise must be large enough
         Account enterprise = enterprises.get(0);
@@ -293,7 +291,6 @@ public class OrderServiceImpl implements OrderService {
             this.accountRepository.save(collaborator);
             this.accountRepository.save(_enterprise);
         });
-        LOGGER.info("I'm here");
 
         //todo send notification
         this.orderRepository.save(order.setStatus(OrderStatus.FINISHED));
@@ -303,7 +300,6 @@ public class OrderServiceImpl implements OrderService {
          * Customer name, enterprise, datetime order, total point inscrease
          *
          */
-        LOGGER.info("I'm here xxx");
         //todo get account token:
         accountTokenRepository.getAccountTokenByAccountOptional(order.getAccount().getId())
                 .ifPresent(fcmException(token ->  sendNotificationToCollaborator(
@@ -311,7 +307,7 @@ public class OrderServiceImpl implements OrderService {
                         enterprise.getAvatar().getPath(),
                         order.getId(), order.getCreateDate(), order.getTotalPointSale(),
                         token.get(0).getRegistrationToken())));
-
+        clearCache();
     }
 
     private void sendNotificationToCollaborator(
@@ -329,7 +325,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-//    @Cacheable(key = "{#p0, #p1, #p2}", value = "getOrderResDtoByEnterprise")
+    @Cacheable(key = "{#p0, #p1, #p2}", value = "getOrderResDtoByEnterprise")
     public PageImplResDto<OrderEnterpriseManageResDto> getOrderResDtoByEnterprise(
             UUID enterpriseId, Integer pageNumber, Integer pageSize) {
 
@@ -352,7 +348,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-//    @Cacheable(key = "#p0", value = "getRevenue")
+    @Cacheable(key = "#p0", value = "getRevenue")
     public Optional<List<EnterpriseRevenueDto>> getRevenue(UUID enterpriseId) {
         List<EnterpriseRevenueDto> revenueDtos = this.orderRepository
                 .getRevenueByEnterprise(enterpriseId)
