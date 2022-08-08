@@ -59,7 +59,7 @@ public class OrderServiceImpl implements OrderService {
     private final int DEFAULT_PAGE_NUMBER = 1;
     private final int SHIFT_TO_ACTUAL_PAGE = 1;
     private final int DEFAULT_PAGE_SIZE = 10;
-    private Logger LOGGER = LoggerFactory.getLogger(getClass());
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
     private final Supplier<RuntimeException> notFoundOrderException =
             () -> new RuntimeException("The Order not found or in processing so not allow to modified");
     private final Function<UUID, Supplier<RuntimeException>> notFoundOrderWithIdException =
@@ -162,8 +162,8 @@ public class OrderServiceImpl implements OrderService {
                         entry.getKey().getPrice(),
                         entry.getKey().getPointSale(),
                         entry.getValue(),
-                        entry.getValue() * entry.getKey().getPointSale(),
-                        entry.getValue() * entry.getKey().getPrice())
+                        Math.ceil(entry.getValue() * entry.getKey().getPointSale()),
+                        Math.ceil(entry.getValue() * entry.getKey().getPrice()))
                         .addProductToOrderDetail(entry.getKey()))
                 .peek(this.orderDetailRepository::save)
                 .collect(Collectors.toList());
