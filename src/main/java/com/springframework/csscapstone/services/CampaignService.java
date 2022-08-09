@@ -2,6 +2,7 @@ package com.springframework.csscapstone.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.springframework.csscapstone.data.status.CampaignStatus;
+import com.springframework.csscapstone.payload.basic.CampaignCompletedDetailDto;
 import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.CampaignUpdaterReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
@@ -60,4 +61,7 @@ public interface CampaignService {
             throws ExecutionException, JsonProcessingException, InterruptedException;
 
     void sentCampaign(UUID campaignId);
+
+    List<CampaignCompletedDetailDto> getInformationCompletedCampaign(UUID campaignId);
+
 }

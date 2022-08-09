@@ -72,7 +72,7 @@ public class EnterpriseCampaignController {
             @RequestParam(value = "pageSize", required = false) Integer pageSize
     ) {
         PageImplResDto<CampaignResDto> campaign = campaignService.findCampaign(
-                enterpriseId, campaignName, startDate , endDate, minKpi, maxKpi,status, pageNumber, pageSize);
+                enterpriseId, campaignName, startDate, endDate, minKpi, maxKpi, status, pageNumber, pageSize);
         return ResponseEntity.ok(campaign);
     }
 
@@ -103,6 +103,11 @@ public class EnterpriseCampaignController {
     public ResponseEntity<?> getCampaignById(@PathVariable("campaignId") UUID campaignId) {
         CampaignDetailDto result = this.campaignService.findById(campaignId);
         return ok(result);
+    }
+
+    @GetMapping(V2_CAMPAIGN_GET + "/detail/{campaignId}")
+    public ResponseEntity<?> getDetailCamapaignDetail(@PathVariable("campaignId") UUID campaignId) {
+        return ok(this.campaignService.getInformationCompletedCampaign(campaignId));
     }
 
     @PutMapping(V2_CAMPAIGN_SENT + "/{campaignId}")

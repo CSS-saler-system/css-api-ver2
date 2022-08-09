@@ -9,6 +9,7 @@ import com.springframework.csscapstone.data.dao.specifications.CampaignSpecifica
 import com.springframework.csscapstone.data.domain.*;
 import com.springframework.csscapstone.data.repositories.*;
 import com.springframework.csscapstone.data.status.CampaignStatus;
+import com.springframework.csscapstone.payload.basic.CampaignCompletedDetailDto;
 import com.springframework.csscapstone.payload.request_dto.admin.CampaignCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.CampaignUpdaterReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
@@ -41,7 +42,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -351,6 +351,7 @@ public class CampaignServiceImpl implements CampaignService {
         //get sort collaborator and Long by OrderRepository
         Map<UUID, Long> collaboratorSelling = new HashMap<>();
         Account enterprise = campaign.getAccount();
+
         //get product in campaign
         List<UUID> productIds = campaign.getProducts().stream()
                 .map(Product::getId)
@@ -415,7 +416,7 @@ public class CampaignServiceImpl implements CampaignService {
     @Transactional
     @Override
     public void rejectCampaignInDate() {
-
+//todo comment to test
 //         Consumer<Campaign> sendNotification = camp -> this.accountTokenRepository
 //                 .getAccountTokenByAccountOptional(camp.getAccount().getId())
 //                 .map(Collection::stream)
@@ -449,7 +450,7 @@ public class CampaignServiceImpl implements CampaignService {
                 .map(camp -> camp.setCampaignStatus(status))
                 .map(this.campaignRepository::save)
                 .orElseThrow(campaignNotFoundException);
-
+//todo comment to test
 //         AccountToken token = this.accountTokenRepository
 //                 .getAccountTokenByAccountOptional(campaign.getAccount().getId())
 //                 .map(Collection::stream)
@@ -458,7 +459,7 @@ public class CampaignServiceImpl implements CampaignService {
 //                 .orElseThrow(noTokenException);
 //         System.out.println(token);
         clearCache();
-        //todo send notification
+
 //        sendNotificationSentCampaign(campaign, status, token.getRegistrationToken());
 
     }
@@ -472,6 +473,69 @@ public class CampaignServiceImpl implements CampaignService {
                 .map(this.campaignRepository::save)
                 .orElseThrow(notFoundException);
         clearCache();
+    }
+
+    @Override
+    public List<CampaignCompletedDetailDto>  getInformationCompletedCampaign(UUID campaignId) {
+
+        Campaign campaign = this.campaignRepository.findById(campaignId)
+                .orElseThrow(() -> new RuntimeException("No Campaign was found!!!"));
+
+        List<CampaignCompletedDetailDto> campaignCompletedDetailDtos = new ArrayList<>();
+
+        //get sort collaborator and Long by OrderRepository
+        Map<UUID, Long> collaboratorSelling = new HashMap<>();
+
+        //get product in campaign
+        List<UUID> productIds = campaign.getProducts().stream()
+                .map(Product::getId)
+                .collect(Collectors.toList());
+
+        //get all [prize] with desc price:
+        List<Prize> prizes = campaign.getPrizes().stream()
+                .sorted(Comparator.comparing(Prize::getPrice).reversed())
+                .collect(Collectors.toList());
+
+        for (UUID productId : productIds) {
+            Map<UUID, Long> _tmp = this.orderRepository
+                    .getCollaboratorAndTotalQuantitySold(productId).stream()
+                    .collect(Collectors.toMap(
+                            tuple -> tuple.get(OrderRepository.COLLABORATOR_IDS, UUID.class),
+                            tuple -> tuple.get(OrderRepository.TOTAL_QUANTITY, Long.class)));
+
+            _tmp.forEach((key, value) -> collaboratorSelling
+                    .compute(key, (k, v) -> Objects.isNull(v) ? value : v + value));
+        }
+
+        //filter collaborators have enough standard: ASC
+        List<Account> accounts = collaboratorSelling.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .filter(_entry -> _entry.getValue() >= campaign.getKpiSaleProduct())
+                //todo grt list collaborator by prizes size
+                .limit(prizes.size())
+                //find account by the key in collaborator map
+                .flatMap(entry -> this.accountRepository
+                        .findById(entry.getKey())
+                        .map(Stream::of)
+                        .orElseGet(Stream::empty))
+                .collect(Collectors.toList());
+
+        int count = 0;
+
+        for (Account account : accounts) {
+            LOGGER.info("count prize: {}", count);
+            if (count < prizes.size()) {
+
+                Prize prize = prizes.get(count++);
+
+                CampaignCompletedDetailDto campaignCompletedDetailDto = new CampaignCompletedDetailDto(
+                        account.getName(), account.getPhone(), prize.getName(), prize.getPrice());
+
+                campaignCompletedDetailDtos.add(campaignCompletedDetailDto);
+
+            }
+        }
+        return campaignCompletedDetailDtos;
     }
 
     private PageImplResDto<CampaignResDto> getCampaignResDtoPageImplResDto(
