@@ -416,21 +416,21 @@ public class CampaignServiceImpl implements CampaignService {
     @Override
     public void rejectCampaignInDate() {
 
-        Consumer<Campaign> sendNotification = camp -> this.accountTokenRepository
-                .getAccountTokenByAccountOptional(camp.getAccount().getId())
-                .map(Collection::stream)
-                .orElseGet(Stream::empty)
-                .findFirst()
-                .ifPresent(
-                        fcmException(token -> sendNotificationSentCampaign(
-                                camp, CampaignStatus.REJECTED,
-                                token.getRegistrationToken())));
+//         Consumer<Campaign> sendNotification = camp -> this.accountTokenRepository
+//                 .getAccountTokenByAccountOptional(camp.getAccount().getId())
+//                 .map(Collection::stream)
+//                 .orElseGet(Stream::empty)
+//                 .findFirst()
+//                 .ifPresent(
+//                         fcmException(token -> sendNotificationSentCampaign(
+//                                 camp, CampaignStatus.REJECTED,
+//                                 token.getRegistrationToken())));
 
         this.campaignRepository
                 //query sent filter
                 .getAllCampaignInDate().stream()
                 .map(camp -> camp.setCampaignStatus(CampaignStatus.REJECTED))
-                .peek(sendNotification)
+//                 .peek(sendNotification)
                 .forEach(this.campaignRepository::save);
         clearCache();
     }
@@ -450,13 +450,13 @@ public class CampaignServiceImpl implements CampaignService {
                 .map(this.campaignRepository::save)
                 .orElseThrow(campaignNotFoundException);
 
-        AccountToken token = this.accountTokenRepository
-                .getAccountTokenByAccountOptional(campaign.getAccount().getId())
-                .map(Collection::stream)
-                .orElseGet(Stream::empty)
-                .findFirst()
-                .orElseThrow(noTokenException);
-        System.out.println(token);
+//         AccountToken token = this.accountTokenRepository
+//                 .getAccountTokenByAccountOptional(campaign.getAccount().getId())
+//                 .map(Collection::stream)
+//                 .orElseGet(Stream::empty)
+//                 .findFirst()
+//                 .orElseThrow(noTokenException);
+//         System.out.println(token);
         clearCache();
         //todo send notification
 //        sendNotificationSentCampaign(campaign, status, token.getRegistrationToken());
