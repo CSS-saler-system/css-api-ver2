@@ -12,34 +12,27 @@ import java.util.UUID;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 public class FeedBack {
-
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(nullable = false, columnDefinition = "uniqueIdentifier")
     private UUID id;
-
     @Lob
     private String feedReply;
-
     @Lob
     private String feedContent;
-
     @ManyToOne
     @JoinColumn(name = "approver_id")
     private Account approver;
-
     @ManyToOne
     @JoinColumn(name = "creator_id")
     private Account creator;
-
     @ManyToOne
     @JoinColumn(name = "campaign_id")
     private Campaign campaign;
 
     @CreatedDate
     private LocalDateTime createDate;
-
     @LastModifiedDate
     private LocalDateTime replyDate;
 

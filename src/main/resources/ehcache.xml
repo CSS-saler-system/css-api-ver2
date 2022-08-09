@@ -24,7 +24,7 @@
         </resources>
     </cache>
     <cache alias="requestById">
-        <key-type>java.util.ArrayList</key-type>
+        <key-type>java.util.UUID</key-type>
         <value-type>com.springframework.csscapstone.payload.response_dto.PageImplResDto</value-type>
         <expiry>
             <ttl>30</ttl>
@@ -170,8 +170,7 @@
     </cache>
     <cache alias="productById">
         <key-type>java.util.UUID</key-type>
-        <value-type>com.springframework.csscapstone.payload.response_dto.enterprise.ProductDetailEnterpriseDto
-        </value-type>
+        <value-type>com.springframework.csscapstone.payload.response_dto.enterprise.ProductDetailEnterpriseDto</value-type>
         <expiry>
             <ttl>30</ttl>
         </expiry>
@@ -226,8 +225,7 @@
     </cache>
     <cache alias="productByIdForCollaborator">
         <key-type>java.util.UUID</key-type>
-        <value-type>com.springframework.csscapstone.payload.response_dto.collaborator.ProductForCollabGetDetailResDto
-        </value-type>
+        <value-type>com.springframework.csscapstone.payload.response_dto.collaborator.ProductForCollabGetDetailResDto</value-type>
         <expiry>
             <ttl>30</ttl>
         </expiry>
@@ -238,8 +236,7 @@
     </cache>
     <cache alias="findCampaignWithoutEnterpriseId">
         <key-type>java.util.ArrayList</key-type>
-        <value-type>com.springframework.csscapstone.payload.response_dto.collaborator.ProductForCollabGetDetailResDto
-        </value-type>
+        <value-type>com.springframework.csscapstone.payload.response_dto.collaborator.ProductForCollabGetDetailResDto</value-type>
         <expiry>
             <ttl>30</ttl>
         </expiry>
@@ -272,8 +269,7 @@
     </cache>
     <cache alias="campaignFindById">
         <key-type>java.util.UUID</key-type>
-        <value-type>com.springframework.csscapstone.payload.response_dto.enterprise.CampaignDetailDto
-        </value-type>
+        <value-type>com.springframework.csscapstone.payload.response_dto.enterprise.CampaignDetailDto</value-type>
         <expiry>
             <ttl>30</ttl>
         </expiry>
@@ -306,8 +302,7 @@
     </cache>
     <cache alias="getOrderResDtoByEnterprise">
         <key-type>java.util.ArrayList</key-type>
-        <value-type>com.springframework.csscapstone.payload.response_dto.enterprise.CampaignDetailDto
-        </value-type>
+        <value-type>com.springframework.csscapstone.payload.response_dto.enterprise.CampaignDetailDto</value-type>
         <expiry>
             <ttl>30</ttl>
         </expiry>
@@ -327,5 +322,4 @@
             <offheap unit="MB">10</offheap>
         </resources>
     </cache>
-
 </config>

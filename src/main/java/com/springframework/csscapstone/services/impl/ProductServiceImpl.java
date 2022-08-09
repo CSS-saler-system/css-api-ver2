@@ -98,8 +98,8 @@ public class ProductServiceImpl implements ProductService {
      * @param pageSize
      * @return
      */
-    @Cacheable(key = "{#p0, #p1, #p2, #p3, #p4, #p5, #p6}", value = ALL_PRODUCT_BY_ENTERPRISE)
     @Override
+    @Cacheable(key = "{#p0, #p1, #p2, #p3, #p4, #p5, #p6}", value = ALL_PRODUCT_BY_ENTERPRISE)
     public PageImplResDto<ProductResDto> findAllProductByIdEnterprise(
             UUID idEnterprise, String name,
             String brand, Double minPrice, Double maxPrice,
@@ -126,7 +126,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Cacheable(key = "{#p0, #p1, #p2, #p3, #p4, #p5, #p6, #p7}", value = PRODUCT_FOR_COLLABORATOR)
     public PageImplResDto<ProductResDto> findAllProductForCollaborator(
-            String name, String brand, Long inStock, Double minPrice, Double maxPrice,
+            String name, String brand, Long inStock,
+            Double minPrice, Double maxPrice,
             Double minPoint, Double maxPoint,
             Integer pageNumber, Integer pageSize) {
 

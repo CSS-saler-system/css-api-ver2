@@ -461,9 +461,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     /**
-     * create account<BR>
-     * </>
-     *
+     * create account
      * @param enterprise
      * @return
      */
@@ -502,7 +500,6 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * todo create AccountImage
-     *
      * @param avatars
      * @param licenses
      * @param idCards
