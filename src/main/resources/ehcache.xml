@@ -236,7 +236,7 @@
     </cache>
     <cache alias="findCampaignWithoutEnterpriseId">
         <key-type>java.util.ArrayList</key-type>
-        <value-type>com.springframework.csscapstone.payload.response_dto.collaborator.ProductForCollabGetDetailResDto</value-type>
+        <value-type>com.springframework.csscapstone.payload.response_dto.PageImplResDto</value-type>
         <expiry>
             <ttl>30</ttl>
         </expiry>
