@@ -4,7 +4,6 @@ import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobContainerClientBuilder;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,10 +47,12 @@ public class BlobUploadImages {
      */
     @Async("threadPoolTaskExecutor")
     public void azureAccountStorageHandler(String key, MultipartFile value) {
+
         BlobContainerClient container = new BlobContainerClientBuilder()
                 .containerName(accountContainer)
                 .connectionString(connectionString)
                 .buildClient();
+
         BlobClient blobClient = container.getBlobClient(key);
         CompletableFuture.runAsync(wrapVoid(() -> blobClient.upload(value.getInputStream(), value.getSize(), true)));
     }

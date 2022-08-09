@@ -8,8 +8,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Getter
 @Setter
@@ -34,6 +33,9 @@ public class AccountToken {
     @JoinColumn(name = "account_id")
     @ToString.Exclude
     private Account account;
+
+    @OneToMany(mappedBy = "accountToken")
+    private List<Notification> notificationList = new ArrayList<>();
 
     public AccountToken(String registrationToken) {
         this.registrationToken = registrationToken;

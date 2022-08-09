@@ -34,7 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
@@ -483,12 +482,15 @@ public class AccountServiceImpl implements AccountService {
 
     @Transactional
     @Override
-    public UUID updateCollaboratorProfiles(UUID collaboratorId, AccountCollaboratorUpdaterDto accountUpdaterJsonDto, MultipartFile avatar) {
+    public UUID updateCollaboratorProfiles(
+            UUID collaboratorId, AccountCollaboratorUpdaterDto accountUpdaterJsonDto, MultipartFile avatar) {
+
         Account collaborator = this.accountRepository.findById(collaboratorId)
                 .filter(acc -> acc.getRole().getName().equals("Collaborator"))
                 .orElseThrow(() -> new RuntimeException("The collaborator with id: " + collaboratorId + " was not found"));
 
         Account account = AccountMapper.INSTANCE.updateAccountFromAccountCollaboratorUpdaterDto(accountUpdaterJsonDto, collaborator);
+
         if (nonNull(avatar)) {
             Optional<AccountImage> accountImage = this.saveAccountImageEntity(avatar, collaboratorId, AVATAR);
             accountImage.ifPresent(account::addImage);
