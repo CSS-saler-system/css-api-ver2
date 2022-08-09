@@ -302,7 +302,7 @@
     </cache>
     <cache alias="getOrderResDtoByEnterprise">
         <key-type>java.util.ArrayList</key-type>
-        <value-type>com.springframework.csscapstone.payload.response_dto.enterprise.CampaignDetailDto</value-type>
+        <value-type>com.springframework.csscapstone.payload.response_dto.PageImplResDto</value-type>
         <expiry>
             <ttl>30</ttl>
         </expiry>
