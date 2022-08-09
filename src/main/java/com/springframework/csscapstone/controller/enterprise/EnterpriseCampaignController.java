@@ -86,14 +86,14 @@ public class EnterpriseCampaignController {
         CampaignUpdaterReqDto dto = objectMapper
                 .readValue(campaign, CampaignUpdaterReqDto.class);
 
-        //campaignNotFoundException
-        if (dto.getKpiSaleProduct() < 0) throw new RuntimeException("The KPI must be greater than 0");
-
-        if (dto.getStartDate().isBefore(LocalDateTime.now().plusDays(3)))
-            throw new RuntimeException("The start day must be after 3 days from now");
-
-        if (dto.getStartDate().isAfter(dto.getEndDate()))
-            throw new RuntimeException("The start, end date is invalid");
+//        //campaignNotFoundException
+//        if (dto.getKpiSaleProduct() < 0) throw new RuntimeException("The KPI must be greater than 0");
+//
+//        if (dto.getStartDate().isBefore(LocalDateTime.now().plusDays(3)))
+//            throw new RuntimeException("The start day must be after 3 days from now");
+//
+//        if (dto.getStartDate().isAfter(dto.getEndDate()))
+//            throw new RuntimeException("The start, end date is invalid");
 
         UUID campaignUUID = campaignService.updateCampaign(campaignId, dto, images);
         return ok(campaignUUID);
