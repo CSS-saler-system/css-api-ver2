@@ -241,7 +241,9 @@ public class TransactionServicesImpl implements TransactionServices {
         pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
 
         Page<Transactions> page = this.transactionsRepository
-                .findAllByPendingStatus(PageRequest.of(pageNumber - 1, pageSize,  Sort.by(Transactions_.CREATE_TRANSACTION_DATE).descending()));
+                .findAllByPendingStatus(PageRequest.of(pageNumber - 1, pageSize,
+                        Sort.by(Transactions_.CREATE_TRANSACTION_DATE).descending()));
+
         List<TransactionsDto> pageRes = page.getContent()
                 .stream().map(MapperDTO.INSTANCE::toTransactionsResDto)
                 .collect(Collectors.toList());

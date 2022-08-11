@@ -38,7 +38,7 @@ public interface TransactionsRepository
             @Param("status") TransactionStatus status,
             Pageable pageable);
 
-    @Query("SELECT t FROM Transactions t where t.transactionStatus = 'CREATED'")
+    @Query("SELECT t FROM Transactions t where not t.transactionStatus = 'DISABLED'")
     Page<Transactions> findAllByPendingStatus(Pageable pageable);
 
 }
