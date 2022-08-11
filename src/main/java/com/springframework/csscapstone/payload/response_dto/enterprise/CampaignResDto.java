@@ -20,6 +20,12 @@ import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 public class CampaignResDto implements Serializable {
     private final UUID campaignId;
     private final String name;
+
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private final LocalDateTime createDate;
+
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -38,11 +44,12 @@ public class CampaignResDto implements Serializable {
     public CampaignResDto(
             @JsonProperty("campaignId") UUID campaignId,
             @JsonProperty("name") String name,
-            @JsonProperty("startDate") LocalDateTime startDate,
+            LocalDateTime createDate, @JsonProperty("startDate") LocalDateTime startDate,
             @JsonProperty("endDate") LocalDateTime endDate,
             @JsonProperty("campaignStatus") CampaignStatus campaignStatus, String campaignDescription, String campaignShortDescription) {
         this.campaignId = campaignId;
         this.name = name;
+        this.createDate = createDate;
         this.startDate = startDate;
         this.endDate = endDate;
         this.campaignStatus = campaignStatus;
