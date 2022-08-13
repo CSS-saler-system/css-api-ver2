@@ -42,7 +42,8 @@ public class CollaboratorRequestController {
             @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
             @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         PageImplResDto<RequestSellingProductResDto> allRequestByIdCreator =
-                this.requestSellingProductService
+                this
+                        .requestSellingProductService
                         .getAllRequestByIdCreatorByCollaborator(idCollaborator, status, pageNumber, pageSize);
         return ok(allRequestByIdCreator);
     }

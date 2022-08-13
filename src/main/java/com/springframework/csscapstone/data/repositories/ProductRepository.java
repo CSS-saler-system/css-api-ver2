@@ -1,12 +1,9 @@
     package com.springframework.csscapstone.data.repositories;
 
-    import com.springframework.csscapstone.data.domain.Account;
     import com.springframework.csscapstone.data.domain.Category;
     import com.springframework.csscapstone.data.domain.Product;
-    import org.hibernate.annotations.Parameter;
     import org.springframework.data.domain.Page;
     import org.springframework.data.domain.Pageable;
-    import org.springframework.data.jpa.domain.Specification;
     import org.springframework.data.jpa.repository.JpaRepository;
     import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
     import org.springframework.data.jpa.repository.Query;
@@ -67,7 +64,9 @@
                         "AND p NOT IN (SELECT r.product " +
                         "                 FROM RequestSellingProduct r " +
                         "                 WHERE r.account.id = :collaboratorId " +
-                        "                 AND r.requestStatus = 'REGISTERED')")
+                        "                 AND r.requestStatus = 'REGISTERED' " +
+                        "                 AND r.requestStatus = 'CREATED'" +
+                        ")")
         Page<Product> getAllProductNotRegister(
                 @Param("collaboratorId") UUID collaboratorId,
                 @Param("enterpriseId") UUID enterpriseId,
