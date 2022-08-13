@@ -12,26 +12,28 @@ import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 
 @Data
 public class NotificationBasicDto implements Serializable {
-    private final UUID id;
     private final String title;
     private final String message;
     private final LocalDateTime sendDate;
     private final String pathImage;
+
+    private final String topic;
+
     private final AccountTokenDto accountToken;
 
     @JsonCreator(mode = PROPERTIES)
     public NotificationBasicDto(
-            @JsonProperty("id") UUID id,
             @JsonProperty("title") String title,
             @JsonProperty("message") String message,
             @JsonProperty("sendDate") LocalDateTime sendDate,
             @JsonProperty("pathImage") String pathImage,
+            @JsonProperty("topic") String topic,
             @JsonProperty("accountToken") AccountTokenDto accountToken) {
-        this.id = id;
         this.title = title;
         this.message = message;
         this.sendDate = sendDate;
         this.pathImage = pathImage;
+        this.topic = topic;
         this.accountToken = accountToken;
     }
 

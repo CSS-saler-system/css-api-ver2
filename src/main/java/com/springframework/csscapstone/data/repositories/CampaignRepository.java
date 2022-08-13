@@ -8,7 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Tuple;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -31,4 +33,15 @@ public interface CampaignRepository extends JpaRepository<Campaign, UUID>, JpaSp
 //            "WHERE _camp.campaignStatus = 'APPROVAL' " +
 //            "ORDER BY _camp.startDate DESC")
 //    Page<Campaign> findCampaignForCollaborator();
+//
+//    @Query("SELECT c FROM Campaign c JOIN c.prizes p WHERE c.")
+//    List<Tuple> getCamapaignFetchJoinAccountAndPrizeSortByPrice();
+//
+
+    @Query("SELECT a FROM Campaign c " +
+            "JOIN c.prizes p " +
+            "JOIN p.recipients a " +
+            "WHERE c.id =:campaignId ")
+    List<Map<UUID, Long>> getAccountInClosedCampaign(@Param("campaignId") UUID campaignId);
+
 }

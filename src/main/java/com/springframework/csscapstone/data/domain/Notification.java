@@ -20,21 +20,14 @@ public class Notification {
 
     @Id
     @GeneratedValue(generator = "generator_id")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
-
     private String title;
-
     private String message;
 
     @CreatedDate
     private LocalDateTime sendDate;
-
-//    @ElementCollection
     private String pathImage;
-
     private String topic;
 
     @ManyToOne

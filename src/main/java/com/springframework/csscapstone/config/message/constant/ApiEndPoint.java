@@ -249,4 +249,22 @@ public class ApiEndPoint {
 
     }
 
+    public static class FeedBack {
+        private static final String v1_handler = ADMIN + "/transaction";
+        private static final String v2_handler = ENTERPRISE + "/transaction";
+        private static final String v3_handler = COLLABORATOR + "/transaction";
+        private static final String v4_handler = MODERATOR + "/transaction";
+
+
+        public static final String V1_FEEDBACK_PAGE = v1_handler + "/list";
+        public static final String V1_FEEDBACK_DETAIL = v1_handler + "/detail";
+
+        public static final String V2_FEEDBACK_CREATE = v2_handler + "/create";
+        public static final String V2_FEEDBACK_DETAIL = v2_handler + "/detail";
+        public static final String V2_FEEDBACK_PAGE = v2_handler + "/page";
+
+        public static final String V3_FEEDBACK_CREATE = v3_handler + "/create";
+        public static final String V3_FEEDBACK_DETAIL = v3_handler + "/detail";
+    }
+
 }

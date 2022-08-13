@@ -140,4 +140,12 @@ public class Campaign {
         return this;
     }
 
+    public Campaign addFeedback(FeedBack... feedBacks) {
+        Arrays
+                .stream(feedBacks)
+                .peek(this.feedBacks::add)
+                .forEach(feedBack -> feedBack.setCampaign(this));
+        return this;
+    }
+
 }

@@ -475,6 +475,11 @@ public class CampaignServiceImpl implements CampaignService {
         clearCache();
     }
 
+    /**
+     * todo must modified:
+     * @param campaignId
+     * @return
+     */
     @Override
     public List<CampaignCompletedDetailDto>  getInformationCompletedCampaign(UUID campaignId) {
 
