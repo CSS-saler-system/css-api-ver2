@@ -256,8 +256,9 @@ public class ApiEndPoint {
         private static final String v4_handler = MODERATOR + "/transaction";
 
 
-        public static final String V1_FEEDBACK_PAGE = v1_handler + "/list";
-        public static final String V1_FEEDBACK_DETAIL = v1_handler + "/detail";
+        public static final String V4_FEEDBACK_PAGE = v4_handler + "/list";
+        public static final String V4_FEEDBACK_DETAIL = v4_handler + "/detail";
+        public static final String V4_FEEDBACK_REPLY = v4_handler + "/detail";
 
         public static final String V2_FEEDBACK_CREATE = v2_handler + "/create";
         public static final String V2_FEEDBACK_DETAIL = v2_handler + "/detail";

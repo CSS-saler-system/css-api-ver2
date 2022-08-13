@@ -23,11 +23,11 @@ public class EnterpriseFeedbackController {
     private final FeedBackService feedBackService;
 
     @PostMapping(V2_FEEDBACK_CREATE)
-    public ResponseEntity<?> createfeedBack(@RequestBody FeedBackCreatorReqDto dto) {
+    public ResponseEntity<?> createFeedBack(@RequestBody FeedBackCreatorReqDto dto) {
         return ok(this.feedBackService.createFeedBack(dto));
     }
 
-    @GetMapping(V2_FEEDBACK_DETAIL)
+    @GetMapping(V2_FEEDBACK_DETAIL + "/{feedbackId}")
     public ResponseEntity<?> getDetailFeedBack(@PathVariable("feedbackId") UUID feedbackId) {
         FeedBackEnterpriseDetailResDto res = this.feedBackService.getFeedbackDetailForEnterprise(feedbackId);
         return ok(res);

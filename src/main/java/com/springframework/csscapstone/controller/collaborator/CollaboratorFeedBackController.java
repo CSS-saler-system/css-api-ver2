@@ -27,7 +27,7 @@ public class CollaboratorFeedBackController {
         return ok(feedBack);
     }
 
-    @GetMapping(V3_FEEDBACK_DETAIL)
+    @GetMapping(V3_FEEDBACK_DETAIL + "/{feedbackId}")
     public ResponseEntity<?> getDetailFeedBack(@PathVariable("feedbackId") UUID feedbackId) {
         FeedBackEnterpriseDetailResDto res = this.feedBackService.getFeedbackDetailForEnterprise(feedbackId);
         return ok(res);
