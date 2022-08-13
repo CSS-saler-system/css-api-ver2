@@ -22,6 +22,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -56,7 +57,7 @@ public class FeedBackServiceImpl implements FeedBackService {
                 .stream()
                 .map(FeedBackMapper.INSTANCE::feedBackToFeedBackPageModeraterResDto)
                 .sorted(Comparator.comparing(FeedBackPageModeraterResDto::getCreateDate))
-                .toList();
+                .collect(Collectors.toList());
         return new PageImplResDto<>(list, page.getNumber() + 1, list.size(),
                 page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
     }
@@ -70,7 +71,7 @@ public class FeedBackServiceImpl implements FeedBackService {
                 .stream()
                 .map(FeedBackMapper.INSTANCE::feedBackToFeedBackPageEnterpriseResDto)
                 .sorted(Comparator.comparing(FeedBackPageEnterpriseResDto::getCreateDate))
-                .toList();
+                .collect(Collectors.toList());
         return new PageImplResDto<>(list, page.getNumber() + 1, list.size(),
                 page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
     }
