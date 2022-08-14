@@ -32,13 +32,4 @@ public class FeedBackCreatorReqDto implements Serializable {
         }
     }
 
-    @Data
-    public static class CampaignDto implements Serializable {
-        private final UUID id;
-
-        @JsonCreator(mode = PROPERTIES)
-        public CampaignDto(UUID id) {
-            this.id = id;
-        }
-    }
 }

@@ -256,4 +256,16 @@ public class Account {
         return this;
     }
 
+    public Account addFeedBackCreate(FeedBack feedBack) {
+        this.getCreatorFeedback().add(feedBack);
+        feedBack.setCreator(this);
+        return this;
+    }
+
+    public Account addFeedBackReply(FeedBack feedBack) {
+        this.getApproverFeedback().add(feedBack);
+        feedBack.setApprover(this);
+        return this;
+    }
+
 }

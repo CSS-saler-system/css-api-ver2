@@ -1,7 +1,8 @@
 package com.springframework.csscapstone.services.impl;
 
+import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.FeedBack;
-import com.springframework.csscapstone.data.repositories.CampaignRepository;
+import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.data.repositories.FeedBackRepository;
 import com.springframework.csscapstone.data.status.FeedbackStatus;
 import com.springframework.csscapstone.payload.request_dto.FeedBackCreatorReqDto;
@@ -32,12 +33,21 @@ import static java.util.Objects.isNull;
 public class FeedBackServiceImpl implements FeedBackService {
 
     private final FeedBackRepository feedBackRepository;
-    private final CampaignRepository campaignRepository;
+    private final AccountRepository accountRepository;
+
     @Transactional
     @Override
     public UUID createFeedBack(FeedBackCreatorReqDto dto) {
+        if(isNull(dto.getCreator().getId())) {
+            throw new RuntimeException("The creator id must be not null");
+        }
+        Account account = accountRepository.findById(dto.getCreator().getId())
+                .orElseThrow(() -> new EntityNotFoundException("The creator with id: " + dto.getCreator().getId() + " was not found!!!"));
         FeedBack feedBack = FeedBackMapper.INSTANCE.feedBackCreatorReqDtoToFeedBack(dto);
         feedBack.setFeedbackStatus(FeedbackStatus.CREATED);
+
+        account.addFeedBackCreate(feedBack);
+
         FeedBack saved = this.feedBackRepository.save(feedBack);
         return saved.getId();
     }
