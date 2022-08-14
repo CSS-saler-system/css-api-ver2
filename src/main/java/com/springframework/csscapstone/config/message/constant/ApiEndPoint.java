@@ -241,6 +241,12 @@ public class ApiEndPoint {
         public static final String V2_TRANSACTION_CREATE = v2_handler + "/create";
         public static final String V2_TRANSACTION_DELETE = v2_handler + "/delete";
 
+        public static final String V3_TRANSACTION_CREATE = v3_handler + "/create";
+        public static final String V3_TRANSACTION_LIST = v3_handler + "/list";
+        public static final String V3_TRANSACTION_GET = v3_handler + "/get";
+        public static final String V3_TRANSACTION_UPDATE = v3_handler + "/update";
+        public static final String V3_TRANSACTION_DELETE = v3_handler + "/delete";
+
         public static final String V4_TRANSACTION_LIST = v4_handler + "/list";
         public static final String V4_TRANSACTION_GET = v4_handler + "/get";
         public static final String V4_TRANSACTION_PENDING = v4_handler + "/list-pending";
