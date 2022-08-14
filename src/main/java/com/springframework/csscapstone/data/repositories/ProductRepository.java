@@ -61,11 +61,12 @@
         @Query(value =
                 "SELECT p FROM Product p " +
                         "WHERE p.account.id = :enterpriseId " +
+                        "AND p.productStatus = 'ACTIVE'" +
                         "AND p NOT IN (SELECT r.product " +
                         "                 FROM RequestSellingProduct r " +
                         "                 WHERE r.account.id = :collaboratorId " +
                         "                 AND r.requestStatus = 'REGISTERED' " +
-                        "                 AND r.requestStatus = 'CREATED'" +
+                        "                 OR r.requestStatus = 'CREATED'" +
                         ")")
         Page<Product> getAllProductNotRegister(
                 @Param("collaboratorId") UUID collaboratorId,

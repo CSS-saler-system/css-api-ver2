@@ -16,13 +16,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static java.util.Objects.isNull;
 
 @Service
 @RequiredArgsConstructor
@@ -30,8 +32,12 @@ public class FeedBackServiceImpl implements FeedBackService {
 
     private final FeedBackRepository feedBackRepository;
 
+    @Transactional
     @Override
     public UUID createFeedBack(FeedBackCreatorReqDto dto) {
+        if(isNull(dto.getCampaign().getId())) {
+            throw new RuntimeException("The campaign was null!!!");
+        }
         FeedBack feedBack = FeedBackMapper.INSTANCE.feedBackCreatorReqDtoToFeedBack(dto);
         feedBack.setFeedbackStatus(FeedbackStatus.CREATED);
         FeedBack saved = this.feedBackRepository.save(feedBack);
@@ -50,8 +56,8 @@ public class FeedBackServiceImpl implements FeedBackService {
 
     @Override
     public PageImplResDto<FeedBackPageModeraterResDto> getPageFeedBackForModerator(Integer pageSize, Integer pageNumber) {
-        pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
-        pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 10 : pageNumber;
+        pageSize = isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
+        pageNumber = isNull(pageNumber) || pageNumber < 1 ? 10 : pageNumber;
         Page<FeedBack> page = this.feedBackRepository.findAll(PageRequest.of(pageNumber - 1, pageSize));
         List<FeedBackPageModeraterResDto> list = page.getContent()
                 .stream()
@@ -64,8 +70,8 @@ public class FeedBackServiceImpl implements FeedBackService {
 
     @Override
     public PageImplResDto<FeedBackPageEnterpriseResDto> getPageFeedBackForEnterprise(Integer pageSize, Integer pageNumber) {
-        pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
-        pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 10 : pageNumber;
+        pageSize = isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
+        pageNumber = isNull(pageNumber) || pageNumber < 1 ? 10 : pageNumber;
         Page<FeedBack> page = this.feedBackRepository.findAll(PageRequest.of(pageNumber - 1, pageSize));
         List<FeedBackPageEnterpriseResDto> list = page.getContent()
                 .stream()
