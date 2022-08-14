@@ -1,7 +1,6 @@
 package com.springframework.csscapstone.utils.fcm_utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.springframework.csscapstone.config.firebase_config.FirebaseMessageAsyncUtils;
 import com.springframework.csscapstone.config.firebase_config.model.PushNotificationRequest;
 import com.springframework.csscapstone.config.message.constant.MobileScreen;
 import com.springframework.csscapstone.data.domain.Account;

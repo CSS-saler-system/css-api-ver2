@@ -28,6 +28,7 @@ public class ModeratorProductController {
             @PathVariable("enterpriseId") UUID enterpriseId,
             @RequestParam(value = "productName", required = false) String name,
             @RequestParam(value = "brand", required = false) String brand,
+            @RequestParam(value = "status", required = false) ProductStatus productStatus,
             @RequestParam(value = "price", required = false) Double minPrice,
             @RequestParam(value = "price", required = false) Double maxPrice,
             @RequestParam(value = "pointSale", required = false) Double minPointSale,
@@ -37,7 +38,7 @@ public class ModeratorProductController {
     ) {
 
         PageImplResDto<ProductResDto> result = productService.findAllProductByIdEnterprise(
-                enterpriseId, name, brand, minPrice,
+                enterpriseId, name, brand, productStatus, minPrice,
                 maxPrice, minPointSale, maxPointSale, pageNumber, pageSize);
         return ok(result);
     }

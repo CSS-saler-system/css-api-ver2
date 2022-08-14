@@ -1,5 +1,6 @@
 package com.springframework.csscapstone.controller.collaborator;
 
+import com.springframework.csscapstone.data.status.ProductStatus;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.collaborator.ProductForCollabGetDetailResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.ProductResDto;
@@ -45,6 +46,7 @@ public class CollaboratorProductController {
             @PathVariable("enterpriseId") UUID enterpriseId,
             @RequestParam(value = "productName", required = false) String name,
             @RequestParam(value = "brand", required = false) String brand,
+            @RequestParam(value = "status", required = false)ProductStatus productStatus,
             @RequestParam(value = "price", required = false) Double minPrice,
             @RequestParam(value = "price", required = false) Double maxPrice,
             @RequestParam(value = "pointSale", required = false) Double minPointSale,
@@ -54,7 +56,7 @@ public class CollaboratorProductController {
     ) {
         PageImplResDto<ProductResDto> result = productService
                 .findAllProductByIdEnterprise(
-                        enterpriseId, name, brand,
+                        enterpriseId, name, brand, productStatus,
                         minPrice, maxPrice, minPointSale,
                         maxPointSale, pageNumber, pageSize);
         return ok(result);
