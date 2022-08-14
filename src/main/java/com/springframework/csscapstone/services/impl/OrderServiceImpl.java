@@ -1,7 +1,7 @@
 package com.springframework.csscapstone.services.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.springframework.csscapstone.config.firebase_config.FirebaseMessageService;
+import com.springframework.csscapstone.config.firebase_config.FirebaseMessageAsyncUtils;
 import com.springframework.csscapstone.config.firebase_config.model.PushNotificationRequest;
 import com.springframework.csscapstone.config.message.constant.MessageConstant;
 import com.springframework.csscapstone.config.message.constant.MobileScreen;
@@ -55,7 +55,7 @@ public class OrderServiceImpl implements OrderService {
     private final CustomerRepository customerRepository;
     private final ProductRepository productRepository;
     private final AccountTokenRepository accountTokenRepository;
-    private final FirebaseMessageService firebaseMessageService;
+    private final FirebaseMessageAsyncUtils firebaseMessageAsyncUtils;
     private final int INVALID_PAGE = 1;
     private final int DEFAULT_PAGE_NUMBER = 1;
     private final int SHIFT_TO_ACTUAL_PAGE = 1;
@@ -320,7 +320,7 @@ public class OrderServiceImpl implements OrderService {
         String message = "The order belong to " + customerName + " at time: " + createDate + " was completed";
         String topic = "The point increase";
 
-        firebaseMessageService.sendMessage(data, new PushNotificationRequest(title, message, topic, token, path));
+        firebaseMessageAsyncUtils.sendMessage(data, new PushNotificationRequest(title, message, topic, token, path));
 
     }
 

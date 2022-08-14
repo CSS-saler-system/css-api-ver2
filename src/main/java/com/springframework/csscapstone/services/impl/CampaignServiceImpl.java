@@ -1,10 +1,6 @@
 package com.springframework.csscapstone.services.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.springframework.csscapstone.config.firebase_config.FirebaseMessageService;
-import com.springframework.csscapstone.config.firebase_config.model.PushNotificationRequest;
 import com.springframework.csscapstone.config.message.constant.MessageConstant;
-import com.springframework.csscapstone.config.message.constant.MobileScreen;
 import com.springframework.csscapstone.data.dao.specifications.CampaignSpecifications;
 import com.springframework.csscapstone.data.domain.*;
 import com.springframework.csscapstone.data.repositories.*;
@@ -22,6 +18,7 @@ import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundExcep
 import com.springframework.csscapstone.utils.exception_utils.account_exception.NotEnoughKpiException;
 import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignInvalidException;
 import com.springframework.csscapstone.utils.exception_utils.campaign_exception.CampaignNotFoundException;
+import com.springframework.csscapstone.utils.fcm_utils.FcmNotificationUtils;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.CampaignMapper;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +38,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -49,7 +45,6 @@ import java.util.stream.Stream;
 
 import static com.springframework.csscapstone.data.status.CampaignStatus.APPROVAL;
 import static com.springframework.csscapstone.utils.exception_catch_utils.ExceptionCatchHandler.completeSchedule;
-import static com.springframework.csscapstone.utils.exception_catch_utils.ExceptionFCMHandler.fcmException;
 
 
 @Service
@@ -62,8 +57,9 @@ public class CampaignServiceImpl implements CampaignService {
     private final BlobUploadImages blobUploadImages;
     private final CampaignImageRepository campaignImageRepository;
     private final PrizeRepository prizeRepository;
-    private final AccountTokenRepository accountTokenRepository;
-    private final FirebaseMessageService firebaseMessageService;
+
+    private final FcmNotificationUtils fcmNotificationUtils;
+
     @Value("${endpoint}")
     private String endpoint;
 
@@ -392,7 +388,7 @@ public class CampaignServiceImpl implements CampaignService {
         if (accounts.isEmpty()) {
             this.campaignRepository.save(campaign.setCampaignStatus(CampaignStatus.FINISHED));
             //todo send message no have enough kpi
-            sendNotificationEnterprise(campaign, enterprise, quantity);
+            fcmNotificationUtils.sendNotificationEnterprise(campaign, enterprise, quantity);
             return;
         }
 //        mapping prize by using campaign prize with greater than KPI on campaign KPI
@@ -403,14 +399,14 @@ public class CampaignServiceImpl implements CampaignService {
                 Prize prize = prizes.get(count++);
                 Account accountMapping = account.awardPrize(prize);
                 this.accountRepository.save(accountMapping);
-                sendNotificationFinishCampaign(campaign, account, prize,
+                fcmNotificationUtils.sendNotificationFinishCampaign(campaign, account, prize,
                         collaboratorSelling.get(account.getId()));
             }
         }
 
         this.campaignRepository.save(campaign.setCampaignStatus(CampaignStatus.FINISHED));
         clearCache();
-        sendNotificationEnterprise(campaign, enterprise, quantity);
+        fcmNotificationUtils.sendNotificationEnterprise(campaign, enterprise, quantity);
     }
 
     @Transactional
@@ -592,54 +588,4 @@ public class CampaignServiceImpl implements CampaignService {
                 .findFirst();
     }
 
-    private void sendNotificationSentCampaign(Campaign campaign, CampaignStatus status, String token)
-            throws ExecutionException, JsonProcessingException, InterruptedException {
-        PushNotificationRequest notification = new PushNotificationRequest(
-                "Campaign Approval Result",
-                "The campaign was " + (status.equals(CampaignStatus.REJECTED) ? "reject" : "approval"),
-                "The Campaign",
-                token,
-                campaign.getImage().get(0).getPath());
-
-        Map<String, String> data = new HashMap<>();
-
-        data.put(MobileScreen.CAMPAIGN.getScreen(), campaign.getId().toString());
-
-        this.firebaseMessageService.sendMessage(data, notification);
-    }
-
-    private void sendNotificationFinishCampaign(Campaign campaign, Account account, Prize prize, Long kpi) {
-        this.accountTokenRepository.getAccountTokenByAccountOptional(account.getId())
-                .map(Collection::stream)
-                .orElseGet(Stream::empty)
-                .findFirst()
-                .map(token -> new PushNotificationRequest(
-                        "The Finished Campaign",
-                        "You receive the prize: " + prize.getName() + ",price: " + prize.getPrice(),
-                        "The award prize",
-                        token.getRegistrationToken(),
-                        campaign.getImage().get(0).getPath()))
-                .ifPresent(fcmException(notification -> this.firebaseMessageService.sendMessage(
-                        Collections.singletonMap(MobileScreen.CAMPAIGN.getScreen(), campaign.getId().toString()),
-                        notification)));
-    }
-
-    private void sendNotificationEnterprise(Campaign campaign, Account enterprise, long quantity) {
-        this.accountTokenRepository
-                .getAccountTokenByAccountOptional(enterprise.getId())
-                .map(List::stream)
-                .orElseGet(Stream::empty)
-                .findFirst()
-                .map(token -> new PushNotificationRequest(
-                        "The Finished Campaign",
-                        "The Campaign name: " + campaign.getName() + ",with quantity sold: " + quantity,
-                        "The Finished Campaign",
-                        token.getRegistrationToken(),
-                        campaign.getImage().get(0).getPath()))
-                .ifPresent(fcmException(notification -> firebaseMessageService.sendMessage(
-                        Collections.singletonMap(MobileScreen.CAMPAIGN.getScreen(), campaign.getId().toString()),
-                        notification
-                )));
-
-    }
 }

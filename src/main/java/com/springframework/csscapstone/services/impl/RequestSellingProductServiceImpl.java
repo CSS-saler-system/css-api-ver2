@@ -1,7 +1,7 @@
 package com.springframework.csscapstone.services.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.springframework.csscapstone.config.firebase_config.FirebaseMessageService;
+import com.springframework.csscapstone.config.firebase_config.FirebaseMessageAsyncUtils;
 import com.springframework.csscapstone.config.firebase_config.model.PushNotificationRequest;
 import com.springframework.csscapstone.config.message.constant.MessageConstant;
 import com.springframework.csscapstone.config.message.constant.MobileScreen;
@@ -55,7 +55,7 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
     private final ProductRepository productRepository;
     private final AccountRepository accountRepository;
     private final CacheManager cacheManager;
-    private final FirebaseMessageService firebaseMessageService;
+    private final FirebaseMessageAsyncUtils firebaseMessageAsyncUtils;
 
     private final AccountTokenRepository accountTokenRepository;
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
@@ -209,7 +209,7 @@ public class RequestSellingProductServiceImpl implements RequestSellingProductSe
 
         data.put(MobileScreen.REQUEST.getScreen(), request.getId().toString());
 
-        this.firebaseMessageService.sendMessage(data, notification);
+        this.firebaseMessageAsyncUtils.sendMessage(data, notification);
 
     }
 

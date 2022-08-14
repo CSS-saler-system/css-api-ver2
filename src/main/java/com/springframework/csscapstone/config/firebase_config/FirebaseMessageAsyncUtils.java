@@ -25,7 +25,7 @@ import java.util.concurrent.ExecutionException;
 
 @Component
 @RequiredArgsConstructor
-public class FirebaseMessageService {
+public class FirebaseMessageAsyncUtils {
 
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
     private final ObjectMapper objectMapper = new ObjectMapper();
