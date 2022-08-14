@@ -9,5 +9,5 @@ public class NotificationDto implements Serializable {
     private final String title;
     private final String message;
     private final String pathImage;
-    private final String topic;
+//    private final String topic;
 }

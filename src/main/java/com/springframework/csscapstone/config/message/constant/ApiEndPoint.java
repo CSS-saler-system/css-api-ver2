@@ -250,10 +250,10 @@ public class ApiEndPoint {
     }
 
     public static class FeedBack {
-        private static final String v1_handler = ADMIN + "/transaction";
-        private static final String v2_handler = ENTERPRISE + "/transaction";
-        private static final String v3_handler = COLLABORATOR + "/transaction";
-        private static final String v4_handler = MODERATOR + "/transaction";
+        private static final String v1_handler = ADMIN + "/feedback";
+        private static final String v2_handler = ENTERPRISE + "/feedback";
+        private static final String v3_handler = COLLABORATOR + "/feedback";
+        private static final String v4_handler = MODERATOR + "/feedback";
 
 
         public static final String V4_FEEDBACK_PAGE = v4_handler + "/list";
