@@ -102,7 +102,7 @@ public class ProductServiceImpl implements ProductService {
     @Cacheable(key = "{#p0, #p1, #p2, #p3, #p4, #p5, #p6, #p7, #p8}", value = ALL_PRODUCT_BY_ENTERPRISE)
     public PageImplResDto<ProductResDto> findAllProductByIdEnterprise(
             UUID idEnterprise, String name,
-            String brand, Double minPrice, Double maxPrice,
+            String brand, ProductStatus productStatus, Double minPrice, Double maxPrice,
             Double minPoint, Double maxPoint,
             Integer pageNumber, Integer pageSize) {
 
@@ -114,6 +114,7 @@ public class ProductServiceImpl implements ProductService {
                 .and(StringUtils.isBlank(name) ? null : ProductSpecifications.nameContains(name))
                 .and(StringUtils.isBlank(brand) ? null : ProductSpecifications.brandContains(brand))
                 .and(Objects.isNull(minPrice) ? null : ProductSpecifications.priceGreaterThan(minPrice))
+                .and(Objects.isNull(productStatus) ? null : ProductSpecifications.filterByStatus(productStatus))
                 .and(Objects.isNull(maxPrice) ? null : ProductSpecifications.priceLessThan(maxPrice))
                 .and(Objects.isNull(minPoint) ? null : ProductSpecifications.pointGreaterThan(minPoint))
                 .and(Objects.isNull(maxPoint) ? null : ProductSpecifications.pointLessThan(maxPoint))

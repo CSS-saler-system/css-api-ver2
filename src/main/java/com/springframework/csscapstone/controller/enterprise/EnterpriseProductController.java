@@ -4,6 +4,7 @@ package com.springframework.csscapstone.controller.enterprise;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springframework.csscapstone.config.message.constant.MessageConstant;
+import com.springframework.csscapstone.data.status.ProductStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.ProductCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.ProductUpdaterReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
@@ -64,6 +65,7 @@ public class EnterpriseProductController {
             @RequestParam(value = "brand", required = false) String brand,
             @RequestParam(value = "price", required = false) Double minPrice,
             @RequestParam(value = "price", required = false) Double maxPrice,
+            @RequestParam(value = "status", required = false) ProductStatus productStatus,
             @RequestParam(value = "pointSale", required = false) Double minPointSale,
             @RequestParam(value = "pointSale", required = false) Double maxPointSale,
             @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
@@ -71,7 +73,7 @@ public class EnterpriseProductController {
     ) {
         PageImplResDto<ProductResDto> result = productService
                 .findAllProductByIdEnterprise(
-                        enterpriseId, name, brand,
+                        enterpriseId, name, brand, productStatus,
                         minPrice, maxPrice, minPointSale,
                         maxPointSale, pageNumber, pageSize);
         return ok(result);

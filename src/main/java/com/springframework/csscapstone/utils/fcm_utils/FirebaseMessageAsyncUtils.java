@@ -1,4 +1,4 @@
-package com.springframework.csscapstone.config.firebase_config;
+package com.springframework.csscapstone.utils.fcm_utils;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;

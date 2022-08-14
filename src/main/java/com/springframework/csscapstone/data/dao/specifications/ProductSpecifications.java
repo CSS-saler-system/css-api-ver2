@@ -70,4 +70,8 @@ public final class ProductSpecifications {
                 criteriaBuilder.notEqual(root.get(Product_.PRODUCT_STATUS), ProductStatus.DELETED);
 
     }
+
+    public static Specification<Product> filterByStatus(ProductStatus productStatus) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Product_.PRODUCT_STATUS), productStatus);
+    }
 }

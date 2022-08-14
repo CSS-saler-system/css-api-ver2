@@ -25,7 +25,7 @@ import java.util.concurrent.ExecutionException;
 public interface ProductService {
 
     PageImplResDto<ProductResDto> findAllProductByIdEnterprise(
-            UUID idEnterprise, String name, String brand,
+            UUID idEnterprise, String name, String brand, ProductStatus productStatus,
             Double minPrice, Double maxPrice,
             Double minPoint, Double maxPoint,
             Integer pageNumber, Integer pageSize);
