@@ -4,7 +4,6 @@ import com.springframework.csscapstone.data.status.FeedbackStatus;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -29,9 +28,6 @@ public class FeedBack {
     @ManyToOne
     @JoinColumn(name = "creator_id")
     private Account creator;
-    @ManyToOne
-    @JoinColumn(name = "campaign_id")
-    private Campaign campaign;
 
     @CreatedDate
     private LocalDateTime createDate;

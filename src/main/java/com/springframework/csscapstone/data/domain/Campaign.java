@@ -94,9 +94,6 @@ public class Campaign {
         return Objects.equals(id, campaign.id);
     }
 
-    @OneToMany(mappedBy = "campaign")
-    private List<FeedBack> feedBacks = new ArrayList<>();
-
     @Override
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
@@ -137,14 +134,6 @@ public class Campaign {
         Arrays.stream(products)
                 .peek(this.products::add)
                 .forEach(p -> p.getCampaign().add(this));
-        return this;
-    }
-
-    public Campaign addFeedback(FeedBack... feedBacks) {
-        Arrays
-                .stream(feedBacks)
-                .peek(this.feedBacks::add)
-                .forEach(feedBack -> feedBack.setCampaign(this));
         return this;
     }
 
