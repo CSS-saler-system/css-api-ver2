@@ -12,22 +12,22 @@ import static com.fasterxml.jackson.annotation.JsonCreator.Mode.PROPERTIES;
 @Data
 public class FeedBackCreatorReqDto implements Serializable {
     private final String feedContent;
-    private final AccountDto creator;
+    private final AccountInnerFeedBack creator;
 
     @JsonCreator(mode = PROPERTIES)
     public FeedBackCreatorReqDto(
             @JsonProperty("feedContent") String feedContent,
-            @JsonProperty("creator") AccountDto creator) {
+            @JsonProperty("creator") AccountInnerFeedBack creator) {
         this.feedContent = feedContent;
         this.creator = creator;
     }
 
     @Data
-    public static class AccountDto implements Serializable {
+    public static class AccountInnerFeedBack implements Serializable {
         private final UUID id;
 
         @JsonCreator(mode = PROPERTIES)
-        public AccountDto(UUID id) {
+        public AccountInnerFeedBack(@JsonProperty("id") UUID id) {
             this.id = id;
         }
     }
