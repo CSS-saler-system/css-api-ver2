@@ -43,7 +43,7 @@ public interface OrderService {
 
 
     PageImplResDto<OrderEnterpriseManageResDto> getOrderResDtoByEnterprise(
-            UUID enterpriseId, Integer pageNumber, Integer pageSize);
+            UUID enterpriseId, OrderStatus orderStatus, Integer pageNumber, Integer pageSize);
 
     Optional<List<EnterpriseRevenueDto>> getRevenue(UUID enterpriseId);
 }

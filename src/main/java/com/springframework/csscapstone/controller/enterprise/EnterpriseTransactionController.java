@@ -3,6 +3,7 @@ package com.springframework.csscapstone.controller.enterprise;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springframework.csscapstone.config.message.constant.MessageConstant;
+import com.springframework.csscapstone.data.status.TransactionStatus;
 import com.springframework.csscapstone.payload.request_dto.enterprise.TransactionsCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.TransactionsUpdateReqDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.TransactionsDto;
@@ -46,11 +47,12 @@ public class EnterpriseTransactionController {
     @GetMapping(V2_TRANSACTION_LIST + "/{enterpriseId}")
     public ResponseEntity<?> getAllTransactionExcludeDisableStatus(
             @PathVariable("enterpriseId") UUID idEnterprise,
+            @RequestParam(value = "status", required = false) TransactionStatus status,
             @RequestParam(value = "createDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createDate,
             @RequestParam(value = "modifiedDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime modifiedDate,
             @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
             @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        return ok(transactionServices.getAllTransaction(idEnterprise, createDate, modifiedDate, pageNumber, pageSize));
+        return ok(transactionServices.getAllTransaction(idEnterprise,status, createDate, modifiedDate, pageNumber, pageSize));
     }
 
     @GetMapping(V2_TRANSACTION_GET + "/{transactionId}")

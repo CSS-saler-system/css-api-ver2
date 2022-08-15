@@ -11,13 +11,11 @@ import com.springframework.csscapstone.utils.exception_utils.transaction_excepti
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -43,16 +41,17 @@ public class CollaboratorTransactionController {
         UUID transaction = this.transactionServices.createTransaction(dto, images);
         return ok(transaction);
     }
-
-    @GetMapping(V3_TRANSACTION_LIST + "/{enterpriseId}")
-    public ResponseEntity<?> getAllTransactionExcludeDisableStatus(
-            @PathVariable("enterpriseId") UUID idEnterprise,
-            @RequestParam(value = "createDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createDate,
-            @RequestParam(value = "modifiedDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime modifiedDate,
-            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
-            @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        return ok(transactionServices.getAllTransaction(idEnterprise, createDate, modifiedDate, pageNumber, pageSize));
-    }
+//
+//    @GetMapping(V3_TRANSACTION_LIST + "/{enterpriseId}")
+//    public ResponseEntity<?> getAllTransactionExcludeDisableStatus(
+//            @PathVariable("enterpriseId") UUID idEnterprise,
+//            @RequestParam(value = "createDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createDate,
+//            @RequestParam(value = "createDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createDate,
+//            @RequestParam(value = "modifiedDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime modifiedDate,
+//            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+//            @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+//        return ok(transactionServices.getAllTransaction(idEnterprise, createDate, modifiedDate, pageNumber, pageSize));
+//    }
 
     @GetMapping(V3_TRANSACTION_GET + "/{transactionId}")
     public ResponseEntity<?> getTransactionById(@PathVariable UUID transactionId) {

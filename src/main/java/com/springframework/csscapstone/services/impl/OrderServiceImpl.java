@@ -326,15 +326,23 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Cacheable(key = "{#p0, #p1, #p2}", value = "getOrderResDtoByEnterprise")
     public PageImplResDto<OrderEnterpriseManageResDto> getOrderResDtoByEnterprise(
-            UUID enterpriseId, Integer pageNumber, Integer pageSize) {
+            UUID enterpriseId, OrderStatus orderStatus, Integer pageNumber, Integer pageSize) {
 
         pageNumber = Objects.isNull(pageNumber) || pageNumber < INVALID_PAGE ? DEFAULT_PAGE_NUMBER : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize < INVALID_PAGE ? DEFAULT_PAGE_SIZE : pageSize;
 
-        Page<Order> page = this.orderRepository.getOrderByEnterprise(enterpriseId, OrderStatus.DISABLED, PageRequest.of(
-                pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize,
-                Sort.by(Order_.CREATE_DATE).descending()));
+//        Page<Order> page = this.orderRepository
+//                .getOrderByEnterprise(enterpriseId, OrderStatus.DISABLED, PageRequest.of(
+//                pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize, Sort.by(Order_.CREATE_DATE).descending()));
+        Specification<Order> conditions = Specification
+                .where(Objects.isNull(orderStatus) ? null : OrdersSpecification.equalsStatus(orderStatus))
+//                .and(OrdersSpecification.equalsCollaborator(account))
+                .and(OrdersSpecification.equalsEnterpriseId(enterpriseId))
+                .and(OrdersSpecification.excludeDisableStatus());
 
+        Page<Order> page = this.orderRepository
+                .findAll(conditions,
+                        PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize, Sort.by(Order_.CREATE_DATE).descending()));
         List<OrderEnterpriseManageResDto> content = page.getContent()
                 .stream()
                 .map(MapperDTO.INSTANCE::toOrderEnterpriseManageResDto)

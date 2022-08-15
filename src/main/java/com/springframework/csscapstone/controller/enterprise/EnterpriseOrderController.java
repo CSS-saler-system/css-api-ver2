@@ -41,10 +41,11 @@ public class EnterpriseOrderController {
     @GetMapping(V2_ORDER_LIST_BY_ENTERPRISE + "/{enterpriseId}")
     public ResponseEntity<?> getAllOrderByEnterprise(
             @PathVariable("enterpriseId") UUID enterpriseId,
+            @RequestParam(value = "status", required = false) OrderStatus orderStatus,
             @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
             @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         PageImplResDto<OrderEnterpriseManageResDto> result = this.orderService
-                .getOrderResDtoByEnterprise(enterpriseId, pageNumber, pageSize);
+                .getOrderResDtoByEnterprise(enterpriseId, orderStatus,pageNumber, pageSize);
 
         return ok(result);
     }

@@ -1,5 +1,6 @@
 package com.springframework.csscapstone.controller.moderator;
 
+import com.springframework.csscapstone.data.status.TransactionStatus;
 import com.springframework.csscapstone.payload.request_dto.moderator.TransactionHandler;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.TransactionsDto;
@@ -11,7 +12,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -47,6 +47,7 @@ public class ModeratorTransactionController {
     @GetMapping(V4_TRANSACTION_LIST + "/{enterpriseId}")
     public ResponseEntity<?> listTransaction(
             @PathVariable("enterpriseId") UUID idEnterprise,
+            @RequestParam(value = "status", required = false) TransactionStatus status,
             @RequestParam(value = "createDate", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createDate,
             @RequestParam(value = "modifiedDate", required = false)
@@ -55,7 +56,7 @@ public class ModeratorTransactionController {
             @RequestParam(value = "pageSize", required = false) Integer pageSize
     ) {
         PageImplResDto<TransactionsDto> page = transactionServices
-                .getAllTransaction(idEnterprise, createDate, modifiedDate, pageNumber, pageSize);
+                .getAllTransaction(idEnterprise, status, createDate, modifiedDate, pageNumber, pageSize);
         return ok(page);
     }
 

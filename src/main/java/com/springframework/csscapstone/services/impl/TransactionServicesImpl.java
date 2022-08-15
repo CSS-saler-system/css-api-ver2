@@ -1,5 +1,6 @@
 package com.springframework.csscapstone.services.impl;
 
+import com.springframework.csscapstone.data.dao.specifications.TransactionSpecifications;
 import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.BillImage;
 import com.springframework.csscapstone.data.domain.Transactions;
@@ -25,6 +26,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -59,23 +61,24 @@ public class TransactionServicesImpl implements TransactionServices {
     @Transactional
     @Override
     public PageImplResDto<TransactionsDto> getAllTransaction(
-            UUID enterpriseId, LocalDateTime createDate, LocalDateTime modifiedDate,
+            UUID enterpriseId,  TransactionStatus status, LocalDateTime createDate, LocalDateTime modifiedDate,
             Integer pageNumber, Integer pageSize) {
 
         this.accountRepository.findById(enterpriseId)
                 .filter(acc -> acc.getRole().getName().equals("Enterprise"))
                 .orElseThrow(() -> new EntityNotFoundException("The enterprise with id: " + enterpriseId + "was not found"));
 
-        createDate = Objects.isNull(createDate) ? defaultMinDate : createDate;
-        modifiedDate = Objects.isNull(modifiedDate) ? defaultMaxDate : modifiedDate;
-
         pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
 
+        Specification<Transactions> specification = Specification
+                .where(Objects.isNull(status) ? null : TransactionSpecifications.equalsStatus(status))
+                .and(Objects.isNull(createDate) ? null : TransactionSpecifications.afterDate(createDate))
+                .and(Objects.isNull(modifiedDate) ? null : TransactionSpecifications.afterDate(modifiedDate))
+                .and(TransactionSpecifications.equalsEnterpriseId(enterpriseId));
+
         Page<Transactions> page = this.transactionsRepository
-                .findAllByDate(enterpriseId, createDate, modifiedDate, TransactionStatus.DISABLED,
-                        PageRequest.of(pageNumber - 1, pageSize,
-                        Sort.by(Transactions_.CREATE_TRANSACTION_DATE).descending()));
+                .findAll(specification, PageRequest.of(pageNumber - 1, pageSize, Sort.by(Transactions_.LAST_MODIFIED_DATE).descending()));
 
         page.getContent().forEach(System.out::println);
         List<TransactionsDto> collect = page.getContent()
