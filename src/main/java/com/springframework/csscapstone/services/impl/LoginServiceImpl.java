@@ -18,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -91,16 +90,16 @@ public class LoginServiceImpl implements LoginService {
             return accountByEmail.map(getTokenForEnterprise).get();
         }
 
-//        Account account = new Account().setEmail(email).setPoint(0.0);
-//
-//        Account savedAccount = accountRepository.save(account
-//                .addRole(this.roleRepository.getById("ROLE_2")));
-//
-//        return new WebUserDetail(savedAccount, this.jwtTokenProvider.generateJwtTokenForCollaborator(
-//                account.getRole().getName(),
-//                account.getEmail()));
+        Account account = new Account().setEmail(email).setPoint(0.0);
 
-        throw new BadCredentialsException("email or password was wrong");
+        Account savedAccount = accountRepository.save(account
+                .addRole(this.roleRepository.getById("ROLE_2")));
+
+        return new WebUserDetail(savedAccount, this.jwtTokenProvider.generateJwtTokenForCollaborator(
+                account.getRole().getName(),
+                account.getEmail()));
+
+//        throw new BadCredentialsException("email or password was wrong");
     }
 
     /**
