@@ -90,7 +90,7 @@ public class LoginServiceImpl implements LoginService {
             return accountByEmail.map(getTokenForEnterprise).get();
         }
 
-        Account account = new Account().setEmail(email).setPoint(0.0);
+        Account account = new Account().setEmail(email).setPoint(0.0).setPhone("0000-0000-0000");
 
         Account savedAccount = accountRepository.save(account
                 .addRole(this.roleRepository.getById("ROLE_2")));
