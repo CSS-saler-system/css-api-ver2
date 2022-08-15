@@ -253,6 +253,7 @@ public class OrderServiceImpl implements OrderService {
         //check order valid
         Order order = this.orderRepository.findById(orderId)
                 .filter(_order -> _order.getStatus() != OrderStatus.FINISHED)
+                .filter(_order -> _order.getStatus() != OrderStatus.DISABLED)
                 .orElseThrow(handlerOrderNotFound);
 
         //get collaborator who create order
@@ -276,37 +277,37 @@ public class OrderServiceImpl implements OrderService {
                 .stream()
                 .map(detail -> detail.getProduct().getAccount())
                 .distinct().collect(Collectors.toList());
-        if (enterprises.size() > 1) {
-            throw new RuntimeException("Order wrong with 2 enterprise!!!");
-        }
+            if (enterprises.size() != 1) {
+                throw new RuntimeException("Order wrong with 2 enterprise or no have enterprise!!!");
+            }
 
-        //todo point of enterprise must be large enough
-        Account enterprise = enterprises.get(0);
-        Optional.of(enterprise).ifPresent(_enterprise -> {
-            if (_enterprise.getPoint() < totalPoint) throw handlerLackPoint.get();
+            //todo point of enterprise must be large enough
+            Account enterprise = enterprises.get(0);
+            Optional.of(enterprise).ifPresent(_enterprise -> {
+                if (_enterprise.getPoint() < totalPoint) throw handlerLackPoint.get();
 
-            _enterprise.setPoint(_enterprise.getPoint() - totalPoint);
-            collaborator.setPoint(collaborator.getPoint() + totalPoint);
-            this.accountRepository.save(collaborator);
-            this.accountRepository.save(_enterprise);
-        });
+                _enterprise.setPoint(_enterprise.getPoint() - totalPoint);
+                collaborator.setPoint(collaborator.getPoint() + totalPoint);
+                this.accountRepository.save(collaborator);
+                this.accountRepository.save(_enterprise);
+            });
 
-        //todo send notification
-        this.orderRepository.save(order.setStatus(OrderStatus.FINISHED));
+            //todo send notification
+            this.orderRepository.save(order.setStatus(OrderStatus.FINISHED));
 
-        //send notification:
-        /**
-         * Customer name, enterprise, datetime order, total point inscrease
-         *
-         */
-        //todo get account token:
-        accountTokenRepository.getAccountTokenByAccountOptional(order.getAccount().getId())
-                .ifPresent(fcmException(token ->  sendNotificationToCollaborator(
-                        order.getCustomer().getName(), enterprise.getName(),
-                        enterprise.getAvatar().getPath(),
-                        order.getId(), order.getCreateDate(), order.getTotalPointSale(),
-                        token.get(0).getRegistrationToken())));
-        clearCache();
+            //send notification:
+            /**
+             * Customer name, enterprise, datetime order, total point inscrease
+             *
+             */
+            //todo get account token:
+            accountTokenRepository.getAccountTokenByAccountOptional(order.getAccount().getId())
+                    .ifPresent(fcmException(token -> sendNotificationToCollaborator(
+                            order.getCustomer().getName(), enterprise.getName(),
+                            enterprise.getAvatar().getPath(),
+                            order.getId(), order.getCreateDate(), order.getTotalPointSale(),
+                            token.get(0).getRegistrationToken())));
+            clearCache();
     }
 
     private void sendNotificationToCollaborator(
