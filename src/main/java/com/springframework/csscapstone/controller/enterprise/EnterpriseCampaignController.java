@@ -99,9 +99,8 @@ public class EnterpriseCampaignController {
         return ok(campaignUUID);
     }
 
-    @PutMapping(value = V2_CAMPAIGN_TEST + "/{campaignId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> updateClosingCampaign(
-            @PathVariable("campaignId") UUID campaignId)
+    @PutMapping(value = V2_CAMPAIGN_TEST + "/{campaignId}")
+    public ResponseEntity<?> updateClosingCampaign(@PathVariable("campaignId") UUID campaignId)
             throws EntityNotFoundException, JsonProcessingException {
         this.campaignService.completeCampaign(campaignId);
         return ok(MessagesUtils.getMessage(MessageConstant.REQUEST_SUCCESS));
