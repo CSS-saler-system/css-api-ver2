@@ -473,11 +473,12 @@ public class CampaignServiceImpl implements CampaignService {
 
     /**
      * todo must modified:
+     *
      * @param campaignId
      * @return
      */
     @Override
-    public List<CampaignCompletedDetailDto>  getInformationCompletedCampaign(UUID campaignId) {
+    public List<CampaignCompletedDetailDto> getInformationCompletedCampaign(UUID campaignId) {
 
         Campaign campaign = this.campaignRepository.findById(campaignId)
                 .orElseThrow(() -> new RuntimeException("No Campaign was found!!!"));
