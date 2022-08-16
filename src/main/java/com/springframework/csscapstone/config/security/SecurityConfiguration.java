@@ -47,13 +47,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(authenticationHandlerFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests(
                         request -> request
-                                .antMatchers(PUBLIC_URLS).permitAll()
-//                                .antMatchers(ADMIN + "/**").hasAuthority("Admin")
-//                                .antMatchers(ENTERPRISE + "/**").hasAuthority("Enterprise")
-//                                .antMatchers(COLLABORATOR + "/**").hasAuthority("Collaborator")
-//                                .antMatchers(MODERATOR + "/**").hasAuthority("Moderator")
-//                                .anyRequest().authenticated())
-                )
+                                .antMatchers(PUBLIC_URLS)
+                                .permitAll()
+                                .antMatchers(ADMIN + "/**").hasAuthority("Admin")
+                                .antMatchers(ENTERPRISE + "/**").hasAuthority("Enterprise")
+                                .antMatchers(COLLABORATOR + "/**").hasAuthority("Collaborator")
+                                .antMatchers(MODERATOR + "/**").hasAuthority("Moderator")
+                                .anyRequest().authenticated())
                 .logout(_logout -> _logout.logoutUrl(USER_LOGOUT))
                 .exceptionHandling(exception -> exception
                         .accessDeniedHandler(jwtAccessDeniedHandler)
