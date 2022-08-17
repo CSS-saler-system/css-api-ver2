@@ -77,10 +77,10 @@ public class FeedBackServiceImpl implements FeedBackService {
     }
 
     @Override
-    public PageImplResDto<FeedBackPageEnterpriseResDto> getPageFeedBackForEnterprise(Integer pageSize, Integer pageNumber) {
+    public PageImplResDto<FeedBackPageEnterpriseResDto> getPageFeedBackForEnterprise(UUID enterpriseId, Integer pageSize, Integer pageNumber) {
         pageSize = isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
         pageNumber = isNull(pageNumber) || pageNumber < 1 ? 10 : pageNumber;
-        Page<FeedBack> page = this.feedBackRepository.findAll(PageRequest.of(pageNumber - 1, pageSize));
+        Page<FeedBack> page = this.feedBackRepository.findAllByCreator_Id(enterpriseId, PageRequest.of(pageNumber - 1, pageSize));
         List<FeedBackPageEnterpriseResDto> list = page.getContent()
                 .stream()
                 .map(FeedBackMapper.INSTANCE::feedBackToFeedBackPageEnterpriseResDto)

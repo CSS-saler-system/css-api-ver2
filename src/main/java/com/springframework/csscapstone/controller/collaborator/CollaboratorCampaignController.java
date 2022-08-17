@@ -27,7 +27,7 @@ import static org.springframework.http.ResponseEntity.ok;
 public class CollaboratorCampaignController {
 
     private final CampaignService campaignService;
-
+    
     @GetMapping(V3_LIST_CAMPAIGN)
     public ResponseEntity<?> getListDto(
             @RequestParam(value = "campaignName", required = false) String campaignName,

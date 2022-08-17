@@ -35,5 +35,5 @@ public interface FeedBackService {
      */
     FeedBackModeratorFeedbackDetailResDto getFeedbackDetailForModerator(UUID id);
 
-    PageImplResDto<FeedBackPageEnterpriseResDto> getPageFeedBackForEnterprise(Integer pageSize, Integer pageNumber);
+    PageImplResDto<FeedBackPageEnterpriseResDto> getPageFeedBackForEnterprise(UUID enterpriseId, Integer pageSize, Integer pageNumber);
 }

@@ -79,6 +79,7 @@ public class OrderServiceImpl implements OrderService {
     private final Function<UUID, Predicate<UUID>> isSameEnterpriseId = (id) -> (enterpriseId) -> !enterpriseId.equals(id);
     private final Function<UUID, Supplier<RuntimeException>> orderNotFound = (id) -> () -> new RuntimeException("No have Order With id: " + id);
     private final CacheManager cacheManager;
+
     private void clearCache() {
         Objects.requireNonNull(cacheManager.getCache("getOrderResDtoById")).clear();
         Objects.requireNonNull(cacheManager.getCache("pageOrderOfCollaborator")).clear();
@@ -244,6 +245,7 @@ public class OrderServiceImpl implements OrderService {
     /**
      * Order -> Order-Detail: (total point)
      * todo Notification to collaborators:
+     *
      * @param orderId
      */
     @Override
@@ -277,37 +279,37 @@ public class OrderServiceImpl implements OrderService {
                 .stream()
                 .map(detail -> detail.getProduct().getAccount())
                 .distinct().collect(Collectors.toList());
-            if (enterprises.size() != 1) {
-                throw new RuntimeException("Order wrong with 2 enterprise or no have enterprise!!!");
-            }
+        if (enterprises.size() != 1) {
+            throw new RuntimeException("Order wrong with 2 enterprise or no have enterprise!!!");
+        }
 
-            //todo point of enterprise must be large enough
-            Account enterprise = enterprises.get(0);
-            Optional.of(enterprise).ifPresent(_enterprise -> {
-                if (_enterprise.getPoint() < totalPoint) throw handlerLackPoint.get();
+        //todo point of enterprise must be large enough
+        Account enterprise = enterprises.get(0);
+        Optional.of(enterprise).ifPresent(_enterprise -> {
+            if (_enterprise.getPoint() < totalPoint) throw handlerLackPoint.get();
 
-                _enterprise.setPoint(_enterprise.getPoint() - totalPoint);
-                collaborator.setPoint(collaborator.getPoint() + totalPoint);
-                this.accountRepository.save(collaborator);
-                this.accountRepository.save(_enterprise);
-            });
+            _enterprise.setPoint(_enterprise.getPoint() - totalPoint);
+            collaborator.setPoint(collaborator.getPoint() + totalPoint);
+            this.accountRepository.save(collaborator);
+            this.accountRepository.save(_enterprise);
+        });
 
-            //todo send notification
-            this.orderRepository.save(order.setStatus(OrderStatus.FINISHED));
+        //todo send notification
+        this.orderRepository.save(order.setStatus(OrderStatus.FINISHED));
 
-            //send notification:
-            /**
-             * Customer name, enterprise, datetime order, total point inscrease
-             *
-             */
-            //todo get account token:
-            accountTokenRepository.getAccountTokenByAccountOptional(order.getAccount().getId())
-                    .ifPresent(fcmException(token -> sendNotificationToCollaborator(
-                            order.getCustomer().getName(), enterprise.getName(),
-                            enterprise.getAvatar().getPath(),
-                            order.getId(), order.getCreateDate(), order.getTotalPointSale(),
-                            token.get(0).getRegistrationToken())));
-            clearCache();
+        //send notification:
+        /**
+         * Customer name, enterprise, datetime order, total point inscrease
+         *
+         */
+        //todo get account token:
+        accountTokenRepository.getAccountTokenByAccountOptional(order.getAccount().getId())
+                .ifPresent(fcmException(token -> sendNotificationToCollaborator(
+                        order.getCustomer().getName(), enterprise.getName(),
+                        enterprise.getAvatar().getPath(),
+                        order.getId(), order.getCreateDate(), order.getTotalPointSale(),
+                        token.get(0).getRegistrationToken())));
+        clearCache();
     }
 
     private void sendNotificationToCollaborator(
@@ -343,7 +345,9 @@ public class OrderServiceImpl implements OrderService {
 
         Page<Order> page = this.orderRepository
                 .findAll(conditions,
-                        PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize, Sort.by(Order_.CREATE_DATE).descending()));
+                        PageRequest.of(
+                                pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize,
+                                Sort.by(Order_.CREATE_DATE).descending()));
         List<OrderEnterpriseManageResDto> content = page.getContent()
                 .stream()
                 .map(MapperDTO.INSTANCE::toOrderEnterpriseManageResDto)
@@ -362,7 +366,8 @@ public class OrderServiceImpl implements OrderService {
                 .getRevenueByEnterprise(enterpriseId)
                 .stream()
                 .collect(
-                        toMap(tuple -> tuple.get(OrderRepository.ORDER_DATE, Integer.class),
+                        toMap(
+                                tuple -> tuple.get(OrderRepository.ORDER_DATE, Integer.class),
                                 tuple -> tuple.get(OrderRepository.ORDER_REVENUE, Double.class)))
                 .entrySet()
                 .stream()

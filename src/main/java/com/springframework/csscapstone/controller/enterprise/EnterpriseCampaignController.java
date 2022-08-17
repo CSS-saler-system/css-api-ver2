@@ -113,7 +113,7 @@ public class EnterpriseCampaignController {
     }
 
     @GetMapping(V2_CAMPAIGN_GET + "/detail/{campaignId}")
-    public ResponseEntity<?> getDetailCamapaignDetail(@PathVariable("campaignId") UUID campaignId) {
+    public ResponseEntity<?> getDetailCampaignDetail(@PathVariable("campaignId") UUID campaignId) {
         return ok(this.campaignService.getInformationCompletedCampaign(campaignId));
     }
 

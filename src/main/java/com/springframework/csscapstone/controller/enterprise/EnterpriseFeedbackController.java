@@ -33,13 +33,14 @@ public class EnterpriseFeedbackController {
         return ok(res);
     }
 
-    @GetMapping(V2_FEEDBACK_PAGE)
+    @GetMapping(V2_FEEDBACK_PAGE + "/{enterpriseId}")
     public ResponseEntity<?> getPageFeedBack(
-            @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize
+            @PathVariable("enterpriseId") UUID enterpriseId,
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize
             ) {
         PageImplResDto<FeedBackPageEnterpriseResDto> res = this.feedBackService
-                .getPageFeedBackForEnterprise(pageSize, pageNumber);
+                .getPageFeedBackForEnterprise(enterpriseId, pageSize, pageNumber);
         return ok(res);
     }
 

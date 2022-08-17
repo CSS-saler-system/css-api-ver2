@@ -24,8 +24,8 @@ public class ModeratorFeedbackController {
 
     @GetMapping(V4_FEEDBACK_PAGE)
     public ResponseEntity<?> pageFeedback(
-            @RequestParam("pageSize") Integer pageSize,
-            @RequestParam("pageNumber") Integer pageNumber) {
+            @RequestParam(value = "pageSize", required = false) Integer pageSize,
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber) {
         PageImplResDto<FeedBackPageModeraterResDto> res =
                 this.feedBackService.getPageFeedBackForModerator(pageSize, pageNumber);
         return ok(res);
