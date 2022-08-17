@@ -34,6 +34,7 @@ public interface AccountMapper {
             AccountUpdaterJsonDto accountDto, @MappingTarget Account account);
 
     Account enterpriseSignUpDtoToAccount(EnterpriseSignUpDto enterpriseSignUpDto);
+    EnterpriseSignUpDto accountToSignUpDto(Account account);
 
     EnterpriseSignUpDto accountToEnterpriseSignUpDto(Account account);
 

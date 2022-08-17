@@ -54,10 +54,11 @@ public interface AccountService {
 
     List<CollaboratorResDto> awardCollaboratorByCampaign(UUID campaign);
 
-    Optional<UUID> singUpEnterprise(EnterpriseSignUpDto enterprise);
+    Optional<UUID> singUpEnterprise(EnterpriseSignUpDto enterprise, MultipartFile avatar, MultipartFile licences);
 
     Optional<AccountResDto> getProfile(UUID accountId);
 
     UUID updateCollaboratorProfiles(UUID collaboratorId, AccountCollaboratorUpdaterDto accountUpdaterJsonDto, MultipartFile avatar);
 
+    EnterpriseSignUpDto getByIdSignup(UUID id);
 }

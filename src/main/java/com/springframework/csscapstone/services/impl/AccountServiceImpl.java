@@ -423,6 +423,7 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * TODO Update Account for Collaborator
+     *
      * @param reqUpdateDto
      * @return
      * @throws AccountInvalidException
@@ -447,6 +448,7 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * todo for admin disable account
+     *
      * @param id
      */
     @Transactional
@@ -461,23 +463,52 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * create account
+     *
      * @param enterprise
      * @return
      */
     @Override
-    public Optional<UUID> singUpEnterprise(EnterpriseSignUpDto enterprise) {
+    public Optional<UUID> singUpEnterprise(
+            EnterpriseSignUpDto enterprise, MultipartFile avatar, MultipartFile licences) {
+
         Account account = AccountMapper.INSTANCE.enterpriseSignUpDtoToAccount(enterprise);
 
-        this.accountRepository
-                .findAccountByEmail(account.getEmail())
-                .ifPresent(duplicationEmailException.apply(account.getEmail()));
+        Optional<Account> accountByEmail = this.accountRepository
+                .findAccountByEmail(account.getEmail());
 
-        this.accountRepository.findAccountByPhone(account.getPhone())
-                .ifPresent(duplicationPhoneException.apply(account.getPhone()));
+        Optional<Account> accountByPhone = this.accountRepository
+                .findAccountByPhone(account.getPhone());
+
+        if (accountByEmail.isPresent()) {
+            duplicationEmailException.apply(account.getEmail());
+        }
+
+        if (accountByPhone.isPresent()) {
+            duplicationPhoneException.apply(account.getPhone());
+        }
 
         Account savedAccount = this.accountRepository.save(account);
+
+        if (nonNull(avatar)) {
+            saveAccountImageEntity(avatar, savedAccount.getId(), AccountImageType.AVATAR)
+                    .ifPresent(savedAccount::addImage);
+        }
+
+        if (nonNull(licences)) {
+            saveAccountImageEntity(licences, savedAccount.getId(), AccountImageType.ID_CARD)
+                    .ifPresent(savedAccount::addImage);
+        }
+
+        this.accountRepository.save(savedAccount);
         clearCache();
         return Optional.of(savedAccount.getId());
+    }
+
+    @Override
+    public EnterpriseSignUpDto getByIdSignup(UUID id) {
+        return this.accountRepository.findById(id)
+                .map(AccountMapper.INSTANCE::accountToSignUpDto)
+                .orElseThrow(() -> new EntityNotFoundException("Not found!!!"));
     }
 
     @Transactional
@@ -502,6 +533,7 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * todo create AccountImage
+     *
      * @param avatars
      * @param licenses
      * @param idCards
@@ -589,6 +621,7 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * todo Create save Account-Image
+     *
      * @param images
      * @return
      */

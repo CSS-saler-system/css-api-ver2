@@ -7,13 +7,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import com.springframework.csscapstone.data.domain.AccountImage;
-import com.springframework.csscapstone.payload.basic.AccountImageBasicDto;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.List;
 
 @Data
 public class EnterpriseSignUpDto implements Serializable {
@@ -27,7 +24,7 @@ public class EnterpriseSignUpDto implements Serializable {
     private final String email;
     private final String address;
     private final String description;
-    private final List<AccountImageBasicDto> images;
+//    private final List<AccountImageBasicDto> images;
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public EnterpriseSignUpDto(
@@ -36,14 +33,15 @@ public class EnterpriseSignUpDto implements Serializable {
             @JsonProperty("phone") String phone,
             @JsonProperty("email") String email,
             @JsonProperty("address") String address,
-            @JsonProperty("description") String description,
-            @JsonProperty("images") List<AccountImageBasicDto> images) {
+            @JsonProperty("description") String description
+//            @JsonProperty("images") List<AccountImageBasicDto> images
+    ) {
         this.name = name;
         this.dob = dob;
         this.phone = phone;
         this.email = email;
         this.address = address;
         this.description = description;
-        this.images = images;
+//        this.images = images;
     }
 }

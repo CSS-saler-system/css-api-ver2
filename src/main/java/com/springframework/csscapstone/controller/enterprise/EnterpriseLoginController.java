@@ -1,9 +1,12 @@
 package com.springframework.csscapstone.controller.enterprise;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.springframework.csscapstone.payload.request_dto.enterprise.EnterpriseSignUpDto;
 import com.springframework.csscapstone.services.AccountService;
 import com.springframework.csscapstone.services.LoginService;
+import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountInvalidException;
 import com.springframework.csscapstone.utils.security_provider_utils.TokenProvider;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -12,14 +15,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Optional;
+import javax.security.auth.login.AccountNotFoundException;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -47,11 +49,24 @@ public class EnterpriseLoginController {
         return new ResponseEntity<>(userDetails, HttpStatus.OK);
     }
 
-    @PostMapping(ENTERPRISE_SIGNUP)
-    public ResponseEntity<?> singupEnterprise(@RequestBody EnterpriseSignUpDto enterprise) {
-        Optional<UUID> uuid = this.accountService.singUpEnterprise(enterprise);
-        UUID result = uuid.orElseThrow(somethingWrongException);
+    @PostMapping(
+            value = ENTERPRISE_SIGNUP,
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> singupEnterprise(
+            @RequestPart("enterpriseDto") String enterpriseString,
+            @RequestPart("avatar") MultipartFile avatar,
+            @RequestPart("businessLicences") MultipartFile licences) throws JsonProcessingException {
+        EnterpriseSignUpDto enterprise = new ObjectMapper().readValue(enterpriseString, EnterpriseSignUpDto.class);
+        UUID result = this.accountService
+                .singUpEnterprise(enterprise, avatar, licences)
+                .orElseThrow(somethingWrongException);
         return ok(result);
+    }
+
+    @GetMapping(ENTERPRISE_GET_SIGNUP + "/{accountId}")
+    public ResponseEntity<?> getAccountById(@PathVariable("accountId") UUID id)
+            throws AccountInvalidException, AccountNotFoundException {
+        return ok(accountService.getByIdSignup(id));
     }
 
     private final Supplier<RuntimeException> somethingWrongException = () -> new RuntimeException("Something went wrong during sign up account");

@@ -14,6 +14,7 @@ public class ApiEndPoint {
     public static final String COLLABORATOR_LOGIN = COLLABORATOR + "/login";
     public static final String ENTERPRISE_LOGIN = ENTERPRISE + "/login";
     public static final String ENTERPRISE_SIGNUP = ENTERPRISE + "/singup";
+    public static final String ENTERPRISE_GET_SIGNUP = ENTERPRISE + "/get-test-singup";
 
     public static final String MODERATOR_LOGIN = MODERATOR + "/login";
 
@@ -205,6 +206,8 @@ public class ApiEndPoint {
         public static final String V2_ORDER_COMPLETE = v2_handler + "/complete";
         public static final String V2_ORDER_LIST_BY_ENTERPRISE = v2_handler + "/list";
         public static final String  V2_ORDER_GET = v2_handler + "/get";
+        public static final String  V2_ORDER_TOTAL = v2_handler + "/total";
+        public static final String  V2_ORDER_SUCCESS = v2_handler + "/success";
         public static final String V2_REVENUE_DASHBOARD = v2_handler + "/revenue";
         public static final String V3_ORDER_CREATE = v3_handler + "/new";
         public static final String V3_ORDER_GET = v3_handler + "/get";
