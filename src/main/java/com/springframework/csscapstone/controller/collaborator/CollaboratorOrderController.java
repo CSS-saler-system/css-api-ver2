@@ -58,7 +58,7 @@ public class CollaboratorOrderController {
         return ok(uuid);
     }
 
-    @DeleteMapping(V3_ORDER_DELETE + "{orderId}")
+    @DeleteMapping(V3_ORDER_DELETE + "/{orderId}")
     public ResponseEntity<?> deleteOrderById(
             @PathVariable("orderId") UUID id
     ) {
