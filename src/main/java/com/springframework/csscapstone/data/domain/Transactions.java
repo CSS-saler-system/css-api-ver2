@@ -30,7 +30,7 @@ public class Transactions {
     @CreatedDate
     private LocalDateTime createTransactionDate;
     @LastModifiedDate
-    private LocalDateTime LastModifiedDate;
+    private LocalDateTime lastModifiedDate;
 
     @OneToMany(mappedBy = "transactions")
     private List<BillImage> billImage = new ArrayList<>();
@@ -69,7 +69,7 @@ public class Transactions {
         return "Transactions{" +
                 "id=" + id +
                 ", createTransaction=" + createTransactionDate +
-                ", LastModifiedDate=" + LastModifiedDate +
+                ", LastModifiedDate=" + lastModifiedDate +
                 ", billImage=" + billImage +
                 ", point=" + point +
                 ", transactionStatus=" + transactionStatus +

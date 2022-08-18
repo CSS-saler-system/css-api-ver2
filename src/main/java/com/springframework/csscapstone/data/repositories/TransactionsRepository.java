@@ -21,15 +21,15 @@ public interface TransactionsRepository
             "SELECT t " +
                     "FROM Transactions t " +
                     "WHERE t.transactionCreator.id = :id " +
-                    "AND t.LastModifiedDate >= :startDate " +
-                    "AND t.LastModifiedDate <= :endDate " +
+                    "AND t.lastModifiedDate >= :startDate " +
+                    "AND t.lastModifiedDate <= :endDate " +
                     "AND NOT t.transactionStatus = :status",
             countQuery =
                     "SELECT count(t) " +
                             "FROM Transactions t " +
                             "WHERE t.transactionCreator.id = :id " +
-                            "AND t.LastModifiedDate >= :startDate " +
-                            "AND t.LastModifiedDate <= :endDate " +
+                            "AND t.lastModifiedDate >= :startDate " +
+                            "AND t.lastModifiedDate <= :endDate " +
                             "AND NOT t.transactionStatus = :status")
     Page<Transactions> findAllByDate(
             @Param("id") UUID id,
