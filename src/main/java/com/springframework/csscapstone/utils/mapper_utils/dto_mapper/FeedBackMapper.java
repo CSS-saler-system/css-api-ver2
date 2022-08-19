@@ -4,6 +4,7 @@ import com.springframework.csscapstone.data.domain.FeedBack;
 import com.springframework.csscapstone.payload.request_dto.FeedBackCreatorReqDto;
 import com.springframework.csscapstone.payload.response_dto.admin.FeedBackModeratorFeedbackDetailResDto;
 import com.springframework.csscapstone.payload.response_dto.admin.FeedBackPageModeraterResDto;
+import com.springframework.csscapstone.payload.response_dto.collaborator.FeedBackCollaboratorListDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.FeedBackEnterpriseDetailResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.FeedBackPageEnterpriseResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.FeedBackPageForEnterpriseResDto;
@@ -56,4 +57,11 @@ public interface FeedBackMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     FeedBack updateFeedBackFromFeedBackPageEnterpriseResDto(FeedBackPageEnterpriseResDto feedBackPageEnterpriseResDto, @MappingTarget FeedBack feedBack);
+
+    FeedBack feedBackCollaboratorListDtoToFeedBack(FeedBackCollaboratorListDto feedBackCollaboratorListDto);
+
+    FeedBackCollaboratorListDto feedBackToFeedBackCollaboratorListDto(FeedBack feedBack);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    FeedBack updateFeedBackFromFeedBackCollaboratorListDto(FeedBackCollaboratorListDto feedBackCollaboratorListDto, @MappingTarget FeedBack feedBack);
 }

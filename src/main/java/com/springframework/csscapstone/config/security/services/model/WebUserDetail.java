@@ -76,6 +76,22 @@ public class WebUserDetail implements UserDetails {
         return this.jwt;
     }
 
+    //    @JsonIgnore
+    @JsonProperty("isActive")
+    @Override
+    public boolean isEnabled() {
+        return entity.getIsActive();
+    }
+
+    @JsonProperty("avatar")
+    public String getImage() {
+        return entity.getImages().
+                stream()
+                .filter(image -> image.getType().equals(AccountImageType.AVATAR))
+                .map(AccountImage::getPath)
+                .findFirst().orElse("");
+    }
+
     @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
@@ -92,21 +108,5 @@ public class WebUserDetail implements UserDetails {
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
-    }
-
-    //    @JsonIgnore
-    @JsonProperty("isActive")
-    @Override
-    public boolean isEnabled() {
-        return entity.getIsActive();
-    }
-
-    @JsonProperty("avatar")
-    public String getImage() {
-        return entity.getImages().
-                stream()
-                .filter(image -> image.getType().equals(AccountImageType.AVATAR))
-                .map(AccountImage::getPath)
-                .findFirst().orElse("");
     }
 }

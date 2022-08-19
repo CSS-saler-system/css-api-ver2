@@ -21,7 +21,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.security.auth.login.AccountNotFoundException;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -65,7 +64,7 @@ public class EnterpriseLoginController {
 
     @GetMapping(ENTERPRISE_GET_SIGNUP + "/{accountId}")
     public ResponseEntity<?> getAccountById(@PathVariable("accountId") UUID id)
-            throws AccountInvalidException, AccountNotFoundException {
+            throws AccountInvalidException {
         return ok(accountService.getByIdSignup(id));
     }
 

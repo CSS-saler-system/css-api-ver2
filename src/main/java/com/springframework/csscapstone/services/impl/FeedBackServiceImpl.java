@@ -9,6 +9,7 @@ import com.springframework.csscapstone.payload.request_dto.FeedBackCreatorReqDto
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.admin.FeedBackModeratorFeedbackDetailResDto;
 import com.springframework.csscapstone.payload.response_dto.admin.FeedBackPageModeraterResDto;
+import com.springframework.csscapstone.payload.response_dto.collaborator.FeedBackCollaboratorListDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.FeedBackEnterpriseDetailResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.FeedBackPageEnterpriseResDto;
 import com.springframework.csscapstone.services.FeedBackService;
@@ -88,6 +89,14 @@ public class FeedBackServiceImpl implements FeedBackService {
                 .collect(Collectors.toList());
         return new PageImplResDto<>(list, page.getNumber() + 1, list.size(),
                 page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
+    }
+
+    @Override
+    public List<FeedBackCollaboratorListDto> getAllListFeedBackCollaborator(UUID collaboratorId) {
+        List<FeedBack> result = this.feedBackRepository.findAllByCreator_Id(collaboratorId);
+        return result.stream()
+                .map(FeedBackMapper.INSTANCE::feedBackToFeedBackCollaboratorListDto)
+                .collect(Collectors.toList());
     }
 
     @Override

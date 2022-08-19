@@ -4,9 +4,11 @@ import com.springframework.csscapstone.payload.request_dto.FeedBackCreatorReqDto
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.admin.FeedBackModeratorFeedbackDetailResDto;
 import com.springframework.csscapstone.payload.response_dto.admin.FeedBackPageModeraterResDto;
+import com.springframework.csscapstone.payload.response_dto.collaborator.FeedBackCollaboratorListDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.FeedBackEnterpriseDetailResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.FeedBackPageEnterpriseResDto;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface FeedBackService {
@@ -36,4 +38,7 @@ public interface FeedBackService {
     FeedBackModeratorFeedbackDetailResDto getFeedbackDetailForModerator(UUID id);
 
     PageImplResDto<FeedBackPageEnterpriseResDto> getPageFeedBackForEnterprise(UUID enterpriseId, Integer pageSize, Integer pageNumber);
+
+    List<FeedBackCollaboratorListDto> getAllListFeedBackCollaborator(UUID collaboratorId);
+
 }

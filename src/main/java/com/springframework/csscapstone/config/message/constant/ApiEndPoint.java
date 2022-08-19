@@ -277,6 +277,7 @@ public class ApiEndPoint {
 
         public static final String V3_FEEDBACK_CREATE = v3_handler + "/create";
         public static final String V3_FEEDBACK_DETAIL = v3_handler + "/detail";
+        public static final String V3_FEEDBACK_LIST = v3_handler + "/list";
     }
 
 }

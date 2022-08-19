@@ -6,10 +6,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface FeedBackRepository extends JpaRepository<FeedBack, UUID>, JpaSpecificationExecutor<FeedBack> {
 
-    Page<FeedBack> findAllByCreator_Id(UUID id, Pageable pageable);
+    Page<FeedBack> findAllByCreator_Id(UUID enterpriseId, Pageable pageable);
+
+    List<FeedBack> findAllByCreator_Id(UUID collaboratorId);
 
 }
