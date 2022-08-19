@@ -66,7 +66,7 @@ public class PrizeServiceImpl implements PrizeService {
                 .and(PrizeSpecifications.excludeDisableStatus());
 
         pageNumber = nonNull(pageNumber) && pageNumber > 1 ? pageNumber : 1;
-        pageSize = nonNull(pageSize) && pageSize > 1 ? pageSize : 10;
+        pageSize = nonNull(pageSize) && pageSize > 1 ? pageSize : Integer.MAX_VALUE;
 
         Page<Prize> result = this.prizeRepository
                 .findAll(prizeSpecifications, PageRequest.of(pageNumber - 1, pageSize, Sort.by(Prize_.NAME).ascending()));
