@@ -36,4 +36,9 @@ public class TransactionSpecifications {
                 criteriaBuilder.equal(root.get(Transactions_.TRANSACTION_CREATOR).get(Account_.ID), enterpriseId);
     }
 
+    public static Specification<Transactions> excludeStatusDisable() {
+        return (root, query, criteriaBuilder) -> criteriaBuilder
+                .notEqual(root.get(Transactions_.TRANSACTION_STATUS), TransactionStatus.DISABLED);
+    }
+
 }

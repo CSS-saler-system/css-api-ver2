@@ -75,10 +75,12 @@ public class TransactionServicesImpl implements TransactionServices {
                 .where(Objects.isNull(status) ? null : TransactionSpecifications.equalsStatus(status))
                 .and(Objects.isNull(createDate) ? null : TransactionSpecifications.afterDate(createDate))
                 .and(Objects.isNull(modifiedDate) ? null : TransactionSpecifications.afterDate(modifiedDate))
-                .and(TransactionSpecifications.equalsEnterpriseId(enterpriseId));
+                .and(TransactionSpecifications.equalsEnterpriseId(enterpriseId))
+                .and(TransactionSpecifications.excludeStatusDisable());
 
         Page<Transactions> page = this.transactionsRepository
-                .findAll(specification, PageRequest.of(pageNumber - 1, pageSize, Sort.by(Transactions_.LAST_MODIFIED_DATE).descending()));
+                .findAll(specification, PageRequest.of(pageNumber - 1, pageSize,
+                        Sort.by(Transactions_.LAST_MODIFIED_DATE).descending()));
 
         page.getContent().forEach(System.out::println);
         List<TransactionsDto> collect = page.getContent()
