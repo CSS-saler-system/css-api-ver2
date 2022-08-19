@@ -115,7 +115,7 @@ public class AccountServiceImpl implements AccountService {
             () -> new EntityNotFoundException(MessagesUtils.getMessage(MessageConstant.Account.NOT_FOUND));
     //    private final Supplier<Role> getDefaultRoleSupplier = () -> new Role("ROLE_3", "Collaborator");
     private final Function<String, Consumer<Account>> duplicationEmailException = email -> {
-        throw new RuntimeException("The email: " + email + " was existed!!!");
+        throw new RuntimeException("The email: " + email + " was not existed!!!");
     };
     private final Function<String, Consumer<Account>> duplicationPhoneException = email -> {
         throw new RuntimeException("The email: " + email + " was existed!!!");
@@ -448,7 +448,6 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * todo for admin disable account
-     *
      * @param id
      */
     @Transactional
@@ -479,7 +478,7 @@ public class AccountServiceImpl implements AccountService {
         Optional<Account> accountByPhone = this.accountRepository
                 .findAccountByPhone(account.getPhone());
 
-        if (accountByEmail.isPresent()) {
+        if (accountByEmail.isEmpty()) {
             duplicationEmailException.apply(account.getEmail());
         }
 

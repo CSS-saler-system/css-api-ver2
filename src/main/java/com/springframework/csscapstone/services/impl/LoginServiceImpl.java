@@ -90,7 +90,10 @@ public class LoginServiceImpl implements LoginService {
             return accountByEmail.map(getTokenForEnterprise).get();
         }
 
-        Account account = new Account().setEmail(email).setPoint(0.0).setPhone("0000-0000-0000");
+        Account account = new Account()
+                .setEmail(email).setPoint(0.0)
+                .setPhone("0000-0000-0000")
+                .setIsActive(false);
 
         Account savedAccount = accountRepository.save(account
                 .addRole(this.roleRepository.getById("ROLE_2")));
@@ -98,8 +101,6 @@ public class LoginServiceImpl implements LoginService {
         return new WebUserDetail(savedAccount, this.jwtTokenProvider.generateJwtTokenForCollaborator(
                 account.getRole().getName(),
                 account.getEmail()));
-
-//        throw new BadCredentialsException("email or password was wrong");
     }
 
     /**
