@@ -1,5 +1,6 @@
 package com.springframework.csscapstone.controller.enterprise;
 
+import com.springframework.csscapstone.data.status.FeedbackStatus;
 import com.springframework.csscapstone.payload.request_dto.FeedBackCreatorReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.FeedBackEnterpriseDetailResDto;
@@ -36,11 +37,12 @@ public class EnterpriseFeedbackController {
     @GetMapping(V2_FEEDBACK_PAGE + "/{enterpriseId}")
     public ResponseEntity<?> getPageFeedBack(
             @PathVariable("enterpriseId") UUID enterpriseId,
+            @RequestParam(value = "status", required = false) FeedbackStatus status,
             @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
             @RequestParam(value = "pageSize", required = false) Integer pageSize
             ) {
         PageImplResDto<FeedBackPageEnterpriseResDto> res = this.feedBackService
-                .getPageFeedBackForEnterprise(enterpriseId, pageSize, pageNumber);
+                .getPageFeedBackForEnterprise(enterpriseId, status, pageSize, pageNumber);
         return ok(res);
     }
 

@@ -1,5 +1,6 @@
 package com.springframework.csscapstone.services;
 
+import com.springframework.csscapstone.data.status.FeedbackStatus;
 import com.springframework.csscapstone.payload.request_dto.FeedBackCreatorReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.admin.FeedBackModeratorFeedbackDetailResDto;
@@ -37,7 +38,8 @@ public interface FeedBackService {
      */
     FeedBackModeratorFeedbackDetailResDto getFeedbackDetailForModerator(UUID id);
 
-    PageImplResDto<FeedBackPageEnterpriseResDto> getPageFeedBackForEnterprise(UUID enterpriseId, Integer pageSize, Integer pageNumber);
+    PageImplResDto<FeedBackPageEnterpriseResDto> getPageFeedBackForEnterprise(
+            UUID enterpriseId, FeedbackStatus status, Integer pageSize, Integer pageNumber);
 
     List<FeedBackCollaboratorListDto> getAllListFeedBackCollaborator(UUID collaboratorId);
 

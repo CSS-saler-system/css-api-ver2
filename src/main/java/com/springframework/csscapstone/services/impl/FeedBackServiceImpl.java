@@ -1,7 +1,9 @@
 package com.springframework.csscapstone.services.impl;
 
+import com.springframework.csscapstone.data.dao.specifications.FeedBackSpecifications;
 import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.FeedBack;
+import com.springframework.csscapstone.data.domain.FeedBack_;
 import com.springframework.csscapstone.data.repositories.AccountRepository;
 import com.springframework.csscapstone.data.repositories.FeedBackRepository;
 import com.springframework.csscapstone.data.status.FeedbackStatus;
@@ -18,6 +20,8 @@ import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.FeedBackMap
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +32,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 @Service
 @RequiredArgsConstructor
@@ -78,10 +83,17 @@ public class FeedBackServiceImpl implements FeedBackService {
     }
 
     @Override
-    public PageImplResDto<FeedBackPageEnterpriseResDto> getPageFeedBackForEnterprise(UUID enterpriseId, Integer pageSize, Integer pageNumber) {
+    public PageImplResDto<FeedBackPageEnterpriseResDto> getPageFeedBackForEnterprise(UUID enterpriseId, FeedbackStatus status, Integer pageSize, Integer pageNumber) {
         pageSize = isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
         pageNumber = isNull(pageNumber) || pageNumber < 1 ? 10 : pageNumber;
-        Page<FeedBack> page = this.feedBackRepository.findAllByCreator_Id(enterpriseId, PageRequest.of(pageNumber - 1, pageSize));
+
+        Specification<FeedBack> condition = Specification.where(FeedBackSpecifications.equalsByEnterpriseId(enterpriseId))
+                .and(nonNull(status) ? FeedBackSpecifications.equalsStatus(status) : null);
+
+        Page<FeedBack> page = this.feedBackRepository
+                .findAll(condition, PageRequest.of(pageNumber - 1, pageSize,
+                        Sort.by(FeedBack_.CREATE_DATE).descending().and(Sort.by(FeedBack_.REPLY_DATE).descending())));
+
         List<FeedBackPageEnterpriseResDto> list = page.getContent()
                 .stream()
                 .map(FeedBackMapper.INSTANCE::feedBackToFeedBackPageEnterpriseResDto)
