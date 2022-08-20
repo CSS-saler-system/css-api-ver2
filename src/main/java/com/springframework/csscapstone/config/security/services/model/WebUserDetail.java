@@ -54,7 +54,9 @@ public class WebUserDetail implements UserDetails {
     }
 
     @JsonProperty("name")
-    public String name;
+    public String name() {
+        return entity.getName();
+    }
 
 //    @JsonProperty("dob")
 //    @JsonSerialize(using = LocalDateSerializer.class)
@@ -63,13 +65,19 @@ public class WebUserDetail implements UserDetails {
 //    public LocalDate dob;
 
     @JsonProperty("phone")
-    public String phone;
+    public String phone() {
+        return entity.getPhone();
+    }
 
     @JsonProperty("description")
-    public String description;
+    public String description() {
+        return entity.getDescription();
+    }
 
     @JsonProperty("address")
-    public String address;
+    public String address() {
+        return this.entity.getAddress();
+    }
 
     @JsonProperty("jwt_token")
     public String getJwtToken() {

@@ -90,6 +90,7 @@ public class LoginServiceImpl implements LoginService {
                 account.addRegistration(savedToken);
             }
             System.out.println("The last one code of if block");
+            System.out.println("This is account by emial: " + accountByEmail.get());
             return accountByEmail.map(getTokenForEnterprise).get();
         }
 

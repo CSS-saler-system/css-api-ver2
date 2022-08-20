@@ -53,8 +53,8 @@ public class EnterpriseLoginController {
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> singupEnterprise(
             @RequestPart("enterpriseDto") String enterpriseString,
-            @RequestPart("avatar") MultipartFile avatar,
-            @RequestPart("businessLicences") MultipartFile licences) throws JsonProcessingException {
+            @RequestPart(value = "avatar", required = false) MultipartFile avatar,
+            @RequestPart(value = "businessLicences", required = false) MultipartFile licences) throws JsonProcessingException {
         EnterpriseSignUpDto enterprise = new ObjectMapper().readValue(enterpriseString, EnterpriseSignUpDto.class);
         UUID result = this.accountService
                 .singUpEnterprise(enterprise, avatar, licences)
