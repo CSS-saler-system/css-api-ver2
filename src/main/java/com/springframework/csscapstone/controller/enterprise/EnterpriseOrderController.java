@@ -38,6 +38,13 @@ public class EnterpriseOrderController {
         return ok(uuid);
     }
 
+    @PutMapping(V2_ORDER_UPDATE_STATUS + "/{orderId}")
+    public ResponseEntity<?> updateStatusOrder(
+            @PathVariable("orderId") UUID id) {
+        Optional<UUID> uuid = this.orderService.updateStatusOrder(id, OrderStatus.PROCESSING);
+        return ok(uuid);
+    }
+
     @PutMapping(V2_ORDER_COMPLETE + "/{orderId}")
     public ResponseEntity<?> completeOrder(@PathVariable("orderId") UUID orderId) {
         this.orderService.completedOrder(orderId);
@@ -64,7 +71,10 @@ public class EnterpriseOrderController {
     }
 
 //    @GetMapping(V2_ORDER_TOTAL + "/{enterpriseId}")
-//    public ResponseEntity<?> getTotalOrderByIdEnterprise(@PathVariable("enterpriseId") UUID enterpriseId) {
+//    public ResponseEntity<?> getTotalOrderByIdEnterprise(
+//            @PathVariable("enterpriseId") UUID enterpriseId
+//            @RequestParam("")
+//    ) {
 //        this.orderService.getTotalOrderByEnterpriseId(enterpriseId);
 //    }
 //    @GetMapping(V2_ORDER_SUCCESS + "/{enterpriseId}")
