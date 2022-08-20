@@ -506,9 +506,28 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public EnterpriseSignUpDto getByIdSignup(UUID id) {
+    public EnterpriseLofiginTestResDto getByIdSignup(UUID id) {
         return this.accountRepository.findById(id)
-                .map(AccountMapper.INSTANCE::accountToSignUpDto)
+//                .map(AccountMapper.INSTANCE::accountToEnterpriseLofiginTestResDto)
+                .map(account -> new EnterpriseLofiginTestResDto(
+                        account.getId(),
+                        account.getName(),
+                        account.getPhone(),
+                        account.getEmail(),
+                        account.getAddress(),
+                        account.getDescription(),
+                        account.getPoint(),
+                        new EnterpriseLofiginTestResDto.AccountImageDto(
+                                account.getAvatar().getId(),
+                                account.getAvatar().getType(),
+                                account.getAvatar().getPath()
+                                ),
+                        new EnterpriseLofiginTestResDto.AccountImageDto(
+                                account.getLicense().getId(),
+                                account.getLicense().getType(),
+                                account.getLicense().getPath()
+                                )
+                ))
                 .orElseThrow(() -> new EntityNotFoundException("Not found!!!"));
     }
 

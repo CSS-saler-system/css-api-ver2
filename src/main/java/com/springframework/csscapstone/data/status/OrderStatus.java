@@ -6,6 +6,7 @@ public enum OrderStatus {
     DISABLED, //delete
     //collaborator
     CANCELED,
+    REJECTED,
     WAITING,//delete
     PROCESSING
 }

@@ -1,6 +1,7 @@
 package com.springframework.csscapstone.utils.mapper_utils.dto_mapper;
 
 import com.springframework.csscapstone.data.domain.Account;
+import com.springframework.csscapstone.data.domain.EnterpriseLofiginTestResDto;
 import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.collaborator.AccountCollaboratorUpdaterDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.EnterpriseSignUpDto;
@@ -34,6 +35,7 @@ public interface AccountMapper {
             AccountUpdaterJsonDto accountDto, @MappingTarget Account account);
 
     Account enterpriseSignUpDtoToAccount(EnterpriseSignUpDto enterpriseSignUpDto);
+
     EnterpriseSignUpDto accountToSignUpDto(Account account);
 
     EnterpriseSignUpDto accountToEnterpriseSignUpDto(Account account);

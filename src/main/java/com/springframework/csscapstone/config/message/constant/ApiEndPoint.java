@@ -203,6 +203,8 @@ public class ApiEndPoint {
         private static final String v3_handler = COLLABORATOR + "/order";
 
         public static final String V2_ORDER_UPDATE_STATUS = v2_handler + "/order";
+        public static final String V2_ORDER_REJECT_STATUS = v2_handler + "/order/reject";
+        public static final String V2_ORDER_CANCEL_STATUS = v2_handler + "/order/cancel";
         public static final String V2_ORDER_COMPLETE = v2_handler + "/complete";
         public static final String V2_ORDER_LIST_BY_ENTERPRISE = v2_handler + "/list";
         public static final String  V2_ORDER_GET = v2_handler + "/get";

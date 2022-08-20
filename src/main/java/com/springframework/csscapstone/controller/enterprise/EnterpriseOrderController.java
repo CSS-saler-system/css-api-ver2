@@ -24,11 +24,17 @@ import static org.springframework.http.ResponseEntity.ok;
 public class EnterpriseOrderController {
     private final OrderService orderService;
 
-    @PutMapping(V2_ORDER_UPDATE_STATUS + "/{orderId}")
-    public ResponseEntity<?> updateStatusOrder(
-            @PathVariable("orderId") UUID id,
-            @RequestParam(value = "status", defaultValue = "PROCESSING") OrderStatus status) {
-        Optional<UUID> uuid = this.orderService.updateStatusOrder(id, status);
+    @PutMapping(V2_ORDER_REJECT_STATUS + "/{orderId}")
+    public ResponseEntity<?> rejecctStatusOrder(
+            @PathVariable("orderId") UUID id) {
+        Optional<UUID> uuid = this.orderService.updateStatusOrder(id, OrderStatus.REJECTED);
+        return ok(uuid);
+    }
+
+    @PutMapping(V2_ORDER_CANCEL_STATUS + "/{orderId}")
+    public ResponseEntity<?> cancelStatusOrder(
+            @PathVariable("orderId") UUID id) {
+        Optional<UUID> uuid = this.orderService.updateStatusOrder(id, OrderStatus.CANCELED);
         return ok(uuid);
     }
 
