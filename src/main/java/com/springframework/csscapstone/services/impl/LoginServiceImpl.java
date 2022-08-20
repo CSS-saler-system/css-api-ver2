@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Service
@@ -79,14 +80,16 @@ public class LoginServiceImpl implements LoginService {
         if (accountByEmail.isPresent()) {
 
             Account account = accountByEmail.get();
-
+            if (isNull(account.getRole())) {
+                accountRepository.save(account.addRole(this.roleRepository.getById("ROLE_2")));
+            }
             //todo save registration token
             if (StringUtils.isNotEmpty(registrationToken) || !registrationToken.equals("string")) {
                 AccountToken token = new AccountToken(registrationToken);
                 AccountToken savedToken = this.accountTokenRepository.save(token);
                 account.addRegistration(savedToken);
             }
-
+            System.out.println("The last one code of if block");
             return accountByEmail.map(getTokenForEnterprise).get();
         }
 
@@ -95,9 +98,10 @@ public class LoginServiceImpl implements LoginService {
                 .setPhone("0000-0000-0000")
                 .setIsActive(false);
 
-        Account savedAccount = accountRepository.save(account
+        Account savedAccount = accountRepository.save(
+                account
                 .addRole(this.roleRepository.getById("ROLE_2")));
-
+        System.out.println("The last one code");
         return new WebUserDetail(savedAccount, this.jwtTokenProvider.generateJwtTokenForCollaborator(
                 account.getRole().getName(),
                 account.getEmail()));
