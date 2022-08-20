@@ -56,11 +56,11 @@ public class WebUserDetail implements UserDetails {
     @JsonProperty("name")
     public String name;
 
-    @JsonProperty("dob")
-    @JsonSerialize(using = LocalDateSerializer.class)
-    @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    public LocalDate dob;
+//    @JsonProperty("dob")
+//    @JsonSerialize(using = LocalDateSerializer.class)
+//    @JsonDeserialize(using = LocalDateDeserializer.class)
+//    @JsonFormat(pattern = "yyyy-MM-dd")
+//    public LocalDate dob;
 
     @JsonProperty("phone")
     public String phone;

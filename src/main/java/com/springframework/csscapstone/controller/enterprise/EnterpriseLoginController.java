@@ -48,7 +48,7 @@ public class EnterpriseLoginController {
         return new ResponseEntity<>(userDetails, HttpStatus.OK);
     }
 
-    @PostMapping(
+    @PutMapping(
             value = ENTERPRISE_SIGNUP,
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> singupEnterprise(

@@ -114,7 +114,7 @@ public class AccountServiceImpl implements AccountService {
     private final Supplier<EntityNotFoundException> handlerAccountNotFound =
             () -> new EntityNotFoundException(MessagesUtils.getMessage(MessageConstant.Account.NOT_FOUND));
     //    private final Supplier<Role> getDefaultRoleSupplier = () -> new Role("ROLE_3", "Collaborator");
-    private final Function<String, Consumer<Account>> duplicationEmailException = email -> {
+    private final Function<String, Consumer<Account>> notExistedEmailException = email -> {
         throw new RuntimeException("The email: " + email + " was not existed!!!");
     };
     private final Function<String, Consumer<Account>> duplicationPhoneException = email -> {
@@ -470,23 +470,24 @@ public class AccountServiceImpl implements AccountService {
     public Optional<UUID> singUpEnterprise(
             EnterpriseSignUpDto enterprise, MultipartFile avatar, MultipartFile licences) {
 
-        Account account = AccountMapper.INSTANCE.enterpriseSignUpDtoToAccount(enterprise);
-
         Optional<Account> accountByEmail = this.accountRepository
-                .findAccountByEmail(account.getEmail());
+                .findAccountByEmail(enterprise.getEmail());
+
+        System.out.println("This is acccount: " + accountByEmail);
 
         Optional<Account> accountByPhone = this.accountRepository
-                .findAccountByPhone(account.getPhone());
+                .findAccountByPhone(enterprise.getPhone());
 
-        if (accountByEmail.isEmpty()) {
-            duplicationEmailException.apply(account.getEmail());
+        if (!accountByEmail.isPresent()) {
+            notExistedEmailException.apply(enterprise.getEmail());
         }
+
+        Account savedAccount = this.accountRepository.save(AccountMapper.INSTANCE.updateAccountFromEnterpriseSignUpDto(enterprise, accountByEmail.get()));
+        System.out.println("This is savedAccount; " + savedAccount);
 
         if (accountByPhone.isPresent()) {
-            duplicationPhoneException.apply(account.getPhone());
+            duplicationPhoneException.apply(enterprise.getPhone());
         }
-
-        Account savedAccount = this.accountRepository.save(account);
 
         if (nonNull(avatar)) {
             saveAccountImageEntity(avatar, savedAccount.getId(), AccountImageType.AVATAR)
