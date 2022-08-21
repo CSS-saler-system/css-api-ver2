@@ -92,7 +92,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderResDto getOrderResDtoById(UUID id) {
         return this.orderRepository.findById(id)
                 .filter(order -> !order.getStatus().equals(OrderStatus.DISABLED))
-                .map(MapperDTO.INSTANCE::toOrderResDto)
+                .map(getOrderOrderResDtoFunction())
                 .orElseThrow(orderNotFound.apply(id));
     }
 
@@ -115,17 +115,24 @@ public class OrderServiceImpl implements OrderService {
 
         Page<Order> orders = this.orderRepository
                 .findAll(conditions,
-                        PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize,
-                                Sort.by(Order_.CREATE_DATE).descending()));
-
+                        PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize, Sort.by(Order_.CREATE_DATE).descending()));
         List<OrderResDto> content = orders
                 .getContent()
                 .stream()
-                .map(MapperDTO.INSTANCE::toOrderResDto)
+                .map(getOrderOrderResDtoFunction())
                 .collect(Collectors.toList());
 
         return new PageImplResDto<>(content, orders.getNumber() + SHIFT_TO_ACTUAL_PAGE, content.size(),
                 orders.getTotalElements(), orders.getTotalPages(), orders.isFirst(), orders.isLast());
+    }
+
+    private static Function<Order, OrderResDto> getOrderOrderResDtoFunction() {
+        return order -> {
+            AccountImage avatar = order.getOrderDetails().get(0).getProduct().getAccount().getAvatar();
+            AccountImageBasicVer2Dto image = AccountImageMapper.INSTANCE.accountImageToAccountImageBasicVer2Dto(avatar);
+            OrderResDto orderResDto = MapperDTO.INSTANCE.toOrderResDto(order, image);
+            return orderResDto;
+        };
     }
 
     @Transactional

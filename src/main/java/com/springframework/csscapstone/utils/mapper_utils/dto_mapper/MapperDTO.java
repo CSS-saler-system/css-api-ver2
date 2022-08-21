@@ -38,7 +38,10 @@ public interface MapperDTO {
 
     CategoryResDto toCategoryResDto(Category entity);
 
-    OrderResDto toOrderResDto(Order entity);
+    @Mapping(target = "enterpriseImage", source = "image")
+    @Mapping(target = "id", source = "entity.id")
+//    @Mapping(target = "enterpriseImage", source = "image")
+    OrderResDto toOrderResDto(Order entity, AccountImageBasicVer2Dto image);
 
     OrderDetailResDto toOrderDetailResDto(OrderDetail entity);
 
