@@ -31,6 +31,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             "/api/v1.0/admin/login/**",
             "/api/v2.0/enterprise/login/**",
             "/api/v3.0/collaborator/login/**",
+            MODERATOR_LOGIN + "/**"
     };
 
     @Override
@@ -49,11 +50,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         request -> request
                                 .antMatchers(PUBLIC_URLS)
                                 .permitAll()
-//                                .antMatchers(ADMIN + "/**").hasAuthority("Admin")
-//                                .antMatchers(ENTERPRISE + "/**").hasAuthority("Enterprise")
-//                                .antMatchers(COLLABORATOR + "/**").hasAuthority("Collaborator")
-//                                .antMatchers(MODERATOR + "/**").hasAuthority("Moderator")
-//                                .anyRequest().authenticated()
+                                .antMatchers(ADMIN + "/**").hasAuthority("Admin")
+                                .antMatchers(ENTERPRISE + "/**").hasAuthority("Enterprise")
+                                .antMatchers(COLLABORATOR + "/**").hasAuthority("Collaborator")
+                                .antMatchers(MODERATOR + "/**").hasAuthority("Moderator")
+                                .anyRequest().authenticated()
                 )
                 .logout(_logout -> _logout.logoutUrl(USER_LOGOUT))
                 .exceptionHandling(exception -> exception

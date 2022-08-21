@@ -7,13 +7,9 @@ import com.springframework.csscapstone.utils.security_provider_utils.JwtTokenPro
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,9 +19,10 @@ public class UserDetailService implements UserDetailsService {
     private final AccountRepository repository;
 
     @Override
-    public UserDetails loadUserByUsername(String email) {
+    public WebUserDetail loadUserByUsername(String email) {
         LOGGER.info("The email: {}", email);
         return repository.findAccountByEmail(email)
+                .filter(acc -> acc.getRole().getName().equals("Admin") || acc.getRole().getName().equals("Moderator"))
                 .map(account -> new WebUserDetail(account,
                         jwtTokenProvider.generateJwtToken(new AdministrationWebDetail(account))))
                 .orElseThrow(() -> new UsernameNotFoundException("The user: " + email + " cant be not found"));
