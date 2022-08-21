@@ -65,6 +65,7 @@ public class FeedBackServiceImpl implements FeedBackService {
                     feedBack.setFeedReply(content);
                     feedBack.setReplyDate(LocalDateTime.now());
                     feedBack.setFeedbackStatus(FeedbackStatus.REPLIED);
+                    this.feedBackRepository.save(feedBack);
                 });
     }
 
@@ -90,8 +91,7 @@ public class FeedBackServiceImpl implements FeedBackService {
         Specification<FeedBack> condition = Specification.where(FeedBackSpecifications.equalsByEnterpriseId(enterpriseId))
                 .and(nonNull(status) ? FeedBackSpecifications.equalsStatus(status) : null);
 
-        Page<FeedBack> page = this.feedBackRepository
-                .findAll(condition, PageRequest.of(pageNumber - 1, pageSize,
+        Page<FeedBack> page = this.feedBackRepository.findAll(condition, PageRequest.of(pageNumber - 1, pageSize,
                         Sort.by(FeedBack_.CREATE_DATE).descending().and(Sort.by(FeedBack_.REPLY_DATE).descending())));
 
         List<FeedBackPageEnterpriseResDto> list = page.getContent()
