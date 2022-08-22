@@ -195,8 +195,6 @@ public class ApiEndPoint {
         public static final String V3_LIST_REQUEST = v3_handler + "/list";
         public static final String V3_REQUEST_GET_OWNER = v3_handler + "/get";
         public static final String V3_REQUEST_RETRIEVE = v3_handler + "/retrieve";
-
-//        public static final String V4_LIST_REQUEST = v4_ha
     }
 
     public static class Order {

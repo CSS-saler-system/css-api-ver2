@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -27,6 +28,7 @@ import static org.springframework.http.HttpStatus.OK;
 @PropertySource(value = "classpath:application-securities.properties")
 @Tag(name = "Login (Admin)")
 public class AdminLoginController {
+    private static final String ADMIN_ROLE = "Admin";
     private final UserDetailsService userDetailsService;
     private final AuthenticationManager authenticationManager;
     private final TokenProvider jwtTokenProvider;
@@ -37,12 +39,16 @@ public class AdminLoginController {
     private String tokenHeader;
 
     @PostMapping(ADMIN_LOGIN)
-    public ResponseEntity<UserDetails> login(
-            @RequestBody @Valid UserLogin userLogin
-    ) {
+    public ResponseEntity<UserDetails> login(@RequestBody @Valid UserLogin userLogin) {
+
         authentication(userLogin.getEmail(), userLogin.getPassword());
         UserDetails _principal = userDetailsService.loadUserByUsername(userLogin.getEmail());
-        LOGGER.info("The authentication {}", _principal);
+
+        _principal.getAuthorities().stream()
+                .filter(authorize -> authorize.getAuthority().equals(ADMIN_ROLE))
+                .findFirst()
+                .orElseThrow(() -> new BadCredentialsException("Wrong username or password!!!"));
+
         return new ResponseEntity<>(_principal, OK);
     }
 

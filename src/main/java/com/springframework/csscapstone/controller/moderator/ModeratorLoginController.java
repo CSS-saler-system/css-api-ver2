@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,6 +23,7 @@ import static org.springframework.http.HttpStatus.OK;
 @Tag(name = "Login (Moderator)")
 public class ModeratorLoginController {
 
+    private static final String MODERATOR_ROLE = "Moderator";
     private final UserDetailsService userDetailsService;
     private final AuthenticationManager authenticationManager;
 
@@ -31,6 +33,10 @@ public class ModeratorLoginController {
     ) {
         authentication(userLogin.getEmail(), userLogin.getPassword());
         UserDetails _principal = userDetailsService.loadUserByUsername(userLogin.getEmail());
+        _principal.getAuthorities().stream()
+                .filter(authorize -> authorize.getAuthority().equals(MODERATOR_ROLE))
+                .findFirst()
+                .orElseThrow(() -> new BadCredentialsException("Wrong username or password!!!"));
         return new ResponseEntity<>(_principal, OK);
     }
 
