@@ -86,8 +86,10 @@ public class ApiEndPoint {
         public static final String V4_ACCOUNT_UPDATE = v4_handler + "/update";
 
         public static final String V4_ACCOUNT_CREATE = v4_handler + "/new";
-        public static final String V4_DELETE_ACCOUNT = v4_handler + "/delete";
+        public static final String V4_ACTIVE_ACCOUNT = v4_handler + "/active";
+        public static final String V4_DISABLE_ACCOUNT = v4_handler + "/disable";
         public static final String V4_ACCOUNT_GET = v4_handler + "/get";
+        public static final String V4_ACCOUNT_LIST = v4_handler + "/list";
     }
 
 

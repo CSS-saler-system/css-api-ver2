@@ -14,6 +14,7 @@ import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.admin.AccountResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.CollaboratorResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.CollaboratorWithQuantitySoldByCategoryDto;
+import com.springframework.csscapstone.payload.response_dto.moderator.AccountModeratorPageResDto;
 import com.springframework.csscapstone.payload.sharing.AccountUpdaterJsonDto;
 import com.springframework.csscapstone.services.AccountService;
 import com.springframework.csscapstone.utils.blob_utils.BlobUploadImages;
@@ -38,6 +39,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,6 +56,7 @@ import java.util.stream.Stream;
 
 import static com.springframework.csscapstone.data.status.AccountImageType.*;
 import static com.springframework.csscapstone.utils.exception_catch_utils.ExceptionCatchHandler.peek;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 
@@ -215,8 +218,8 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Cacheable(key = "{#p0, #p1}", value = ENTERPRISE_FOR_COLLABORATOR)
     public PageImplResDto<AccountResDto> getAllHavingEnterpriseRole(Integer pageNumber, Integer pageSize) {
-        pageNumber = Objects.isNull(pageNumber) || pageNumber <= DEFAULT_PAGE_NUMBER ? DEFAULT_PAGE_NUMBER : pageNumber;
-        pageSize = Objects.isNull(pageSize) || pageSize <= DEFAULT_PAGE_SIZE ? DEFAULT_PAGE_SIZE : pageSize;
+        pageNumber = isNull(pageNumber) || pageNumber <= DEFAULT_PAGE_NUMBER ? DEFAULT_PAGE_NUMBER : pageNumber;
+        pageSize = isNull(pageSize) || pageSize <= DEFAULT_PAGE_SIZE ? DEFAULT_PAGE_SIZE : pageSize;
 
         Page<Account> page = this.accountRepository
                 .findAllEnterprise(PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize));
@@ -260,10 +263,10 @@ public class AccountServiceImpl implements AccountService {
     public PageImplResDto<AccountResDto> getAllCollaboratorsOfEnterprise(
             UUID idEnterprise, Integer pageNumber, Integer pageSize) {
 
-        if (Objects.isNull(idEnterprise)) handlerAccountNotFound.get();
+        if (isNull(idEnterprise)) handlerAccountNotFound.get();
 
-        pageNumber = Objects.isNull(pageNumber) || pageNumber < DEFAULT_PAGE_NUMBER ? DEFAULT_PAGE_NUMBER : pageNumber;
-        pageSize = Objects.isNull(pageSize) || pageSize < DEFAULT_PAGE_SIZE ? DEFAULT_PAGE_SIZE : pageSize;
+        pageNumber = isNull(pageNumber) || pageNumber < DEFAULT_PAGE_NUMBER ? DEFAULT_PAGE_NUMBER : pageNumber;
+        pageSize = isNull(pageSize) || pageSize < DEFAULT_PAGE_SIZE ? DEFAULT_PAGE_SIZE : pageSize;
 
         //todo convert to Account response Dto
         Page<Account> page = requestSellingProductRepository
@@ -293,10 +296,10 @@ public class AccountServiceImpl implements AccountService {
     public PageImplResDto<CollaboratorResDto> collaboratorsByEnterpriseIncludeNumberOfQuantitySold(
             UUID idEnterprise, Integer pageNumber, Integer pageSize) {
 
-        if (Objects.isNull(idEnterprise)) handlerAccountNotFound.get();
+        if (isNull(idEnterprise)) handlerAccountNotFound.get();
 
-        pageNumber = Objects.isNull(pageNumber) || pageNumber < DEFAULT_PAGE_NUMBER ? DEFAULT_PAGE_NUMBER : pageNumber;
-        pageSize = Objects.isNull(pageSize) || pageSize < DEFAULT_PAGE_SIZE ? DEFAULT_PAGE_SIZE : pageSize;
+        pageNumber = isNull(pageNumber) || pageNumber < DEFAULT_PAGE_NUMBER ? DEFAULT_PAGE_NUMBER : pageNumber;
+        pageSize = isNull(pageSize) || pageSize < DEFAULT_PAGE_SIZE ? DEFAULT_PAGE_SIZE : pageSize;
 
         Page<Tuple> collaboratorSortBySellingPage = this.orderRepository
                 .sortedPageCollaboratorByQuantitySelling(
@@ -398,7 +401,7 @@ public class AccountServiceImpl implements AccountService {
             MultipartFile licenses, MultipartFile idCards)
             throws AccountExistException {
 
-        if (Objects.isNull(reqDto.getEmail()) || Objects.isNull(reqDto.getPhone())) {
+        if (isNull(reqDto.getEmail()) || isNull(reqDto.getPhone())) {
             throw new RuntimeException("The email or phone was null!!!");
         }
 
@@ -446,8 +449,19 @@ public class AccountServiceImpl implements AccountService {
         return entity.getId();
     }
 
+    @Override
+    public boolean disableEnterprise(UUID id) {
+        accountRepository.findById(id).ifPresent(x -> {
+            x.setIsActive(false);
+            accountRepository.save(x);
+            clearCache();
+        });
+        return true;
+    }
+
     /**
      * todo for admin disable account
+     *
      * @param id
      */
     @Transactional
@@ -521,14 +535,43 @@ public class AccountServiceImpl implements AccountService {
                                 account.getAvatar().getId(),
                                 account.getAvatar().getType(),
                                 account.getAvatar().getPath()
-                                ),
+                        ),
                         new EnterpriseLofiginTestResDto.AccountImageDto(
                                 account.getLicense().getId(),
                                 account.getLicense().getType(),
                                 account.getLicense().getPath()
-                                )
+                        )
                 ))
                 .orElseThrow(() -> new EntityNotFoundException("Not found!!!"));
+    }
+
+    @Override
+    public PageImplResDto<AccountModeratorPageResDto> pageEnterprise(Boolean isActive, Integer pageNumber, Integer pageSize) {
+        pageNumber = nonNull(pageNumber) && (pageNumber >= DEFAULT_PAGE_NUMBER) ? pageNumber : DEFAULT_PAGE_NUMBER;
+        pageSize = nonNull(pageSize) && (pageSize >= DEFAULT_PAGE_SIZE) ? pageSize : DEFAULT_PAGE_SIZE;
+
+
+        Specification<Account> condition = Specification.where(AccountSpecifications.getAllRoleEnterprise())
+                .and(isNull(isActive) ? null : AccountSpecifications.getEnterpriseByStatus(isActive));
+
+        Page<Account> page = this.accountRepository.findAll(condition, PageRequest.of(pageNumber - 1, pageSize,
+                Sort.by(Account_.CREATE_ACCOUNT_DATE).descending()));
+        List<AccountModeratorPageResDto> accounts = page.getContent().stream()
+                .map(AccountMapper.INSTANCE::accountToAccountModeratorPageResDto)
+                .collect(toList());
+
+        return new PageImplResDto<>(accounts, page.getNumber() + 1, accounts.size(),
+                page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
+    }
+    @Transactional
+    @Override
+    public boolean activeEnterprise(UUID enterpriseId) {
+        accountRepository.findById(enterpriseId).ifPresent(x -> {
+            x.setIsActive(true);
+            accountRepository.save(x);
+            clearCache();
+        });
+        return true;
     }
 
     @Transactional

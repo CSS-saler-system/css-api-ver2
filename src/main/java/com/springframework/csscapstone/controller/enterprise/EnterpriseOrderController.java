@@ -70,13 +70,13 @@ public class EnterpriseOrderController {
         return ok(result);
     }
 
-//    @GetMapping(V2_ORDER_TOTAL + "/{enterpriseId}")
-//    public ResponseEntity<?> getTotalOrderByIdEnterprise(
-//            @PathVariable("enterpriseId") UUID enterpriseId
-//            @RequestParam("")
-//    ) {
-//        this.orderService.getTotalOrderByEnterpriseId(enterpriseId);
-//    }
+    @GetMapping(V2_ORDER_TOTAL + "/{enterpriseId}")
+    public ResponseEntity<?> getTotalOrderByIdEnterprise(
+            @PathVariable("enterpriseId") UUID enterpriseId
+    ) {
+        this.orderService.getTotalOrderByEnterpriseId(enterpriseId);
+        return ok("");
+    }
 //    @GetMapping(V2_ORDER_SUCCESS + "/{enterpriseId}")
 //    public ResponseEntity<?> getTotalOrderByIdEnterprise(@PathVariable("enterpriseId") UUID enterpriseId) {
 //

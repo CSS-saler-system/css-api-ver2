@@ -12,6 +12,7 @@ import com.springframework.csscapstone.payload.request_dto.collaborator.OrderCre
 import com.springframework.csscapstone.payload.request_dto.collaborator.OrderUpdaterDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.EnterpriseRevenueDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.OrderChartResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.OrderEnterpriseManageResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.OrderResDto;
 import com.springframework.csscapstone.services.OrderService;
@@ -381,5 +382,13 @@ public class OrderServiceImpl implements OrderService {
                 .map(entry -> new EnterpriseRevenueDto(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
         return Optional.of(revenueDtos);
+    }
+
+    @Override
+    public List<OrderChartResDto> getTotalOrderByEnterpriseId(UUID enterpriseId) {
+//        this.orderRepository
+//                .getOrderByMonth()
+//                .
+        return null;
     }
 }

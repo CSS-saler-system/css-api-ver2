@@ -7,6 +7,7 @@ import com.springframework.csscapstone.payload.request_dto.collaborator.AccountC
 import com.springframework.csscapstone.payload.request_dto.enterprise.EnterpriseSignUpDto;
 import com.springframework.csscapstone.payload.response_dto.admin.AccountResDto;
 import com.springframework.csscapstone.payload.response_dto.collaborator.EnterpriseResDto;
+import com.springframework.csscapstone.payload.response_dto.moderator.AccountModeratorPageResDto;
 import com.springframework.csscapstone.payload.sharing.AccountUpdaterJsonDto;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
@@ -60,4 +61,11 @@ public interface AccountMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Account updateAccountFromAccountCollaboratorUpdaterDto(AccountCollaboratorUpdaterDto accountCollaboratorUpdaterDto, @MappingTarget Account account);
+
+    Account accountModeratorPageResDtoToAccount(AccountModeratorPageResDto accountModeratorPageResDto);
+
+    AccountModeratorPageResDto accountToAccountModeratorPageResDto(Account account);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    Account updateAccountFromAccountModeratorPageResDto(AccountModeratorPageResDto accountModeratorPageResDto, @MappingTarget Account account);
 }

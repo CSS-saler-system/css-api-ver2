@@ -5,6 +5,7 @@ import com.springframework.csscapstone.payload.request_dto.collaborator.OrderCre
 import com.springframework.csscapstone.payload.request_dto.collaborator.OrderUpdaterDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.EnterpriseRevenueDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.OrderChartResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.OrderEnterpriseManageResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.OrderResDto;
 
@@ -46,4 +47,6 @@ public interface OrderService {
             UUID enterpriseId, OrderStatus orderStatus, Integer pageNumber, Integer pageSize);
 
     Optional<List<EnterpriseRevenueDto>> getRevenue(UUID enterpriseId);
+
+    List<OrderChartResDto> getTotalOrderByEnterpriseId(UUID enterpriseId);
 }

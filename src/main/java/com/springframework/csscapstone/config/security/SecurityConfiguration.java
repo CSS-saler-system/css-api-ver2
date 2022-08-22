@@ -47,6 +47,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .addFilterBefore(authenticationHandlerFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests(
+
                         request -> request
                                 .antMatchers(PUBLIC_URLS)
                                 .permitAll()

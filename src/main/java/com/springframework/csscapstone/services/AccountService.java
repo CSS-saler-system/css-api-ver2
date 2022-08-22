@@ -10,6 +10,7 @@ import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.admin.AccountResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.CollaboratorResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.CollaboratorWithQuantitySoldByCategoryDto;
+import com.springframework.csscapstone.payload.response_dto.moderator.AccountModeratorPageResDto;
 import com.springframework.csscapstone.payload.sharing.AccountUpdaterJsonDto;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountExistException;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountInvalidException;
@@ -42,6 +43,7 @@ public interface AccountService {
                        MultipartFile licenses,
                        MultipartFile idCards) throws AccountInvalidException;
 
+    boolean disableEnterprise(UUID id);
     void disableAccount(UUID id);
 
     PageImplResDto<AccountResDto> getAllHavingEnterpriseRole(Integer pageNumber, Integer pageSize);
@@ -62,4 +64,8 @@ public interface AccountService {
     UUID updateCollaboratorProfiles(UUID collaboratorId, AccountCollaboratorUpdaterDto accountUpdaterJsonDto, MultipartFile avatar);
 
     EnterpriseLofiginTestResDto getByIdSignup(UUID id);
+
+    PageImplResDto<AccountModeratorPageResDto> pageEnterprise(Boolean isActive, Integer pageNumber, Integer pageSize);
+
+    boolean activeEnterprise(UUID enterpriseId);
 }

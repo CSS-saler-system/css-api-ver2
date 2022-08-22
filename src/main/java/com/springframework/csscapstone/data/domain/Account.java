@@ -9,9 +9,12 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.GenericGenerator;
 import org.mapstruct.Named;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.springframework.csscapstone.data.status.AccountImageType.AVATAR;
@@ -25,6 +28,7 @@ import static javax.persistence.FetchType.LAZY;
 @NoArgsConstructor
 @Entity
 @Table(name = "account")
+@EntityListeners(AuditingEntityListener.class)
 public class Account {
     @Id
     @GeneratedValue(generator = "UUID")
@@ -112,6 +116,9 @@ public class Account {
 
     @OneToMany(mappedBy = "creator")
     private List<FeedBack> creatorFeedback = new ArrayList<>();
+
+    @LastModifiedDate
+    private LocalDateTime createAccountDate;
 
     @ManyToOne
     @JoinColumn(name = "role_id")
