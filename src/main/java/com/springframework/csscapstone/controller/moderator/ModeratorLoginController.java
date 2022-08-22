@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springframework.csscapstone.config.security.services.model.UserLogin;
 import com.springframework.csscapstone.data.domain.Account;
-import com.springframework.csscapstone.payload.sharing.AccountUpdaterJsonDto;
+import com.springframework.csscapstone.payload.request_dto.moderator.AccountModeratorUpdateReqDto;
 import com.springframework.csscapstone.services.AccountService;
 import com.springframework.csscapstone.utils.exception_utils.account_exception.AccountInvalidException;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -59,7 +59,7 @@ public class ModeratorLoginController {
             @PathVariable("moderatorId") UUID moderatorId,
             @RequestPart("enterpriseDto") String moderatorString,
             @RequestPart(value = "avatar", required = false) MultipartFile avatar) throws JsonProcessingException {
-        AccountUpdaterJsonDto moderator = new ObjectMapper().readValue(moderatorString, AccountUpdaterJsonDto.class);
+        AccountModeratorUpdateReqDto moderator = new ObjectMapper().readValue(moderatorString, AccountModeratorUpdateReqDto.class);
         Account res = this.accountService
                 .updateAccountForModerator(moderatorId, moderator, avatar)
                 .orElseThrow(somethingWrongException);

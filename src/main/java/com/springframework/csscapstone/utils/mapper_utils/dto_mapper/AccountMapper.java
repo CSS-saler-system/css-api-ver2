@@ -1,10 +1,10 @@
 package com.springframework.csscapstone.utils.mapper_utils.dto_mapper;
 
 import com.springframework.csscapstone.data.domain.Account;
-import com.springframework.csscapstone.data.domain.EnterpriseLofiginTestResDto;
 import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.collaborator.AccountCollaboratorUpdaterDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.EnterpriseSignUpDto;
+import com.springframework.csscapstone.payload.request_dto.moderator.AccountModeratorUpdateReqDto;
 import com.springframework.csscapstone.payload.response_dto.admin.AccountResDto;
 import com.springframework.csscapstone.payload.response_dto.collaborator.EnterpriseResDto;
 import com.springframework.csscapstone.payload.response_dto.moderator.AccountModeratorPageResDto;
@@ -68,4 +68,11 @@ public interface AccountMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Account updateAccountFromAccountModeratorPageResDto(AccountModeratorPageResDto accountModeratorPageResDto, @MappingTarget Account account);
+
+    Account accountModeratorUpdateReqDtoToAccount(AccountModeratorUpdateReqDto accountModeratorUpdateReqDto);
+
+    AccountModeratorUpdateReqDto accountToAccountModeratorUpdateReqDto(Account account);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    Account updateAccountFromAccountModeratorUpdateReqDto(AccountModeratorUpdateReqDto accountModeratorUpdateReqDto, @MappingTarget Account account);
 }

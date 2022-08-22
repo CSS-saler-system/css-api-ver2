@@ -7,6 +7,7 @@ import com.springframework.csscapstone.data.domain.EnterpriseLofiginTestResDto;
 import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.collaborator.AccountCollaboratorUpdaterDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.EnterpriseSignUpDto;
+import com.springframework.csscapstone.payload.request_dto.moderator.AccountModeratorUpdateReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.admin.AccountResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.CollaboratorResDto;
@@ -70,5 +71,5 @@ public interface AccountService {
 
     boolean activeEnterprise(UUID enterpriseId);
 
-    Optional<Account> updateAccountForModerator(UUID moderatorId, AccountUpdaterJsonDto moderator, MultipartFile avatar);
+    Optional<Account> updateAccountForModerator(UUID moderatorId, AccountModeratorUpdateReqDto moderator, MultipartFile avatar);
 }

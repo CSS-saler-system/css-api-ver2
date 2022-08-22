@@ -10,6 +10,7 @@ import com.springframework.csscapstone.data.status.RequestStatus;
 import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.collaborator.AccountCollaboratorUpdaterDto;
 import com.springframework.csscapstone.payload.request_dto.enterprise.EnterpriseSignUpDto;
+import com.springframework.csscapstone.payload.request_dto.moderator.AccountModeratorUpdateReqDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.admin.AccountResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.CollaboratorResDto;
@@ -575,11 +576,11 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Optional<Account> updateAccountForModerator(UUID moderatorId, AccountUpdaterJsonDto moderator, MultipartFile avatar) {
+    public Optional<Account> updateAccountForModerator(UUID moderatorId, AccountModeratorUpdateReqDto moderator, MultipartFile avatar) {
         Account tmpAccount = this.accountRepository.findById(moderatorId)
                 .filter(acc -> acc.getRole().getName().equals("Moderator"))
                 .orElseThrow(() -> new RuntimeException("The moderator with id: " + moderatorId + " was not found"));
-        Account account = AccountMapper.INSTANCE.updateAccountFromAccountUpdaterJsonDto(moderator, tmpAccount);
+        Account account = AccountMapper.INSTANCE.updateAccountFromAccountModeratorUpdateReqDto(moderator, tmpAccount);
 
         Account savedAccount = this.accountRepository.save(account);
 
