@@ -28,9 +28,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     public static final String[] PUBLIC_URLS = {
             "/", "/user/**", "/user/image/**", "/blob/**",
-            "/api/v1.0/admin/login/**",
-            "/api/v2.0/enterprise/login/**",
-            "/api/v3.0/collaborator/login/**",
+            ADMIN_LOGIN + "/**",
+            ENTERPRISE_LOGIN + "/**",
+            COLLABORATOR_LOGIN + "/**",
             MODERATOR_LOGIN + "/**"
     };
 
@@ -54,8 +54,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                                 .antMatchers(ENTERPRISE + "/**").hasAuthority("Enterprise")
                                 .antMatchers(COLLABORATOR + "/**").hasAuthority("Collaborator")
                                 .antMatchers(MODERATOR + "/**").hasAuthority("Moderator")
-                                .anyRequest().authenticated()
-                )
+                                .anyRequest().authenticated())
                 .logout(_logout -> _logout.logoutUrl(USER_LOGOUT))
                 .exceptionHandling(exception -> exception
                         .accessDeniedHandler(jwtAccessDeniedHandler)
