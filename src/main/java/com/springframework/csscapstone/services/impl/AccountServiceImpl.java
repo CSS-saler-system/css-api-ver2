@@ -574,6 +574,24 @@ public class AccountServiceImpl implements AccountService {
         return true;
     }
 
+    @Override
+    public Optional<Account> updateAccountForModerator(UUID moderatorId, AccountUpdaterJsonDto moderator, MultipartFile avatar) {
+        Account tmpAccount = this.accountRepository.findById(moderatorId)
+                .filter(acc -> acc.getRole().getName().equals("Moderator"))
+                .orElseThrow(() -> new RuntimeException("The moderator with id: " + moderatorId + " was not found"));
+        Account account = AccountMapper.INSTANCE.updateAccountFromAccountUpdaterJsonDto(moderator, tmpAccount);
+
+        Account savedAccount = this.accountRepository.save(account);
+
+        if (nonNull(avatar)) {
+            Optional<AccountImage> accountImage = this.saveAccountImageEntity(avatar, savedAccount.getId(), AVATAR);
+            accountImage.ifPresent(savedAccount::addImage);
+            clearCache();
+            return Optional.of(this.accountRepository.save(account));
+        }
+        return Optional.empty();
+    }
+
     @Transactional
     @Override
     public UUID updateCollaboratorProfiles(

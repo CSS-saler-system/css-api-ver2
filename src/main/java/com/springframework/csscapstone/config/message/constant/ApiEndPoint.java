@@ -17,6 +17,8 @@ public class ApiEndPoint {
     public static final String ENTERPRISE_GET_SIGNUP = ENTERPRISE + "/get-test-singup";
 
     public static final String MODERATOR_LOGIN = MODERATOR + "/login";
+    public static final String MODERATOR_UPDATE = MODERATOR + "/update";
+    public static final String MODERATOR_GET_SIGNUP = MODERATOR + "/get-test-singup";
 
     static class AdminConfiguration {
         private static final String v1_handler = ADMIN + "/config";

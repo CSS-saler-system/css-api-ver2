@@ -2,6 +2,7 @@ package com.springframework.csscapstone.services;
 
 
 import com.google.firebase.auth.FirebaseAuthException;
+import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.EnterpriseLofiginTestResDto;
 import com.springframework.csscapstone.payload.request_dto.admin.AccountCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.collaborator.AccountCollaboratorUpdaterDto;
@@ -68,4 +69,6 @@ public interface AccountService {
     PageImplResDto<AccountModeratorPageResDto> pageEnterprise(Boolean isActive, Integer pageNumber, Integer pageSize);
 
     boolean activeEnterprise(UUID enterpriseId);
+
+    Optional<Account> updateAccountForModerator(UUID moderatorId, AccountUpdaterJsonDto moderator, MultipartFile avatar);
 }
