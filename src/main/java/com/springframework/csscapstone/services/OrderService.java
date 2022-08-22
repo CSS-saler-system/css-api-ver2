@@ -4,12 +4,10 @@ import com.springframework.csscapstone.data.status.OrderStatus;
 import com.springframework.csscapstone.payload.request_dto.collaborator.OrderCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.collaborator.OrderUpdaterDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
-import com.springframework.csscapstone.payload.response_dto.enterprise.EnterpriseRevenueDto;
-import com.springframework.csscapstone.payload.response_dto.enterprise.OrderChartResDto;
-import com.springframework.csscapstone.payload.response_dto.enterprise.OrderEnterpriseManageResDto;
-import com.springframework.csscapstone.payload.response_dto.enterprise.OrderResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -48,5 +46,5 @@ public interface OrderService {
 
     Optional<List<EnterpriseRevenueDto>> getRevenue(UUID enterpriseId);
 
-    List<OrderChartResDto> getTotalOrderByEnterpriseId(UUID enterpriseId);
+    Map<String, OrderChartEnterpriseResDto> getTotalOrderByEnterpriseId(UUID enterpriseId);
 }

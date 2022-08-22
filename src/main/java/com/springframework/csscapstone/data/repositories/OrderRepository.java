@@ -3,7 +3,6 @@ package com.springframework.csscapstone.data.repositories;
 import com.springframework.csscapstone.data.domain.Account;
 import com.springframework.csscapstone.data.domain.Order;
 import com.springframework.csscapstone.data.status.OrderStatus;
-import com.springframework.csscapstone.payload.response_dto.enterprise.OrderChartResDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -151,6 +150,16 @@ public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecific
             "WHERE p.account.id =:enterpriseId " +
             "GROUP BY month(o.createDate)")
     List<Tuple> getOrderByMonth(@Param("enterpriseId") UUID enterpriseId);
+
+    @Query("SELECT COUNT(distinct o) AS " + ORDER_TOTAL + " , " +
+            "month(o.createDate) AS " + ORDER_BY_MONTH + " " +
+            "FROM Order o " +
+            "JOIN o.orderDetails od " +
+            "JOIN od.product p " +
+            "WHERE p.account.id =:enterpriseId " +
+            "AND o.status = :status " +
+            "GROUP BY month(o.createDate)")
+    List<Tuple> getOrderByMonthWithStatus(@Param("enterpriseId") UUID enterpriseId, @Param("status") OrderStatus status);
 
 
 

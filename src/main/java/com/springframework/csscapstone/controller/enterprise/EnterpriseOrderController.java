@@ -3,6 +3,7 @@ package com.springframework.csscapstone.controller.enterprise;
 import com.springframework.csscapstone.config.message.constant.MessageConstant;
 import com.springframework.csscapstone.data.status.OrderStatus;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.OrderChartEnterpriseResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.OrderEnterpriseManageResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.OrderResDto;
 import com.springframework.csscapstone.services.OrderService;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -70,16 +72,10 @@ public class EnterpriseOrderController {
         return ok(result);
     }
 
-    @GetMapping(V2_ORDER_TOTAL + "/{enterpriseId}")
-    public ResponseEntity<?> getTotalOrderByIdEnterprise(
-            @PathVariable("enterpriseId") UUID enterpriseId
-    ) {
-        this.orderService.getTotalOrderByEnterpriseId(enterpriseId);
-        return ok("");
+    @GetMapping(V2_CHART_TOTAL + "/{enterpriseId}")
+    public ResponseEntity<?> getTotalOrderByIdEnterprise(@PathVariable("enterpriseId") UUID enterpriseId) {
+        Map<String, OrderChartEnterpriseResDto> res = this.orderService.getTotalOrderByEnterpriseId(enterpriseId);
+        return ok(res);
     }
-//    @GetMapping(V2_ORDER_SUCCESS + "/{enterpriseId}")
-//    public ResponseEntity<?> getTotalOrderByIdEnterprise(@PathVariable("enterpriseId") UUID enterpriseId) {
-//
-//    }
 
 }

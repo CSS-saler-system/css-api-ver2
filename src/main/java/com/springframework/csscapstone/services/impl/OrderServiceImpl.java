@@ -11,10 +11,7 @@ import com.springframework.csscapstone.data.status.OrderStatus;
 import com.springframework.csscapstone.payload.request_dto.collaborator.OrderCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.collaborator.OrderUpdaterDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
-import com.springframework.csscapstone.payload.response_dto.enterprise.EnterpriseRevenueDto;
-import com.springframework.csscapstone.payload.response_dto.enterprise.OrderChartResDto;
-import com.springframework.csscapstone.payload.response_dto.enterprise.OrderEnterpriseManageResDto;
-import com.springframework.csscapstone.payload.response_dto.enterprise.OrderResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.*;
 import com.springframework.csscapstone.services.OrderService;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.LackPointException;
@@ -385,10 +382,43 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderChartResDto> getTotalOrderByEnterpriseId(UUID enterpriseId) {
-//        this.orderRepository
-//                .getOrderByMonth()
-//                .
-        return null;
+    public Map<String, OrderChartEnterpriseResDto> getTotalOrderByEnterpriseId(UUID enterpriseId) {
+        Map<Integer, Long> totalOrder = this.orderRepository.getOrderByMonth(enterpriseId)
+                .stream().collect(toMap(
+                        tuple -> tuple.get(OrderRepository.ORDER_BY_MONTH, Integer.class),
+                        tuple -> tuple.get(OrderRepository.ORDER_TOTAL, Number.class).longValue()));
+
+        Map<Integer, Long> finishedOrder = this.orderRepository.getOrderByMonthWithStatus(enterpriseId, OrderStatus.FINISHED)
+                .stream().collect(toMap(
+                        tuple -> tuple.get(OrderRepository.ORDER_BY_MONTH, Integer.class),
+                        tuple -> tuple.get(OrderRepository.ORDER_TOTAL, Number.class).longValue()));
+
+        Map<Integer, Long> cancelOrder = this.orderRepository.getOrderByMonthWithStatus(enterpriseId, OrderStatus.CANCELED)
+                .stream().collect(toMap(
+                        tuple -> tuple.get(OrderRepository.ORDER_BY_MONTH, Integer.class),
+                        tuple -> tuple.get(OrderRepository.ORDER_TOTAL, Number.class).longValue()));
+
+        HashMap<String, OrderChartEnterpriseResDto> res = new HashMap<>();
+
+        OrderChartEnterpriseResDto _totalOrder = handlerOrderQuantityWithMonth(totalOrder);
+        OrderChartEnterpriseResDto _finishedOrder = handlerOrderQuantityWithMonth(finishedOrder);
+        OrderChartEnterpriseResDto _cancelOrder = handlerOrderQuantityWithMonth(cancelOrder);
+
+        res.put("total_order", _totalOrder);
+        res.put("finish_order", _finishedOrder);
+        res.put("cancel_order", _cancelOrder);
+
+        return res;
+    }
+
+    private OrderChartEnterpriseResDto handlerOrderQuantityWithMonth(Map<Integer, Long> preTotalOrder) {
+        OrderChartEnterpriseResDto orderChartEnterpriseResDto = new OrderChartEnterpriseResDto();
+
+        List<Long> collect = preTotalOrder.keySet()
+                .stream()
+                .map(key -> orderChartEnterpriseResDto.getQuantity()[key - 1] = preTotalOrder.get(key))
+                .collect(Collectors.toList());
+
+        return orderChartEnterpriseResDto;
     }
 }
