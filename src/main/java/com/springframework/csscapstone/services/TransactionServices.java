@@ -31,5 +31,5 @@ public interface TransactionServices {
 
     void deleteTransaction(UUID id);
 
-    PageImplResDto<TransactionsDto> getAllPendingStatusList(Integer pageNumber, Integer pageSize);
+    PageImplResDto<TransactionsDto> getAllPendingStatusList(TransactionStatus status, Integer pageNumber, Integer pageSize);
 }

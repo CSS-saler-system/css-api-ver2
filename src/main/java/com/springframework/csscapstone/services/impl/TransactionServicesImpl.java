@@ -36,6 +36,8 @@ import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
+
 @Service
 @RequiredArgsConstructor
 public class TransactionServicesImpl implements TransactionServices {
@@ -68,13 +70,13 @@ public class TransactionServicesImpl implements TransactionServices {
                 .filter(acc -> acc.getRole().getName().equals("Enterprise"))
                 .orElseThrow(() -> new EntityNotFoundException("The enterprise with id: " + enterpriseId + "was not found"));
 
-        pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
-        pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
+        pageNumber = isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
+        pageSize = isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
 
         Specification<Transactions> specification = Specification
-                .where(Objects.isNull(status) ? null : TransactionSpecifications.equalsStatus(status))
-                .and(Objects.isNull(createDate) ? null : TransactionSpecifications.afterDate(createDate))
-                .and(Objects.isNull(modifiedDate) ? null : TransactionSpecifications.afterDate(modifiedDate))
+                .where(isNull(status) ? null : TransactionSpecifications.equalsStatus(status))
+                .and(isNull(createDate) ? null : TransactionSpecifications.afterDate(createDate))
+                .and(isNull(modifiedDate) ? null : TransactionSpecifications.afterDate(modifiedDate))
                 .and(TransactionSpecifications.equalsEnterpriseId(enterpriseId))
                 .and(TransactionSpecifications.excludeStatusDisable());
 
@@ -240,14 +242,15 @@ public class TransactionServicesImpl implements TransactionServices {
     }
 
     @Override
-    public PageImplResDto<TransactionsDto> getAllPendingStatusList(Integer pageNumber, Integer pageSize) {
+    public PageImplResDto<TransactionsDto> getAllPendingStatusList(TransactionStatus status, Integer pageNumber, Integer pageSize) {
 
-        pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
-        pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
+        pageNumber = isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
+        pageSize = isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
+
+        Specification<Transactions> condition = Specification.where(isNull(status) ? null : TransactionSpecifications.equalsStatus(status));
 
         Page<Transactions> page = this.transactionsRepository
-                .findAllByPendingStatus(PageRequest.of(pageNumber - 1, pageSize,
-                        Sort.by(Transactions_.CREATE_TRANSACTION_DATE).descending()));
+                .findAll(condition, PageRequest.of(pageNumber - 1, pageSize, Sort.by(Transactions_.CREATE_TRANSACTION_DATE).descending()));
 
         List<TransactionsDto> pageRes = page.getContent()
                 .stream().map(MapperDTO.INSTANCE::toTransactionsResDto)

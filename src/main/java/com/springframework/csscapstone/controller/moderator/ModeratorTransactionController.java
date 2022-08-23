@@ -27,11 +27,12 @@ public class ModeratorTransactionController {
 
     @GetMapping(V4_TRANSACTION_PENDING)
     public ResponseEntity<?> listTransactionPendingList(
+            @RequestParam(value = "status", required = false) TransactionStatus status,
             @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
             @RequestParam(value = "pageSize", required = false) Integer pageSize
     ) {
         PageImplResDto<TransactionsDto> result = this.transactionServices
-                .getAllPendingStatusList(pageNumber, pageSize);
+                .getAllPendingStatusList(status, pageNumber, pageSize);
         return ok(result);
     }
 
