@@ -182,7 +182,6 @@ public class OrderServiceImpl implements OrderService {
                 .sum();
 
         //todo get total point by map double with orderDetails
-
         double totalPointSale = oderDetails
                 .stream()
                 .map(OrderDetail::getTotalPointProduct)

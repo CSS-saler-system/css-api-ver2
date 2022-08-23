@@ -72,7 +72,7 @@ public class FeedBackServiceImpl implements FeedBackService {
     @Override
     public PageImplResDto<FeedBackPageModeraterResDto> getPageFeedBackForModerator(Integer pageSize, Integer pageNumber) {
         pageSize = isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
-        pageNumber = isNull(pageNumber) || pageNumber < 1 ? 10 : pageNumber;
+        pageNumber = isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
         Page<FeedBack> page = this.feedBackRepository.findAll(PageRequest.of(pageNumber - 1, pageSize));
         List<FeedBackPageModeraterResDto> list = page.getContent()
                 .stream()

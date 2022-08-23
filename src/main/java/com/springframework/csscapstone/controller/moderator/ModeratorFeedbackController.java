@@ -24,15 +24,18 @@ public class ModeratorFeedbackController {
 
     @GetMapping(V4_FEEDBACK_PAGE)
     public ResponseEntity<?> pageFeedback(
-            @RequestParam(value = "pageSize", required = false) Integer pageSize,
-            @RequestParam(value = "pageNumber", required = false) Integer pageNumber) {
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize
+    ) {
         PageImplResDto<FeedBackPageModeraterResDto> res =
                 this.feedBackService.getPageFeedBackForModerator(pageSize, pageNumber);
         return ok(res);
     }
 
     @PutMapping(V4_FEEDBACK_REPLY + "/{feedbackId}")
-    public ResponseEntity<?> replyFeedback(@PathVariable("feedbackId") UUID feedbackId, @RequestParam("replyContent") String replyContent) {
+    public ResponseEntity<?> replyFeedback(
+            @PathVariable("feedbackId") UUID feedbackId,
+            @RequestParam("replyContent") String replyContent) {
         this.feedBackService.replyFeedBack(feedbackId, replyContent);
         return ok(MessagesUtils.getMessage(MessageConstant.REQUEST_SUCCESS));
     }

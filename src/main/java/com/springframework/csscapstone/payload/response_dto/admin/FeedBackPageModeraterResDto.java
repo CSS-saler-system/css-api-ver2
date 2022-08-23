@@ -10,13 +10,14 @@ import java.util.UUID;
 @Data
 public class FeedBackPageModeraterResDto implements Serializable {
     private final UUID id;
-    private final AccountDto creator;
+    private final AccountInnerFeedBackPageModDto creator;
+    private final AccountInnerFeedBackPageModDto approver;
     private final LocalDateTime createDate;
     private final LocalDateTime replyDate;
     private final FeedbackStatus feedbackStatus;
 
     @Data
-    public static class AccountDto implements Serializable {
+    public static class AccountInnerFeedBackPageModDto implements Serializable {
         private final UUID id;
         private final String name;
         private final RoleDto role;
