@@ -485,8 +485,6 @@ public class AccountServiceImpl implements AccountService {
     public Optional<UUID> singUpEnterprise(
             EnterpriseSignUpDto enterprise, MultipartFile avatar, MultipartFile licences) {
 
-        System.out.println("enterprise; ;" + enterprise);
-
         Optional<Account> accountByEmail = this.accountRepository
                 .findAccountByEmail(enterprise.getEmail());
 
@@ -502,8 +500,8 @@ public class AccountServiceImpl implements AccountService {
             duplicationPhoneException.apply(enterprise.getPhone());
         }
 
-        Account savedAccount = this.accountRepository.save(AccountMapper.INSTANCE.updateAccountFromEnterpriseSignUpDto(enterprise, accountByEmail.get()));
-        System.out.println("enterprise; ;" + savedAccount);
+        Account savedAccount = this.accountRepository
+                .save(AccountMapper.INSTANCE.updateAccountFromEnterpriseSignUpDto(enterprise, accountByEmail.get()));
 
         if (nonNull(avatar)) {
             saveAccountImageEntity(avatar, savedAccount.getId(), AccountImageType.AVATAR)
