@@ -359,6 +359,18 @@ public class CampaignServiceImpl implements CampaignService {
                 .sorted(Comparator.comparing(Prize::getPrice).reversed())
                 .collect(Collectors.toList());
 
+        double totalPointCampaign = prizes
+                .stream()
+                .mapToDouble(Prize::getPrice)
+                .sum();
+
+        if (enterprise.getPoint() < totalPointCampaign) {
+            throw new RuntimeException(String.format("The Enterprise no have enough %.2f point to closing campaign with id: %s",
+                    totalPointCampaign, enterprise.getId()));
+        }
+
+        enterprise.setPoint(enterprise.getPoint() - totalPointCampaign);
+
         for (UUID productId : productIds) {
             Map<UUID, Long> getProductQuantityGroupByCollaborator = this.orderRepository
                     .getTotalQuantityProductGroupByCollaboratorId(productId).stream()
@@ -400,12 +412,16 @@ public class CampaignServiceImpl implements CampaignService {
             if (count < prizes.size()) {
                 Prize prize = prizes.get(count++);
                 Account accountMapping = account.awardPrize(prize);
+
+                accountMapping.setPoint(accountMapping.getPoint() + prize.getPrice());
+
                 this.accountRepository.save(accountMapping);
                 fcmNotificationUtils.sendNotificationFinishCampaign(campaign, account, prize,
                         collaboratorSelling.get(account.getId()));
             }
         }
 
+        this.accountRepository.save(enterprise);
         this.campaignRepository.save(campaign.setCampaignStatus(CampaignStatus.FINISHED));
         clearCache();
         fcmNotificationUtils.sendNotificationEnterprise(campaign, enterprise, quantity);
