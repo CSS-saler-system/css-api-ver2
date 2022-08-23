@@ -412,7 +412,7 @@ public class OrderServiceImpl implements OrderService {
         Map<Integer, Double> revenueByMonth = this.orderRepository.groupRevenueOrderByMonth(enterpriseId)
                 .stream().collect(toMap(
                         tuple -> tuple.get(OrderRepository.ORDER_BY_MONTH, Number.class).intValue(),
-                        tuple -> tuple.get(OrderRepository.ORDER_REVENUE, Number.class).doubleValue()));
+                        tuple -> tuple.get(OrderRepository.TOTAL_PRICE_MONTH, Number.class).doubleValue()));
 
         revenueByMonth.forEach((key, value) -> res.getRevenue()[key - 1] = value);
 
