@@ -31,7 +31,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             ADMIN_LOGIN + "/**",
             ENTERPRISE_LOGIN + "/**",
             COLLABORATOR_LOGIN + "/**",
-            MODERATOR_LOGIN + "/**"
+            MODERATOR_LOGIN + "/**",
+            ENTERPRISE_SIGNUP + "/**"
     };
 
     @Override
