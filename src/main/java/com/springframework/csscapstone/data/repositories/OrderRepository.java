@@ -66,7 +66,7 @@ public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecific
                     "WHERE od.product.id = :idProduct " +
                     "GROUP BY _collaborator.id " +
                     "ORDER BY sum(od.quantity) DESC")
-    List<Tuple> getCollaboratorAndTotalQuantitySold(@Param("idProduct") UUID idProduct);
+    List<Tuple> getTotalQuantityProductGroupByCollaboratorId(@Param("idProduct") UUID idProduct);
 
     /**
      * todo list query separate| need more test

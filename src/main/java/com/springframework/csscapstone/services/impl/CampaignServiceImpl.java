@@ -344,6 +344,7 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     private void closingCampaign(Campaign campaign) {
+
         //get sort collaborator and Long by OrderRepository
         Map<UUID, Long> collaboratorSelling = new HashMap<>();
         Account enterprise = campaign.getAccount();
@@ -359,21 +360,21 @@ public class CampaignServiceImpl implements CampaignService {
                 .collect(Collectors.toList());
 
         for (UUID productId : productIds) {
-            Map<UUID, Long> _tmp = this.orderRepository
-                    .getCollaboratorAndTotalQuantitySold(productId).stream()
+            Map<UUID, Long> getProductQuantityGroupByCollaborator = this.orderRepository
+                    .getTotalQuantityProductGroupByCollaboratorId(productId).stream()
                     .collect(Collectors.toMap(
                             tuple -> tuple.get(OrderRepository.COLLABORATOR_IDS, UUID.class),
                             tuple -> tuple.get(OrderRepository.TOTAL_QUANTITY, Long.class)));
 
-            _tmp.forEach((key, value) -> collaboratorSelling
-                    .compute(key, (k, v) -> Objects.isNull(v) ? value : v + value));
+            getProductQuantityGroupByCollaborator
+                    .forEach((key, value) -> collaboratorSelling.compute(key, (k, v) -> Objects.isNull(v) ? value : v + value));
         }
 
         //filter collaborators have enough standard: ASC
         List<Account> accounts = collaboratorSelling.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .filter(_entry -> _entry.getValue() >= campaign.getKpiSaleProduct())
-                //todo grt list collaborator by prizes size
+                //todo get list collaborator by prizes size
                 .limit(prizes.size())
                 //find account by the key in collaborator map
                 .flatMap(entry -> this.accountRepository
@@ -391,6 +392,7 @@ public class CampaignServiceImpl implements CampaignService {
             fcmNotificationUtils.sendNotificationEnterprise(campaign, enterprise, quantity);
             return;
         }
+
 //        mapping prize by using campaign prize with greater than KPI on campaign KPI
         int count = 0;
         for (Account account : accounts) {
@@ -500,7 +502,7 @@ public class CampaignServiceImpl implements CampaignService {
 
         for (UUID productId : productIds) {
             Map<UUID, Long> _tmp = this.orderRepository
-                    .getCollaboratorAndTotalQuantitySold(productId).stream()
+                    .getTotalQuantityProductGroupByCollaboratorId(productId).stream()
                     .collect(Collectors.toMap(
                             tuple -> tuple.get(OrderRepository.COLLABORATOR_IDS, UUID.class),
                             tuple -> tuple.get(OrderRepository.TOTAL_QUANTITY, Long.class)));
@@ -527,14 +529,10 @@ public class CampaignServiceImpl implements CampaignService {
         for (Account account : accounts) {
             LOGGER.info("count prize: {}", count);
             if (count < prizes.size()) {
-
                 Prize prize = prizes.get(count++);
-
                 CampaignCompletedDetailDto campaignCompletedDetailDto = new CampaignCompletedDetailDto(
                         account.getName(), account.getPhone(), prize.getName(), prize.getPrice());
-
                 campaignCompletedDetailDtos.add(campaignCompletedDetailDto);
-
             }
         }
         return campaignCompletedDetailDtos;

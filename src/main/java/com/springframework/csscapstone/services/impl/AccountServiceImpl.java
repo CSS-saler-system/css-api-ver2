@@ -356,7 +356,7 @@ public class AccountServiceImpl implements AccountService {
 
         //todo main handle: case list uuid not empty
         for (UUID id : productIds) {
-            Map<UUID, Long> tmp = this.orderRepository.getCollaboratorAndTotalQuantitySold(id)
+            Map<UUID, Long> tmp = this.orderRepository.getTotalQuantityProductGroupByCollaboratorId(id)
                     .stream().collect(Collectors.toMap(
                             tuple -> tuple.get(OrderRepository.COLLABORATOR_IDS, UUID.class),
                             tuple -> tuple.get(OrderRepository.TOTAL_QUANTITY, Long.class)));
