@@ -65,11 +65,12 @@ public class ModeratorProductController {
             @RequestParam(value = "productName", required = false) String name,
             @RequestParam(value = "enterpriseName", required = false) String enterpriseName,
             @RequestParam(value = "brand", required = false) String brand,
+            @RequestParam(value = "status", required = false) ProductStatus status,
             @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
             @RequestParam(value = "pageSize", required = false) Integer pageSize
     ) {
         PageImplResDto<ProductForModeratorResDto> result = this.productService
-                .pageAllForProductForModerator(name, enterpriseName, brand, pageNumber, pageSize);
+                .pageAllForProductForModerator(name, enterpriseName, brand, status, pageNumber, pageSize);
         return ok(result);
     }
 

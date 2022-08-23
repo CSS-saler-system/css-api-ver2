@@ -52,6 +52,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -113,11 +114,11 @@ public class ProductServiceImpl implements ProductService {
                 .where(ProductSpecifications.enterpriseId(account))
                 .and(StringUtils.isBlank(name) ? null : ProductSpecifications.nameContains(name))
                 .and(StringUtils.isBlank(brand) ? null : ProductSpecifications.brandContains(brand))
-                .and(Objects.isNull(minPrice) ? null : ProductSpecifications.priceGreaterThan(minPrice))
-                .and(Objects.isNull(productStatus) ? null : ProductSpecifications.filterByStatus(productStatus))
-                .and(Objects.isNull(maxPrice) ? null : ProductSpecifications.priceLessThan(maxPrice))
-                .and(Objects.isNull(minPoint) ? null : ProductSpecifications.pointGreaterThan(minPoint))
-                .and(Objects.isNull(maxPoint) ? null : ProductSpecifications.pointLessThan(maxPoint))
+                .and(isNull(minPrice) ? null : ProductSpecifications.priceGreaterThan(minPrice))
+                .and(isNull(productStatus) ? null : ProductSpecifications.filterByStatus(productStatus))
+                .and(isNull(maxPrice) ? null : ProductSpecifications.priceLessThan(maxPrice))
+                .and(isNull(minPoint) ? null : ProductSpecifications.pointGreaterThan(minPoint))
+                .and(isNull(maxPoint) ? null : ProductSpecifications.pointLessThan(maxPoint))
                 .and(ProductSpecifications.excludeDeleteStatus());
 
         return getProductResDtoPageImplResDto(pageNumber, pageSize, search);
@@ -135,10 +136,10 @@ public class ProductServiceImpl implements ProductService {
         Specification<Product> search = Specification
                 .where(StringUtils.isBlank(name) ? null : ProductSpecifications.nameContains(name))
                 .and(StringUtils.isBlank(brand) ? null : ProductSpecifications.brandContains(brand))
-                .and(Objects.isNull(minPrice) ? null : ProductSpecifications.priceGreaterThan(minPrice))
-                .and(Objects.isNull(maxPrice) ? null : ProductSpecifications.priceLessThan(maxPrice))
-                .and(Objects.isNull(minPoint) ? null : ProductSpecifications.pointGreaterThan(minPoint))
-                .and(Objects.isNull(maxPoint) ? null : ProductSpecifications.pointLessThan(maxPoint))
+                .and(isNull(minPrice) ? null : ProductSpecifications.priceGreaterThan(minPrice))
+                .and(isNull(maxPrice) ? null : ProductSpecifications.priceLessThan(maxPrice))
+                .and(isNull(minPoint) ? null : ProductSpecifications.pointGreaterThan(minPoint))
+                .and(isNull(maxPoint) ? null : ProductSpecifications.pointLessThan(maxPoint))
                 .and(ProductSpecifications.excludeDeleteStatus());
         return getProductResDtoPageImplResDto(pageNumber, pageSize, search);
     }
@@ -180,10 +181,10 @@ public class ProductServiceImpl implements ProductService {
             throws ProductInvalidException, AccountNotFoundException {
 
         //check null category
-        if (Objects.isNull(dto.getCategoryId())) throw handlerCategoryNotFound.get();
+        if (isNull(dto.getCategoryId())) throw handlerCategoryNotFound.get();
 
         //check null account
-        if (Objects.isNull(dto.getCreatorAccountId())) throw handlerAccountCreatorNotFound.get();
+        if (isNull(dto.getCreatorAccountId())) throw handlerAccountCreatorNotFound.get();
 
         //check existed account
         Account account = accountRepository
@@ -274,10 +275,10 @@ public class ProductServiceImpl implements ProductService {
     public PageImplResDto<ProductCountOrderResDto> getListProductWithCountOrder(
             UUID id, LocalDate startDate, LocalDate endDate, Integer pageNumber, Integer pageSize) throws AccountNotFoundException {
         //throws exception if id not found
-        if (Objects.isNull(id)) throw handlerAccountNotFound.get();
+        if (isNull(id)) throw handlerAccountNotFound.get();
 
-        pageNumber = Objects.isNull(pageNumber) || pageNumber <= 1 ? 1 : pageNumber;
-        pageSize = Objects.isNull(pageSize) || pageSize <= 1 ? 1 : pageSize;
+        pageNumber = isNull(pageNumber) || pageNumber <= 1 ? 1 : pageNumber;
+        pageSize = isNull(pageSize) || pageSize <= 1 ? 1 : pageSize;
 
         //get sum number in order-detail of order in during start date and end date
         Page<Tuple> page = this.orderDetailRepository.findAllSumInOrderDetailGroupingByProduct(
@@ -306,8 +307,8 @@ public class ProductServiceImpl implements ProductService {
     @Cacheable(key = "{#p0, #p1, #p2, #p3}", value = LIST_PRODUCT_NO_REGISTERED_FOR_COLLABORATOR)
     public PageImplResDto<ProductForCollaboratorResDto> pageProductWithNoRegisteredByEnterpriseAndCollaborator(
             UUID collaboratorId, UUID enterpriseId, Integer pageNumber, Integer pageSize) {
-        pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
-        pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
+        pageNumber = isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
+        pageSize = isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
 
         Page<Product> page = this.productRepository.getAllProductNotRegister(
                 collaboratorId, enterpriseId, PageRequest.of(pageNumber - 1, pageSize, Sort.by(Product_.NAME)));
@@ -326,8 +327,8 @@ public class ProductServiceImpl implements ProductService {
     @Cacheable(key = "{#p0, #p1, #p2, #p3}", value = LIST_PRODUCT_REGISTERED_FOR_COLLABORATOR)
     public PageImplResDto<ProductForCollaboratorResDto> pageProductWithRegisteredByEnterpriseAndCollaborator(
             UUID collaboratorId, UUID enterpriseId, Integer pageNumber, Integer pageSize) {
-        pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
-        pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
+        pageNumber = isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
+        pageSize = isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
         Page<Product> page = this.productRepository.getAllProductRegister(
                 collaboratorId, enterpriseId, PageRequest.of(pageNumber - 1, pageSize, Sort.by(Product_.NAME)));
         List<ProductForCollaboratorResDto> result = page.getContent()
@@ -342,14 +343,15 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Cacheable(key = "{#p0, #p1, #p2, #p3, #p4}", value = LIST_PRODUCT_FOR_COLLABORATOR)
     public PageImplResDto<ProductForModeratorResDto> pageAllForProductForModerator(
-            String name, String nameEnterprise, String brand,
+            String name, String nameEnterprise, String brand,ProductStatus status,
             Integer pageNumber, Integer pageSize) {
 
-        pageNumber = Objects.isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
-        pageSize = Objects.isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
+        pageNumber = isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
+        pageSize = isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
 
         Specification<Product> search = Specification
                 .where(StringUtils.isBlank(name) ? null : ProductSpecifications.nameContains(name))
+                .and(isNull(status) ? null : ProductSpecifications.filterByStatus(status))
                 .and(StringUtils.isBlank(brand) ? null : ProductSpecifications.brandContains(brand))
                 .and(StringUtils.isBlank(nameEnterprise) ? null : ProductSpecifications.enterpriseName(nameEnterprise));
         Page<Product> page = this.productRepository.findAll(search,
@@ -417,8 +419,8 @@ public class ProductServiceImpl implements ProductService {
     private final Supplier<ProductInvalidException> handlerProductInvalidException = () -> new ProductInvalidException(MessagesUtils.getMessage(MessageConstant.Product.INVALID));
 
     private PageImplResDto<ProductResDto> getProductResDtoPageImplResDto(Integer pageNumber, Integer pageSize, Specification<Product> search) {
-        pageSize = Objects.isNull(pageSize) || (pageSize <= 1) ? 50 : pageSize;
-        pageNumber = Objects.isNull(pageNumber) || (pageNumber <= 1) ? 1 : pageNumber;
+        pageSize = isNull(pageSize) || (pageSize <= 1) ? 50 : pageSize;
+        pageNumber = isNull(pageNumber) || (pageNumber <= 1) ? 1 : pageNumber;
 
         Page<Product> page = this.productRepository
                 .findAll(search, PageRequest.of(pageNumber - 1, pageSize, Sort.by(Product_.CREATE_DATE).descending()));

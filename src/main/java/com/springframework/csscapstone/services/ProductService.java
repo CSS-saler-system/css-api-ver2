@@ -47,7 +47,8 @@ public interface ProductService {
             UUID collaboratorId, UUID enterpriseId, Integer pageNumber, Integer pageSize);
 
     PageImplResDto<ProductForModeratorResDto> pageAllForProductForModerator(
-            String name, String nameEnterprise, String brand, Integer pageNumber, Integer pageSize);
+            String name, String nameEnterprise, String brand, ProductStatus status,
+            Integer pageNumber, Integer pageSize);
 
     Optional<ProductForCollabGetDetailResDto> findByIdForCollaborator(UUID productId);
 
