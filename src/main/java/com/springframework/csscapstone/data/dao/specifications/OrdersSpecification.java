@@ -23,11 +23,14 @@ public class OrdersSpecification {
     }
 
     public static Specification<Order> equalsEnterpriseId(UUID enterpriseId) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(
-                root
-                        .join(Order_.orderDetails)
-                        .join(OrderDetail_.product)
-                        .join(Product_.account)
-                        .get(Account_.id), enterpriseId);
+        return (root, query, criteriaBuilder) -> {
+            query.distinct(true);
+            return criteriaBuilder.equal(
+                    root
+                            .join(Order_.orderDetails)
+                            .join(OrderDetail_.product)
+                            .join(Product_.account)
+                            .get(Account_.id), enterpriseId);
+        };
     }
 }

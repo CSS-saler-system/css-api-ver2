@@ -502,12 +502,12 @@ public class AccountServiceImpl implements AccountService {
                 .save(AccountMapper.INSTANCE.updateAccountFromEnterpriseSignUpDto(enterprise, accountByEmail.get()));
 
         if (nonNull(avatar)) {
-            saveAccountImageEntity(avatar, savedAccount.getId(), AccountImageType.AVATAR)
+            saveAccountImageEntity(avatar, savedAccount.getId(), AVATAR)
                     .ifPresent(savedAccount::addImage);
         }
 
         if (nonNull(licences)) {
-            saveAccountImageEntity(licences, savedAccount.getId(), AccountImageType.ID_CARD)
+            saveAccountImageEntity(licences, savedAccount.getId(), LICENSE)
                     .ifPresent(savedAccount::addImage);
         }
 

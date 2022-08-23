@@ -34,6 +34,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import static com.springframework.csscapstone.config.message.constant.ApiEndPoint.Product.*;
+import static java.util.Objects.isNull;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -117,6 +118,12 @@ public class EnterpriseProductController {
     ) throws ProductInvalidException, AccountNotFoundException, IOException, ExecutionException, InterruptedException {
         ProductCreatorReqDto productCreatorReqDto = new ObjectMapper()
                 .readValue(dto, ProductCreatorReqDto.class);
+        if (isNull(productCreatorReqDto.getPointSale())) {
+            throw new RuntimeException("The creator product is invalid!!!");
+        }
+        if (isNull(productCreatorReqDto.getName())) {
+            throw new RuntimeException("The creator product is invalid!!!");
+        }
         return ok(this.productService.createProduct(productCreatorReqDto, typeImages, certificationImages));
     }
 
