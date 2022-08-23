@@ -117,7 +117,6 @@ public class AccountServiceImpl implements AccountService {
 
     private final Supplier<EntityNotFoundException> handlerAccountNotFound =
             () -> new EntityNotFoundException(MessagesUtils.getMessage(MessageConstant.Account.NOT_FOUND));
-    //    private final Supplier<Role> getDefaultRoleSupplier = () -> new Role("ROLE_3", "Collaborator");
     private final Function<String, Consumer<Account>> notExistedEmailException = email -> {
         throw new RuntimeException("The email: " + email + " was not existed!!!");
     };
@@ -149,7 +148,6 @@ public class AccountServiceImpl implements AccountService {
 
     /**
      * todo Get Collaborator With performance skill selling
-     *
      * @param uuid
      * @return
      */

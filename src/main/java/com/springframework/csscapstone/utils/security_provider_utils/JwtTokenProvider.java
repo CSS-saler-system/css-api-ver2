@@ -105,15 +105,11 @@ public class JwtTokenProvider implements TokenProvider {
         return verifier.verify(token).getSubject();
     }
 
-
-
     public boolean isTokenValid(String email, String token) {
         JWTVerifier verifier = getVerifier();
         return StringUtils.isNotEmpty(email)
                 || !verifier.verify(token).getExpiresAt().before(new Date());
     }
-
-
 
     public List<GrantedAuthority> getAuthorities(String token) {
         JWTVerifier verifier = getVerifier();

@@ -7,7 +7,6 @@ public class MessageConstant {
     public static final String KPI_NOT_ENOUGH = "kpi.error.not_enough";
 
     public static class Prize {
-
         public static final String BAD_JSON = "prize.error.bad_json";
         public static final String NOT_FOUND = "prize.error.not_found";
     }
@@ -18,7 +17,6 @@ public class MessageConstant {
     }
 
     public static class Point {
-
         public static final String LACK_POINT = "point.error.lack";
     }
 
@@ -45,7 +43,7 @@ public class MessageConstant {
     public static class Product {
         public static final String NOT_FOUND = "product.error.not-found";
         public static final String INVALID = "product.error.invalid";
-        public static final String ERROR_NOT_SAME_ID_ENTERPRISE = "error.product.not_same_enterprise";
+        public static final String ERROR_NOT_SAME_ID_ENTERPRISE = "product.error.not_same_enterprise";
     }
 
     public static class Campaign {

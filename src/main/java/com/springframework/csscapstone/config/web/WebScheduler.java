@@ -13,12 +13,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 public class WebScheduler {
     private final CampaignService campaignService;
 
-   @Scheduled(cron = "*/60 * * * * *") // 0 0 0 * * *
+   @Scheduled(cron = "*/120 * * * * *") // 0 0 0 * * *
 //     @Scheduled(cron = "${cron_time}") // 0 0 0 * * *
     public void finishCampaignConfiguration() {
         campaignService.scheduleCloseCampaign();
     }
-   @Scheduled(cron = "*/60 * * * * *") // 0 0 0 * * *
+   @Scheduled(cron = "*/120 * * * * *") // 0 0 0 * * *
 //     @Scheduled(cron = "${cron_time}")
     public void rejectCampaignConfiguration() {
         campaignService.rejectCampaignInDate();

@@ -35,7 +35,6 @@ public class BlobTestController {
         BlobContainerClient container = new BlobContainerClientBuilder()
                 .containerName(this.productContainer)
                 .buildClient();
-
         String blobName = UUID.randomUUID().toString();
         return ok(blobName);
     }

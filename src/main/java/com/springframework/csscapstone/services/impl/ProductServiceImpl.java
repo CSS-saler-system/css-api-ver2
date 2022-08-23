@@ -353,7 +353,7 @@ public class ProductServiceImpl implements ProductService {
                 .and(StringUtils.isBlank(brand) ? null : ProductSpecifications.brandContains(brand))
                 .and(StringUtils.isBlank(nameEnterprise) ? null : ProductSpecifications.enterpriseName(nameEnterprise));
         Page<Product> page = this.productRepository.findAll(search,
-                PageRequest.of(pageNumber - 1, pageSize, Sort.by(Product_.NAME)));
+                PageRequest.of(pageNumber - 1, pageSize, Sort.by(Product_.CREATE_DATE)));
         List<ProductForModeratorResDto> result = page.getContent()
                 .stream()
                 .map(ProductMapper.INSTANCE::productToProductForModeratorResDto)

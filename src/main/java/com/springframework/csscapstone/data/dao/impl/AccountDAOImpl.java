@@ -21,7 +21,9 @@ public class AccountDAOImpl implements AccountDAO {
     private final EntityManager em;
 
     @Override
-    public List<AccountResDto> findDtoCriteria(String name, String phone, String email, String address, String description, boolean status) {
+    public List<AccountResDto> findDtoCriteria(
+            String name, String phone, String email,
+            String address, String description, boolean status) {
         CriteriaBuilder builder = em.getCriteriaBuilder();
         CriteriaQuery<Account> query = builder.createQuery(Account.class);
         Root<Account> root = query.from(Account.class);
