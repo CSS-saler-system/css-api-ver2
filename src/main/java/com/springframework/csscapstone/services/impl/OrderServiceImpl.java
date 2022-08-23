@@ -11,17 +11,19 @@ import com.springframework.csscapstone.data.status.OrderStatus;
 import com.springframework.csscapstone.payload.request_dto.collaborator.OrderCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.collaborator.OrderUpdaterDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
-import com.springframework.csscapstone.payload.response_dto.enterprise.*;
+import com.springframework.csscapstone.payload.response_dto.enterprise.EnterpriseRevenueDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.OrderChartEnterpriseResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.OrderEnterpriseManageResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.OrderResDto;
 import com.springframework.csscapstone.services.OrderService;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.LackPointException;
 import com.springframework.csscapstone.utils.exception_utils.order_exception.OrderNotFoundException;
 import com.springframework.csscapstone.utils.fcm_utils.FirebaseMessageAsyncUtils;
+import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.AccountImageMapper;
 import com.springframework.csscapstone.utils.mapper_utils.dto_mapper.MapperDTO;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -46,6 +48,10 @@ import static java.util.stream.Collectors.toMap;
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
     private static final double priceLatch = 0.0;
+    private final int INVALID_PAGE = 1;
+    private final int DEFAULT_PAGE_NUMBER = 1;
+    private final int SHIFT_TO_ACTUAL_PAGE = 1;
+    private final int DEFAULT_PAGE_SIZE = 10;
     private final OrderRepository orderRepository;
     private final AccountRepository accountRepository;
     private final OrderDetailRepository orderDetailRepository;
@@ -53,29 +59,25 @@ public class OrderServiceImpl implements OrderService {
     private final ProductRepository productRepository;
     private final AccountTokenRepository accountTokenRepository;
     private final FirebaseMessageAsyncUtils firebaseMessageAsyncUtils;
-    private final int INVALID_PAGE = 1;
-    private final int DEFAULT_PAGE_NUMBER = 1;
-    private final int SHIFT_TO_ACTUAL_PAGE = 1;
-    private final int DEFAULT_PAGE_SIZE = 10;
-    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
     private final Supplier<RuntimeException> notFoundOrderException =
-            () -> new RuntimeException("The Order not found or in processing so not allow to modified");
+            () -> new RuntimeException(MessagesUtils.getMessage(MessageConstant.Order.ORDER_NOT_FOUND_OR_PROCESSING));
     private final Function<UUID, Supplier<RuntimeException>> notFoundOrderWithIdException =
-            (id) -> () -> new RuntimeException("No have order by id: " + id + " or order in pending process");
+            (id) -> () -> new RuntimeException(MessagesUtils.getMessage(MessageConstant.Order.ORDER_NOT_FOUND_WITH_ID) + id);
     private final Supplier<LackPointException> handlerLackPoint =
             () -> new LackPointException(MessagesUtils.getMessage(MessageConstant.Point.LACK_POINT));
     private final Supplier<OrderNotFoundException> handlerOrderNotFound =
             () -> new OrderNotFoundException(MessagesUtils.getMessage(MessageConstant.Order.NOT_FOUND));
     private final Supplier<EntityNotFoundException> handlerNotFoundException =
-            () -> new EntityNotFoundException("The product in order detail was not found");
+            () -> new EntityNotFoundException(MessagesUtils.getMessage(MessageConstant.OrderDetail.NOT_HAVE_PRODUCT_IN_ORDER_DETAIL));
     private final Supplier<RuntimeException> notSameEnterpriseException =
-            () -> new RuntimeException("Product not have same id enterprise!!!");
+            () -> new RuntimeException(MessagesUtils.getMessage(MessageConstant.Product.ERROR_NOT_SAME_ID_ENTERPRISE));
     private final Supplier<RuntimeException> customerNotFoundException =
-            () -> new RuntimeException("The Customer Not Found!!!");
+            () -> new RuntimeException(MessagesUtils.getMessage(MessageConstant.Customer.NOT_FOUND));
     private final Function<UUID, Supplier<EntityNotFoundException>> collaboratorNotFoundException =
-            (id) -> () -> new EntityNotFoundException("The collaborator with id: " + id + " not found");
+            (id) -> () -> new EntityNotFoundException(MessagesUtils.getMessage(MessageConstant.Account.NOT_FOUND_WITH_ID) + id);
     private final Function<UUID, Predicate<UUID>> isSameEnterpriseId = (id) -> (enterpriseId) -> !enterpriseId.equals(id);
-    private final Function<UUID, Supplier<RuntimeException>> orderNotFound = (id) -> () -> new RuntimeException("No have Order With id: " + id);
+    private final Function<UUID, Supplier<RuntimeException>> orderNotFound =
+            (id) -> () -> new RuntimeException(MessagesUtils.getMessage(MessageConstant.Order.ORDER_NOT_FOUND_WITH_ID) + id);
     private final CacheManager cacheManager;
 
     private void clearCache() {
@@ -102,7 +104,6 @@ public class OrderServiceImpl implements OrderService {
         Account account = this.accountRepository.findById(idCollaborator)
                 .orElseThrow(collaboratorNotFoundException.apply(idCollaborator));
 
-
         pageNumber = Objects.isNull(pageNumber) || pageNumber < INVALID_PAGE ? DEFAULT_PAGE_NUMBER : pageNumber;
         pageSize = Objects.isNull(pageSize) || pageSize < INVALID_PAGE ? DEFAULT_PAGE_SIZE : pageSize;
 
@@ -112,8 +113,9 @@ public class OrderServiceImpl implements OrderService {
                 .and(OrdersSpecification.excludeDisableStatus());
 
         Page<Order> orders = this.orderRepository
-                .findAll(conditions,
-                        PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize, Sort.by(Order_.CREATE_DATE).descending()));
+                .findAll(conditions, PageRequest.of(pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize,
+                        Sort.by(Order_.CREATE_DATE).descending()));
+
         List<OrderResDto> content = orders
                 .getContent()
                 .stream()
@@ -125,11 +127,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private static Function<Order, OrderResDto> getOrderOrderResDtoFunction() {
+        int firstElement = 0;
         return order -> {
-            AccountImage avatar = order.getOrderDetails().get(0).getProduct().getAccount().getAvatar();
+            AccountImage avatar = order.getOrderDetails().get(firstElement).getProduct().getAccount().getAvatar();
             AccountImageBasicVer2Dto image = AccountImageMapper.INSTANCE.accountImageToAccountImageBasicVer2Dto(avatar);
-            OrderResDto orderResDto = MapperDTO.INSTANCE.toOrderResDto(order, image);
-            return orderResDto;
+            return MapperDTO.INSTANCE.toOrderResDto(order, image);
         };
     }
 
@@ -169,8 +171,7 @@ public class OrderServiceImpl implements OrderService {
                         entry.getKey().getPointSale(),
                         entry.getValue(),
                         Math.ceil(entry.getValue() * entry.getKey().getPointSale()),
-                        Math.ceil(entry.getValue() * entry.getKey().getPrice()))
-                        .addProductToOrderDetail(entry.getKey()))
+                        Math.ceil(entry.getValue() * entry.getKey().getPrice())).addProductToOrderDetail(entry.getKey()))
                 .peek(this.orderDetailRepository::save)
                 .collect(Collectors.toList());
 
@@ -234,7 +235,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-//    @Cacheable(key = "{#p0, #p1}", value = "updateStatusOrder")
     public Optional<UUID> updateStatusOrder(UUID id, OrderStatus status) {
         Order order = orderRepository.findById(id).orElseThrow(handlerOrderNotFound);
         order.setStatus(status);
@@ -256,7 +256,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public void completedOrder(UUID orderId) {
-
+        int firstElement = 0;
         //check order valid
         Order order = this.orderRepository.findById(orderId)
                 .filter(_order -> _order.getStatus() != OrderStatus.FINISHED)
@@ -285,11 +285,12 @@ public class OrderServiceImpl implements OrderService {
                 .map(detail -> detail.getProduct().getAccount())
                 .distinct().collect(Collectors.toList());
         if (enterprises.size() != 1) {
-            throw new RuntimeException("Order wrong with 2 enterprise or no have enterprise!!!");
+            throw new RuntimeException(MessagesUtils.getMessage(MessageConstant.Order.NOT_HAVE_ENTERPRISE));
         }
 
         //todo point of enterprise must be large enough
-        Account enterprise = enterprises.get(0);
+
+        Account enterprise = enterprises.get(firstElement);
         Optional.of(enterprise).ifPresent(_enterprise -> {
             if (_enterprise.getPoint() < totalPoint) throw handlerLackPoint.get();
 
@@ -305,7 +306,6 @@ public class OrderServiceImpl implements OrderService {
         //send notification:
         /**
          * Customer name, enterprise, datetime order, total point inscrease
-         *
          */
         //todo get account token:
         accountTokenRepository.getAccountTokenByAccountOptional(order.getAccount().getId())
@@ -313,7 +313,7 @@ public class OrderServiceImpl implements OrderService {
                         order.getCustomer().getName(), enterprise.getName(),
                         enterprise.getAvatar().getPath(),
                         order.getId(), order.getCreateDate(), order.getTotalPointSale(),
-                        token.get(0).getRegistrationToken())));
+                        token.get(firstElement).getRegistrationToken())));
         clearCache();
     }
 
@@ -332,7 +332,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Cacheable(key = "{#p0, #p1, #p2}", value = "getOrderResDtoByEnterprise")
+    @Cacheable(key = "{#p0, #p1, #p2, #p3}", value = "getOrderResDtoByEnterprise")
     public PageImplResDto<OrderEnterpriseManageResDto> getOrderResDtoByEnterprise(
             UUID enterpriseId, OrderStatus orderStatus, Integer pageNumber, Integer pageSize) {
 
@@ -349,8 +349,7 @@ public class OrderServiceImpl implements OrderService {
                 .and(OrdersSpecification.excludeDisableStatus());
 
         Page<Order> page = this.orderRepository
-                .findAll(conditions,
-                        PageRequest.of(
+                .findAll(conditions, PageRequest.of(
                                 pageNumber - SHIFT_TO_ACTUAL_PAGE, pageSize,
                                 Sort.by(Order_.CREATE_DATE).descending()));
         List<OrderEnterpriseManageResDto> content = page.getContent()
@@ -370,8 +369,7 @@ public class OrderServiceImpl implements OrderService {
         List<EnterpriseRevenueDto> revenueDtos = this.orderRepository
                 .getRevenueByEnterprise(enterpriseId)
                 .stream()
-                .collect(
-                        toMap(
+                .collect(toMap(
                                 tuple -> tuple.get(OrderRepository.ORDER_DATE, Integer.class),
                                 tuple -> tuple.get(OrderRepository.ORDER_REVENUE, Double.class)))
                 .entrySet()
@@ -413,12 +411,10 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderChartEnterpriseResDto handlerOrderQuantityWithMonth(Map<Integer, Long> preTotalOrder) {
         OrderChartEnterpriseResDto orderChartEnterpriseResDto = new OrderChartEnterpriseResDto();
-
         List<Long> collect = preTotalOrder.keySet()
                 .stream()
                 .map(key -> orderChartEnterpriseResDto.getQuantity()[key - 1] = preTotalOrder.get(key))
                 .collect(Collectors.toList());
-
         return orderChartEnterpriseResDto;
     }
 }

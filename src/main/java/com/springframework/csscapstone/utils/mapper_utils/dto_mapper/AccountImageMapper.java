@@ -1,5 +1,7 @@
-package com.springframework.csscapstone.data.domain;
+package com.springframework.csscapstone.utils.mapper_utils.dto_mapper;
 
+import com.springframework.csscapstone.data.domain.AccountImage;
+import com.springframework.csscapstone.data.domain.AccountImageBasicVer2Dto;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 

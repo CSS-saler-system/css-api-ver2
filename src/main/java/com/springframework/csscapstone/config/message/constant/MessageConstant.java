@@ -5,6 +5,7 @@ public class MessageConstant {
     public static final String REQUEST_SUCCESS = "request.success.message";
     public static final String REQUEST_FAILURE = "request.false.message";
     public static final String KPI_NOT_ENOUGH = "kpi.error.not_enough";
+
     public static class Prize {
 
         public static final String BAD_JSON = "prize.error.bad_json";
@@ -44,7 +45,7 @@ public class MessageConstant {
     public static class Product {
         public static final String NOT_FOUND = "product.error.not-found";
         public static final String INVALID = "product.error.invalid";
-
+        public static final String ERROR_NOT_SAME_ID_ENTERPRISE = "error.product.not_same_enterprise";
     }
 
     public static class Campaign {
@@ -54,6 +55,7 @@ public class MessageConstant {
 
     public static class Account {
         public static final String NOT_FOUND = "account.error.not-found";
+        public static final String NOT_FOUND_WITH_ID = "account.error.not_found_with_id";
         public static final String NOT_FOUND_TOKEN = "account.error.not-found-token";
         public static final String INVALID = "account.error.invalid";
         public static final String EXISTED = "account.error.existed";
@@ -68,15 +70,19 @@ public class MessageConstant {
 
     public static class Order {
         public static final String NOT_FOUND = "order.error.not_found";
+        public static final String ORDER_NOT_FOUND_OR_PROCESSING = "order.error.process_or_not_found";
+        public static final String ORDER_NOT_FOUND_WITH_ID = "order.error.no_have_order_id";
+        public static final String NOT_HAVE_ENTERPRISE = "error.order.no_have_valid_enterprise";
     }
 
     public static class OrderDetail {
         public static final String CANT_CREATE = "order_detail.error.cant_create";
         public static final String NOT_FOUND = "order_detail.error.not_found";
+        public static final String NOT_HAVE_PRODUCT_IN_ORDER_DETAIL = "order_detail.error.not_have_product_in_order_detail";
     }
 
     public static class Customer {
-        public static final String NOT_FOUND = "customer.error.not-found";
+        public static final String NOT_FOUND = "customer.error.not_found";
         public static final String EXISTED = "customer.error.existed";
     }
 
