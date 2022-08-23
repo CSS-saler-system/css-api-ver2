@@ -51,11 +51,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         request -> request
                                 .antMatchers(PUBLIC_URLS)
                                 .permitAll()
-                                .antMatchers(ADMIN + "/**").hasAuthority("Admin")
-                                .antMatchers(ENTERPRISE + "/**").hasAuthority("Enterprise")
-                                .antMatchers(COLLABORATOR + "/**").hasAuthority("Collaborator")
-                                .antMatchers(MODERATOR + "/**").hasAuthority("Moderator")
-                                .anyRequest().authenticated()
+//                                .antMatchers(ADMIN + "/**").hasAuthority("Admin")
+//                                .antMatchers(ENTERPRISE + "/**").hasAuthority("Enterprise")
+//                                .antMatchers(COLLABORATOR + "/**").hasAuthority("Collaborator")
+//                                .antMatchers(MODERATOR + "/**").hasAuthority("Moderator")
+//                                .anyRequest().authenticated()
                 )
                 .logout(_logout -> _logout.logoutUrl(USER_LOGOUT))
                 .exceptionHandling(exception -> exception

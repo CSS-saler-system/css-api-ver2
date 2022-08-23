@@ -25,6 +25,7 @@ public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecific
     String ORDER_REVENUE = "tuple_revenue";
     String ORDER_TOTAL = "tuple_order_total";
     String ORDER_BY_MONTH = "tuple_order_month";
+    String TOTAL_PRICE_MONTH = "tuple_price_month";
 
     @Query("SELECT o FROM Order o " +
             "WHERE o.account = :idCollaborator " +
@@ -161,6 +162,11 @@ public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecific
             "GROUP BY month(o.createDate)")
     List<Tuple> getOrderByMonthWithStatus(@Param("enterpriseId") UUID enterpriseId, @Param("status") OrderStatus status);
 
-
-
+    @Query("SELECT MONTH(o.createDate) AS " + ORDER_BY_MONTH + ", SUM(od.totalPriceProduct) AS " + TOTAL_PRICE_MONTH + " " +
+            "FROM Order o " +
+            "JOIN o.orderDetails od " +
+            "JOIN od.product p " +
+            "WHERE p.account.id = :enterpriseId " +
+            "GROUP BY MONTH(o.createDate)")
+    List<Tuple> groupRevenueOrderByMonth(@Param("enterpriseId") UUID enterpriseId);
 }

@@ -211,6 +211,7 @@ public class ApiEndPoint {
         public static final String V2_ORDER_LIST_BY_ENTERPRISE = v2_handler + "/list";
         public static final String  V2_ORDER_GET = v2_handler + "/get";
         public static final String V2_CHART_TOTAL = v2_handler + "/chart";
+        public static final String V2_CHART_REVENUE = v2_handler + "/chart";
         public static final String  V2_ORDER_SUCCESS = v2_handler + "/success";
         public static final String V2_REVENUE_DASHBOARD = v2_handler + "/revenue";
         public static final String V3_ORDER_CREATE = v3_handler + "/new";

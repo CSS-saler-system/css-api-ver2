@@ -11,10 +11,7 @@ import com.springframework.csscapstone.data.status.OrderStatus;
 import com.springframework.csscapstone.payload.request_dto.collaborator.OrderCreatorReqDto;
 import com.springframework.csscapstone.payload.request_dto.collaborator.OrderUpdaterDto;
 import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
-import com.springframework.csscapstone.payload.response_dto.enterprise.EnterpriseRevenueDto;
-import com.springframework.csscapstone.payload.response_dto.enterprise.OrderChartEnterpriseResDto;
-import com.springframework.csscapstone.payload.response_dto.enterprise.OrderEnterpriseManageResDto;
-import com.springframework.csscapstone.payload.response_dto.enterprise.OrderResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.*;
 import com.springframework.csscapstone.services.OrderService;
 import com.springframework.csscapstone.utils.exception_utils.EntityNotFoundException;
 import com.springframework.csscapstone.utils.exception_utils.LackPointException;
@@ -406,6 +403,20 @@ public class OrderServiceImpl implements OrderService {
         res.put("cancel_order", _cancelOrder);
 
         return res;
+    }
+
+    @Override
+    public Map<String, RevenueChartEnterpriseResDto> getTotalRevenueByEnterpriseId(UUID enterpriseId) {
+        RevenueChartEnterpriseResDto res = new RevenueChartEnterpriseResDto();
+
+        Map<Integer, Double> revenueByMonth = this.orderRepository.groupRevenueOrderByMonth(enterpriseId)
+                .stream().collect(toMap(
+                        tuple -> tuple.get(OrderRepository.ORDER_BY_MONTH, Number.class).intValue(),
+                        tuple -> tuple.get(OrderRepository.ORDER_REVENUE, Number.class).doubleValue()));
+
+        revenueByMonth.forEach((key, value) -> res.getRevenue()[key - 1] = value);
+
+        return Collections.singletonMap("revenue", res);
     }
 
     private OrderChartEnterpriseResDto handlerOrderQuantityWithMonth(Map<Integer, Long> preTotalOrder) {

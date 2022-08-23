@@ -47,4 +47,6 @@ public interface OrderService {
     Optional<List<EnterpriseRevenueDto>> getRevenue(UUID enterpriseId);
 
     Map<String, OrderChartEnterpriseResDto> getTotalOrderByEnterpriseId(UUID enterpriseId);
+
+    Map<String, RevenueChartEnterpriseResDto> getTotalRevenueByEnterpriseId(UUID enterpriseId);
 }

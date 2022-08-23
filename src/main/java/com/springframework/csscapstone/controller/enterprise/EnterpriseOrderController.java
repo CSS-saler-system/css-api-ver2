@@ -6,6 +6,7 @@ import com.springframework.csscapstone.payload.response_dto.PageImplResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.OrderChartEnterpriseResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.OrderEnterpriseManageResDto;
 import com.springframework.csscapstone.payload.response_dto.enterprise.OrderResDto;
+import com.springframework.csscapstone.payload.response_dto.enterprise.RevenueChartEnterpriseResDto;
 import com.springframework.csscapstone.services.OrderService;
 import com.springframework.csscapstone.utils.message_utils.MessagesUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -61,7 +62,6 @@ public class EnterpriseOrderController {
             @RequestParam(value = "pageSize", required = false) Integer pageSize) {
         PageImplResDto<OrderEnterpriseManageResDto> result = this.orderService
                 .getOrderResDtoByEnterprise(enterpriseId, orderStatus,pageNumber, pageSize);
-
         return ok(result);
     }
 
@@ -75,6 +75,11 @@ public class EnterpriseOrderController {
     @GetMapping(V2_CHART_TOTAL + "/{enterpriseId}")
     public ResponseEntity<?> getTotalOrderByIdEnterprise(@PathVariable("enterpriseId") UUID enterpriseId) {
         Map<String, OrderChartEnterpriseResDto> res = this.orderService.getTotalOrderByEnterpriseId(enterpriseId);
+        return ok(res);
+    }
+    @GetMapping(V2_CHART_REVENUE + "/{enterpriseId}")
+    public ResponseEntity<?> getTotalRevenueByIdEnterprise(@PathVariable("enterpriseId") UUID enterpriseId) {
+        Map<String, RevenueChartEnterpriseResDto> res = this.orderService.getTotalRevenueByEnterpriseId(enterpriseId);
         return ok(res);
     }
 
