@@ -122,7 +122,7 @@ public class AccountServiceImpl implements AccountService {
         throw new RuntimeException("The email: " + email + " was not existed!!!");
     };
     private final Function<String, Consumer<Account>> duplicationPhoneException = email -> {
-        throw new RuntimeException("The email: " + email + " was existed!!!");
+        throw new RuntimeException("The phone: " + email + " was existed!!!");
     };
 
     private static final String COLLABORATOR_WITH_PERFORMANCE = "getCollaboratorWithPerformance";
