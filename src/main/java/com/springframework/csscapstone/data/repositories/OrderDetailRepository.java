@@ -28,23 +28,25 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, UUID> 
      * @return
      */
     @Query(
-            value = "SELECT od.product.id AS " + PRODUCT + ", " +
+            value = "SELECT DISTINCT od.product.id AS " + PRODUCT + ", " +
                     "sum(od.quantity) AS " + COUNT + " " +
                     "FROM OrderDetail od " +
                     "JOIN od.order o " +
-                    "WHERE od NOT IN(SELECT _od FROM OrderDetail _od WHERE _od.product.productStatus = 'DISABLE') " +
-                    "AND o.createDate >= :startDate  " +
+                    "JOIN od.product p " +
+                    "WHERE  o.createDate >= :startDate  " +
                     "AND o.createDate <= :endDate " +
                     "AND o.status = :status " +
                     "AND od.product.account.id = :enterpriseId " +
+                    "AND not p.productStatus = 'DISABLED' " +
                     "GROUP BY od.product.id",
             countQuery = "SELECT count(distinct od.product.id) " +
                     "FROM OrderDetail od " +
                     "JOIN od.order o " +
-                    "WHERE od NOT IN(SELECT _od FROM OrderDetail _od WHERE _od.product.productStatus = 'DISABLE') " +
-                    "AND o.createDate >= :startDate  " +
+                    "JOIN od.product p " +
+                    "WHERE o.createDate >= :startDate  " +
                     "AND o.createDate <= :endDate " +
                     "AND o.status = :status " +
+                    "AND not p.productStatus = 'DISABLED' " +
                     "AND od.product.account.id = :enterpriseId " +
                     "GROUP BY od.product.id")
     Page<Tuple> findAllSumInOrderDetailGroupingByProduct(

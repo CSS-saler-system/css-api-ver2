@@ -98,8 +98,6 @@ public class EnterpriseProductController {
     ) {
         LocalDate start = LocalDate.parse(startDate, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
         LocalDate end = LocalDate.parse(endDate, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-        LOGGER.info("The start date {}", start);
-        LOGGER.info("The end date {}", end);
         PageImplResDto<ProductCountOrderResDto> page =
                 this.productService.getListProductWithCountOrder(enterpriseId, start, end, pageNumber, pageSize);
         return ok(page);
