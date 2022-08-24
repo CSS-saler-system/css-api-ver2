@@ -1,4 +1,4 @@
-package com.springframework.csscapstone.payload.response_dto;
+package com.springframework.csscapstone.payload.response_dto.fpt_ai;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

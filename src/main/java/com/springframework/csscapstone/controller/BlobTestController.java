@@ -2,7 +2,9 @@ package com.springframework.csscapstone.controller;
 
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobContainerClientBuilder;
-import com.springframework.csscapstone.payload.response_dto.AccountFromIdentityResDto;
+import com.springframework.csscapstone.payload.response_dto.fpt_ai.AccountFromDriverLicencesResDto;
+import com.springframework.csscapstone.payload.response_dto.fpt_ai.AccountFromIdentityResDto;
+import com.springframework.csscapstone.payload.response_dto.fpt_ai.AccountFromPassportResDto;
 import com.springframework.csscapstone.services.IdentityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 import static org.springframework.http.ResponseEntity.ok;
@@ -50,10 +53,31 @@ public class BlobTestController {
 //        return ok("sending email");
 //    }
 
-    @PostMapping(value = "/extract-infomation",  consumes = {MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> extractInformationIdentityCard(@RequestParam("identity_card") MultipartFile identityCard) throws IOException {
-        AccountFromIdentityResDto accountFromIdentityResDto = identityService.extractInfoIdentityCard(identityCard);
+    @PostMapping(
+            value = "/extract-information/by-id-card",
+            consumes = {MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> extractInformationIdentityCard(
+            @RequestParam("identity_card") MultipartFile identityCard) throws IOException, ExecutionException, InterruptedException {
+        AccountFromIdentityResDto accountFromIdentityResDto = identityService.extractInfoIdentityCard(identityCard).get();
         return ok(accountFromIdentityResDto);
+    }
+
+    @PostMapping(
+            value = "/extract-information/by-drive-licences",
+            consumes = {MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> extractInformationDriverLicencesCard(
+            @RequestParam("identity_card") MultipartFile identityCard) throws IOException, ExecutionException, InterruptedException {
+        AccountFromDriverLicencesResDto res = identityService.extractInfoDriveLicenseCard(identityCard).get();
+        return ok(res);
+    }
+
+    @PostMapping(
+            value = "/extract-information/by-passport",
+            consumes = {MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> extractInformationPassport(
+            @RequestParam("identity_card") MultipartFile identityCard) throws IOException, ExecutionException, InterruptedException {
+        AccountFromPassportResDto res = identityService.extractInfoPassport(identityCard).get();
+        return ok(res);
     }
 
 }
