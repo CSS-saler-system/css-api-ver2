@@ -24,9 +24,9 @@ import static org.springframework.http.ResponseEntity.ok;
 public class CollaboratorCustomerController {
     private final CustomerService customerService;
 
-    @GetMapping(V3_LIST_CUSTOMER)
-    public ResponseEntity<?> getListCustomer() {
-        return ok(this.customerService.getAllCustomer());
+    @GetMapping(V3_LIST_CUSTOMER + "/{collaboratorId}")
+    public ResponseEntity<?> getListCustomer(@PathVariable("collaboratorId") UUID collaboratorId) {
+        return ok(this.customerService.getAllCustomer(collaboratorId));
     }
 
     @GetMapping(V3_GET_CUSTOMER_BY_PHONE)

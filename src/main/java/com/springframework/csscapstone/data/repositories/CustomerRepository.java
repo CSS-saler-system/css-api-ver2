@@ -7,15 +7,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Transactional(readOnly = true)
 public interface CustomerRepository extends JpaRepository<Customer, UUID>, JpaSpecificationExecutor<Customer> {
-    @Transactional(readOnly = true)
     Optional<Customer> getCustomerByPhone(String phone);
 
-    @Transactional(readOnly = true)
     @Query("SELECT a FROM Customer a WHERE a.phone = :phone")
     Optional<Customer> findByPhone(@Param("phone") String phone);
+
+    List<Customer> findAllByAccountCreator_Id(UUID collaboratorId);
 
 }
