@@ -28,22 +28,22 @@ import java.util.concurrent.CompletableFuture;
 @PropertySource(value = "classpath:application-fptai.properties")
 public class IdentityServiceImpl implements IdentityService {
     @Value("${request.key}")
-    private final String requestKey;
+    private String requestKey;
 
     @Value("${request.body}")
-    private final String requestBody;
+    private String requestBody;
 
     @Value("${fpt.secret.key}")
-    private final String fptSecretKey;
+    private String fptSecretKey;
 
     @Value("${identity.url}")
-    private final String identityUrl;
+    private String identityUrl;
 
     @Value("${driverLicences.url}")
-    private final String driverLicencesUrl;
+    private String driverLicencesUrl;
 
     @Value("${passport.url}")
-    private final String passportUrl;
+    private String passportUrl;
 
     @Override
     @Async("threadPoolTaskExecutor")
