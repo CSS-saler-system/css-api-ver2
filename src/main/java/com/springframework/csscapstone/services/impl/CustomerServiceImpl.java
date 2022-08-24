@@ -39,8 +39,8 @@ public class CustomerServiceImpl implements CustomerService {
 
 
     @Override
-    public List<CustomerResDto> getAllCustomer() {
-        return this.customerRepository.findAll()
+    public List<CustomerResDto> getAllCustomer(UUID collaboratorID) {
+        return this.customerRepository.findAllByAccountCreator_Id(collaboratorID)
                 .stream()
                 .sorted(Comparator.comparing(Customer::getName).reversed())
                 .map(MapperDTO.INSTANCE::toCustomerResDto)
