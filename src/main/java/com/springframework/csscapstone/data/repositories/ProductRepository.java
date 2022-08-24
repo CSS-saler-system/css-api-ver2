@@ -49,6 +49,7 @@
                 "SELECT DISTINCT p FROM Product p " +
                         "LEFT JOIN p.requestSellingProducts r " +
                         "WHERE p.account.id = :enterpriseId " +
+                        "AND p.productStatus = 'ACTIVE' " +
                         "AND r IN (SELECT request " +
                         "                 FROM RequestSellingProduct request " +
                         "                 WHERE request.account.id = :collaboratorId " +
