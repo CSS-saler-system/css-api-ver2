@@ -28,7 +28,7 @@ public class EnterpriseOrderController {
     private final OrderService orderService;
 
     @PutMapping(V2_ORDER_REJECT_STATUS + "/{orderId}")
-    public ResponseEntity<?> rejecctStatusOrder(
+    public ResponseEntity<?> rejectStatusOrder(
             @PathVariable("orderId") UUID id) {
         Optional<UUID> uuid = this.orderService.updateStatusOrder(id, OrderStatus.REJECTED);
         return ok(uuid);

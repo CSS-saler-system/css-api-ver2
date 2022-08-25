@@ -167,6 +167,7 @@ public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecific
             "JOIN o.orderDetails od " +
             "JOIN od.product p " +
             "WHERE p.account.id = :enterpriseId " +
+            "AND o.status = 'FINISHED' " +
             "GROUP BY MONTH(o.createDate)")
     List<Tuple> groupRevenueOrderByMonth(@Param("enterpriseId") UUID enterpriseId);
 }
