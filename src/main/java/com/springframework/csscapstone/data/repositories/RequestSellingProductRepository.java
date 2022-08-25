@@ -63,4 +63,19 @@ public interface RequestSellingProductRepository extends JpaRepository<RequestSe
             @Param("status") RequestStatus status, Pageable pageable);
 
 
+    @Query("SELECT COUNT(distinct r.account) FROM RequestSellingProduct r " +
+            "JOIN r.product p " +
+            "JOIN p.account enterprise " +
+            "WHERE r.requestStatus = 'REGISTERED' " +
+            "AND enterprise.id = :enterpriseId")
+    Long countCollaboratorByEnterprise(@Param("enterpriseId") UUID enterpriseId);
+
+
+    @Query("SELECT COUNT(distinct r) FROM RequestSellingProduct r " +
+            "JOIN r.product p " +
+            "JOIN p.account enterprise " +
+            "WHERE r.requestStatus = 'REGISTERED' " +
+            "AND enterprise.id = :enterpriseId")
+    Long countRequestByEnterprise(@Param("enterpriseId") UUID enterpriseId);
+
 }

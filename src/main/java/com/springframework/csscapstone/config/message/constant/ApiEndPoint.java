@@ -56,6 +56,15 @@ public class ApiEndPoint {
         public static final String V4_DISABLE_PRODUCT = v4_handler + "/disable";
     }
 
+    public static class Enterprise {
+        public static final String v2_handler = ENTERPRISE + "/home";
+
+        public static final String V2_COLLABORATOR_COUNT = v2_handler + "/collabortor-count";
+        public static final String V2_INFORMATION_POINT = v2_handler + "/point";
+        public static final String V2_INFORMATION_REQUEST = v2_handler + "/number-request";
+        public static final String V2_CAMPAIGN_COUNT = v2_handler + "/campaign";
+    }
+
     public static class Account {
         public static final String v1_handler = ADMIN + "/account";
         public static final String v2_handler = ENTERPRISE + "/collaborator";
