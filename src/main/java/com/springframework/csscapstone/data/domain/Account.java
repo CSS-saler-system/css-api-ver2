@@ -17,18 +17,16 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static com.springframework.csscapstone.data.status.AccountImageType.AVATAR;
-import static com.springframework.csscapstone.data.status.AccountImageType.ID_CARD;
-import static com.springframework.csscapstone.data.status.AccountImageType.LICENSE;
+import static com.springframework.csscapstone.data.status.AccountImageType.*;
 import static javax.persistence.FetchType.LAZY;
 
 @Getter
 @Setter
 @Accessors(chain = true)
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 @Entity
 @Table(name = "account")
-@EntityListeners(AuditingEntityListener.class)
 public class Account {
     @Id
     @GeneratedValue(generator = "UUID")

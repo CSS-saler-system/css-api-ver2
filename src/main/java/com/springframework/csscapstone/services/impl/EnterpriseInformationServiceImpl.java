@@ -30,7 +30,8 @@ public class EnterpriseInformationServiceImpl implements EnterpriseInformationSe
 
     @Override
     public Double getPoint(UUID enterpriseId) {
-        return accountRepository.findById(enterpriseId).map(Account::getPoint)
+        return accountRepository.findById(enterpriseId)
+                .map(Account::getPoint)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("not have enterprise with id %s", enterpriseId)));
     }
 }

@@ -51,7 +51,7 @@ public class EnterpriseLoginController {
     @PutMapping(
             value = ENTERPRISE_SIGNUP,
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> singupEnterprise(
+    public ResponseEntity<?> singUpEnterprise(
             @RequestPart("enterpriseDto") String enterpriseString,
             @RequestPart(value = "avatar", required = false) MultipartFile avatar,
             @RequestPart(value = "businessLicences", required = false) MultipartFile licences) throws JsonProcessingException {

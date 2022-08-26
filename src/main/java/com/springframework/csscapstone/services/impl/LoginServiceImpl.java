@@ -22,6 +22,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -90,12 +91,14 @@ public class LoginServiceImpl implements LoginService {
                 account.addRegistration(savedToken);
             }
             System.out.println("The last one code of if block");
-            System.out.println("This is account by emial: " + accountByEmail.get());
+            System.out.println("This is account by email: " + accountByEmail.get());
             return accountByEmail.map(getTokenForEnterprise).get();
         }
 
         Account account = new Account()
-                .setEmail(email).setPoint(0.0)
+                .setEmail(email)
+                .setDob(LocalDate.now())
+                .setPoint(0.0)
                 .setPhone("0000-0000-0000")
                 .setIsActive(false);
 
