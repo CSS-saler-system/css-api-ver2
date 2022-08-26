@@ -25,7 +25,7 @@
     </cache>
     <cache alias="requestById">
         <key-type>java.util.UUID</key-type>
-        <value-type>com.springframework.csscapstone.payload.response_dto.PageImplResDto</value-type>
+        <value-type>com.springframework.csscapstone.payload.response_dto.enterprise.RequestSellingProductResDto</value-type>
         <expiry>
             <ttl>30</ttl>
         </expiry>
