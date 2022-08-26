@@ -6,18 +6,20 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
-
-import static javax.persistence.FetchType.LAZY;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
 @Accessors(chain = true)
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "account_image")
 public class AccountImage {
     @Id
@@ -34,6 +36,9 @@ public class AccountImage {
     @ManyToOne
     @JoinColumn(name = "account_id")
     private Account account;
+
+    @CreatedDate
+    private LocalDateTime createDate;
 
     public AccountImage(AccountImageType type, String path) {
         this.type = type;

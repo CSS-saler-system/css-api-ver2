@@ -151,21 +151,24 @@ public class Account {
     public AccountImage getAvatar() {
         return this.images.stream()
                 .filter(image -> image.getType().equals(AVATAR))
-                .findFirst().orElse(AccountImage.emptyInstance(AVATAR));
+                .max(Comparator.comparing(AccountImage::getCreateDate))
+                .orElse(AccountImage.emptyInstance(AVATAR));
     }
 
     @Named("license")
     public AccountImage getLicense() {
         return this.images.stream()
                 .filter(image -> image.getType().equals(AccountImageType.LICENSE))
-                .findFirst().orElse(AccountImage.emptyInstance(LICENSE));
+                .max(Comparator.comparing(AccountImage::getCreateDate))
+                .orElse(AccountImage.emptyInstance(LICENSE));
     }
 
     @Named("idCard")
     public AccountImage getIdCard() {
         return this.images.stream()
                 .filter(image -> image.getType().equals(AccountImageType.ID_CARD))
-                .findFirst().orElse(AccountImage.emptyInstance(ID_CARD));
+                .max(Comparator.comparing(AccountImage::getCreateDate))
+                .orElse(AccountImage.emptyInstance(ID_CARD));
     }
 
     public void setTotalQuantity(Long quantity) {
