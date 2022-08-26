@@ -12,7 +12,6 @@ import com.springframework.csscapstone.payload.basic.RoleBasicDto;
 import lombok.Data;
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -34,6 +33,10 @@ public class AccountResDto implements Serializable {
     private final AccountImageBasicDto licenses;
     private final AccountImageBasicDto idCard;
     private final RoleBasicDto role;
+
+    private final Boolean isActive;
+
+//    private final AccountStatus
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public AccountResDto(
             @JsonProperty("id") UUID id,
@@ -48,7 +51,8 @@ public class AccountResDto implements Serializable {
             @JsonProperty("role") RoleBasicDto role,
             @JsonProperty("avatar") AccountImageBasicDto avatar,
             @JsonProperty("licenses") AccountImageBasicDto licenses,
-            @JsonProperty("idCard") AccountImageBasicDto idCard) {
+            @JsonProperty("idCard") AccountImageBasicDto idCard,
+            @JsonProperty("isActive") Boolean isActive) {
         this.id = id;
         this.name = name;
         this.dob = dob;
@@ -62,6 +66,7 @@ public class AccountResDto implements Serializable {
         this.avatar = avatar;
         this.licenses = licenses;
         this.idCard = idCard;
+        this.isActive = isActive;
     }
 
 
