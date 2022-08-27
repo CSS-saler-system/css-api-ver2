@@ -308,7 +308,7 @@ public class ProductServiceImpl implements ProductService {
     public PageImplResDto<ProductForCollaboratorResDto> pageProductWithNoRegisteredByEnterpriseAndCollaborator(
             UUID collaboratorId, UUID enterpriseId, Integer pageNumber, Integer pageSize) {
         pageNumber = isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
-        pageSize = isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
+        pageSize = isNull(pageSize) || pageSize < 1 ? 100 : pageSize;
 
         Page<Product> page = this.productRepository.getAllProductNotRegister(
                 collaboratorId, enterpriseId, PageRequest.of(pageNumber - 1, pageSize, Sort.by(Product_.NAME)));
