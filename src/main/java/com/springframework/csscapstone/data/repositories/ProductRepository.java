@@ -64,6 +64,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
                     "JOIN p.requestSellingProducts r " +
                     "WHERE p.account.id = :enterpriseId " +
                     "AND p.productStatus = 'ACTIVE' " +
+                    "AND r.account.id = :collaboratorId " +
                     "AND r NOT IN (SELECT r " +
                     "                 FROM RequestSellingProduct r " +
                     "                 WHERE r.account.id = :collaboratorId " +
