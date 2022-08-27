@@ -45,6 +45,16 @@ public interface AccountRepository extends JpaRepository<Account, UUID>, JpaSpec
     @Query("SELECT a FROM Account a WHERE a.role = 'ROLE_2' AND a.isActive = true")
     Page<Account> findAllEnterprise(Pageable pageable);
 
+    @Query("SELECT COUNT(a) FROM Account a " +
+            "WHERE a.role.name = 'Collaborator' " +
+            "AND a.isActive = true")
+    long countCollaborator();
+
+    @Query("SELECT COUNT(a) FROM Account a " +
+            "WHERE a.role.name = 'Enterprise' " +
+            "AND a.isActive = true ")
+    long countEnterprise();
+
 //    @Query("SELECT a FROM Account a WHERE a.role.name = 'Enterprise'")
 //    Page<Account> getAllEnterprise(Pageable pageable);
 
