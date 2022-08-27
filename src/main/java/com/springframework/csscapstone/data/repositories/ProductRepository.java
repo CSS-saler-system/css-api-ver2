@@ -60,7 +60,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
             Pageable pageable);
 
     @Query(value =
-            "SELECT p FROM Product p " +
+            "SELECT distinct p FROM Product p " +
                     "JOIN p.requestSellingProducts r " +
                     "WHERE p.account.id = :enterpriseId " +
                     "AND p.productStatus = 'ACTIVE' " +
