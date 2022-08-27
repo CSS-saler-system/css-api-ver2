@@ -46,31 +46,37 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
      * UUID.fromString("8b37872e-b974-4e04-a485-cedfee79a511"),
      */
     @Query(value =
-            "SELECT DISTINCT p FROM Product p " +
-                    "LEFT JOIN p.requestSellingProducts r " +
-                    "WHERE p.account.id = :enterpriseId " +
-                    "AND p.productStatus = 'ACTIVE' " +
-                    "AND r IN (SELECT request " +
-                    "                 FROM RequestSellingProduct request " +
-                    "                 WHERE request.account.id = :collaboratorId " +
-                    "                 AND request.requestStatus = 'REGISTERED')")
+            "SELECT p FROM Product p " +
+                    "WHERE p IN (SELECT _p FROM Product _p " +
+                                "JOIN _p.requestSellingProducts r " +
+                                "WHERE r.account.id = :collaboratorId)" +
+                    "AND p.account.id = :enterpriseId " +
+                    "AND p.productStatus = 'ACTIVE' ")
     Page<Product> getAllProductRegister(
             @Param("collaboratorId") UUID collaboratorId,
             @Param("enterpriseId") UUID enterpriseId,
             Pageable pageable);
 
+    //    @Query(value =
+//            "SELECT distinct p FROM Product p " +
+//                    "JOIN p.requestSellingProducts r " +
+//                    "WHERE p.account.id = :enterpriseId " +
+//                    "AND p.productStatus = 'ACTIVE' " +
+//                    "AND r.account.id = :collaboratorId " +
+//                    "AND NOT r.requestStatus = 'REGISTERED' " +
+//                    "AND NOT r.requestStatus = 'CREATED'")
+//    Page<Product> getAllProductNotRegister(
+//            @Param("collaboratorId") UUID collaboratorId,
+//            @Param("enterpriseId") UUID enterpriseId,
+//            Pageable pageable
+//    );
     @Query(value =
-            "SELECT distinct p FROM Product p " +
-                    "JOIN p.requestSellingProducts r " +
-                    "WHERE p.account.id = :enterpriseId " +
-                    "AND p.productStatus = 'ACTIVE' " +
-                    "AND r.account.id = :collaboratorId " +
-                    "AND r NOT IN (SELECT r " +
-                    "                 FROM RequestSellingProduct r " +
-                    "                 WHERE r.account.id = :collaboratorId " +
-                    "                 AND r.requestStatus = 'REGISTERED' " +
-                    "                 OR r.requestStatus = 'CREATED'" +
-                    ")")
+            "SELECT p FROM Product p " +
+                    "WHERE p NOT IN (SELECT _p FROM Product _p " +
+                    "JOIN _p.requestSellingProducts r " +
+                    "WHERE r.account.id = :collaboratorId)" +
+                    "AND p.account.id = :enterpriseId " +
+                    "AND p.productStatus = 'ACTIVE' ")
     Page<Product> getAllProductNotRegister(
             @Param("collaboratorId") UUID collaboratorId,
             @Param("enterpriseId") UUID enterpriseId,
