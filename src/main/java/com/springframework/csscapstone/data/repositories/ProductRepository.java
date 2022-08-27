@@ -61,9 +61,10 @@
 
         @Query(value =
                 "SELECT p FROM Product p " +
+                        "JOIN p.requestSellingProducts r " +
                         "WHERE p.account.id = :enterpriseId " +
-                        "AND p.productStatus = 'ACTIVE'" +
-                        "AND p NOT IN (SELECT r.product " +
+                        "AND p.productStatus = 'ACTIVE' " +
+                        "AND r NOT IN (SELECT r " +
                         "                 FROM RequestSellingProduct r " +
                         "                 WHERE r.account.id = :collaboratorId " +
                         "                 AND r.requestStatus = 'REGISTERED' " +
