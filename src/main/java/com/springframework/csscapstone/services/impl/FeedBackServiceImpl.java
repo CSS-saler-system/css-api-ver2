@@ -73,11 +73,12 @@ public class FeedBackServiceImpl implements FeedBackService {
     public PageImplResDto<FeedBackPageModeraterResDto> getPageFeedBackForModerator(Integer pageSize, Integer pageNumber) {
         pageSize = isNull(pageSize) || pageSize < 1 ? 10 : pageSize;
         pageNumber = isNull(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
-        Page<FeedBack> page = this.feedBackRepository.findAll(PageRequest.of(pageNumber - 1, pageSize));
+        Page<FeedBack> page = this.feedBackRepository
+                .findAll(PageRequest.of(pageNumber - 1, pageSize, Sort.by(FeedBack_.CREATE_DATE).descending()));
         List<FeedBackPageModeraterResDto> list = page.getContent()
                 .stream()
                 .map(FeedBackMapper.INSTANCE::feedBackToFeedBackPageModeraterResDto)
-                .sorted(Comparator.comparing(FeedBackPageModeraterResDto::getCreateDate).reversed())
+//                 .sorted(Comparator.comparing(FeedBackPageModeraterResDto::getCreateDate).reversed())
                 .collect(Collectors.toList());
         return new PageImplResDto<>(list, page.getNumber() + 1, list.size(),
                 page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
