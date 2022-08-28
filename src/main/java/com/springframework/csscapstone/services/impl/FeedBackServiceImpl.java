@@ -77,7 +77,7 @@ public class FeedBackServiceImpl implements FeedBackService {
         List<FeedBackPageModeraterResDto> list = page.getContent()
                 .stream()
                 .map(FeedBackMapper.INSTANCE::feedBackToFeedBackPageModeraterResDto)
-                .sorted(Comparator.comparing(FeedBackPageModeraterResDto::getCreateDate))
+                .sorted(Comparator.comparing(FeedBackPageModeraterResDto::getCreateDate).reversed())
                 .collect(Collectors.toList());
         return new PageImplResDto<>(list, page.getNumber() + 1, list.size(),
                 page.getTotalElements(), page.getTotalPages(), page.isFirst(), page.isLast());
