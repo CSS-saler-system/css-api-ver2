@@ -23,6 +23,8 @@ public class CollaboratorWithQuantitySoldByCategoryDto implements Serializable {
     private final String name;
     private final String phone;
 
+    private final String email;
+
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -44,7 +46,7 @@ public class CollaboratorWithQuantitySoldByCategoryDto implements Serializable {
             @JsonProperty("id") UUID id,
             @JsonProperty("name") String name,
             @JsonProperty("phone") String phone,
-            @JsonProperty("dob") LocalDate dob,
+            String email, @JsonProperty("dob") LocalDate dob,
             @JsonProperty("address") String address,
             @JsonProperty("avatar") AccountImageBasicDto avatar,
             @JsonProperty("percentSoldByCategory") Map<String, Long> percentSoldByCategory
@@ -52,6 +54,7 @@ public class CollaboratorWithQuantitySoldByCategoryDto implements Serializable {
         this.id = id;
         this.name = name;
         this.phone = phone;
+        this.email = email;
         this.dob = dob;
         this.avatar = avatar;
         this.percentSoldByCategory = percentSoldByCategory;
