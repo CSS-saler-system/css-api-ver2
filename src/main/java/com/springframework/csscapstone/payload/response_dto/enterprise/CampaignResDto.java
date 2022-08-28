@@ -30,6 +30,12 @@ public class CampaignResDto implements Serializable {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private final LocalDateTime startDate;
+
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private final LocalDateTime lastModifiedDate;
+
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -45,12 +51,13 @@ public class CampaignResDto implements Serializable {
             @JsonProperty("campaignId") UUID campaignId,
             @JsonProperty("name") String name,
             LocalDateTime createDate, @JsonProperty("startDate") LocalDateTime startDate,
-            @JsonProperty("endDate") LocalDateTime endDate,
+            LocalDateTime lastModifiedDate, @JsonProperty("endDate") LocalDateTime endDate,
             @JsonProperty("campaignStatus") CampaignStatus campaignStatus, String campaignDescription, String campaignShortDescription) {
         this.campaignId = campaignId;
         this.name = name;
         this.createDate = createDate;
         this.startDate = startDate;
+        this.lastModifiedDate = lastModifiedDate;
         this.endDate = endDate;
         this.campaignStatus = campaignStatus;
         this.campaignDescription = campaignDescription;
