@@ -11,9 +11,3 @@ Bug parse LocalDate to Json:
 @JsonSerialize(using = LocalDateSerializer.class)
 @JsonDeserialize(using = LocalDateDeserializer.class) 
 @JsonFormat(pattern = "yyyy-MM-dd")
-
-@JsonSerialize(using = LocalDateTimeSerializer.class)
-@JsonDeserialize(using = LocalDateTimeDeserializer.class)
-@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-
-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
