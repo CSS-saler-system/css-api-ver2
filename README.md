@@ -6,8 +6,3 @@
 "@Enterprise(https://product-manage-complete-webpack.vercel.app)"
 
 "@Processing(https://docs.google.com/spreadsheets/d/1rDqd08oqSDx8zCZpwptwkM08bClxDIj8mrbsULxApjE/edit#gid=692238097)"
-
-Bug parse LocalDate to Json: 
-@JsonSerialize(using = LocalDateSerializer.class)
-@JsonDeserialize(using = LocalDateDeserializer.class) 
-@JsonFormat(pattern = "yyyy-MM-dd")
